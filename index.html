@@ -1442,6 +1442,8 @@
           renderBookingCalendar();
           loadBookingAvailability();
         } else if (viewId === 'bookings-admin') {
+          // Show loading state immediately, loadBookings handles auth wait
+          if (adminMessage) setMessage(adminMessage, "Loading bookings...");
           loadBookings();
           loadReviewsAdmin();
         } else if (viewId === 'account') {
@@ -1997,8 +1999,28 @@
       }
 
       async function loadBookings() {
-        if (!supabaseClient || !window.currentSupabaseUser) return;
-        setMessage(adminMessage, "Syncing event lists...");
+        if (!supabaseClient) {
+          setMessage(adminMessage, "Supabase client not available.", true);
+          return;
+        }
+
+        // If session not yet resolved, wait for it
+        if (!window.currentSupabaseUser) {
+          setMessage(adminMessage, "Verifying session...");
+          try {
+            const { data } = await supabaseClient.auth.getSession();
+            const user = data?.session?.user || null;
+            window.currentSupabaseUser = user;
+            if (user) loadAccountState(user);
+          } catch (_) {}
+          if (!window.currentSupabaseUser) {
+            setMessage(adminMessage, "Sign in to access admin bookings.", true);
+            return;
+          }
+        }
+
+        if (adminMeta) adminMeta.textContent = "Logged in as " + window.currentSupabaseUser.email;
+        setMessage(adminMessage, "Syncing event records...");
 
         try {
           const { data, error } = await supabaseClient
@@ -2008,7 +2030,7 @@
 
           if (error) throw error;
           bookings = data || [];
-          setMessage(adminMessage, bookings.length ? "Bookings loaded." : "No requests found.");
+          setMessage(adminMessage, bookings.length ? bookings.length + " booking(s) loaded." : "No requests found.");
           renderBookings();
         } catch (err) {
           setMessage(adminMessage, err.message, true);
@@ -2129,6 +2151,13 @@
 
       async function loadReviewsAdmin() {
         if (!supabaseClient) return;
+        if (!window.currentSupabaseUser) {
+          try {
+            const { data } = await supabaseClient.auth.getSession();
+            window.currentSupabaseUser = data?.session?.user || null;
+          } catch (_) {}
+          if (!window.currentSupabaseUser) return;
+        }
         try {
           const { data, error } = await supabaseClient
             .from("public_reviews")
@@ -2344,6 +2373,14 @@
           renderBookings();
         };
       });
+
+      // Refresh button for admin panel
+      if (refreshBookings) {
+        refreshBookings.onclick = () => {
+          loadBookings();
+          loadReviewsAdmin();
+        };
+      }
 
       // Authentication modal operations
       document.getElementById("loginOpen").onclick = () => openAuthModal("login");
