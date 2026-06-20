@@ -1680,7 +1680,7 @@
           <a href="#top">Home</a>
           <a href="#features">Features</a>
           <a href="#pricing">Pricing</a>
-          <a href="./book-event.html">Book Event</a>
+          <a href="./book-event">Book Event</a>
           <a href="#download">Download</a>
           <a href="#faq">FAQ</a>
         </nav>
@@ -1691,8 +1691,8 @@
               <span>▾</span>
             </button>
             <div class="dropdown-menu" role="menu" aria-label="User session options">
-              <a href="./account.html" id="accountOpen">View Account</a>
-              <a href="./bookings-admin.html" id="adminBookingsOpen" class="is-hidden">Admin Bookings</a>
+              <a href="./account" id="accountOpen">View Account</a>
+              <a href="./bookings-admin" id="adminBookingsOpen" class="is-hidden">Admin Bookings</a>
               <div class="menu-divider"></div>
               <button type="button" id="logoutAction">Logout</button>
             </div>
@@ -1845,7 +1845,7 @@
               <h2>Download Studio Photuna for Windows</h2>
               <p>Install the Windows booth app, sign in, and prepare events from the same operator system your account uses.</p>
               <div class="download-actions">
-                <a class="btn" href="./download.html">Download for Windows</a>
+                <a class="btn" href="./download">Download for Windows</a>
               </div>
             </div>
             <div class="download-card">
@@ -1957,8 +1957,8 @@
             <p>Studio Photuna helps operators launch and manage Korean-style photobooth experiences using a practical Windows workflow.</p>
             <div class="socials"><span>X</span><span>F</span><span>I</span><span>in</span></div>
           </div>
-          <div><h4>Company</h4><nav><a href="#top">Home</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="./book-event.html">Book Event</a><a href="#faq">FAQ</a></nav></div>
-          <div><h4>Pages</h4><nav><a href="./account.html">Account</a><a href="./download.html">Download</a><a href="./book-event.html">Book Event</a><a href="mailto:support@photuna.app">Support</a></nav></div>
+          <div><h4>Company</h4><nav><a href="#top">Home</a><a href="#features">Features</a><a href="#pricing">Pricing</a><a href="./book-event">Book Event</a><a href="#faq">FAQ</a></nav></div>
+          <div><h4>Pages</h4><nav><a href="./account">Account</a><a href="./download">Download</a><a href="./book-event">Book Event</a><a href="mailto:support@photuna.app">Support</a></nav></div>
           <div><h4>Product</h4><nav><a href="#download">Download</a><a href="#pricing">Pricing</a><a href="#features">Features</a><a href="#faq">FAQ</a></nav></div>
         </div>
         <div class="footer-bottom">Copyright Studio Photuna. All rights reserved.</div>
@@ -2541,7 +2541,7 @@
       }
 
       function openAccountModal() {
-        let accountUrl = "./account.html";
+        let accountUrl = "./account";
         if (window.currentSupabaseUser) {
           const payload = writeAccountSnapshot(window.currentSupabaseUser, currentProfile, currentLicense);
           if (payload) accountUrl += `#account=${encodeURIComponent(payload)}`;
@@ -2654,7 +2654,7 @@
 
         if (pricingCardTrialBtn) {
           pricingCardTrialBtn.textContent = hasPremiumStatus ? "Manage Subscription" : "Start Trial";
-          pricingCardTrialBtn.setAttribute("href", hasPremiumStatus ? "./account.html" : "#pricing");
+          pricingCardTrialBtn.setAttribute("href", hasPremiumStatus ? "./account" : "#pricing");
         }
 
         if (heroTrialSubmit) {

@@ -319,14 +319,14 @@
   <body>
     <header class="site-header">
       <div class="container header-row">
-        <a class="logo" href="./index.html" aria-label="Studio Photuna">
+        <a class="logo" href="./" aria-label="Studio Photuna">
           <img src="./logo-dark.png" alt="Studio Photuna" />
         </a>
         <nav class="nav-links" aria-label="Account navigation">
-          <a href="./index.html">Home</a>
-          <a href="./index.html#features">Features</a>
-          <a href="./index.html#pricing">Pricing</a>
-          <a href="./download.html">Download</a>
+          <a href="./">Home</a>
+          <a href="./#features">Features</a>
+          <a href="./#pricing">Pricing</a>
+          <a href="./download">Download</a>
         </nav>
         <div class="header-actions">
           <button class="btn hidden" type="button" id="logoutButton">Logout</button>
@@ -347,7 +347,7 @@
           <h2>Login from the Home page</h2>
           <p class="message" id="authMessage">For account security, this page only displays profile details after you log in from the Studio Photuna home page.</p>
           <div class="account-actions">
-            <a class="btn" href="./index.html">Go to Home</a>
+            <a class="btn" href="./">Go to Home</a>
           </div>
         </div>
 
@@ -674,7 +674,7 @@
         } catch (_error) {
           // Continue back to Home even if Supabase has already cleared the session.
         } finally {
-          window.location.href = "./index.html";
+          window.location.href = "./";
         }
       });
 
