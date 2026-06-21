@@ -1719,6 +1719,7 @@
           document.getElementById("profilePhone").value = profile?.phone || "";
 
           renderRenewalBanner(license);
+          setBillingPlan(selectedBilling); // refresh pricing CTA now that currentLicense is known
           updateAuthUi(user);
         } catch (err) {
           console.warn("Unable to map account details", err);
@@ -1832,7 +1833,17 @@
         }
         if (proPlanCta) {
           proPlanCta.dataset.plan = selectedBilling;
-          proPlanCta.textContent = selected.cta;
+
+          const blocker = getSubscriptionBlocker(currentLicense, selectedBilling);
+          if (blocker?.type === "block" && blocker.title === "Plan Already Active") {
+            proPlanCta.textContent = "Current Plan -- Active";
+            proPlanCta.disabled = true;
+            proPlanCta.classList.add("opacity-60", "cursor-not-allowed");
+          } else {
+            proPlanCta.textContent = selected.cta;
+            proPlanCta.disabled = false;
+            proPlanCta.classList.remove("opacity-60", "cursor-not-allowed");
+          }
         }
       }
 
@@ -1853,6 +1864,16 @@
         if (!supabaseClient) {
           spawnToast("Unavailable", "Supabase client not loaded.", "fa-solid fa-triangle-exclamation", "warning");
           return;
+        }
+
+        const blocker = getSubscriptionBlocker(currentLicense, selectedBilling);
+        if (blocker) {
+          if (blocker.type === "confirm") {
+            if (!window.confirm(blocker.message)) return; // guest cancelled the switch
+          } else {
+            spawnToast(blocker.title, blocker.message, "fa-solid fa-circle-info", "warning");
+            return;
+          }
         }
 
         if (ACTIVE_PAYMENT_MODE === "manual_gcash") {
@@ -1881,6 +1902,49 @@
           spawnToast("Checkout Failed", err.message || "Could not start checkout. Please try again.", "fa-solid fa-circle-exclamation", "warning");
           ctas.forEach((el, i) => { el.disabled = false; el.textContent = originalLabels[i]; });
         }
+      }
+
+      // Stops a guest from accidentally paying twice for the same active
+      // period, or submitting a second payment while their first is still
+      // being reviewed. Plan switches (monthly <-> yearly) are allowed but
+      // need an explicit confirm since this manual-renew model doesn't
+      // prorate the days left on the old plan.
+      function getSubscriptionBlocker(license, requestedBilling) {
+        if (!license) return null; // never subscribed -- nothing to block
+
+        if (license.state === "pending_verification") {
+          return {
+            type: "block",
+            title: "Payment Already Under Review",
+            message: "Your last GCash payment proof is still being verified. Please wait for confirmation before submitting another payment, or contact support if it's been more than a day.",
+          };
+        }
+
+        if (license.state === "active" && license.current_period_end) {
+          const daysLeft = Math.ceil((new Date(license.current_period_end) - new Date()) / (1000 * 60 * 60 * 24));
+          const currentBilling = license.plan === "pro_yearly" ? "yearly" : license.plan === "pro_monthly" ? "monthly" : null;
+
+          // Inside the renewal window (<=7 days left, or already expired),
+          // re-paying is exactly the intended renewal flow -- no blocker.
+          if (daysLeft > 7 && currentBilling) {
+            const formattedDate = new Date(license.current_period_end).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" });
+
+            if (currentBilling === requestedBilling) {
+              return {
+                type: "block",
+                title: "Plan Already Active",
+                message: `You already have an active ${requestedBilling} plan, valid through ${formattedDate}. No need to pay again yet -- check back closer to your renewal date.`,
+              };
+            }
+
+            return {
+              type: "confirm",
+              message: `You have an active ${currentBilling} plan through ${formattedDate}. Switching to ${requestedBilling} now starts a new period once verified, and the remaining ${currentBilling} time won't be automatically refunded or carried over. Continue anyway?`,
+            };
+          }
+        }
+
+        return null;
       }
 
       // ---------------------------------------------------------------------
