@@ -425,7 +425,7 @@
                     <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-purple"></i> Priority developer support queue</li>
                   </ul>
                 </div>
-                <button onclick="handleSubscribePlan()" id="proPlanCta" class="btn-animation mt-8 w-full bg-purple hover:bg-purple-dark text-white py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
+                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-8 w-full bg-purple hover:bg-purple-dark text-white py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
                   Choose Pro Plan
                 </button>
               </div>
@@ -1262,7 +1262,7 @@
               <p class="text-sm font-bold" id="renewalBannerTitle">Plan status</p>
               <p class="text-xs text-body" id="renewalBannerSubtitle"></p>
             </div>
-            <button onclick="handleSubscribePlan()" id="renewalBannerBtn" class="btn-animation shrink-0 bg-purple hover:bg-purple-dark text-white px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider">
+            <button onclick="handleSubscribePlan('renewalBannerBtn')" id="renewalBannerBtn" class="btn-animation shrink-0 bg-purple hover:bg-purple-dark text-white px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider">
               Renew Now
             </button>
           </div>
@@ -1399,6 +1399,12 @@
           <div class="inline-block rounded-2xl border border-line p-3 bg-grey">
             <img src="gcash-qr.png" alt="Studio Photuna GCash QR code" class="w-48 h-48 object-contain mx-auto" onerror="this.onerror=null; this.src='https://placehold.co/300x300/f4f5f8/5f6678?text=Add+gcash-qr.png'" />
           </div>
+
+          <div class="flex justify-center gap-2 mt-4 bg-grey p-1 rounded-full border border-line w-fit mx-auto">
+            <button type="button" data-gcash-billing="monthly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('monthly')">Monthly</button>
+            <button type="button" data-gcash-billing="yearly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('yearly')">Yearly</button>
+          </div>
+
           <p class="text-sm font-bold text-title mt-3" id="gcashAmountDue">Amount due: ₱0.00</p>
           <p class="text-xs text-body">Scan with your GCash app, send the exact amount above, then fill in the details below.</p>
         </div>
@@ -1538,15 +1544,15 @@
       const billingPlans = {
         monthly: {
           badge: "Flexible Plan",
-          price: "₱1,800.00<small class='text-sm text-white/70'>/mo</small>",
+          price: "$30<small class='text-sm text-white/70'>/mo</small>",
           note: "Billed monthly. Ideal for pop-up event testing, seasonal hubs, and flexible slots.",
           details: ["Billed monthly", "Standard support ticket guidelines", "Unlimited image capture parameters", "Dynamic custom template coordinates"],
           cta: "Choose Monthly Plan"
         },
         yearly: {
           badge: "Best Value",
-          price: "₱950.00<small class='text-sm text-white/70'>/mo</small>",
-          note: "₱11,400.00 billed annually. Enjoy a 47% savings compared with monthly cycles.",
+          price: "$17<small class='text-sm text-white/70'>/mo</small>",
+          note: "$204 billed annually. Enjoy a 43% savings compared with monthly cycles.",
           details: ["Best value choice", "Continuous software feature releases", "Priority developer support queue", "Advanced custom branding frames"],
           cta: "Choose Yearly Plan"
         }
@@ -1556,7 +1562,7 @@
       // update to your actual rates before going live (GCash doesn't do
       // currency conversion, so whatever's shown here is exactly what the
       // guest is asked to send).
-      const PHP_AMOUNTS = { monthly: 1800, yearly: 11400 };
+      const PHP_AMOUNTS = { monthly: 1700, yearly: 11500 };
 
       // Switch this to "paymongo" or "stripe" once BIR registration clears
       // and one of those is ready -- everything else (renewal banner,
@@ -1765,6 +1771,16 @@
           title.textContent = "Plan active";
           subtitle.textContent = `Renews manually -- valid through ${formattedDate}.`;
           btn.classList.add("hidden");
+        } else if (license.state === "active" && daysLeft === null) {
+          // Active but no current_period_end on file -- almost always means
+          // the row was activated manually without setting that column (see
+          // the runbook in 04_manual_gcash_payment_proofs.sql). Treat as
+          // active, not expired, but flag it so it gets corrected.
+          banner.className = "flex flex-col sm:flex-row items-center justify-between gap-4 bg-grey border border-line rounded-2xl p-5";
+          title.className = "text-sm font-bold text-title";
+          title.textContent = "Plan active";
+          subtitle.textContent = "No renewal date on file -- contact support if this looks wrong.";
+          btn.classList.add("hidden");
         } else if (license.state === "active" && daysLeft !== null && daysLeft >= 0) {
           banner.className = "flex flex-col sm:flex-row items-center justify-between gap-4 bg-yellow-50 border border-yellow-300 rounded-2xl p-5";
           title.className = "text-sm font-bold text-yellow-900";
@@ -1855,7 +1871,7 @@
         });
       });
 
-      async function handleSubscribePlan() {
+      async function handleSubscribePlan(triggerId) {
         if (!window.currentSupabaseUser) {
           spawnToast("Authentication Needed", "Please log in before choosing a license plan.", "fa-solid fa-user-lock", "warning");
           openAuthModal("signup");
@@ -1866,7 +1882,16 @@
           return;
         }
 
-        const blocker = getSubscriptionBlocker(currentLicense, selectedBilling);
+        // The pricing card's "Choose Plan" button is a deliberate billing
+        // choice (selectedBilling, from that card's own toggle). The renew
+        // banner button means "renew what I already have" -- it should
+        // default to the guest's current plan, not whatever the unrelated
+        // pricing-card toggle happens to be set to.
+        const requestedBilling = triggerId === "renewalBannerBtn"
+          ? (currentLicense?.plan === "pro_yearly" ? "yearly" : currentLicense?.plan === "pro_monthly" ? "monthly" : selectedBilling)
+          : selectedBilling;
+
+        const blocker = getSubscriptionBlocker(currentLicense, requestedBilling);
         if (blocker) {
           if (blocker.type === "confirm") {
             if (!window.confirm(blocker.message)) return; // guest cancelled the switch
@@ -1877,7 +1902,7 @@
         }
 
         if (ACTIVE_PAYMENT_MODE === "manual_gcash") {
-          openGcashModal();
+          openGcashModal(requestedBilling);
           return;
         }
 
@@ -1890,7 +1915,7 @@
 
         try {
           const { data, error } = await supabaseClient.functions.invoke("create-checkout-session", {
-            body: { billing: selectedBilling },
+            body: { billing: requestedBilling },
           });
 
           if (error) throw error;
@@ -1950,14 +1975,35 @@
       // ---------------------------------------------------------------------
       // Manual GCash QR flow (bridge solution until PayMongo/Stripe go live)
       // ---------------------------------------------------------------------
-      function openGcashModal() {
-        const amount = PHP_AMOUNTS[selectedBilling] || 0;
-        document.getElementById("gcashAmountDue").textContent = `Amount due: ₱${amount.toLocaleString("en-PH", { minimumFractionDigits: 2 })} (${selectedBilling})`;
+      let gcashModalBilling = "monthly";
+
+      function openGcashModal(defaultBilling) {
         document.getElementById("gcashMessage").textContent = "";
         document.getElementById("gcashProofForm").reset();
+        setGcashModalBilling(defaultBilling || selectedBilling);
+
         gcashModal.classList.remove("hidden");
         gcashModal.classList.add("grid");
         gcashModal.setAttribute("aria-hidden", "false");
+      }
+
+      // Lets the guest pick (or switch) which plan they're paying for right
+      // inside the modal, instead of being locked to whatever billing toggle
+      // was last clicked elsewhere on the page.
+      function setGcashModalBilling(billing) {
+        gcashModalBilling = PHP_AMOUNTS[billing] !== undefined ? billing : "monthly";
+
+        document.querySelectorAll(".gcash-billing-toggle").forEach((btn) => {
+          const isActive = btn.dataset.gcashBilling === gcashModalBilling;
+          btn.classList.toggle("active", isActive);
+          btn.classList.toggle("bg-white", isActive);
+          btn.classList.toggle("text-title", isActive);
+          btn.classList.toggle("shadow-sm", isActive);
+          btn.classList.toggle("text-muted", !isActive);
+        });
+
+        const amount = PHP_AMOUNTS[gcashModalBilling] || 0;
+        document.getElementById("gcashAmountDue").textContent = `Amount due: ₱${amount.toLocaleString("en-PH", { minimumFractionDigits: 2 })} (${gcashModalBilling})`;
       }
 
       function closeGcashModal() {
@@ -2005,8 +2051,8 @@
 
           const { data, error } = await supabaseClient.functions.invoke("submit-payment-proof", {
             body: {
-              billing: selectedBilling,
-              amount_php: PHP_AMOUNTS[selectedBilling] || 0,
+              billing: gcashModalBilling,
+              amount_php: PHP_AMOUNTS[gcashModalBilling] || 0,
               gcash_reference_number: referenceNumber,
               gcash_sender_name: senderName,
               screenshot_path: path,
