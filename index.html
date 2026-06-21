@@ -1256,14 +1256,14 @@
             <div class="account-card bg-grey border border-line p-4 rounded-xl"><small class="text-[10px] uppercase font-black text-muted block mb-1">Gallery Add-on</small><strong id="accountGallery" class="text-base text-title font-extrabold">No</strong></div>
           </div>
 
-          <!-- Billing management (Stripe Customer Portal) -->
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-grey border border-line rounded-2xl p-5">
+          <!-- Renewal banner: no auto-renew (no webhook), so we prompt manually -->
+          <div class="hidden flex-col sm:flex-row items-center justify-between gap-4 border rounded-2xl p-5" id="renewalBanner">
             <div class="text-center sm:text-left">
-              <p class="text-sm font-bold text-title">Subscription billing</p>
-              <p class="text-xs text-body">Update your card, view invoices, switch plans, or cancel anytime.</p>
+              <p class="text-sm font-bold" id="renewalBannerTitle">Plan status</p>
+              <p class="text-xs text-body" id="renewalBannerSubtitle"></p>
             </div>
-            <button onclick="handleManageBilling()" id="manageBillingBtn" class="btn-animation shrink-0 border border-line bg-white hover:bg-grey px-5 py-2.5 rounded-full text-xs font-black text-title uppercase tracking-wider">
-              Manage Billing
+            <button onclick="handleSubscribePlan()" id="renewalBannerBtn" class="btn-animation shrink-0 bg-purple hover:bg-purple-dark text-white px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider">
+              Renew Now
             </button>
           </div>
 
@@ -1384,8 +1384,38 @@
       </div>
     </div>
 
-    <script>
-      // Supabase Keys configured directly for immediate workspace operations
+    <!-- Manual GCash QR Payment Modal (bridge solution until PayMongo/Stripe go live) -->
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="gcashModal" aria-hidden="true">
+      <div class="auth-modal w-full max-w-md bg-white border border-line rounded-3xl p-8 shadow-luxe max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="gcashTitle">
+        <div class="auth-head flex items-start justify-between border-b border-line pb-4 mb-4">
+          <div>
+            <h2 id="gcashTitle" class="text-2xl font-black text-title">Pay via GCash</h2>
+            <p class="text-xs text-muted mt-1">We'll verify your payment and activate your plan manually.</p>
+          </div>
+          <button class="modal-close w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey" type="button" aria-label="Close" onclick="closeGcashModal()">&times;</button>
+        </div>
+
+        <div class="text-center mb-6">
+          <div class="inline-block rounded-2xl border border-line p-3 bg-grey">
+            <img src="gcash-qr.png" alt="Studio Photuna GCash QR code" class="w-48 h-48 object-contain mx-auto" onerror="this.onerror=null; this.src='https://placehold.co/300x300/f4f5f8/5f6678?text=Add+gcash-qr.png'" />
+          </div>
+          <p class="text-sm font-bold text-title mt-3" id="gcashAmountDue">Amount due: ₱0.00</p>
+          <p class="text-xs text-body">Scan with your GCash app, send the exact amount above, then fill in the details below.</p>
+        </div>
+
+        <form class="auth-form space-y-4" id="gcashProofForm">
+          <input id="gcashSenderName" name="sender_name" type="text" placeholder="Your GCash account name" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+          <input id="gcashReferenceNumber" name="reference_number" type="text" placeholder="GCash reference number (13 characters)" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required minlength="6" />
+          <div>
+            <label for="gcashScreenshot" class="block text-xs font-bold text-title mb-2">Screenshot of receipt <span class="text-red-600">(required)</span></label>
+            <input id="gcashScreenshot" name="screenshot" type="file" accept="image/png,image/jpeg,image/webp" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+          </div>
+          <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors shadow-sm" type="submit" id="gcashSubmitBtn">Submit Payment Proof</button>
+          <p class="text-center text-xs font-bold" id="gcashMessage"></p>
+          <p class="text-center text-[11px] text-muted">Your plan activates once we manually confirm the payment — usually within a day.</p>
+        </form>
+      </div>
+    </div>
       const SUPABASE_URL = "https://elthktbvojsmvhtxxqnz.supabase.co";
       const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsdGhrdGJ2b2pzbXZodHh4cW56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzYzMjUsImV4cCI6MjA5MDI1MjMyNX0.5QrzeI0WKJclFLHEBgZH7WxsHPdKBJmdEtpqlyXg9PQ";
       const ACCOUNT_SNAPSHOT_KEY = "studio-photuna-account-snapshot";
@@ -1399,6 +1429,7 @@
       const userDropdown = document.getElementById("userDropdown");
       const dropdownButton = document.getElementById("dropdownButton");
       const authModal = document.getElementById("authModal");
+      const gcashModal = document.getElementById("gcashModal");
       const authForm = document.getElementById("authForm");
       const authName = document.getElementById("authName");
       const authPassword = document.getElementById("authPassword");
@@ -1517,6 +1548,17 @@
           cta: "Choose Yearly Plan"
         }
       };
+
+      // GCash only settles in PHP. These are placeholder PHP amounts --
+      // update to your actual rates before going live (GCash doesn't do
+      // currency conversion, so whatever's shown here is exactly what the
+      // guest is asked to send).
+      const PHP_AMOUNTS = { monthly: 1700, yearly: 11500 };
+
+      // Switch this to "paymongo" or "stripe" once BIR registration clears
+      // and one of those is ready -- everything else (renewal banner,
+      // licenses table, etc.) already supports all three providers.
+      const ACTIVE_PAYMENT_MODE = "manual_gcash";
 
       function navigateTo(viewId) {
         currentView = viewId;
@@ -1673,9 +1715,64 @@
           document.getElementById("profileCompany").value = profile?.company || "";
           document.getElementById("profilePhone").value = profile?.phone || "";
 
+          renderRenewalBanner(license);
           updateAuthUi(user);
         } catch (err) {
           console.warn("Unable to map account details", err);
+        }
+      }
+
+      // No webhook means no background auto-charging -- a paid period has a
+      // fixed end date (current_period_end) and we just prompt the guest to
+      // pay again here instead of silently re-billing them.
+      function renderRenewalBanner(license) {
+        const banner = document.getElementById("renewalBanner");
+        const title = document.getElementById("renewalBannerTitle");
+        const subtitle = document.getElementById("renewalBannerSubtitle");
+        const btn = document.getElementById("renewalBannerBtn");
+        if (!banner) return;
+
+        if (!license || license.state === "pending") {
+          banner.classList.remove("flex");
+          banner.classList.add("hidden");
+          return;
+        }
+
+        if (license.state === "pending_verification") {
+          banner.className = "flex flex-col sm:flex-row items-center justify-between gap-4 bg-blue-50 border border-blue-300 rounded-2xl p-5";
+          title.className = "text-sm font-bold text-blue-900";
+          title.textContent = "Payment under review";
+          subtitle.textContent = "We received your GCash payment proof and are verifying it — this usually takes under a day.";
+          btn.classList.add("hidden");
+          return;
+        }
+
+        const periodEnd = license.current_period_end ? new Date(license.current_period_end) : null;
+        const now = new Date();
+        const daysLeft = periodEnd ? Math.ceil((periodEnd - now) / (1000 * 60 * 60 * 24)) : null;
+        const formattedDate = periodEnd ? periodEnd.toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" }) : null;
+
+        banner.classList.remove("hidden");
+        banner.classList.add("flex");
+
+        if (license.state === "active" && daysLeft !== null && daysLeft > 7) {
+          banner.className = "flex flex-col sm:flex-row items-center justify-between gap-4 bg-grey border border-line rounded-2xl p-5";
+          title.className = "text-sm font-bold text-title";
+          title.textContent = "Plan active";
+          subtitle.textContent = `Renews manually -- valid through ${formattedDate}.`;
+          btn.classList.add("hidden");
+        } else if (license.state === "active" && daysLeft !== null && daysLeft >= 0) {
+          banner.className = "flex flex-col sm:flex-row items-center justify-between gap-4 bg-yellow-50 border border-yellow-300 rounded-2xl p-5";
+          title.className = "text-sm font-bold text-yellow-900";
+          title.textContent = `Plan expires ${daysLeft === 0 ? "today" : `in ${daysLeft} day${daysLeft === 1 ? "" : "s"}`}`;
+          subtitle.textContent = `Valid through ${formattedDate}. Renew now to keep access without interruption.`;
+          btn.classList.remove("hidden");
+        } else {
+          banner.className = "flex flex-col sm:flex-row items-center justify-between gap-4 bg-red-50 border border-red-300 rounded-2xl p-5";
+          title.className = "text-sm font-bold text-red-900";
+          title.textContent = "Plan expired";
+          subtitle.textContent = formattedDate ? `Access lapsed on ${formattedDate}. Renew to restore Pro features.` : "Renew to unlock Pro features.";
+          btn.classList.remove("hidden");
         }
       }
 
@@ -1755,11 +1852,17 @@
           return;
         }
 
-        const cta = document.getElementById("proPlanCta");
-        const originalLabel = cta ? cta.textContent : "";
-        if (cta) { cta.disabled = true; cta.textContent = "Redirecting to checkout..."; }
+        if (ACTIVE_PAYMENT_MODE === "manual_gcash") {
+          openGcashModal();
+          return;
+        }
 
-        spawnToast("Processing subscription", "Connecting with Stripe checkout...", "fa-solid fa-arrows-spin", "info");
+        // Two CTAs can trigger this: the pricing card, and the renew banner.
+        const ctas = [document.getElementById("proPlanCta"), document.getElementById("renewalBannerBtn")].filter(Boolean);
+        const originalLabels = ctas.map((el) => el.textContent);
+        ctas.forEach((el) => { el.disabled = true; el.textContent = "Redirecting to checkout..."; });
+
+        spawnToast("Processing", "Connecting to checkout...", "fa-solid fa-arrows-spin", "info");
 
         try {
           const { data, error } = await supabaseClient.functions.invoke("create-checkout-session", {
@@ -1769,34 +1872,124 @@
           if (error) throw error;
           if (!data?.url) throw new Error(data?.error || "No checkout URL returned.");
 
-          window.location.href = data.url; // Hand off to Stripe-hosted Checkout
+          window.location.href = data.url; // Hand off to the active provider's hosted checkout
         } catch (err) {
           console.error("Checkout session error:", err);
           spawnToast("Checkout Failed", err.message || "Could not start checkout. Please try again.", "fa-solid fa-circle-exclamation", "warning");
-          if (cta) { cta.disabled = false; cta.textContent = originalLabel; }
+          ctas.forEach((el, i) => { el.disabled = false; el.textContent = originalLabels[i]; });
         }
       }
 
-      async function handleManageBilling() {
+      // ---------------------------------------------------------------------
+      // Manual GCash QR flow (bridge solution until PayMongo/Stripe go live)
+      // ---------------------------------------------------------------------
+      function openGcashModal() {
+        const amount = PHP_AMOUNTS[selectedBilling] || 0;
+        document.getElementById("gcashAmountDue").textContent = `Amount due: ₱${amount.toLocaleString("en-PH", { minimumFractionDigits: 2 })} (${selectedBilling})`;
+        document.getElementById("gcashMessage").textContent = "";
+        document.getElementById("gcashProofForm").reset();
+        gcashModal.classList.remove("hidden");
+        gcashModal.classList.add("grid");
+        gcashModal.setAttribute("aria-hidden", "false");
+      }
+
+      function closeGcashModal() {
+        gcashModal.classList.add("hidden");
+        gcashModal.classList.remove("grid");
+        gcashModal.setAttribute("aria-hidden", "true");
+      }
+
+      async function handleGcashProofSubmit(evt) {
+        evt.preventDefault();
         if (!window.currentSupabaseUser || !supabaseClient) {
-          spawnToast("Authentication Needed", "Please log in to manage billing.", "fa-solid fa-user-lock", "warning");
+          spawnToast("Authentication Needed", "Please log in first.", "fa-solid fa-user-lock", "warning");
           return;
         }
 
-        const btn = document.getElementById("manageBillingBtn");
-        if (btn) { btn.disabled = true; btn.textContent = "Opening portal..."; }
+        const message = document.getElementById("gcashMessage");
+        const submitBtn = document.getElementById("gcashSubmitBtn");
+        const senderName = document.getElementById("gcashSenderName").value.trim();
+        const referenceNumber = document.getElementById("gcashReferenceNumber").value.trim();
+        const fileInput = document.getElementById("gcashScreenshot");
+        const file = fileInput.files?.[0];
+
+        if (!file) {
+          message.className = "text-center text-xs font-bold text-red-600";
+          message.textContent = "Please attach a screenshot of your GCash receipt.";
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Uploading...";
+        message.className = "text-center text-xs font-bold text-body";
+        message.textContent = "";
 
         try {
-          const { data, error } = await supabaseClient.functions.invoke("create-portal-session", { body: {} });
-          if (error) throw error;
-          if (!data?.url) throw new Error(data?.error || "No billing portal URL returned.");
+          const user = window.currentSupabaseUser;
+          const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+          const path = `${user.id}/${Date.now()}.${ext}`;
 
-          window.location.href = data.url; // Hand off to Stripe-hosted Customer Portal
+          const { error: uploadError } = await supabaseClient.storage
+            .from("payment-proofs")
+            .upload(path, file, { contentType: file.type || "image/jpeg" });
+          if (uploadError) throw uploadError;
+
+          submitBtn.textContent = "Submitting...";
+
+          const { data, error } = await supabaseClient.functions.invoke("submit-payment-proof", {
+            body: {
+              billing: selectedBilling,
+              amount_php: PHP_AMOUNTS[selectedBilling] || 0,
+              gcash_reference_number: referenceNumber,
+              gcash_sender_name: senderName,
+              screenshot_path: path,
+            },
+          });
+          if (error) throw error;
+          if (data?.error) throw new Error(data.error);
+
+          spawnToast("Payment Proof Submitted", "We'll verify and activate your plan shortly.", "fa-solid fa-circle-check", "success");
+          closeGcashModal();
+          await loadAccountState(user);
+          navigateTo("account");
         } catch (err) {
-          console.error("Billing portal error:", err);
-          spawnToast("Couldn't Open Billing", err.message || "Please try again in a moment.", "fa-solid fa-circle-exclamation", "warning");
+          console.error("Payment proof submission error:", err);
+          message.className = "text-center text-xs font-bold text-red-600";
+          message.textContent = err.message || "Could not submit your proof. Please try again.";
         } finally {
-          if (btn) { btn.disabled = false; btn.textContent = "Manage Billing"; }
+          submitBtn.disabled = false;
+          submitBtn.textContent = "Submit Payment Proof";
+        }
+      }
+
+      // Called once, right after the guest lands back on /?checkout=success.
+      // This is what actually activates the license -- the redirect itself
+      // proves nothing on its own. See verify-checkout-session for why
+      // there's no webhook involved.
+      async function verifyPendingPayment() {
+        if (!window.currentSupabaseUser || !supabaseClient) return;
+
+        spawnToast("Confirming Payment", "Checking your payment status...", "fa-solid fa-arrows-spin", "info");
+
+        try {
+          const { data, error } = await supabaseClient.functions.invoke("verify-checkout-session", { body: {} });
+          if (error) throw error;
+
+          if (data?.verified) {
+            spawnToast("Payment Confirmed", "Your Pro plan is now active.", "fa-solid fa-circle-check", "success");
+          } else {
+            spawnToast(
+              "Still Processing",
+              "We couldn't confirm payment yet. If you paid via GCash/Maya and this persists, contact support to activate manually.",
+              "fa-solid fa-circle-info",
+              "warning"
+            );
+          }
+        } catch (err) {
+          console.error("Verify payment error:", err);
+          spawnToast("Couldn't Confirm Payment", "Please refresh, or contact support if you were charged.", "fa-solid fa-circle-exclamation", "warning");
+        } finally {
+          await loadAccountState(window.currentSupabaseUser);
         }
       }
 
@@ -2426,14 +2619,13 @@
         buildWizardProgress();
         setBillingPlan(selectedBilling);
         loadReviews();
-        handleCheckoutRedirectResult();
 
         // Check active Auth session triggers
         if (supabaseClient) {
           supabaseClient.auth.getSession().then(({ data }) => {
             const user = data?.session?.user || null;
             window.currentSupabaseUser = user;
-            loadAccountState(user);
+            loadAccountState(user).then(() => handleCheckoutRedirectResult());
           });
 
           supabaseClient.auth.onAuthStateChange((_evt, session) => {
@@ -2441,12 +2633,14 @@
             window.currentSupabaseUser = user;
             loadAccountState(user);
           });
+        } else {
+          handleCheckoutRedirectResult();
         }
       };
 
-      // After Stripe redirects back from Checkout (?checkout=success / cancelled),
-      // surface a toast and clean the URL. The actual license activation happens
-      // server-side via the stripe-webhook Edge Function, not from this redirect.
+      // After the payment provider redirects back (?checkout=success/cancelled),
+      // verify the payment server-side before trusting it -- see
+      // verify-checkout-session for why this isn't a webhook.
       function handleCheckoutRedirectResult() {
         const params = new URLSearchParams(window.location.search);
         const result = params.get("checkout");
@@ -2454,12 +2648,14 @@
 
         if (result === "success") {
           navigateTo('account');
-          spawnToast("Payment Received", "Activating your subscription — this can take a few seconds to sync.", "fa-solid fa-circle-check", "success");
+          verifyPendingPayment();
         } else if (result === "cancelled") {
           spawnToast("Checkout Cancelled", "No charge was made. You can subscribe anytime.", "fa-solid fa-circle-info", "info");
         }
 
         params.delete("checkout");
+        params.delete("provider");
+        params.delete("session_id");
         const cleanUrl = window.location.pathname + (params.toString() ? `?${params}` : "") + window.location.hash;
         window.history.replaceState({}, document.title, cleanUrl);
       }
@@ -2549,6 +2745,7 @@
 
       // Authentication modal operations
       document.getElementById("loginOpen").onclick = () => openAuthModal("login");
+      document.getElementById("gcashProofForm").onsubmit = handleGcashProofSubmit;
       authForm.onsubmit = async (event) => {
         event.preventDefault();
         if (!supabaseClient) return;
