@@ -1402,40 +1402,48 @@
 
     <!-- Manual GCash QR Payment Modal (bridge solution until PayMongo/Stripe go live) -->
     <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="gcashModal" aria-hidden="true">
-      <div class="auth-modal w-full max-w-md bg-white border border-line rounded-3xl p-8 shadow-luxe max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="gcashTitle">
-        <div class="auth-head flex items-start justify-between border-b border-line pb-4 mb-4">
+      <div class="w-full max-w-2xl bg-white border border-line rounded-3xl shadow-luxe overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="gcashTitle">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-8 py-5 border-b border-line">
           <div>
-            <h2 id="gcashTitle" class="text-2xl font-black text-title">Pay via GCash</h2>
-            <p class="text-xs text-muted mt-1">We'll verify your payment and activate your plan manually.</p>
+            <h2 id="gcashTitle" class="text-xl font-black text-title">Pay via GCash</h2>
+            <p class="text-xs text-muted mt-0.5">We'll verify and activate your plan manually — usually within a day.</p>
           </div>
-          <button class="modal-close w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey" type="button" aria-label="Close" onclick="closeGcashModal()">&times;</button>
+          <button class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey text-lg" type="button" aria-label="Close" onclick="closeGcashModal()">&times;</button>
         </div>
 
-        <div class="text-center mb-6">
-          <div class="inline-block rounded-2xl border border-line p-3 bg-grey">
-            <img src="gcash-qr.png" alt="Studio Photuna GCash QR code" class="w-48 h-48 object-contain mx-auto" onerror="this.onerror=null; this.src='https://placehold.co/300x300/f4f5f8/5f6678?text=Add+gcash-qr.png'" />
+        <!-- 2-column body -->
+        <div class="grid grid-cols-1 sm:grid-cols-2">
+          <!-- Left: QR + plan info -->
+          <div class="flex flex-col items-center justify-center gap-4 p-8 bg-grey border-r border-line">
+            <div class="rounded-2xl border border-line p-3 bg-white shadow-sm">
+              <img src="gcash-qr.png" alt="GCash QR" class="w-44 h-44 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f4f5f8/5f6678?text=gcash-qr.png'" />
+            </div>
+
+            <div class="flex gap-2 bg-white p-1 rounded-full border border-line">
+              <button type="button" data-gcash-billing="monthly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('monthly')">Monthly</button>
+              <button type="button" data-gcash-billing="yearly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('yearly')">Yearly</button>
+            </div>
+
+            <div class="text-center space-y-1">
+              <p class="text-lg font-black text-title" id="gcashAmountDue">₱0.00</p>
+              <p class="text-[11px] text-muted leading-snug">Scan QR in GCash app, send the exact amount, then fill the form.</p>
+            </div>
           </div>
 
-          <div class="flex justify-center gap-2 mt-4 bg-grey p-1 rounded-full border border-line w-fit mx-auto">
-            <button type="button" data-gcash-billing="monthly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('monthly')">Monthly</button>
-            <button type="button" data-gcash-billing="yearly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('yearly')">Yearly</button>
-          </div>
-
-          <p class="text-sm font-bold text-title mt-3" id="gcashAmountDue">Amount due: ₱0.00</p>
-          <p class="text-xs text-body">Scan with your GCash app, send the exact amount above, then fill in the details below.</p>
+          <!-- Right: proof form -->
+          <form class="flex flex-col gap-4 p-8" id="gcashProofForm">
+            <p class="text-xs font-extrabold text-title uppercase tracking-wider">Payment Details</p>
+            <input id="gcashSenderName" type="text" placeholder="GCash account name" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+            <input id="gcashReferenceNumber" type="text" placeholder="Reference number (13 characters)" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required minlength="6" />
+            <div>
+              <label for="gcashScreenshot" class="block text-xs font-bold text-title mb-2">Receipt screenshot <span class="text-red-500">*</span></label>
+              <input id="gcashScreenshot" type="file" accept="image/png,image/jpeg,image/webp" class="w-full border border-line rounded-xl px-4 py-3 text-sm" required />
+            </div>
+            <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase shadow-sm" type="submit" id="gcashSubmitBtn">Submit Proof</button>
+            <p class="text-center text-xs font-bold" id="gcashMessage"></p>
+          </form>
         </div>
-
-        <form class="auth-form space-y-4" id="gcashProofForm">
-          <input id="gcashSenderName" name="sender_name" type="text" placeholder="Your GCash account name" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
-          <input id="gcashReferenceNumber" name="reference_number" type="text" placeholder="GCash reference number (13 characters)" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required minlength="6" />
-          <div>
-            <label for="gcashScreenshot" class="block text-xs font-bold text-title mb-2">Screenshot of receipt <span class="text-red-600">(required)</span></label>
-            <input id="gcashScreenshot" name="screenshot" type="file" accept="image/png,image/jpeg,image/webp" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
-          </div>
-          <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors shadow-sm" type="submit" id="gcashSubmitBtn">Submit Payment Proof</button>
-          <p class="text-center text-xs font-bold" id="gcashMessage"></p>
-          <p class="text-center text-[11px] text-muted">Your plan activates once we manually confirm the payment — usually within a day.</p>
-        </form>
       </div>
     </div>
 
@@ -2019,8 +2027,8 @@
         });
 
         const amount = PHP_AMOUNTS[gcashModalBilling] || 0;
-        const perMonthNote = gcashModalBilling === "yearly" ? ` (₱${Math.round(amount / 12).toLocaleString("en-PH")}/mo equivalent)` : "";
-        document.getElementById("gcashAmountDue").textContent = `Amount due: ₱${amount.toLocaleString("en-PH", { minimumFractionDigits: 2 })} (${gcashModalBilling})${perMonthNote}`;
+        const perMonth = gcashModalBilling === "yearly" ? ` · ₱${Math.round(amount/12).toLocaleString("en-PH")}/mo` : "";
+        document.getElementById("gcashAmountDue").textContent = `₱${amount.toLocaleString("en-PH", {minimumFractionDigits:2})}${perMonth}`;
       }
 
       function closeGcashModal() {
@@ -2066,17 +2074,26 @@
 
           submitBtn.textContent = "Submitting...";
 
-          const { data, error } = await supabaseClient.functions.invoke("submit-payment-proof", {
-            body: {
+          // Insert proof row directly — no Edge Function needed for this.
+          // Admin email notification still goes via submit-payment-proof if
+          // deployed, but the record is saved regardless.
+          const { error: insertError } = await supabaseClient
+            .from("payment_proofs")
+            .insert({
+              user_id: window.currentSupabaseUser.id,
               billing: gcashModalBilling,
               amount_php: PHP_AMOUNTS[gcashModalBilling] || 0,
               gcash_reference_number: referenceNumber,
-              gcash_sender_name: senderName,
+              gcash_sender_name: senderName || null,
               screenshot_path: path,
-            },
-          });
-          if (error) throw error;
-          if (data?.error) throw new Error(data.error);
+              status: "pending",
+            });
+          if (insertError) throw insertError;
+
+          await supabaseClient.from("licenses").upsert(
+            { user_id: window.currentSupabaseUser.id, payment_provider: "manual_gcash", state: "pending_verification" },
+            { onConflict: "user_id" }
+          );
 
           spawnToast("Payment Proof Submitted", "We'll verify and activate your plan shortly.", "fa-solid fa-circle-check", "success");
           closeGcashModal();
@@ -2487,7 +2504,7 @@
           // a missing admin RLS policy -- run 06_admin_rls_policies.sql to fix it.
           const { data, error } = await supabaseClient
             .from("event_bookings")
-            .select("*, profiles(full_name, email, phone)")
+            .select("*")
             .order("created_at", { ascending: false });
 
           if (error) throw error;
@@ -2583,7 +2600,6 @@
               <div class="lg:col-span-8 space-y-4">
                 <div>
                   <h3 class="text-xl font-black text-title">${b.full_name}</h3>
-                  ${b.profiles?.email ? `<p class="text-xs text-muted font-medium">${b.profiles.email}${b.profiles.phone ? " · " + b.profiles.phone : ""}</p>` : ""}
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
