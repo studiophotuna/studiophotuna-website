@@ -107,7 +107,6 @@
         
         <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
           <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-purple transition-colors">Home</a>
-          <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-purple transition-colors">Book Event</a>
           <a href="#features" onclick="navigateTo('home'); scrollAndHighlight('features');" class="hover:text-purple transition-colors">Features</a>
           <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-purple transition-colors">Download</a>
           <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-purple transition-colors">Help & Support</a>
@@ -139,7 +138,6 @@
     <!-- Mobile Dropdown Panel -->
     <div id="mobile-menu" class="hidden md:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
       <a href="#" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
-      <a href="#" onclick="navigateTo('book-event'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Book Event</a>
       <a href="#" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
       <a href="#" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help & Support</a>
       <a href="#" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
@@ -364,9 +362,9 @@
                 <li class="flex items-center gap-3 font-semibold text-title"><i class="fa-solid fa-circle-check text-green-500"></i> QR sharing and online gallery add-ons</li>
               </ul>
               <div class="pt-4">
-                <button onclick="navigateTo('book-event')" class="btn-animation bg-purple hover:bg-purple-dark text-white px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-colors shadow-sm">
-                  Simulate Live Booking Quote <i class="fa-solid fa-calendar-plus ml-2"></i>
-                </button>
+                <a href="/booknow" class="btn-animation inline-flex items-center gap-2 bg-purple hover:bg-purple-dark text-white px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-colors shadow-sm">
+                  Book Your Event <i class="fa-solid fa-calendar-plus"></i>
+                </a>
               </div>
             </div>
             <div class="relative rounded-2xl overflow-hidden border border-line bg-white shadow-lg p-6">
@@ -465,7 +463,7 @@
               </div>
               <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
                 <h3 class="font-bold text-lg text-title">How do event bookings work?</h3>
-                <p class="text-sm text-body">Event bookings are currently open for local Metro Manila bookings. You can configure and submit requested dates on the Book Event page.</p>
+                <p class="text-sm text-body">Event bookings are open for Metro Manila. Submit your request at <a href="/booknow" class="text-purple font-bold hover:underline">studiophotuna.com/booknow</a> and we'll confirm within 24 hours.</p>
               </div>
             </div>
           </div>
@@ -835,6 +833,9 @@
               <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="proofs">
                 Payment Proofs <span id="proofsTabBadge" class="hidden ml-1 bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
               </button>
+              <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="tickets">
+                Support Tickets <span id="ticketsTabBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
+              </button>
               <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="reviews">Reviews</button>
             </div>
           </div>
@@ -865,6 +866,7 @@
         <!-- Content lists -->
         <div class="booking-list grid grid-cols-1 gap-5" id="bookingList"></div>
         <div class="grid grid-cols-1 gap-5 hidden" id="proofList"></div>
+        <div class="grid grid-cols-1 gap-5 hidden" id="ticketList"></div>
         <div class="booking-list grid grid-cols-1 gap-5 hidden" id="reviewList"></div>
       </section>
 
@@ -1350,7 +1352,7 @@
           <h4 class="font-extrabold text-title text-sm uppercase tracking-wider mb-4">Company</h4>
           <nav class="flex flex-col gap-2.5 text-sm">
             <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-purple">Home Overview</a>
-            <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-purple">Book Event</a>
+            <a href="/booknow" class="hover:text-purple">Book Event</a>
             <a href="#features" onclick="navigateTo('home'); scrollAndHighlight('features'); return false;" class="hover:text-purple">App Features</a>
             <a href="#pricing" onclick="navigateTo('home'); scrollAndHighlight('pricing'); return false;" class="hover:text-purple">Pricing Model</a>
           </nav>
@@ -2706,8 +2708,127 @@
       }
 
       // -----------------------------------------------------------------------
-      // Payment proofs tab
+      // Support Tickets tab
       // -----------------------------------------------------------------------
+      let tickets = [];
+
+      async function loadTickets() {
+        if (!supabaseClient || !window.currentSupabaseUser) return;
+        setMessage(adminMessage, "Loading support tickets...");
+        try {
+          const { data, error } = await supabaseClient
+            .from("support_tickets")
+            .select("*, ticket_replies(id, message, is_admin, created_at)")
+            .order("created_at", { ascending: false });
+          if (error) throw error;
+          tickets = data || [];
+
+          const openCount = tickets.filter(t => t.status === "open").length;
+          const badge = document.getElementById("ticketsTabBadge");
+          if (badge) { badge.textContent = openCount; badge.classList.toggle("hidden", !openCount); }
+
+          setMessage(adminMessage, tickets.length ? `${tickets.length} ticket(s) loaded.` : "No support tickets yet.");
+          renderTickets();
+        } catch (err) {
+          setMessage(adminMessage, `Load error: ${err.message}`, true);
+        }
+      }
+
+      function renderTickets() {
+        const ticketList = document.getElementById("ticketList");
+        if (!ticketList) return;
+        ticketList.innerHTML = "";
+
+        if (!tickets.length) {
+          ticketList.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-10 text-center text-muted space-y-2"><i class="fa-solid fa-ticket text-4xl text-line"></i><p class="font-bold text-sm">No support tickets yet.</p></div>`;
+          return;
+        }
+
+        tickets.forEach(t => {
+          const submittedAt = new Date(t.created_at).toLocaleDateString("en-PH", { year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
+          const statusCls = t.status === "open" ? "bg-yellow-100 text-yellow-800" : t.status === "resolved" ? "bg-green-100 text-green-800" : "bg-gray-200 text-gray-600";
+          const replies = t.ticket_replies || [];
+
+          const card = document.createElement("div");
+          card.className = "border border-line rounded-2xl bg-white shadow-sm overflow-hidden";
+          card.innerHTML = `
+            <div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40">
+              <div class="flex items-center gap-3">
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusCls}">${t.status}</span>
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${t.category || "General"}</span>
+                <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-red-50 text-red-600">${t.priority || "normal"}</span>
+              </div>
+              <span class="text-[10px] text-muted font-bold">${submittedAt}</span>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6">
+              <div class="lg:col-span-8 space-y-4">
+                <div>
+                  <p class="font-black text-title">${t.full_name || "Anonymous"}</p>
+                  <p class="text-xs text-muted">${t.email || ""}</p>
+                </div>
+                <div class="bg-grey rounded-xl p-4 text-sm text-body">${t.message}</div>
+
+                <!-- Thread -->
+                ${replies.length ? `
+                <div class="space-y-2 border-t border-line pt-4">
+                  <p class="text-[10px] uppercase font-black text-muted">Thread (${replies.length})</p>
+                  ${replies.map(r => `
+                    <div class="rounded-xl p-3 text-xs ${r.is_admin ? "bg-purple/10 text-purple border border-purple/20 ml-4" : "bg-grey text-body"}">
+                      <p class="font-bold mb-1">${r.is_admin ? "You (Admin)" : t.full_name || "Guest"} · ${new Date(r.created_at).toLocaleDateString("en-PH", {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</p>
+                      <p>${r.message}</p>
+                    </div>`).join("")}
+                </div>` : ""}
+              </div>
+
+              <div class="lg:col-span-4 space-y-3 bg-grey border border-line rounded-2xl p-5">
+                <p class="text-[10px] uppercase font-extrabold text-muted tracking-wider">Reply</p>
+                <textarea id="reply-${t.id}" rows="4" class="w-full border border-line rounded-xl px-3 py-2 text-xs bg-white resize-none" placeholder="Type your reply to ${t.full_name || "the guest"}…"></textarea>
+                <div class="space-y-1">
+                  <label class="text-[10px] font-extrabold uppercase text-title">Status after reply</label>
+                  <select id="reply-status-${t.id}" class="w-full border border-line rounded-lg px-3 py-2 text-xs bg-white">
+                    <option value="open" ${t.status==="open"?"selected":""}>Keep Open</option>
+                    <option value="in_progress" ${t.status==="in_progress"?"selected":""}>In Progress</option>
+                    <option value="resolved" ${t.status==="resolved"?"selected":""}>Resolved</option>
+                    <option value="closed" ${t.status==="closed"?"selected":""}>Closed</option>
+                  </select>
+                </div>
+                <button onclick="replyToTicket('${t.id}', this)" class="btn-animation w-full bg-purple text-white text-xs font-black py-2.5 rounded-xl flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-paper-plane"></i> Send Reply
+                </button>
+              </div>
+            </div>`;
+          ticketList.appendChild(card);
+        });
+      }
+
+      async function replyToTicket(ticketId, btn) {
+        const message = document.getElementById(`reply-${ticketId}`)?.value?.trim();
+        const newStatus = document.getElementById(`reply-status-${ticketId}`)?.value;
+        if (!message) { spawnToast("Empty Reply", "Type a message before sending.", "fa-solid fa-circle-info", "warning"); return; }
+
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Sending…`;
+
+        try {
+          // Save reply to ticket_replies table
+          const { error: replyErr } = await supabaseClient
+            .from("ticket_replies")
+            .insert({ ticket_id: ticketId, message, is_admin: true });
+          if (replyErr) throw replyErr;
+
+          // Update ticket status
+          await supabaseClient.from("support_tickets").update({ status: newStatus }).eq("id", ticketId);
+
+          spawnToast("Reply Sent", "The reply has been saved.", "fa-solid fa-circle-check", "success");
+          loadTickets();
+        } catch (err) {
+          spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning");
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send Reply`;
+        }
+      }
+
+
       let proofs = [];
       let activeProofFilter = "all";
 
@@ -3115,6 +3236,8 @@
 
           bookingList.classList.toggle("hidden", activeAdminTab !== "bookings");
           proofList.classList.toggle("hidden", activeAdminTab !== "proofs");
+          const ticketList = document.getElementById("ticketList");
+          if (ticketList) ticketList.classList.toggle("hidden", activeAdminTab !== "tickets");
           reviewList.classList.toggle("hidden", activeAdminTab !== "reviews");
 
           const bookingSubToolbar = document.getElementById("bookingSubToolbar");
@@ -3124,6 +3247,7 @@
 
           if (activeAdminTab === "bookings") loadBookings();
           else if (activeAdminTab === "proofs") loadProofs();
+          else if (activeAdminTab === "tickets") loadTickets();
           else loadReviewsAdmin();
         };
       });
@@ -3161,6 +3285,7 @@
         refreshBookings.onclick = () => {
           if (activeAdminTab === "bookings") loadBookings();
           else if (activeAdminTab === "proofs") loadProofs();
+          else if (activeAdminTab === "tickets") loadTickets();
           else loadReviewsAdmin();
         };
       }
