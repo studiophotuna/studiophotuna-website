@@ -389,7 +389,7 @@
                 <div class="space-y-4">
                   <span class="badge bg-purple/10 text-purple text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full inline-block">Trial</span>
                   <h3 class="text-2xl font-bold text-title">14-Day Free Trial</h3>
-                  <div class="text-5xl font-black text-title">₱0</div>
+                  <div class="text-5xl font-black text-title">$0</div>
                   <p class="text-sm text-body">Test every operator workspace feature before committing to plans.</p>
                   <ul class="space-y-2.5 pt-4 text-sm text-title/90 font-medium">
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple"></i> Custom template mapping</li>
@@ -416,7 +416,7 @@
                     <button type="button" data-billing="yearly" class="active py-2 rounded-full text-xs font-extrabold transition-all duration-200 bg-white text-title shadow-sm">Yearly</button>
                   </div>
 
-                  <div class="text-5xl font-black text-white" id="proPlanPrice">₱950.00<small class="text-sm font-semibold text-white/70">/mo</small></div>
+                  <div class="text-5xl font-black text-white" id="proPlanPrice">₱950<small class="text-sm font-semibold text-white/70">/mo</small></div>
                   <p class="text-sm text-white/80" id="proPlanNote">₱11,400 billed annually. Enjoy a 47% savings compared with monthly cycles.</p>
                   
                   <ul class="space-y-2.5 pt-4 text-sm font-semibold" id="proPlanDetails">
@@ -2058,11 +2058,35 @@
         }
 
         submitBtn.disabled = true;
-        submitBtn.textContent = "Uploading...";
+        submitBtn.textContent = "Checking...";
         message.className = "text-center text-xs font-bold text-body";
         message.textContent = "";
 
         try {
+          // Block duplicate submissions: check for any pending proof OR an
+          // already-approved proof for the same billing period that isn't
+          // expired yet — prevents accidental double-payment.
+          const { data: existing } = await supabaseClient
+            .from("payment_proofs")
+            .select("id, status, billing, created_at")
+            .eq("user_id", window.currentSupabaseUser.id)
+            .in("status", ["pending", "approved"])
+            .order("created_at", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+          if (existing) {
+            const isPending = existing.status === "pending";
+            message.className = "text-center text-xs font-bold text-red-600";
+            message.textContent = isPending
+              ? "You already have a payment proof under review. Please wait for it to be verified before submitting another."
+              : "Your current plan is already active. No additional payment is needed until your plan expires.";
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit Proof";
+            return;
+          }
+
+          submitBtn.textContent = "Uploading...";
           const user = window.currentSupabaseUser;
           const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
           const path = `${user.id}/${Date.now()}.${ext}`;
@@ -2811,7 +2835,6 @@
         spawnToast("Processing", action === "approved" ? "Activating license…" : "Rejecting proof…", "fa-solid fa-circle-notch", "info");
 
         try {
-          // Update proof status
           const { error: proofErr } = await supabaseClient
             .from("payment_proofs")
             .update({ status: action, reviewed_at: new Date().toISOString(), admin_note: note })
@@ -2822,19 +2845,36 @@
             const months = billing === "yearly" ? 12 : 1;
             const periodEnd = new Date();
             periodEnd.setMonth(periodEnd.getMonth() + months);
+            const isYearly = billing === "yearly";
 
+            // Update licenses — includes all feature-flag columns that the
+            // desktop app reads to unlock watermark removal, event slots,
+            // template count, and priority support.
             const { error: licenseErr } = await supabaseClient
               .from("licenses")
               .update({
                 state: "active",
-                plan: billing === "yearly" ? "pro_yearly" : "pro_monthly",
+                plan: isYearly ? "pro_yearly" : "pro_monthly",
                 current_period_end: periodEnd.toISOString(),
                 last_payment_verified_at: new Date().toISOString(),
+                // Feature flags — match your desktop app's expected column names.
+                // Yearly gets the full set; monthly gets core features.
+                watermark: false,
+                max_events: isYearly ? null : 10,      // null = unlimited
+                templates: isYearly ? null : 5,
+                priority_support: isYearly,
               })
               .eq("user_id", userId);
             if (licenseErr) throw licenseErr;
 
-            spawnToast("Approved", "License activated successfully.", "fa-solid fa-circle-check", "success");
+            // Keep profiles.subscription_plan in sync so the desktop app
+            // doesn't need to join licenses just to check the plan name.
+            await supabaseClient
+              .from("profiles")
+              .update({ subscription_plan: isYearly ? "pro_yearly" : "pro_monthly" })
+              .eq("id", userId);
+
+            spawnToast("Approved", "License + features activated successfully.", "fa-solid fa-circle-check", "success");
           } else {
             spawnToast("Rejected", "Proof marked as rejected.", "fa-solid fa-circle-info", "info");
           }
