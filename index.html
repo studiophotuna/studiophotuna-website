@@ -629,16 +629,17 @@
 
                   <!-- STEP 3: PACKAGE & OVERTIME -->
                   <div class="flow-step" data-step="3">
-                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">2. Select package and coverage</h4>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div class="field space-y-2">
-                        <label class="font-extrabold text-title text-xs uppercase" for="bookingPackage">Preferred package</label>
-                        <select id="bookingPackage" name="package" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required>
-                          <option value="">Select a package</option>
-                          <option value="high-angle">High Angle Photobooth - PHP 20,000</option>
-                          <option value="phone-booth" disabled>Phone Booth - Coming soon</option>
-                        </select>
+                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">2. Select packages and coverage</h4>
+                    <div class="space-y-3 mb-4">
+                      <div class="flex items-center justify-between">
+                        <p class="text-xs font-bold text-body">Select one or more packages</p>
+                        <p class="text-[10px] font-bold text-purple">Combo discount: ₱2,500 off when 2+ selected</p>
                       </div>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="wizardPkgGrid">
+                        <!-- Rendered by JS -->
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                       <div class="field space-y-2">
                         <label class="font-extrabold text-title text-xs uppercase" for="bookingExtraHours">Extra hours</label>
                         <select id="bookingExtraHours" name="extraHours" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none">
@@ -650,7 +651,7 @@
                       </div>
                     </div>
                     <div class="border border-line rounded-xl p-4 bg-grey space-y-1.5" id="packageBreakdown">
-                      <h4 class="font-bold text-title text-sm">Select package to view specifications</h4>
+                      <h4 class="font-bold text-title text-sm">Select packages to see inclusions</h4>
                     </div>
                   </div>
 
@@ -800,9 +801,9 @@
         </div>
 
         <!-- Metrics Cards Grid -->
-        <div class="stats grid grid-cols-2 md:grid-cols-5 gap-4">
+        <div class="stats grid grid-cols-2 md:grid-cols-6 gap-4">
           <div class="stat-card border border-line rounded-2xl bg-white p-5 shadow-sm">
-            <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-1">Pending Bookings</small>
+            <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-1">Pending</small>
             <strong class="text-3xl font-black text-title" id="statPending">0</strong>
           </div>
           <div class="stat-card border border-line rounded-2xl bg-white p-5 shadow-sm">
@@ -821,6 +822,10 @@
             <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-1">Pending Proofs</small>
             <strong class="text-3xl font-black text-orange-500" id="statProofsPending">0</strong>
           </div>
+          <div class="stat-card border border-line rounded-2xl bg-white p-5 shadow-sm">
+            <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-1">Custom Quotes</small>
+            <strong class="text-3xl font-black text-purple" id="statCustomQuotes">0</strong>
+          </div>
         </div>
 
         <!-- Toolbar -->
@@ -828,13 +833,16 @@
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-line pb-4">
             <h2 class="text-xl font-extrabold text-title" id="adminPanelTitle">Manage Bookings</h2>
             <!-- Main tabs -->
-            <div class="admin-tabs inline-flex gap-1.5 bg-grey p-1.5 rounded-full border border-line">
+            <div class="admin-tabs inline-flex flex-wrap gap-1.5 bg-grey p-1.5 rounded-2xl border border-line">
               <button type="button" class="active bg-white px-4 py-2 rounded-full text-xs font-black text-purple shadow-sm" data-admin-tab="bookings">Bookings</button>
               <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="proofs">
                 Payment Proofs <span id="proofsTabBadge" class="hidden ml-1 bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
               </button>
               <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="tickets">
                 Support Tickets <span id="ticketsTabBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
+              </button>
+              <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="packages">
+                Packages <span id="customQuoteTabBadge" class="hidden ml-1 bg-purple text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
               </button>
               <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="reviews">Reviews</button>
             </div>
@@ -849,6 +857,7 @@
               <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="approved">Approved</button>
               <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="declined">Declined</button>
               <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="cancelled">Cancelled</button>
+              <button type="button" class="border border-purple/40 rounded-full bg-purple/5 text-purple px-4 py-2 text-xs font-bold" data-filter="custom_quote">Custom Quotes</button>
             </div>
           </div>
 
@@ -867,6 +876,7 @@
         <div class="booking-list grid grid-cols-1 gap-5" id="bookingList"></div>
         <div class="grid grid-cols-1 gap-5 hidden" id="proofList"></div>
         <div class="grid grid-cols-1 gap-5 hidden" id="ticketList"></div>
+        <div class="grid grid-cols-1 gap-5 hidden" id="packagesList"></div>
         <div class="booking-list grid grid-cols-1 gap-5 hidden" id="reviewList"></div>
       </section>
 
@@ -1537,10 +1547,24 @@
       let activeFilter = "all";
       let activeAdminTab = "bookings";
 
-      // Package definitions catalog
+      // Package definitions catalog (synced with booknow.html)
       const packageCatalog = {
+        "enclosed": {
+          name: "Enclosed Photobooth",
+          price: 23000,
+          extraRate: 2000,
+          coverage: "3 hours",
+          included: [
+            "Private enclosed photobooth setup",
+            "Custom strip template overlay designs",
+            "Soft lighting configuration",
+            "QR live download access",
+            "On-site technical representative",
+            "Complimentary travel within Metro Manila"
+          ]
+        },
         "high-angle": {
-          name: "High Angle Photobooth",
+          name: "High-Angle Photobooth",
           price: 20000,
           extraRate: 1500,
           coverage: "3 hours",
@@ -1550,11 +1574,22 @@
             "Soft overhead flash configuration",
             "QR live download access",
             "On-site technical representative",
-            "Complimentary travel within Metro Manila boundaries"
+            "Complimentary travel within Metro Manila"
+          ]
+        },
+        "polaroid": {
+          name: "Polaroid Phone App",
+          price: 5000,
+          extraRate: 500,
+          coverage: "3 hours",
+          included: [
+            "Polaroid-style phone app experience",
+            "Instant digital prints via phone",
+            "QR cloud sync storage"
           ]
         },
         "phone-booth": {
-          name: "Phone Guest Booth",
+          name: "Phone Booth",
           price: 4500,
           extraRate: 500,
           coverage: "3 hours",
@@ -1564,8 +1599,22 @@
             "Basic support frame",
             "QR cloud sync storage"
           ]
+        },
+        "cafe": {
+          name: "Cafe Booth",
+          price: 20000,
+          extraRate: 1500,
+          coverage: "3 hours",
+          included: [
+            "Cafe-themed photobooth setup",
+            "Custom strip template overlay designs",
+            "QR live download access",
+            "On-site technical representative",
+            "Complimentary travel within Metro Manila"
+          ]
         }
       };
+      const COMBO_DISCOUNT = 2500;
 
       const billingPlans = {
         monthly: {
@@ -2208,8 +2257,8 @@
           setBookingMessage("Please choose your event date from the availability calendar.");
           return false;
         }
-        if (currentBookingStep === 3 && !selectedPackage()) {
-          setBookingMessage("Please select an available package from the selection menu.");
+        if (currentBookingStep === 3 && !selectedPackages().length) {
+          setBookingMessage("Please select at least one package before proceeding.");
           return false;
         }
         if (currentBookingStep === 4) {
@@ -2228,16 +2277,31 @@
             return false;
           }
           const guests = Number(bookingGuests.value);
-          if (guests < 20 || guests > 500) {
-            setBookingMessage("Please enter an estimated headcount between 20 and 500 guests.");
+          if (guests < 1) {
+            setBookingMessage("Please enter a valid expected guest count.");
             return false;
           }
+          // Warn but don't block for >300 — flagged as custom quote
         }
         return true;
       }
 
       function selectedPackage() {
-        return packageCatalog[bookingPackage?.value] || null;
+        // Legacy single-package reference (used in quote calc — now uses selectedPackages())
+        const sel = selectedPackages();
+        return sel.length ? sel[0] : null;
+      }
+
+      function selectedPackages() {
+        return Object.values(packageCatalog).filter(pkg => {
+          const key = Object.keys(packageCatalog).find(k => packageCatalog[k] === pkg);
+          const el = document.getElementById(`wpkg_${key}`);
+          return el && el.checked;
+        });
+      }
+
+      function getCheckedPackageKeys() {
+        return Object.keys(packageCatalog).filter(k => document.getElementById(`wpkg_${k}`)?.checked);
       }
 
       function selectedExtraHours() {
@@ -2245,42 +2309,45 @@
       }
 
       function calculateQuote() {
-        const pkg = selectedPackage();
+        const pkgs = selectedPackages();
         const extraHours = selectedExtraHours();
-        const basePrice = pkg?.price || 0;
-        const extraCost = pkg ? extraHours * pkg.extraRate : 0;
-        const total = basePrice + extraCost;
-        return { pkg, extraHours, basePrice, extraCost, total };
+        const subtotal = pkgs.reduce((s, p) => s + p.price, 0);
+        const extraCost = pkgs.reduce((s, p) => s + extraHours * p.extraRate, 0);
+        const discount = pkgs.length >= 2 ? COMBO_DISCOUNT : 0;
+        const total = subtotal + extraCost - discount;
+        return { pkgs, extraHours, subtotal, extraCost, discount, total };
       }
 
       function renderQuote() {
-        const { pkg, extraHours, basePrice, extraCost, total } = calculateQuote();
+        const { pkgs, extraHours, subtotal, extraCost, discount, total } = calculateQuote();
+        const guests = parseInt(bookingGuests?.value || "0");
+        const isCustom = guests > 300;
+
         if (packageBreakdown) {
-          if (!pkg) {
-            packageBreakdown.innerHTML = `
-              <h4 class="font-bold text-title text-sm">Select a package to see what is included</h4>
-              <p class="text-xs text-body">Package inclusions and total estimates will load here.</p>
-            `;
+          if (!pkgs.length) {
+            packageBreakdown.innerHTML = `<h4 class="font-bold text-title text-sm">Select packages to see inclusions</h4>`;
           } else {
-            packageBreakdown.innerHTML = `
-              <h4 class="font-bold text-title text-sm">${pkg.name} Inclusions</h4>
-              <ul class="text-xs text-body space-y-1 mt-2">
-                ${pkg.included.map(inc => `<li>• ${inc}</li>`).join("")}
-              </ul>
-            `;
+            packageBreakdown.innerHTML = pkgs.map(pkg => `
+              <div class="mb-3">
+                <h4 class="font-bold text-title text-sm">${pkg.name}</h4>
+                <ul class="text-xs text-body space-y-1 mt-1">
+                  ${pkg.included.map(inc => `<li>• ${inc}</li>`).join("")}
+                </ul>
+              </div>`).join('<hr class="border-line my-2" />');
           }
         }
 
         if (quoteSummaryList) {
-          quoteSummaryList.innerHTML = `
-            <li class="flex justify-between"><span>Package Setup</span><strong>${pkg ? pkg.name : "Unselected"}</strong></li>
-            <li class="flex justify-between"><span>Base Coverage (3 Hours)</span><strong>${pkg ? 'PHP ' + basePrice.toLocaleString() : "PHP 0"}</strong></li>
-            <li class="flex justify-between"><span>Overtime (${extraHours} Hours)</span><strong>PHP ${extraCost.toLocaleString()}</strong></li>
-            <li class="flex justify-between border-t border-white/10 pt-1 mt-1 font-bold"><span>50% Downpayment Deposit</span><strong>PHP ${pkg ? (total / 2).toLocaleString() : "0"}</strong></li>
-          `;
+          quoteSummaryList.innerHTML = pkgs.map(p =>
+            `<li class="flex justify-between"><span>${p.name}</span><strong>PHP ${p.price.toLocaleString()}</strong></li>`
+          ).join("") + (discount ? `<li class="flex justify-between text-yellow-300"><span>Combo Discount</span><strong>-PHP ${discount.toLocaleString()}</strong></li>` : "")
+           + `<li class="flex justify-between"><span>Overtime (${extraHours} hrs)</span><strong>PHP ${extraCost.toLocaleString()}</strong></li>`
+           + `<li class="flex justify-between border-t border-white/10 pt-1 mt-1 font-bold"><span>50% Deposit</span><strong>PHP ${pkgs.length ? ((total)/2).toLocaleString() : "0"}</strong></li>`;
         }
 
-        if (quoteTotal) quoteTotal.textContent = `PHP ${total.toLocaleString()}`;
+        if (quoteTotal) {
+          quoteTotal.textContent = isCustom ? "Custom Quote" : `PHP ${total.toLocaleString()}`;
+        }
       }
 
       function toDateKey(date) {
@@ -2380,23 +2447,26 @@
         submitBtn.disabled = true;
         setBookingMessage("Submitting your request details...", false);
 
-        const { pkg, extraHours, basePrice, extraCost, total } = calculateQuote();
+        const { pkgs, extraHours, subtotal, extraCost, discount, total } = calculateQuote();
+        const guests = Number(bookingGuests.value);
+        const isCustom = guests > 300;
 
         const payload = {
           full_name: document.getElementById("bookingName").value,
           contact_number: bookingPhone.value,
           email: document.getElementById("bookingEmail").value || null,
-          package_name: pkg.name,
+          package_name: pkgs.map(p => p.name).join(", ") || null,
           event_date: selectedBookingDate,
           start_time: bookingTime.value,
           event_type: document.getElementById("bookingType").value,
-          estimated_guests: Number(bookingGuests.value),
+          estimated_guests: guests,
           venue_location: `${bookingVenueName.value}, ${bookingVenueAddress.value}, ${bookingVenueCity.value}, Metro Manila`,
           notes: document.getElementById("bookingNotes").value || null,
           service_area: "Metro Manila",
           status: "pending",
           reservation_status: "unpaid",
-          estimated_total: total
+          estimated_total: isCustom ? null : total,
+          is_custom_quote: isCustom,
         };
 
         try {
@@ -2410,8 +2480,11 @@
           renderQuote();
           showBookingStep(0);
           
-          spawnToast("Request Sent", "Booking request completed! Check email thread for verification parameters.", "fa-solid fa-circle-check", "success");
-          setBookingMessage("Booking request completed. Updates will arrive from notification@studiophotuna.com.", false);
+          const msg = isCustom
+            ? "Booking request sent! Your guest count (>300) requires a custom quote — we'll email you with pricing."
+            : "Booking request completed! Updates will arrive from notification@studiophotuna.com.";
+          spawnToast("Request Sent", "Booking request received. Check email for confirmation.", "fa-solid fa-circle-check", "success");
+          setBookingMessage(msg, false);
         } catch (err) {
           setBookingMessage(err.message || "Insert transaction failed.");
           console.warn(err);
@@ -2559,15 +2632,21 @@
         const pending = bookings.filter(b => b.status === "pending").length;
         const approved = bookings.filter(b => b.status === "approved").length;
         const paid = bookings.filter(b => ["partial_paid","paid"].includes(b.reservation_status)).length;
+        const customQuotes = bookings.filter(b => b.is_custom_quote).length;
         document.getElementById("statPending").textContent = pending;
         document.getElementById("statApproved").textContent = approved;
         document.getElementById("statPaid").textContent = paid;
         document.getElementById("statTotal").textContent = bookings.length;
+        const cqEl = document.getElementById("statCustomQuotes");
+        if (cqEl) cqEl.textContent = customQuotes;
 
         const pendingProofs = proofs.filter(p => p.status === "pending").length;
         document.getElementById("statProofsPending").textContent = pendingProofs;
         const badge = document.getElementById("proofsTabBadge");
         if (badge) { badge.textContent = pendingProofs; badge.classList.toggle("hidden", !pendingProofs); }
+
+        const cqBadge = document.getElementById("customQuoteTabBadge");
+        if (cqBadge) { cqBadge.textContent = customQuotes; cqBadge.classList.toggle("hidden", !customQuotes); }
       }
 
       const STATUS_COLORS = {
@@ -2588,6 +2667,7 @@
         const search = (document.getElementById("bookingSearch")?.value || "").toLowerCase();
 
         let filtered = bookings.filter(b => {
+          if (activeFilter === "custom_quote") return !!b.is_custom_quote;
           if (activeFilter !== "all" && b.status !== activeFilter) return false;
           if (!search) return true;
           return [b.full_name, b.event_type, b.venue_location, b.notes, b.profiles?.email]
@@ -2607,15 +2687,17 @@
           const statusCls = STATUS_COLORS[b.status] || "bg-grey text-body";
           const paymentCls = PAYMENT_COLORS[b.reservation_status] || "bg-grey text-body";
           const submittedAt = b.created_at ? new Date(b.created_at).toLocaleDateString("en-PH", { year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" }) : "—";
+          const isCustom = !!b.is_custom_quote;
 
           const card = document.createElement("div");
-          card.className = "border border-line rounded-2xl bg-white shadow-sm overflow-hidden";
+          card.className = "border border-line rounded-2xl bg-white shadow-sm overflow-hidden" + (isCustom ? " ring-2 ring-purple/30" : "");
           card.innerHTML = `
             <!-- Card header -->
             <div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40">
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-3 flex-wrap">
                 <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusCls}">${b.status}</span>
                 <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${paymentCls}">${b.reservation_status}</span>
+                ${isCustom ? `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple"><i class="fa-solid fa-envelope mr-1"></i>Custom Quote</span>` : ""}
               </div>
               <span class="text-[10px] text-muted font-bold">Submitted ${submittedAt}</span>
             </div>
@@ -2626,14 +2708,15 @@
               <div class="lg:col-span-8 space-y-4">
                 <div>
                   <h3 class="text-xl font-black text-title">${b.full_name}</h3>
+                  ${b.email ? `<p class="text-xs text-muted">${b.email}</p>` : ""}
                 </div>
 
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                   <div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Event Date</span><strong class="text-title">${b.event_date || "—"}</strong></div>
                   <div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Event Type</span><strong class="text-title">${b.event_type || "—"}</strong></div>
-                  <div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Guests</span><strong class="text-title">${b.estimated_guests || "—"}</strong></div>
-                  <div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Package</span><strong class="text-title">${b.package_name || "—"}</strong></div>
-                  <div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Est. Total</span><strong class="text-title">${b.estimated_total ? "₱" + Number(b.estimated_total).toLocaleString() : "—"}</strong></div>
+                  <div class="bg-grey rounded-xl p-3 ${isCustom ? "border border-orange-200 bg-orange-50" : ""}"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Guests</span><strong class="${isCustom ? "text-orange-600" : "text-title"}">${b.estimated_guests || "—"}${isCustom ? " ⚠" : ""}</strong></div>
+                  <div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Package(s)</span><strong class="text-title">${b.package_name || "—"}</strong></div>
+                  <div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Est. Total</span><strong class="text-title">${isCustom ? "Custom" : (b.estimated_total ? "₱" + Number(b.estimated_total).toLocaleString() : "—")}</strong></div>
                   <div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Hours</span><strong class="text-title">${b.hours || "—"}</strong></div>
                 </div>
 
@@ -2648,6 +2731,16 @@
               <!-- Right: admin action panel -->
               <div class="lg:col-span-4 space-y-3 bg-grey border border-line rounded-2xl p-5">
                 <p class="text-[10px] uppercase font-extrabold text-muted tracking-wider">Admin Actions</p>
+
+                ${isCustom ? `
+                <div class="bg-purple/10 border border-purple/20 rounded-xl p-3 space-y-2">
+                  <p class="text-[10px] font-black text-purple uppercase tracking-wider"><i class="fa-solid fa-envelope mr-1"></i>Custom Quote Required</p>
+                  <p class="text-[10px] text-body">${b.estimated_guests}+ guests — send custom rate to client email.</p>
+                  <button onclick="openQuoteModal('${b.id}','${(b.email||b.phone||"").replace(/'/g,"\\'")}','${(b.full_name||"").replace(/'/g,"\\'")}','${(b.package_name||"").replace(/'/g,"\\'")}',${b.estimated_guests||0})"
+                    class="btn-animation w-full bg-purple text-white text-[10px] font-black py-2 rounded-lg flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-paper-plane"></i> Send Custom Quote
+                  </button>
+                </div>` : ""}
 
                 <div class="space-y-1">
                   <label class="text-[10px] font-extrabold uppercase text-title">Booking Status</label>
@@ -2671,7 +2764,7 @@
                   <textarea class="admin-note w-full border border-line rounded-lg px-3 py-2 text-xs bg-white resize-none h-20" placeholder="Internal note visible only to admins…">${b.admin_note || ""}</textarea>
                 </div>
 
-                <button onclick="saveAdminBookingChange(${b.id}, this)" class="btn-animation w-full bg-purple text-white hover:bg-purple-dark text-xs font-bold py-2.5 rounded-xl">
+                <button onclick="saveAdminBookingChange('${b.id}', this)" class="btn-animation w-full bg-purple text-white hover:bg-purple-dark text-xs font-bold py-2.5 rounded-xl">
                   Save Changes
                 </button>
               </div>
@@ -3201,7 +3294,6 @@
       };
 
       // Recalculate Quote Estimations on selectors change
-      bookingPackage.onchange = () => { renderQuote(); };
       bookingExtraHours.onchange = () => { renderQuote(); };
       eventBookingForm.onsubmit = handleBookingSubmit;
 
@@ -3238,6 +3330,8 @@
           proofList.classList.toggle("hidden", activeAdminTab !== "proofs");
           const ticketList = document.getElementById("ticketList");
           if (ticketList) ticketList.classList.toggle("hidden", activeAdminTab !== "tickets");
+          const packagesList = document.getElementById("packagesList");
+          if (packagesList) packagesList.classList.toggle("hidden", activeAdminTab !== "packages");
           reviewList.classList.toggle("hidden", activeAdminTab !== "reviews");
 
           const bookingSubToolbar = document.getElementById("bookingSubToolbar");
@@ -3248,6 +3342,7 @@
           if (activeAdminTab === "bookings") loadBookings();
           else if (activeAdminTab === "proofs") loadProofs();
           else if (activeAdminTab === "tickets") loadTickets();
+          else if (activeAdminTab === "packages") renderPackagesAdmin();
           else loadReviewsAdmin();
         };
       });
@@ -3286,6 +3381,7 @@
           if (activeAdminTab === "bookings") loadBookings();
           else if (activeAdminTab === "proofs") loadProofs();
           else if (activeAdminTab === "tickets") loadTickets();
+          else if (activeAdminTab === "packages") renderPackagesAdmin();
           else loadReviewsAdmin();
         };
       }
@@ -3442,6 +3538,211 @@
           spawnToast("Update failed", err.message, "fa-solid fa-triangle-exclamation", "warning");
         }
       });
+
+      // -----------------------------------------------------------------------
+      // Wizard: render package checkboxes
+      // -----------------------------------------------------------------------
+      (function buildWizardPkgGrid() {
+        const grid = document.getElementById("wizardPkgGrid");
+        if (!grid) return;
+        Object.entries(packageCatalog).forEach(([key, pkg]) => {
+          grid.insertAdjacentHTML("beforeend", `
+            <label class="flex items-start gap-3 border-2 border-line rounded-xl p-3 cursor-pointer hover:border-purple transition-all">
+              <input type="checkbox" id="wpkg_${key}" onchange="renderQuote()" class="mt-0.5 accent-purple w-4 h-4 shrink-0" />
+              <div class="flex-1">
+                <p class="text-xs font-extrabold text-title">${pkg.name}</p>
+                <p class="text-[10px] text-purple font-bold">₱${pkg.price.toLocaleString()}</p>
+              </div>
+            </label>`);
+        });
+      })();
+
+      // -----------------------------------------------------------------------
+      // Packages Admin Tab
+      // -----------------------------------------------------------------------
+      let adminPackages = Object.entries(packageCatalog).map(([key, p]) => ({ key, ...p }));
+
+      function renderPackagesAdmin() {
+        const list = document.getElementById("packagesList");
+        if (!list) return;
+        list.innerHTML = "";
+
+        const customBookings = bookings.filter(b => b.is_custom_quote);
+
+        list.insertAdjacentHTML("beforeend", `
+          <div class="bg-white border border-line rounded-3xl shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-line bg-grey/40 flex items-center justify-between">
+              <h3 class="font-black text-title text-base">Package Catalog</h3>
+              <button onclick="openAddPackageModal()" class="btn-animation bg-purple text-white text-xs font-black px-4 py-2 rounded-full flex items-center gap-2">
+                <i class="fa-solid fa-plus"></i> Add Package
+              </button>
+            </div>
+            <div class="p-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="pkgCatalogGrid"></div>
+          </div>
+          ${customBookings.length ? `
+          <div class="bg-white border border-purple/20 rounded-3xl shadow-sm overflow-hidden ring-1 ring-purple/20">
+            <div class="px-6 py-4 border-b border-line bg-purple/5 flex items-center gap-3">
+              <i class="fa-solid fa-envelope text-purple"></i>
+              <h3 class="font-black text-title text-base">Custom Quote Requests (${customBookings.length})</h3>
+            </div>
+            <div class="p-6 space-y-4" id="customQuoteBookingList"></div>
+          </div>` : `
+          <div class="border border-dashed border-line rounded-2xl p-8 text-center text-muted">
+            <i class="fa-solid fa-circle-check text-3xl text-green mb-3 block"></i>
+            <p class="font-bold text-sm">No custom quote requests pending.</p>
+          </div>`}`);
+
+        const catalogGrid = document.getElementById("pkgCatalogGrid");
+        if (catalogGrid) {
+          adminPackages.forEach((pkg, idx) => {
+            catalogGrid.insertAdjacentHTML("beforeend", `
+              <div class="border border-line rounded-2xl p-5 space-y-3 bg-grey">
+                <div class="flex items-start justify-between gap-2">
+                  <p class="font-extrabold text-title text-sm">${pkg.name}</p>
+                  <button onclick="editPackage(${idx})" class="text-[10px] text-purple font-black hover:underline"><i class="fa-solid fa-pen"></i> Edit</button>
+                </div>
+                <p class="text-xl font-black text-purple">₱${pkg.price.toLocaleString()}</p>
+                <p class="text-[10px] text-muted font-bold uppercase">+₱${pkg.extraRate.toLocaleString()}/extra hr · ${pkg.coverage}</p>
+                <ul class="text-[10px] text-body space-y-0.5 border-t border-line pt-2">
+                  ${pkg.included.slice(0,3).map(i => `<li>• ${i}</li>`).join("")}
+                  ${pkg.included.length > 3 ? `<li class="text-muted">+${pkg.included.length-3} more…</li>` : ""}
+                </ul>
+              </div>`);
+          });
+        }
+
+        const cqList = document.getElementById("customQuoteBookingList");
+        if (cqList) {
+          customBookings.forEach(b => {
+            cqList.insertAdjacentHTML("beforeend", `
+              <div class="border border-line rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="space-y-1">
+                  <p class="font-extrabold text-title">${b.full_name} <span class="text-[10px] font-bold text-muted ml-2">${b.email || b.phone || ""}</span></p>
+                  <p class="text-xs text-body">${b.package_name || "No package selected"} · ${b.estimated_guests} guests · ${b.event_date}</p>
+                  <p class="text-xs text-muted">${b.venue_location || ""}</p>
+                </div>
+                <button onclick="openQuoteModal('${b.id}','${(b.email||"").replace(/'/g,"\\'")}','${(b.full_name||"").replace(/'/g,"\\'")}','${(b.package_name||"").replace(/'/g,"\\'")}',${b.estimated_guests||0})"
+                  class="btn-animation shrink-0 bg-purple text-white text-xs font-black px-4 py-2.5 rounded-xl flex items-center gap-2">
+                  <i class="fa-solid fa-paper-plane"></i> Send Custom Quote
+                </button>
+              </div>`);
+          });
+        }
+      }
+
+      function editPackage(idx) {
+        const pkg = adminPackages[idx];
+        if (!pkg) return;
+        const newPrice = prompt(`Edit price for "${pkg.name}" (current: ₱${pkg.price.toLocaleString()}):`, pkg.price);
+        if (newPrice === null) return;
+        const parsed = parseInt(newPrice.replace(/[^0-9]/g, ""));
+        if (isNaN(parsed) || parsed < 0) { spawnToast("Invalid", "Enter a valid price.", "fa-solid fa-circle-exclamation", "warning"); return; }
+        adminPackages[idx].price = parsed;
+        packageCatalog[pkg.key].price = parsed;
+        spawnToast("Updated", `${pkg.name} set to ₱${parsed.toLocaleString()}`, "fa-solid fa-circle-check", "success");
+        renderPackagesAdmin();
+        renderQuote();
+      }
+
+      function openAddPackageModal() {
+        const name = prompt("New package name:");
+        if (!name?.trim()) return;
+        const priceStr = prompt("Base price (PHP):");
+        const price = parseInt((priceStr || "").replace(/[^0-9]/g, ""));
+        if (isNaN(price)) { spawnToast("Invalid", "Enter a valid price.", "fa-solid fa-circle-exclamation", "warning"); return; }
+        const extraRate = parseInt((prompt("Extra hour rate (PHP):") || "0").replace(/[^0-9]/g, "")) || 1000;
+        const key = name.toLowerCase().replace(/[^a-z0-9]/g, "-");
+        packageCatalog[key] = { name: name.trim(), price, extraRate, coverage: "3 hours", included: [] };
+        adminPackages = Object.entries(packageCatalog).map(([k, p]) => ({ key: k, ...p }));
+        spawnToast("Package Added", `${name.trim()} added to catalog.`, "fa-solid fa-circle-check", "success");
+        renderPackagesAdmin();
+      }
+
+      // -----------------------------------------------------------------------
+      // Custom Quote Modal
+      // -----------------------------------------------------------------------
+      function openQuoteModal(bookingId, email, clientName, packageNames, guestCount) {
+        const existing = document.getElementById("quoteModal");
+        if (existing) existing.remove();
+        const modal = document.createElement("div");
+        modal.id = "quoteModal";
+        modal.className = "fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 grid place-items-center p-4";
+        modal.innerHTML = `
+          <div class="w-full max-w-lg bg-white border border-line rounded-3xl shadow-luxe overflow-hidden">
+            <div class="flex items-center justify-between px-6 py-4 border-b border-line">
+              <div>
+                <h3 class="font-black text-title text-base">Send Custom Quote</h3>
+                <p class="text-xs text-muted mt-0.5">For: <strong>${clientName}</strong>${email ? ` · ${email}` : ""}</p>
+              </div>
+              <button onclick="document.getElementById('quoteModal').remove()" class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey text-lg">&times;</button>
+            </div>
+            <div class="p-6 space-y-4">
+              ${!email ? `<div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-xs text-yellow-800 font-bold"><i class="fa-solid fa-triangle-exclamation mr-1"></i>No email on file. Enter one below.</div>` : ""}
+              <div class="space-y-1.5">
+                <label class="text-xs font-extrabold text-title uppercase">Client Email *</label>
+                <input id="qEmail" type="email" value="${email}" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" placeholder="client@email.com" />
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <div class="space-y-1.5">
+                  <label class="text-xs font-extrabold text-title uppercase">Custom Rate (PHP) *</label>
+                  <input id="qAmount" type="number" min="0" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" placeholder="e.g. 45000"
+                    oninput="const d=document.getElementById('qDeposit');if(this.value)d.value=Math.round(parseFloat(this.value)/2)" />
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-xs font-extrabold text-title uppercase">50% Deposit</label>
+                  <input id="qDeposit" type="number" min="0" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" placeholder="Auto-filled" />
+                </div>
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-xs font-extrabold text-title uppercase">Message / Quote Details</label>
+                <textarea id="qMessage" rows="5" class="w-full border border-line rounded-xl px-4 py-3 text-sm resize-none focus:border-purple outline-none"
+                  placeholder="Hi ${clientName}, based on your event (${guestCount} guests, ${packageNames}), here is our custom rate…"></textarea>
+              </div>
+              <div class="bg-grey border border-line rounded-xl p-3 text-xs text-body">
+                <p class="font-bold text-title mb-1">How this works</p>
+                The custom rate and message will be saved to the booking record as an admin note. Copy the details above and email the client manually from <span class="text-purple">notification@studiophotuna.com</span>.
+              </div>
+              <div class="flex gap-3">
+                <button onclick="document.getElementById('quoteModal').remove()" class="flex-1 border border-line hover:bg-grey py-3 rounded-full font-extrabold text-sm text-title">Cancel</button>
+                <button onclick="saveCustomQuote('${bookingId}', this)" class="btn-animation flex-1 bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm">
+                  <i class="fa-solid fa-check mr-1"></i> Save Quote
+                </button>
+              </div>
+              <p id="quoteModalMsg" class="text-center text-xs font-bold text-red-600 hidden"></p>
+            </div>
+          </div>`;
+        document.body.appendChild(modal);
+      }
+
+      async function saveCustomQuote(bookingId, btn) {
+        const email = document.getElementById("qEmail")?.value?.trim();
+        const amount = parseFloat(document.getElementById("qAmount")?.value) || 0;
+        const deposit = parseFloat(document.getElementById("qDeposit")?.value) || 0;
+        const message = document.getElementById("qMessage")?.value?.trim() || "";
+        const msgEl = document.getElementById("quoteModalMsg");
+
+        if (!email) { msgEl.textContent = "Client email is required."; msgEl.classList.remove("hidden"); return; }
+        if (!amount) { msgEl.textContent = "Enter a custom rate amount."; msgEl.classList.remove("hidden"); return; }
+
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Saving…`;
+
+        const adminNote = `[CUSTOM QUOTE] Rate: ₱${amount.toLocaleString()} | Deposit: ₱${deposit.toLocaleString()} | Email: ${email}${message ? `\n\n${message}` : ""}`;
+
+        try {
+          const { error } = await supabaseClient
+            .from("event_bookings")
+            .update({ estimated_total: amount, email, admin_note: adminNote })
+            .eq("id", bookingId);
+          if (error) throw error;
+          document.getElementById("quoteModal").remove();
+          spawnToast("Quote Saved", `Custom quote of ₱${amount.toLocaleString()} saved. Email ${email} with the details.`, "fa-solid fa-circle-check", "success");
+          loadBookings();
+        } catch (err) {
+          msgEl.textContent = err.message || "Failed to save.";
+          msgEl.classList.remove("hidden");
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-check mr-1"></i> Save Quote`;
+        }
+      }
     </script>
-  </body>
-</html>
