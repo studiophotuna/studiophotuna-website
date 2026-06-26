@@ -756,6 +756,79 @@ async function reviewProof(proofId, userId, billing, action) {
 }
 
 // ===================================================================
+// Public Review Submission
+// ===================================================================
+
+let selectedReviewRating = 5;
+
+function setReviewRating(rating) {
+  selectedReviewRating = rating;
+  const ratingInput = document.getElementById("reviewRating");
+  if (ratingInput) ratingInput.value = rating;
+  document.querySelectorAll("#reviewStarPicker .review-star").forEach(btn => {
+    const star = parseInt(btn.dataset.star);
+    btn.classList.toggle("text-yellow-400", star <= rating);
+    btn.classList.toggle("text-line", star > rating);
+  });
+}
+
+async function handleReviewSubmit(event) {
+  event.preventDefault();
+  const submitBtn = document.getElementById("reviewSubmitBtn");
+  const message = document.getElementById("reviewMessage");
+
+  if (!window.currentSupabaseUser) {
+    message.textContent = "Please sign in to submit a review.";
+    message.style.color = "#dc2626";
+    spawnToast("Sign In Required", "Log in to your account before submitting a review.", "fa-solid fa-user-lock", "warning");
+    openAuthModal("login");
+    return;
+  }
+
+  const name = document.getElementById("reviewName").value.trim();
+  const reviewText = document.getElementById("reviewText").value.trim();
+  const eventType = document.getElementById("reviewEventType").value;
+  const rating = selectedReviewRating;
+
+  if (!name || !reviewText) {
+    message.textContent = "Please fill in your name and review.";
+    message.style.color = "#dc2626";
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Submitting...';
+  message.textContent = "";
+
+  try {
+    if (!supabaseClient) throw new Error("Service temporarily unavailable. Please try again later.");
+    const { error } = await supabaseClient.from("public_reviews").insert({
+      user_id: window.currentSupabaseUser.id,
+      name,
+      review_text: reviewText,
+      rating,
+      event_type: eventType,
+      source: "website",
+      status: "pending",
+      is_featured: false
+    });
+    if (error) throw error;
+
+    document.getElementById("publicReviewForm").reset();
+    setReviewRating(5);
+    message.textContent = "Thank you! Your review has been submitted and will appear after moderation.";
+    message.style.color = "#22c55e";
+    spawnToast("Review Submitted", "Your review will be visible once approved. Thank you!", "fa-solid fa-circle-check", "success");
+  } catch (err) {
+    message.textContent = err.message || "Could not submit your review. Please try again.";
+    message.style.color = "#dc2626";
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Submit Review';
+  }
+}
+
+// ===================================================================
 // Admin: Reviews
 // ===================================================================
 
@@ -1052,6 +1125,61 @@ async function saveCustomQuote(bookingId, btn) {
 }
 
 // ===================================================================
+// Interactive Booth Console Preview
+// ===================================================================
+
+let currentBoothScreen = 0;
+const totalBoothScreens = 5;
+
+function showBoothScreen(index) {
+  currentBoothScreen = Math.max(0, Math.min(totalBoothScreens - 1, index));
+  document.querySelectorAll(".booth-screen").forEach(screen => {
+    const screenIndex = parseInt(screen.dataset.screen);
+    screen.classList.toggle("hidden", screenIndex !== currentBoothScreen);
+    screen.classList.toggle("active", screenIndex === currentBoothScreen);
+    if (screenIndex === currentBoothScreen) {
+      screen.classList.add("flex");
+    } else {
+      screen.classList.remove("flex");
+    }
+  });
+}
+
+function boothNext() {
+  showBoothScreen(currentBoothScreen + 1);
+}
+
+function boothReset() {
+  showBoothScreen(0);
+}
+
+function selectBoothLayout(btn, layout) {
+  document.querySelectorAll(".booth-layout-btn").forEach(b => {
+    b.classList.remove("active", "border-purple", "bg-purple/5");
+    b.classList.add("border-line");
+  });
+  btn.classList.add("active", "border-purple", "bg-purple/5");
+  btn.classList.remove("border-line");
+}
+
+function startBoothCountdown() {
+  const el = document.getElementById("boothCountdown");
+  if (!el) return;
+  let count = 3;
+  el.textContent = count;
+  const interval = setInterval(() => {
+    count--;
+    if (count > 0) {
+      el.textContent = count;
+    } else {
+      clearInterval(interval);
+      el.innerHTML = '<i class="fa-solid fa-camera text-5xl"></i>';
+      setTimeout(() => boothNext(), 800);
+    }
+  }, 1000);
+}
+
+// ===================================================================
 // Init & Event Listeners
 // ===================================================================
 
@@ -1161,6 +1289,8 @@ if (refreshBookings) {
 
 document.getElementById("loginOpen").onclick = () => openAuthModal("login");
 document.getElementById("gcashProofForm").onsubmit = handleGcashProofSubmit;
+const publicReviewForm = document.getElementById("publicReviewForm");
+if (publicReviewForm) publicReviewForm.onsubmit = handleReviewSubmit;
 
 authForm.onsubmit = async (event) => {
   event.preventDefault(); if (!supabaseClient) return;
