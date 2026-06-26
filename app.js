@@ -485,10 +485,15 @@ function renderQuote() {
     else { packageBreakdown.innerHTML = pkgs.map(pkg => `<div class="mb-3"><h4 class="font-bold text-title text-sm">${pkg.name}</h4><ul class="text-xs text-body space-y-1 mt-1">${pkg.included.map(inc => `<li>• ${inc}</li>`).join("")}</ul></div>`).join('<hr class="border-line my-2" />'); }
   }
   if (quoteSummaryList) {
-    quoteSummaryList.innerHTML = pkgs.map(p => `<li class="flex justify-between"><span>${p.name}</span><strong>PHP ${p.price.toLocaleString()}</strong></li>`).join("")
-      + (discount ? `<li class="flex justify-between text-yellow-300"><span>Combo Discount</span><strong>-PHP ${discount.toLocaleString()}</strong></li>` : "")
-      + `<li class="flex justify-between"><span>Overtime (${extraHours} hrs)</span><strong>PHP ${extraCost.toLocaleString()}</strong></li>`
-      + `<li class="flex justify-between border-t border-white/10 pt-1 mt-1 font-bold"><span>50% Deposit</span><strong>PHP ${pkgs.length ? ((total)/2).toLocaleString() : "0"}</strong></li>`;
+    if (isCustom) {
+      quoteSummaryList.innerHTML = pkgs.map(p => `<li class="flex justify-between"><span>${p.name}</span><strong>PHP ${p.price.toLocaleString()}</strong></li>`).join("")
+        + `<li class="flex justify-between border-t border-white/10 pt-2 mt-2"><span colspan="2" class="text-yellow-300 text-xs"><i class="fa-solid fa-circle-info mr-1"></i>300+ guests — Custom Quote required. Our team will reach out to you with a personalized rate.</span></li>`;
+    } else {
+      quoteSummaryList.innerHTML = pkgs.map(p => `<li class="flex justify-between"><span>${p.name}</span><strong>PHP ${p.price.toLocaleString()}</strong></li>`).join("")
+        + (discount ? `<li class="flex justify-between text-yellow-300"><span>Combo Discount</span><strong>-PHP ${discount.toLocaleString()}</strong></li>` : "")
+        + `<li class="flex justify-between"><span>Overtime (${extraHours} hrs)</span><strong>PHP ${extraCost.toLocaleString()}</strong></li>`
+        + `<li class="flex justify-between border-t border-white/10 pt-1 mt-1 font-bold"><span>50% Deposit</span><strong>PHP ${pkgs.length ? ((total)/2).toLocaleString() : "0"}</strong></li>`;
+    }
   }
   if (quoteTotal) { quoteTotal.textContent = isCustom ? "Custom Quote" : `PHP ${total.toLocaleString()}`; }
 }
@@ -1122,6 +1127,35 @@ async function saveCustomQuote(bookingId, btn) {
     document.getElementById("quoteModal").remove();
     spawnToast("Quote Saved", `Custom quote of ₱${amount.toLocaleString()} saved. Email ${email} with the details.`, "fa-solid fa-circle-check", "success"); loadBookings();
   } catch (err) { msgEl.textContent = err.message || "Failed to save."; msgEl.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-check mr-1"></i> Save Quote`; }
+}
+
+// ===================================================================
+// Collapsible Sections: Review Form & FAQ Accordion
+// ===================================================================
+
+function toggleReviewForm() {
+  const body = document.getElementById("reviewFormBody");
+  const chevron = document.getElementById("reviewFormChevron");
+  if (!body) return;
+  body.classList.toggle("hidden");
+  if (chevron) chevron.style.transform = body.classList.contains("hidden") ? "" : "rotate(180deg)";
+}
+
+function toggleFaq(btn) {
+  const item = btn.closest(".faq-item");
+  const answer = item.querySelector(".faq-answer");
+  const chevron = btn.querySelector("i");
+  if (!answer) return;
+  // Close other open FAQs
+  document.querySelectorAll(".faq-item").forEach(other => {
+    if (other !== item) {
+      other.querySelector(".faq-answer")?.classList.add("hidden");
+      const otherChevron = other.querySelector("button i");
+      if (otherChevron) otherChevron.style.transform = "";
+    }
+  });
+  answer.classList.toggle("hidden");
+  if (chevron) chevron.style.transform = answer.classList.contains("hidden") ? "" : "rotate(180deg)";
 }
 
 // ===================================================================
