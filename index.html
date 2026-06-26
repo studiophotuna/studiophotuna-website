@@ -108,7 +108,6 @@
         <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
           <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-purple transition-colors">Home</a>
           <a href="#features" onclick="navigateTo('home'); scrollAndHighlight('features');" class="hover:text-purple transition-colors">Features</a>
-          <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-purple transition-colors">Book Event</a>
           <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-purple transition-colors">Download</a>
           <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-purple transition-colors">Help & Support</a>
         </nav>
@@ -139,7 +138,6 @@
     <!-- Mobile Dropdown Panel -->
     <div id="mobile-menu" class="hidden md:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
       <a href="#" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
-      <a href="#" onclick="navigateTo('book-event'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Book Event</a>
       <a href="#" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
       <a href="#" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help & Support</a>
       <a href="#" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
@@ -375,66 +373,8 @@
           </div>
         </section>
 
-        <!-- Fixed Interactive Pro Plan pricing -->
-        <section id="pricing" class="py-24 px-6 bg-grey border-t border-line">
-          <div class="max-w-7xl mx-auto space-y-12">
-            <div class="text-center max-w-2xl mx-auto space-y-4">
-              <h2 class="text-4xl font-extrabold tracking-tight text-title">Simple pricing for every stage of growth</h2>
-              <p class="text-base text-body">Start free, then choose monthly flexibility or yearly savings inside our Pro plan.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-              <!-- Trial Card -->
-              <div class="bg-white border border-line rounded-3xl p-8 flex flex-col justify-between hover:shadow-md transition-shadow">
-                <div class="space-y-4">
-                  <span class="badge bg-purple/10 text-purple text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full inline-block">Trial</span>
-                  <h3 class="text-2xl font-bold text-title">14-Day Free Trial</h3>
-                  <div class="text-5xl font-black text-title">₱0</div>
-                  <p class="text-sm text-body">Test every operator workspace feature before committing to plans.</p>
-                  <ul class="space-y-2.5 pt-4 text-sm text-title/90 font-medium">
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple"></i> Custom template mapping</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple"></i> Local printer integration</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple"></i> Event dashboard configuration</li>
-                  </ul>
-                </div>
-                <button onclick="openAuthModal('signup')" class="btn-animation mt-8 w-full border border-line hover:bg-grey py-3.5 rounded-full font-extrabold text-sm text-title transition-colors">
-                  Start Free Trial
-                </button>
-              </div>
-
-              <!-- Pro Card with fully functioning toggles -->
-              <div class="bg-title border-2 border-purple rounded-3xl p-8 flex flex-col justify-between shadow-luxe text-white transform md:scale-105 relative">
-                <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-purple text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full" id="proPlanBadge">
-                  Best Value
-                </span>
-                <div class="space-y-4">
-                  <h3 class="text-2xl font-bold mt-4 text-white">Studio Photuna Pro</h3>
-                  
-                  <!-- Billing Cycle Toggle Buttons -->
-                  <div class="billing-toggle grid grid-cols-2 gap-2 bg-white/10 border border-white/20 p-1.5 rounded-full" aria-label="Billing cycle">
-                    <button type="button" data-billing="monthly" class="py-2 rounded-full text-xs font-extrabold transition-all duration-200">Monthly</button>
-                    <button type="button" data-billing="yearly" class="active py-2 rounded-full text-xs font-extrabold transition-all duration-200 bg-white text-title shadow-sm">Yearly</button>
-                  </div>
-
-                  <div class="text-5xl font-black text-white" id="proPlanPrice">₱950<small class="text-sm font-semibold text-white/70">/mo</small></div>
-                  <p class="text-sm text-white/80" id="proPlanNote">₱11,400 billed annually. Enjoy a 47% savings compared with monthly cycles.</p>
-                  
-                  <ul class="space-y-2.5 pt-4 text-sm font-semibold" id="proPlanDetails">
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-star text-yellow"></i> Best value choice</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-purple"></i> Continuous software feature releases</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-purple"></i> Priority developer support queue</li>
-                  </ul>
-                </div>
-                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-8 w-full bg-purple hover:bg-purple-dark text-white py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
-                  Choose Pro Plan
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
         <!-- Interactive Booth Console Preview -->
-        <section id="booth-preview" class="py-24 px-6 bg-grey border-t border-line">
+        <section id="booth-preview" class="py-24 px-6 border-t border-line">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="text-4xl font-extrabold tracking-tight text-title">Try the booth experience</h2>
@@ -543,6 +483,64 @@
           </div>
         </section>
 
+        <!-- Fixed Interactive Pro Plan pricing -->
+        <section id="pricing" class="py-24 px-6 bg-grey border-t border-line">
+          <div class="max-w-7xl mx-auto space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+              <h2 class="text-4xl font-extrabold tracking-tight text-title">Simple pricing for every stage of growth</h2>
+              <p class="text-base text-body">Start free, then choose monthly flexibility or yearly savings inside our Pro plan.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
+              <!-- Trial Card -->
+              <div class="bg-white border border-line rounded-3xl p-8 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div class="space-y-4">
+                  <span class="badge bg-purple/10 text-purple text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full inline-block">Trial</span>
+                  <h3 class="text-2xl font-bold text-title">14-Day Free Trial</h3>
+                  <div class="text-5xl font-black text-title">₱0</div>
+                  <p class="text-sm text-body">Test every operator workspace feature before committing to plans.</p>
+                  <ul class="space-y-2.5 pt-4 text-sm text-title/90 font-medium">
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple"></i> Custom template mapping</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple"></i> Local printer integration</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple"></i> Event dashboard configuration</li>
+                  </ul>
+                </div>
+                <button onclick="openAuthModal('signup')" class="btn-animation mt-8 w-full border border-line hover:bg-grey py-3.5 rounded-full font-extrabold text-sm text-title transition-colors">
+                  Start Free Trial
+                </button>
+              </div>
+
+              <!-- Pro Card with fully functioning toggles -->
+              <div class="bg-title border-2 border-purple rounded-3xl p-8 flex flex-col justify-between shadow-luxe text-white transform md:scale-105 relative">
+                <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-purple text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full" id="proPlanBadge">
+                  Best Value
+                </span>
+                <div class="space-y-4">
+                  <h3 class="text-2xl font-bold mt-4 text-white">Studio Photuna Pro</h3>
+                  
+                  <!-- Billing Cycle Toggle Buttons -->
+                  <div class="billing-toggle grid grid-cols-2 gap-2 bg-white/10 border border-white/20 p-1.5 rounded-full" aria-label="Billing cycle">
+                    <button type="button" data-billing="monthly" class="py-2 rounded-full text-xs font-extrabold transition-all duration-200">Monthly</button>
+                    <button type="button" data-billing="yearly" class="active py-2 rounded-full text-xs font-extrabold transition-all duration-200 bg-white text-title shadow-sm">Yearly</button>
+                  </div>
+
+                  <div class="text-5xl font-black text-white" id="proPlanPrice">₱950<small class="text-sm font-semibold text-white/70">/mo</small></div>
+                  <p class="text-sm text-white/80" id="proPlanNote">₱11,400 billed annually. Enjoy a 47% savings compared with monthly cycles.</p>
+                  
+                  <ul class="space-y-2.5 pt-4 text-sm font-semibold" id="proPlanDetails">
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-star text-yellow"></i> Best value choice</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-purple"></i> Continuous software feature releases</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-purple"></i> Priority developer support queue</li>
+                  </ul>
+                </div>
+                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-8 w-full bg-purple hover:bg-purple-dark text-white py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
+                  Choose Pro Plan
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Static reviews placeholder -->
         <section class="py-24 px-6 max-w-7xl mx-auto">
           <div class="space-y-12">
@@ -555,12 +553,16 @@
               <!-- Rendered Dynamically via JS state -->
             </div>
 
-            <!-- Submit a Review -->
-            <div class="max-w-2xl mx-auto bg-white border border-line rounded-3xl p-8 shadow-sm space-y-6" id="reviewFormSection">
-              <div class="text-center space-y-2">
-                <h3 class="text-2xl font-black text-title">Share your experience</h3>
-                <p class="text-sm text-body">Had a great time with Studio Photuna? Leave a review and let others know!</p>
-              </div>
+            <!-- Submit a Review (Collapsible) -->
+            <div class="max-w-2xl mx-auto bg-white border border-line rounded-3xl shadow-sm overflow-hidden" id="reviewFormSection">
+              <button type="button" onclick="toggleReviewForm()" class="w-full flex items-center justify-between px-8 py-5 text-left hover:bg-grey/50 transition-colors">
+                <div class="space-y-1">
+                  <h3 class="text-xl font-black text-title">Share your experience</h3>
+                  <p class="text-sm text-body">Had a great time with Studio Photuna? Leave a review and let others know!</p>
+                </div>
+                <i class="fa-solid fa-chevron-down text-muted transition-transform duration-300" id="reviewFormChevron"></i>
+              </button>
+              <div id="reviewFormBody" class="hidden px-8 pb-8 space-y-6">
               <form id="publicReviewForm" class="space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div class="space-y-1.5">
@@ -601,61 +603,108 @@
                 <p class="text-xs text-center text-muted font-medium">Your review will be visible after moderation by our team.</p>
                 <p class="text-center text-xs font-bold" id="reviewMessage"></p>
               </form>
+              </div>
             </div>
           </div>
         </section>
 
         <section id="faq" class="py-24 px-6 bg-grey border-t border-line">
           <div class="max-w-7xl mx-auto space-y-12">
-            <h2 class="text-4xl font-extrabold tracking-tight text-title text-center">Frequently asked questions</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">Do I need a kiosk enclosure?</h3>
-                <p class="text-sm text-body">No. Studio Photuna works natively on Windows PCs, allowing you to use existing tripod stands and camera setups before purchasing custom kiosks.</p>
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+              <h2 class="text-4xl font-extrabold tracking-tight text-title">Frequently asked questions</h2>
+              <p class="text-base text-body">Everything you need to know about the Studio Photuna desktop application.</p>
+            </div>
+            <div class="max-w-3xl mx-auto space-y-3" id="faqAccordion">
+              <!-- FAQ items as collapsible accordion -->
+              <div class="faq-item bg-white border border-line rounded-2xl overflow-hidden">
+                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey/50 transition-colors">
+                  <h3 class="font-bold text-title pr-4">Do I need a physical kiosk enclosure to run the app?</h3>
+                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-5">
+                  <p class="text-sm text-body">No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation.</p>
+                </div>
               </div>
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">Can guests retake photos?</h3>
-                <p class="text-sm text-body">Yes. The integrated booth flow allows operators to enable retake parameters and controls to provide a frictionless session experience.</p>
+              <div class="faq-item bg-white border border-line rounded-2xl overflow-hidden">
+                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey/50 transition-colors">
+                  <h3 class="font-bold text-title pr-4">What cameras are compatible with the software?</h3>
+                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-5">
+                  <p class="text-sm text-body">Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices.</p>
+                </div>
               </div>
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">Does it support physical printing?</h3>
-                <p class="text-sm text-body">Yes. Output configuration coordinates perfectly with standard dye-sublimation printers, orientations, and custom print borders.</p>
+              <div class="faq-item bg-white border border-line rounded-2xl overflow-hidden">
+                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey/50 transition-colors">
+                  <h3 class="font-bold text-title pr-4">Does the app support physical printing?</h3>
+                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-5">
+                  <p class="text-sm text-body">Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings.</p>
+                </div>
               </div>
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">How do event bookings work?</h3>
-                <p class="text-sm text-body">Event bookings are open for Metro Manila. Submit your request through our <a href="#" onclick="navigateTo('book-event'); return false;" class="text-purple font-bold hover:underline">booking form</a> and we'll confirm within 24 hours.</p>
+              <div class="faq-item bg-white border border-line rounded-2xl overflow-hidden">
+                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey/50 transition-colors">
+                  <h3 class="font-bold text-title pr-4">Can guests retake their photos during a session?</h3>
+                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-5">
+                  <p class="text-sm text-body">Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed.</p>
+                </div>
               </div>
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">What cameras are compatible?</h3>
-                <p class="text-sm text-body">Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode, including popular Canon and Sony models.</p>
+              <div class="faq-item bg-white border border-line rounded-2xl overflow-hidden">
+                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey/50 transition-colors">
+                  <h3 class="font-bold text-title pr-4">What photo strip layouts are available?</h3>
+                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-5">
+                  <p class="text-sm text-body">The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor.</p>
+                </div>
               </div>
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">How does QR sharing work?</h3>
-                <p class="text-sm text-body">After each photo session, a unique QR code is generated on-screen. Guests scan it with their phone to instantly download their photos from the cloud.</p>
+              <div class="faq-item bg-white border border-line rounded-2xl overflow-hidden">
+                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey/50 transition-colors">
+                  <h3 class="font-bold text-title pr-4">How does QR cloud sharing work?</h3>
+                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-5">
+                  <p class="text-sm text-body">After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end.</p>
+                </div>
               </div>
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">What photo layouts are available?</h3>
-                <p class="text-sm text-body">The template editor supports 4x6, 6x4, and 2x6 strip layouts with customizable frames, overlays, and branding elements to match any event theme.</p>
+              <div class="faq-item bg-white border border-line rounded-2xl overflow-hidden">
+                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey/50 transition-colors">
+                  <h3 class="font-bold text-title pr-4">Is there a free trial available?</h3>
+                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-5">
+                  <p class="text-sm text-body">Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start.</p>
+                </div>
               </div>
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">Is there a free trial?</h3>
-                <p class="text-sm text-body">Yes. New operators get a 14-day free trial with full access to all features including camera integration, template editing, and QR cloud sharing.</p>
+              <div class="faq-item bg-white border border-line rounded-2xl overflow-hidden">
+                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey/50 transition-colors">
+                  <h3 class="font-bold text-title pr-4">Can I use the app offline during events?</h3>
+                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-5">
+                  <p class="text-sm text-body">The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue.</p>
+                </div>
               </div>
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">What areas do you serve for events?</h3>
-                <p class="text-sm text-body">On-site photobooth event services are currently available across Metro Manila. Travel within the metro area is complimentary for most packages.</p>
+              <div class="faq-item bg-white border border-line rounded-2xl overflow-hidden">
+                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey/50 transition-colors">
+                  <h3 class="font-bold text-title pr-4">How do software updates work?</h3>
+                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-5">
+                  <p class="text-sm text-body">Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience.</p>
+                </div>
               </div>
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">How much is the deposit to reserve a date?</h3>
-                <p class="text-sm text-body">A non-refundable 50% downpayment is required to lock your event date. The remaining balance is settled on the day of the event.</p>
-              </div>
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">Can I customize the photo template for my event?</h3>
-                <p class="text-sm text-body">Absolutely. Every package includes custom strip template overlay designs. Share your theme, colors, or logos and we'll create a matching layout.</p>
-              </div>
-              <div class="bg-white border border-line p-6 rounded-2xl space-y-2">
-                <h3 class="font-bold text-lg text-title">What happens if my event goes overtime?</h3>
-                <p class="text-sm text-body">Each package includes a base coverage period (typically 3 hours). Extra hours can be added at a per-hour rate specific to your chosen package.</p>
+              <div class="faq-item bg-white border border-line rounded-2xl overflow-hidden">
+                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey/50 transition-colors">
+                  <h3 class="font-bold text-title pr-4">What happens to guest photos after the event?</h3>
+                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                </button>
+                <div class="faq-answer hidden px-6 pb-5">
+                  <p class="text-sm text-body">Photos captured locally stay on your PC indefinitely. Cloud-uploaded photos (via QR sharing) are retained for 30 days after the event, then permanently deleted from our servers to protect guest privacy.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -1652,3 +1701,26 @@
     </div>
 
     <script src="app.js"></script>
+
+    <!--Start of Tawk.to Live Chat Script-->
+    <!--
+      HOW TO SET UP:
+      1. Go to https://www.tawk.to and create a free account
+      2. Add your site (studiophotuna.com) as a new property
+      3. Copy your Property ID and Widget ID from:
+         Dashboard > Administration > Channels > Chat Widget
+      4. Replace YOUR_TAWK_PROPERTY_ID and YOUR_TAWK_WIDGET_ID below
+      5. Customize the widget color to match your brand (#6C47FF) in the Tawk.to dashboard
+    -->
+    <script type="text/javascript">
+      var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+      (function(){
+        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/YOUR_TAWK_PROPERTY_ID/YOUR_TAWK_WIDGET_ID';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1, s0);
+      })();
+    </script>
+    <!--End of Tawk.to Live Chat Script-->
