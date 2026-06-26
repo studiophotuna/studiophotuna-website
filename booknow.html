@@ -239,14 +239,31 @@
         <!-- Package rates reference -->
         <div class="bg-white border border-line rounded-2xl p-6 space-y-3 shadow-sm">
           <p class="text-[10px] uppercase font-extrabold text-muted tracking-widest">Package Rates</p>
-          <ul class="space-y-2 text-xs text-body">
-            <li class="flex justify-between"><span>Enclosed Photobooth</span><strong class="text-title">₱23,000</strong></li>
-            <li class="flex justify-between"><span>High-Angle Photobooth</span><strong class="text-title">₱20,000</strong></li>
-            <li class="flex justify-between"><span>Polaroid Phone App</span><strong class="text-title">₱5,000</strong></li>
-            <li class="flex justify-between"><span>Phone Booth</span><strong class="text-title">₱4,500</strong></li>
-            <li class="flex justify-between"><span>Cafe Booth</span><strong class="text-title">₱20,000</strong></li>
-            <li class="border-t border-line pt-2 flex justify-between text-purple font-bold"><span>Combo Discount (2+)</span><span>-₱2,500</span></li>
+          <ul id="sidebarRates" class="space-y-2 text-xs text-body">
+            <!-- Populated dynamically from Supabase -->
           </ul>
+        </div>
+
+        <div class="bg-white border border-line rounded-2xl p-6 space-y-4 shadow-sm">
+          <p class="text-[10px] uppercase font-extrabold text-muted tracking-widest">Booking FAQ</p>
+          <div class="space-y-3 text-xs text-body">
+            <div class="border border-line rounded-xl p-3 bg-grey">
+              <strong class="text-title block">Does this form confirm my reservation?</strong>
+              <span>No. Your slot is only secured once the 50% deposit has been paid and verified by our team.</span>
+            </div>
+            <div class="border border-line rounded-xl p-3 bg-grey">
+              <strong class="text-title block">How many guests can I have?</strong>
+              <span>We accommodate events from 20 to 500+ guests. For 300+ guests a custom quote will be provided.</span>
+            </div>
+            <div class="border border-line rounded-xl p-3 bg-grey">
+              <strong class="text-title block">When does the team arrive?</strong>
+              <span>We typically arrive 1–2 hours before the event start for setup, calibration, and testing.</span>
+            </div>
+            <div class="border border-line rounded-xl p-3 bg-grey">
+              <strong class="text-title block">How are payments handled?</strong>
+              <span>GCash, bank transfer, or cash on coordination. All payments are manually verified by our team.</span>
+            </div>
+          </div>
         </div>
 
         <div class="bg-white border border-line rounded-2xl p-6 space-y-3 shadow-sm">
@@ -272,40 +289,76 @@
     // Supabase init
     // ----------------------------------------------------------------
     const SUPABASE_URL = "https://elthktbvojsmvhtxxqnz.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsdGhrdGJ2b2pzbXZodHh4cW56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDYwNTgwMzgsImV4cCI6MjA2MTYzNDAzOH0.rJUvofPwBJ7EwRWnD49j-cDwrSVhiO4Wr3Z3zAJOqjM";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsdGhrdGJ2b2pzbXZodHh4cW56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzYzMjUsImV4cCI6MjA5MDI1MjMyNX0.5QrzeI0WKJclFLHEBgZH7WxsHPdKBJmdEtpqlyXg9PQ";
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     // ----------------------------------------------------------------
-    // Package definitions
+    // Package definitions — loaded from Supabase with fallback
     // ----------------------------------------------------------------
-    const PACKAGES = [
+    const FALLBACK_PACKAGES = [
       { id: "enclosed",  label: "Enclosed Photobooth",  price: 23000, icon: "fa-camera" },
-      { id: "highangle", label: "High-Angle Photobooth", price: 20000, icon: "fa-angles-up" },
+      { id: "high-angle", label: "High-Angle Photobooth", price: 20000, icon: "fa-angles-up" },
       { id: "polaroid",  label: "Polaroid Phone App",    price: 5000,  icon: "fa-mobile-screen" },
-      { id: "phonebooth",label: "Phone Booth",           price: 4500,  icon: "fa-phone-volume" },
+      { id: "phone-booth",label: "Phone Booth",           price: 4500,  icon: "fa-phone-volume" },
       { id: "cafe",      label: "Cafe Booth",            price: 20000, icon: "fa-mug-hot" },
     ];
+    let PACKAGES = [...FALLBACK_PACKAGES];
     const COMBO_DISCOUNT = 2500;
+
+    async function loadPackages() {
+      try {
+        const { data, error } = await supabase
+          .from("packages")
+          .select("*")
+          .eq("is_active", true)
+          .order("sort_order", { ascending: true });
+        if (error) throw error;
+        if (data && data.length) {
+          PACKAGES = data.map(row => ({
+            id: row.key,
+            label: row.name,
+            price: row.price,
+            icon: row.icon || "fa-camera"
+          }));
+        }
+      } catch (err) {
+        console.warn("Failed to load packages from Supabase, using fallback:", err);
+      }
+      renderPackageGrid();
+      renderSidebarRates();
+    }
 
     // ----------------------------------------------------------------
     // Render package checkboxes
     // ----------------------------------------------------------------
-    const pkgGrid = document.getElementById("pkgGrid");
-    PACKAGES.forEach(pkg => {
-      pkgGrid.insertAdjacentHTML("beforeend", `
-        <div class="pkg-card">
-          <input type="checkbox" id="pkg_${pkg.id}" value="${pkg.id}" onchange="updateQuote()" />
-          <label for="pkg_${pkg.id}" class="select-none">
-            <div class="flex items-start justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <i class="fa-solid ${pkg.icon} text-purple text-base w-5 text-center"></i>
-                <span class="text-sm font-extrabold text-title">${pkg.label}</span>
+    function renderPackageGrid() {
+      const pkgGrid = document.getElementById("pkgGrid");
+      pkgGrid.innerHTML = "";
+      PACKAGES.forEach(pkg => {
+        pkgGrid.insertAdjacentHTML("beforeend", `
+          <div class="pkg-card">
+            <input type="checkbox" id="pkg_${pkg.id}" value="${pkg.id}" onchange="updateQuote()" />
+            <label for="pkg_${pkg.id}" class="select-none">
+              <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <i class="fa-solid ${pkg.icon} text-purple text-base w-5 text-center"></i>
+                  <span class="text-sm font-extrabold text-title">${pkg.label}</span>
+                </div>
+                <span class="text-xs font-black text-purple shrink-0">₱${pkg.price.toLocaleString()}</span>
               </div>
-              <span class="text-xs font-black text-purple shrink-0">₱${pkg.price.toLocaleString()}</span>
-            </div>
-          </label>
-        </div>`);
-    });
+            </label>
+          </div>`);
+      });
+    }
+
+    // Update the sidebar rates dynamically
+    function renderSidebarRates() {
+      const ratesList = document.getElementById("sidebarRates");
+      if (!ratesList) return;
+      ratesList.innerHTML = PACKAGES.map(p =>
+        `<li class="flex justify-between"><span>${p.label}</span><strong class="text-title">₱${p.price.toLocaleString()}</strong></li>`
+      ).join("") + `<li class="border-t border-line pt-2 flex justify-between text-purple font-bold"><span>Combo Discount (2+)</span><span>-₱${COMBO_DISCOUNT.toLocaleString()}</span></li>`;
+    }
 
     function getSelectedPackages() {
       return PACKAGES.filter(p => document.getElementById(`pkg_${p.id}`)?.checked);
@@ -423,6 +476,8 @@
       calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; } renderCal();
     };
 
+    // Load packages from Supabase and render, then load calendar dates
+    loadPackages();
     loadBookedDates();
 
     // ----------------------------------------------------------------
