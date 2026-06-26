@@ -1163,7 +1163,8 @@ function toggleFaq(btn) {
 // ===================================================================
 
 let currentBoothScreen = 0;
-const totalBoothScreens = 5;
+const totalBoothScreens = 8;
+let boothReturnInterval = null;
 
 function showBoothScreen(index) {
   currentBoothScreen = Math.max(0, Math.min(totalBoothScreens - 1, index));
@@ -1177,6 +1178,31 @@ function showBoothScreen(index) {
       screen.classList.remove("flex");
     }
   });
+  // Auto-advance from "Preparing your gallery" (screen 5) after 2.5s
+  if (currentBoothScreen === 5) {
+    setTimeout(() => { if (currentBoothScreen === 5) boothNext(); }, 2500);
+  }
+  // Auto-advance from "Printing" (screen 6) after 3s
+  if (currentBoothScreen === 6) {
+    setTimeout(() => { if (currentBoothScreen === 6) boothNext(); }, 3000);
+  }
+  // Countdown on "Your print is ready" (screen 7)
+  if (currentBoothScreen === 7) {
+    if (boothReturnInterval) clearInterval(boothReturnInterval);
+    let sec = 11;
+    const timerEl = document.getElementById("boothReturnTimer");
+    boothReturnInterval = setInterval(() => {
+      sec--;
+      if (timerEl) timerEl.textContent = "returning in " + sec + "s";
+      if (sec <= 0) {
+        clearInterval(boothReturnInterval);
+        boothReturnInterval = null;
+        boothReset();
+      }
+    }, 1000);
+  } else {
+    if (boothReturnInterval) { clearInterval(boothReturnInterval); boothReturnInterval = null; }
+  }
 }
 
 function boothNext() {
@@ -1196,21 +1222,13 @@ function selectBoothLayout(btn, layout) {
   btn.classList.remove("border-line");
 }
 
-function startBoothCountdown() {
-  const el = document.getElementById("boothCountdown");
-  if (!el) return;
-  let count = 3;
-  el.textContent = count;
-  const interval = setInterval(() => {
-    count--;
-    if (count > 0) {
-      el.textContent = count;
-    } else {
-      clearInterval(interval);
-      el.innerHTML = '<i class="fa-solid fa-camera text-5xl"></i>';
-      setTimeout(() => boothNext(), 800);
-    }
-  }, 1000);
+function selectBoothTone(btn) {
+  document.querySelectorAll(".booth-tone-btn").forEach(b => {
+    b.classList.remove("bg-[#1a1a2e]", "text-white");
+    b.classList.add("border", "border-line", "text-title", "bg-white");
+  });
+  btn.classList.add("bg-[#1a1a2e]", "text-white");
+  btn.classList.remove("border", "border-line", "text-title", "bg-white");
 }
 
 // ===================================================================
