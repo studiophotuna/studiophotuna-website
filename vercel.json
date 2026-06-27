@@ -1,80 +1,30 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false,
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=()"
-        }
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
       ]
     },
     {
-      "source": "/bookings-admin",
-      "headers": [
-        {
-          "key": "X-Robots-Tag",
-          "value": "noindex, nofollow"
-        }
-      ]
-    }
-    {
       "source": "/api/(.*)",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "s-maxage=300, stale-while-revalidate=600"
-        }
+        { "key": "Cache-Control", "value": "s-maxage=300, stale-while-revalidate=600" }
       ]
     },
     {
       "source": "/app.min.js",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     }
   ],
   "rewrites": [
-    {
-      "source": "/account",
-      "destination": "/account.html"
-    },
-    {
-      "source": "/download",
-      "destination": "/download.html"
-    },
-    {
-      "source": "/book-event",
-      "destination": "/book-event.html"
-    },
-    {
-      "source": "/bookings-admin",
-      "destination": "/bookings-admin.html"
-    },
-    {
-      "source": "/booknow",
-      "destination": "/index.html"
-    }
+    { "source": "/booknow", "destination": "/index.html" }
   ]
 }
