@@ -1,15 +1,10 @@
-// ===================================================================
-// app.js — Studio Photuna main application script
-// ===================================================================
-
+/* (c) 2026 Studio Photuna. All rights reserved. */
+/* Unauthorized reverse engineering is prohibited under RA 8293 (Intellectual Property Code). */
 const _0x4f = ['\x68\x74\x74\x70\x73\x3a\x2f\x2f\x65\x6c\x74\x68\x6b\x74\x62\x76\x6f\x6a\x73\x6d\x76\x68\x74\x78\x78\x71\x6e\x7a\x2e\x73\x75\x70\x61\x62\x61\x73\x65\x2e\x63\x6f','\x65\x79\x4a\x68\x62\x47\x63\x69\x4f\x69\x4a\x49\x55\x7a\x49\x31\x4e\x69\x49\x73\x49\x6e\x52\x35\x63\x43\x49\x36\x49\x6b\x70\x58\x56\x43\x4a\x39\x2e\x65\x79\x4a\x70\x63\x33\x4d\x69\x4f\x69\x4a\x7a\x64\x58\x42\x68\x59\x6d\x46\x7a\x5a\x53\x49\x73\x49\x6e\x4a\x6c\x5a\x69\x49\x36\x49\x6d\x56\x73\x64\x47\x68\x72\x64\x47\x4a\x32\x62\x32\x70\x7a\x62\x58\x5a\x6f\x64\x48\x68\x34\x63\x57\x35\x36\x49\x69\x77\x69\x63\x6d\x39\x73\x5a\x53\x49\x36\x49\x6d\x46\x75\x62\x32\x34\x69\x4c\x43\x4a\x70\x59\x58\x51\x69\x4f\x6a\x45\x33\x4e\x7a\x51\x32\x4e\x7a\x59\x7a\x4d\x6a\x55\x73\x49\x6d\x56\x34\x63\x43\x49\x36\x4d\x6a\x41\x35\x4d\x44\x49\x31\x4d\x6a\x4d\x79\x4e\x58\x30\x2e\x35\x51\x72\x7a\x65\x49\x30\x57\x4b\x4a\x63\x6c\x46\x4c\x48\x45\x42\x67\x5a\x48\x37\x57\x78\x73\x48\x50\x64\x4b\x42\x4a\x6d\x64\x45\x74\x70\x71\x6c\x79\x58\x67\x39\x50\x51'];
 const ACCOUNT_SNAPSHOT_KEY = "studio-photuna-account-snapshot";
-
 const supabaseClient = window.supabase?.createClient
   ? window.supabase.createClient(_0x4f[0], _0x4f[1])
   : null;
-
-// DOM Target Selectors
 const userDropdown = document.getElementById("userDropdown");
 const dropdownButton = document.getElementById("dropdownButton");
 const authModal = document.getElementById("authModal");
@@ -29,8 +24,6 @@ const proPlanNote = document.getElementById("proPlanNote");
 const proPlanDetails = document.getElementById("proPlanDetails");
 const proPlanCta = document.getElementById("proPlanCta");
 const billingToggleButtons = document.querySelectorAll("[data-billing]");
-
-// Wizard Elements
 const eventBookingForm = document.getElementById("eventBookingForm");
 const bookingDate = document.getElementById("bookingDate");
 const bookingDateDisplay = document.getElementById("bookingDateDisplay");
@@ -57,8 +50,6 @@ const bookingCalendarMonth = document.getElementById("bookingCalendarMonth");
 const calendarPrev = document.getElementById("calendarPrev");
 const calendarNext = document.getElementById("calendarNext");
 const availabilityStatus = document.getElementById("availabilityStatus");
-
-// Admin Panel Selectors
 const bookingList = document.getElementById("bookingList");
 const reviewList = document.getElementById("reviewList");
 const refreshBookings = document.getElementById("refreshBookings");
@@ -68,8 +59,6 @@ const adminPanelTitle = document.getElementById("adminPanelTitle");
 const filterButtons = document.querySelectorAll("[data-filter]");
 const adminTabButtons = document.querySelectorAll("[data-admin-tab]");
 const googleReviewsList = document.getElementById("googleReviewsList");
-
-// Application State Variables
 let currentView = 'home';
 let authMode = "login";
 let currentProfile = null;
@@ -84,12 +73,8 @@ let bookings = [];
 let reviews = [];
 let activeFilter = "all";
 let activeAdminTab = "bookings";
-
-// Package catalog — loaded from Supabase on init, with hardcoded fallback
 let packageCatalog = {};
 const COMBO_DISCOUNT = 2500;
-
-// Fallback packages used if Supabase fetch fails
 const FALLBACK_PACKAGES = {
   "enclosed": { name: "Enclosed Photobooth", price: 23000, extraRate: 2000, coverage: "3 hours", icon: "fa-camera", included: ["Private enclosed photobooth setup","Custom strip template overlay designs","Soft lighting configuration","QR live download access","On-site technical representative","Complimentary travel within Metro Manila"] },
   "high-angle": { name: "High-Angle Photobooth", price: 20000, extraRate: 1500, coverage: "3 hours", icon: "fa-angles-up", included: ["High-angle perspective photobooth set","Custom strip template overlay designs","Soft overhead flash configuration","QR live download access","On-site technical representative","Complimentary travel within Metro Manila"] },
@@ -97,7 +82,6 @@ const FALLBACK_PACKAGES = {
   "phone-booth": { name: "Phone Booth", price: 4500, extraRate: 500, coverage: "3 hours", icon: "fa-phone-volume", included: ["Retro physical phone set","Digital audio guest recording log","Basic support frame","QR cloud sync storage"] },
   "cafe": { name: "Cafe Booth", price: 20000, extraRate: 1500, coverage: "3 hours", icon: "fa-mug-hot", included: ["Cafe-themed photobooth setup","Custom strip template overlay designs","QR live download access","On-site technical representative","Complimentary travel within Metro Manila"] }
 };
-
 async function loadPackagesFromSupabase() {
   if (!supabaseClient) { packageCatalog = { ...FALLBACK_PACKAGES }; return; }
   try {
@@ -124,19 +108,12 @@ async function loadPackagesFromSupabase() {
     packageCatalog = { ...FALLBACK_PACKAGES };
   }
 }
-
 const billingPlans = {
   monthly: { badge: "Flexible Plan", price: "₱1,800<small class='text-sm text-white/70'>/mo</small>", note: "Billed monthly. Ideal for pop-up event testing, seasonal hubs, and flexible slots.", details: ["Billed monthly", "Standard support ticket guidelines", "Unlimited image capture parameters", "Dynamic custom template coordinates"], cta: "Choose Monthly Plan" },
   yearly: { badge: "Best Value", price: "₱950<small class='text-sm text-white/70'>/mo</small>", note: "₱11,400 billed annually. Enjoy a 47% savings compared with monthly cycles.", details: ["Best value choice", "Continuous software feature releases", "Priority developer support queue", "Advanced custom branding frames"], cta: "Choose Yearly Plan" }
 };
-
 const PHP_AMOUNTS = { monthly: 1800, yearly: 11400 };
 const ACTIVE_PAYMENT_MODE = "manual_gcash";
-
-// ===================================================================
-// Navigation, Auth UI, Billing, Account
-// ===================================================================
-
 function navigateTo(viewId) {
   currentView = viewId;
   document.querySelectorAll('main > section.view-container').forEach(el => el.classList.add('hidden'));
@@ -150,19 +127,16 @@ function navigateTo(viewId) {
   else if (viewId === 'account') { loadAccountState(window.currentSupabaseUser); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 function scrollAndHighlight(elementId) {
   setTimeout(() => {
     const el = document.getElementById(elementId);
     if (el) { el.scrollIntoView({ behavior: 'smooth' }); el.classList.add('ring-4', 'ring-purple/20'); setTimeout(() => el.classList.remove('ring-4', 'ring-purple/20'), 1500); }
   }, 300);
 }
-
 function closeDropdown() {
   if (userDropdown) userDropdown.classList.remove("open");
   if (dropdownButton) dropdownButton.setAttribute("aria-expanded", "false");
 }
-
 function spawnToast(title, description, iconClass = 'fa-circle-check', type = 'info') {
   const container = document.getElementById('toast-container');
   const toast = document.createElement('div');
@@ -175,12 +149,10 @@ function spawnToast(title, description, iconClass = 'fa-circle-check', type = 'i
   container.appendChild(toast);
   setTimeout(() => { toast.classList.add('opacity-0', 'transition-opacity', 'duration-500'); setTimeout(() => toast.remove(), 500); }, 4000);
 }
-
 function openAuthModal(mode = "login") {
   setAuthMode(mode); authModal.classList.remove("hidden"); authModal.classList.add("grid"); authModal.setAttribute("aria-hidden", "false"); authMessage.textContent = ""; document.getElementById("authEmail").focus();
 }
 function closeAuthModal() { authModal.classList.add("hidden"); authModal.classList.remove("grid"); authModal.setAttribute("aria-hidden", "true"); }
-
 function setAuthMode(mode) {
   authMode = mode;
   document.querySelectorAll(".auth-tab").forEach((tab) => {
@@ -196,9 +168,7 @@ function setAuthMode(mode) {
   const consentCheck = document.getElementById("consentCheck");
   if (consentCheck && mode !== "signup") { consentCheck.checked = false; }
 }
-
 function setAuthMessage(message, isError = false) { authMessage.textContent = message; authMessage.style.color = isError ? "#dc2626" : "var(--body)"; }
-
 async function loadAccountState(user) {
   if (!user) { document.getElementById('signedOutPanel').classList.remove('hidden'); document.getElementById('accountPanel').classList.add('hidden'); updateAuthUi(null); return; }
   document.getElementById('signedOutPanel').classList.add('hidden'); document.getElementById('accountPanel').classList.remove('hidden');
@@ -223,7 +193,6 @@ async function loadAccountState(user) {
     renderRenewalBanner(license); setBillingPlan(selectedBilling); updateAuthUi(user);
   } catch (err) { console.warn("Unable to map account details", err); }
 }
-
 function renderRenewalBanner(license) {
   const banner = document.getElementById("renewalBanner");
   const title = document.getElementById("renewalBannerTitle");
@@ -260,9 +229,7 @@ function renderRenewalBanner(license) {
     subtitle.textContent = formattedDate ? `Access lapsed on ${formattedDate}. Renew to restore Pro features.` : "Renew to unlock Pro features."; btn.classList.remove("hidden");
   }
 }
-
 function formatStatus(value) { if (!value) return "None"; return String(value).replace(/[_-]/g, " ").replace(/\b\w/g, l => l.toUpperCase()); }
-
 function updateAuthUi(user) {
   if (user) {
     userPill.textContent = user.email; userDropdown.classList.remove("hidden"); userDropdown.classList.add("inline-block");
@@ -272,9 +239,7 @@ function updateAuthUi(user) {
     userDropdown.classList.add("hidden"); userDropdown.classList.remove("inline-block"); document.getElementById("loginOpen").style.display = "inline-flex";
   }
 }
-
 function isAdminProfile(profile) { return ["admin", "superadmin"].includes(String(profile?.role || "").toLowerCase()); }
-
 function setBillingPlan(plan) {
   selectedBilling = billingPlans[plan] ? plan : "yearly";
   const selected = billingPlans[selectedBilling];
@@ -295,15 +260,9 @@ function setBillingPlan(plan) {
     } else { proPlanCta.textContent = selected.cta; proPlanCta.disabled = false; proPlanCta.classList.remove("opacity-60", "cursor-not-allowed"); }
   }
 }
-
 billingToggleButtons.forEach((button) => {
   button.addEventListener("click", () => { setBillingPlan(button.dataset.billing); spawnToast("Billing Plan Updated", `Switched pricing plan views to ${button.dataset.billing}.`, "fa-solid fa-sync", "success"); });
 });
-
-// ===================================================================
-// Subscription, GCash payment, checkout
-// ===================================================================
-
 async function handleSubscribePlan(triggerId) {
   if (!window.currentSupabaseUser) { spawnToast("Authentication Needed", "Please log in before choosing a license plan.", "fa-solid fa-user-lock", "warning"); openAuthModal("signup"); return; }
   if (!supabaseClient) { spawnToast("Unavailable", "Supabase client not loaded.", "fa-solid fa-triangle-exclamation", "warning"); return; }
@@ -327,7 +286,6 @@ async function handleSubscribePlan(triggerId) {
     ctas.forEach((el, i) => { el.disabled = false; el.textContent = originalLabels[i]; });
   }
 }
-
 function getSubscriptionBlocker(license, requestedBilling) {
   if (!license) return null;
   if (license.state === "pending_verification") { return { type: "block", title: "Payment Already Under Review", message: "Your last GCash payment proof is still being verified. Please wait for confirmation before submitting another payment, or contact support if it's been more than a day." }; }
@@ -342,14 +300,12 @@ function getSubscriptionBlocker(license, requestedBilling) {
   }
   return null;
 }
-
 let gcashModalBilling = "monthly";
 function openGcashModal(defaultBilling) {
   document.getElementById("gcashMessage").textContent = ""; document.getElementById("gcashProofForm").reset();
   setGcashModalBilling(defaultBilling || selectedBilling);
   gcashModal.classList.remove("hidden"); gcashModal.classList.add("grid"); gcashModal.setAttribute("aria-hidden", "false");
 }
-
 function setGcashModalBilling(billing) {
   gcashModalBilling = PHP_AMOUNTS[billing] !== undefined ? billing : "monthly";
   document.querySelectorAll(".gcash-billing-toggle").forEach((btn) => {
@@ -360,9 +316,7 @@ function setGcashModalBilling(billing) {
   const perMonth = gcashModalBilling === "yearly" ? ` · ₱${Math.round(amount/12).toLocaleString("en-PH")}/mo` : "";
   document.getElementById("gcashAmountDue").textContent = `₱${amount.toLocaleString("en-PH", {minimumFractionDigits:2})}${perMonth}`;
 }
-
 function closeGcashModal() { gcashModal.classList.add("hidden"); gcashModal.classList.remove("grid"); gcashModal.setAttribute("aria-hidden", "true"); }
-
 async function handleGcashProofSubmit(evt) {
   evt.preventDefault();
   if (!window.currentSupabaseUser || !supabaseClient) { spawnToast("Authentication Needed", "Please log in first.", "fa-solid fa-user-lock", "warning"); return; }
@@ -400,7 +354,6 @@ async function handleGcashProofSubmit(evt) {
     message.className = "text-center text-xs font-bold text-red-600"; message.textContent = err.message || "Could not submit your proof. Please try again.";
   } finally { submitBtn.disabled = false; submitBtn.textContent = "Submit Payment Proof"; }
 }
-
 async function verifyPendingPayment() {
   if (!window.currentSupabaseUser || !supabaseClient) return;
   spawnToast("Confirming Payment", "Checking your payment status...", "fa-solid fa-arrows-spin", "info");
@@ -412,11 +365,6 @@ async function verifyPendingPayment() {
   } catch (err) { console.error("Verify payment error:", err); spawnToast("Couldn't Confirm Payment", "Please refresh, or contact support if you were charged.", "fa-solid fa-circle-exclamation", "warning"); }
   finally { await loadAccountState(window.currentSupabaseUser); }
 }
-
-// ===================================================================
-// Booking Wizard
-// ===================================================================
-
 function buildWizardProgress() {
   if (!bookingWizardProgress) return;
   bookingWizardProgress.innerHTML = "";
@@ -426,7 +374,6 @@ function buildWizardProgress() {
     bookingWizardProgress.appendChild(dot);
   }
 }
-
 function showBookingStep(step) {
   currentBookingStep = Math.min(totalBookingSteps - 1, Math.max(0, step));
   document.querySelectorAll(".flow-step[data-step]").forEach((el) => { el.classList.toggle("active", Number(el.dataset.step) === currentBookingStep); el.classList.toggle("hidden", Number(el.dataset.step) !== currentBookingStep); });
@@ -439,7 +386,6 @@ function showBookingStep(step) {
   document.getElementById("quoteSummary")?.classList.toggle("hidden", !showQuote);
   setBookingMessage("");
 }
-
 function validateCurrentStep() {
   if (currentBookingStep === 2 && !selectedBookingDate) { setBookingMessage("Please choose your event date from the availability calendar."); return false; }
   if (currentBookingStep === 3 && !selectedPackages().length) { setBookingMessage("Please select at least one package before proceeding."); return false; }
@@ -454,9 +400,7 @@ function validateCurrentStep() {
   }
   return true;
 }
-
 function selectedPackage() { const sel = selectedPackages(); return sel.length ? sel[0] : null; }
-
 function selectedPackages() {
   return Object.values(packageCatalog).filter(pkg => {
     const key = Object.keys(packageCatalog).find(k => packageCatalog[k] === pkg);
@@ -464,11 +408,8 @@ function selectedPackages() {
     return el && el.checked;
   });
 }
-
 function getCheckedPackageKeys() { return Object.keys(packageCatalog).filter(k => document.getElementById(`wpkg_${k}`)?.checked); }
-
 function selectedExtraHours() { return Math.min(3, Math.max(0, Number(bookingExtraHours?.value || 0))); }
-
 function calculateQuote() {
   const pkgs = selectedPackages(); const extraHours = selectedExtraHours();
   const subtotal = pkgs.reduce((s, p) => s + p.price, 0);
@@ -477,7 +418,6 @@ function calculateQuote() {
   const total = subtotal + extraCost - discount;
   return { pkgs, extraHours, subtotal, extraCost, discount, total };
 }
-
 function renderQuote() {
   const { pkgs, extraHours, subtotal, extraCost, discount, total } = calculateQuote();
   const guests = parseInt(bookingGuests?.value || "0"); const isCustom = guests > 300;
@@ -498,9 +438,7 @@ function renderQuote() {
   }
   if (quoteTotal) { quoteTotal.textContent = isCustom ? "Custom Quote" : `PHP ${total.toLocaleString()}`; }
 }
-
 function toDateKey(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
-
 function renderBookingCalendar() {
   if (!bookingCalendar || !bookingCalendarMonth) return;
   const monthStart = new Date(visibleBookingMonth.getFullYear(), visibleBookingMonth.getMonth(), 1);
@@ -522,11 +460,9 @@ function renderBookingCalendar() {
     bookingCalendar.appendChild(cell);
   }
 }
-
 async function loadBookingAvailability() {
   if (!supabaseClient) { if (availabilityStatus) availabilityStatus.textContent = "Supabase client not loaded."; return; }
   try {
-    // Query both tables for booked dates
     const [calRes, bookRes] = await Promise.all([
       supabaseClient.from("booking_calendar_days").select("event_date"),
       supabaseClient.from("event_bookings").select("event_date").not("status", "eq", "cancelled").not("status", "eq", "declined")
@@ -537,9 +473,7 @@ async function loadBookingAvailability() {
     renderBookingCalendar();
   } catch (err) { console.warn("Unable to fetch booking availability limits", err); }
 }
-
 function setBookingMessage(message, isError = true) { if (!bookingMessage) return; bookingMessage.textContent = message || ""; bookingMessage.style.color = isError ? "#dc2626" : "#22c55e"; }
-
 async function handleBookingSubmit(event) {
   event.preventDefault();
   if (!supabaseClient) { setBookingMessage("Database gateway offline. Try again shortly."); return; }
@@ -565,11 +499,6 @@ async function handleBookingSubmit(event) {
   } catch (err) { setBookingMessage(err.message || "Insert transaction failed."); console.warn(err); }
   finally { submitBtn.disabled = false; }
 }
-
-// ===================================================================
-// Support Tickets
-// ===================================================================
-
 async function handleSupportSubmit(event) {
   event.preventDefault();
   const supportBtn = document.getElementById("supportSubmitBtn");
@@ -582,16 +511,10 @@ async function handleSupportSubmit(event) {
     spawnToast("Ticket Created", "A confirmation thread from notification@studiophotuna.com has been sent.", "fa-solid fa-envelope-circle-check", "success");
   } catch (err) { spawnToast("Failed", err.message || "Submission error. Try again.", "fa-solid fa-circle-exclamation", "warning"); supportBtn.disabled = false; supportBtn.innerHTML = 'Submit Support Request'; }
 }
-
 function resetSupportForm() {
   const container = document.getElementById("supportTicketForm");
   container.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div class="field space-y-2"><label class="font-extrabold text-title text-xs uppercase" for="supportName">Your Name</label><input id="supportName" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required /></div><div class="field space-y-2"><label class="font-extrabold text-title text-xs uppercase" for="supportEmail">Your Email Address</label><input id="supportEmail" type="email" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required /></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div class="field space-y-2"><label class="font-extrabold text-title text-xs uppercase" for="supportCategory">Inquiry Type</label><select id="supportCategory" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required><option value="hardware">Hardware Setup & Synchronization</option><option value="licensing">Licensing & Payments</option><option value="events">Event Booking Requests</option><option value="other">General Technical Inquiries</option></select></div><div class="field space-y-2"><label class="font-extrabold text-title text-xs uppercase" for="supportPriority">Priority Level</label><select id="supportPriority" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required><option value="normal">Normal Support Response</option><option value="high">Urgent (Upcoming Live Event)</option></select></div></div><div class="field space-y-2"><label class="font-extrabold text-title text-xs uppercase" for="supportMessage">Describe your Technical Issue</label><textarea id="supportMessage" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none h-32 resize-none" placeholder="Provide as much details as possible, including camera model and operating systems..." required></textarea></div><button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3.5 rounded-xl text-sm uppercase transition-colors shadow-sm" type="submit" id="supportSubmitBtn">Submit Support Request</button><div class="text-xs text-center text-muted font-medium pt-2">An automatic notification thread from <span class="text-purple">notification@studiophotuna.com</span> will be dispatched to verify your request.</div>`;
 }
-
-// ===================================================================
-// Admin: Bookings
-// ===================================================================
-
 async function loadBookings() {
   if (!supabaseClient) { setMessage(adminMessage, "Supabase client not available.", true); return; }
   if (!window.currentSupabaseUser) {
@@ -611,9 +534,7 @@ async function loadBookings() {
     renderBookings();
   } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
 }
-
 function setMessage(element, text, isError = false) { if (!element) return; element.textContent = text || ""; element.style.color = isError ? "#dc2626" : "#5f6678"; }
-
 function updateStats() {
   const pending = bookings.filter(b => b.status === "pending").length;
   const approved = bookings.filter(b => b.status === "approved").length;
@@ -629,10 +550,8 @@ function updateStats() {
   const badge = document.getElementById("proofsTabBadge"); if (badge) { badge.textContent = pendingProofs; badge.classList.toggle("hidden", !pendingProofs); }
   const cqBadge = document.getElementById("customQuoteTabBadge"); if (cqBadge) { cqBadge.textContent = customQuotes; cqBadge.classList.toggle("hidden", !customQuotes); }
 }
-
 const STATUS_COLORS = { pending: "bg-yellow-100 text-yellow-800", approved: "bg-green-100 text-green-800", declined: "bg-red-100 text-red-800", cancelled: "bg-gray-200 text-gray-700" };
 const PAYMENT_COLORS = { unpaid: "bg-red-100 text-red-700", partial_paid: "bg-yellow-100 text-yellow-800", paid: "bg-green-100 text-green-800" };
-
 function renderBookings() {
   updateStats(); bookingList.innerHTML = "";
   const search = (document.getElementById("bookingSearch")?.value || "").toLowerCase();
@@ -654,7 +573,6 @@ function renderBookings() {
     bookingList.appendChild(card);
   });
 }
-
 async function saveAdminBookingChange(id, btn) {
   if (!supabaseClient) return;
   const parent = btn.closest(".bg-grey"); const status = parent.querySelector(".status-select").value;
@@ -663,12 +581,7 @@ async function saveAdminBookingChange(id, btn) {
   try { const { error } = await supabaseClient.from("event_bookings").update({ status, reservation_status, admin_note }).eq("id", id); if (error) throw error; spawnToast("Saved", "Booking updated successfully.", "fa-solid fa-circle-check", "success"); loadBookings(); }
   catch (err) { spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); btn.disabled = false; btn.textContent = "Save Changes"; }
 }
-
-// ===================================================================
-// Admin: Support Tickets
-// ===================================================================
 let tickets = [];
-
 async function loadTickets() {
   if (!supabaseClient || !window.currentSupabaseUser) return;
   setMessage(adminMessage, "Loading support tickets...");
@@ -680,7 +593,6 @@ async function loadTickets() {
     setMessage(adminMessage, tickets.length ? `${tickets.length} ticket(s) loaded.` : "No support tickets yet."); renderTickets();
   } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
 }
-
 function renderTickets() {
   const ticketList = document.getElementById("ticketList"); if (!ticketList) return; ticketList.innerHTML = "";
   if (!tickets.length) { ticketList.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-10 text-center text-muted space-y-2"><i class="fa-solid fa-ticket text-4xl text-line"></i><p class="font-bold text-sm">No support tickets yet.</p></div>`; return; }
@@ -693,7 +605,6 @@ function renderTickets() {
     ticketList.appendChild(card);
   });
 }
-
 async function replyToTicket(ticketId, btn) {
   const message = document.getElementById(`reply-${ticketId}`)?.value?.trim();
   const newStatus = document.getElementById(`reply-status-${ticketId}`)?.value;
@@ -705,13 +616,8 @@ async function replyToTicket(ticketId, btn) {
     spawnToast("Reply Sent", "The reply has been saved.", "fa-solid fa-circle-check", "success"); loadTickets();
   } catch (err) { spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send Reply`; }
 }
-
-// ===================================================================
-// Admin: Payment Proofs
-// ===================================================================
 let proofs = [];
 let activeProofFilter = "all";
-
 async function loadProofs() {
   if (!supabaseClient || !window.currentSupabaseUser) return;
   setMessage(adminMessage, "Loading payment proofs...");
@@ -722,7 +628,6 @@ async function loadProofs() {
     updateStats(); renderProofs();
   } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
 }
-
 function renderProofs() {
   proofList.innerHTML = "";
   const filtered = proofs.filter(p => activeProofFilter === "all" || p.status === activeProofFilter);
@@ -736,7 +641,6 @@ function renderProofs() {
     proofList.appendChild(card);
   });
 }
-
 async function viewProofScreenshot(proofId, path) {
   const container = document.getElementById(`screenshot-${proofId}`); if (!container) return;
   if (!container.classList.contains("hidden")) { container.classList.add("hidden"); return; }
@@ -745,7 +649,6 @@ async function viewProofScreenshot(proofId, path) {
     if (error) throw error; container.querySelector("img").src = data.signedUrl; container.classList.remove("hidden");
   } catch (err) { spawnToast("Screenshot Error", err.message, "fa-solid fa-circle-exclamation", "warning"); }
 }
-
 async function reviewProof(proofId, userId, billing, action) {
   if (!supabaseClient) return;
   const note = document.getElementById(`proof-note-${proofId}`)?.value?.trim() || null;
@@ -762,13 +665,7 @@ async function reviewProof(proofId, userId, billing, action) {
     loadProofs();
   } catch (err) { spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); }
 }
-
-// ===================================================================
-// Public Review Submission
-// ===================================================================
-
 let selectedReviewRating = 5;
-
 function setReviewRating(rating) {
   selectedReviewRating = rating;
   const ratingInput = document.getElementById("reviewRating");
@@ -779,12 +676,10 @@ function setReviewRating(rating) {
     btn.classList.toggle("text-line", star > rating);
   });
 }
-
 async function handleReviewSubmit(event) {
   event.preventDefault();
   const submitBtn = document.getElementById("reviewSubmitBtn");
   const message = document.getElementById("reviewMessage");
-
   if (!window.currentSupabaseUser) {
     message.textContent = "Please sign in to submit a review.";
     message.style.color = "#dc2626";
@@ -792,22 +687,18 @@ async function handleReviewSubmit(event) {
     openAuthModal("login");
     return;
   }
-
   const name = document.getElementById("reviewName").value.trim();
   const reviewText = document.getElementById("reviewText").value.trim();
   const eventType = document.getElementById("reviewEventType").value;
   const rating = selectedReviewRating;
-
   if (!name || !reviewText) {
     message.textContent = "Please fill in your name and review.";
     message.style.color = "#dc2626";
     return;
   }
-
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Submitting...';
   message.textContent = "";
-
   try {
     if (!supabaseClient) throw new Error("Service temporarily unavailable. Please try again later.");
     const { error } = await supabaseClient.from("public_reviews").insert({
@@ -821,7 +712,6 @@ async function handleReviewSubmit(event) {
       is_featured: false
     });
     if (error) throw error;
-
     document.getElementById("publicReviewForm").reset();
     setReviewRating(5);
     message.textContent = "Thank you! Your review has been submitted and will appear after moderation.";
@@ -835,17 +725,11 @@ async function handleReviewSubmit(event) {
     submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-2"></i>Submit Review';
   }
 }
-
-// ===================================================================
-// Admin: Reviews
-// ===================================================================
-
 async function loadReviewsAdmin() {
   if (!supabaseClient) return;
   if (!window.currentSupabaseUser) { try { const { data } = await supabaseClient.auth.getSession(); window.currentSupabaseUser = data?.session?.user || null; } catch (_) {} if (!window.currentSupabaseUser) return; }
   try { const { data, error } = await supabaseClient.from("public_reviews").select("*").order("created_at", { ascending: false }); if (error) throw error; reviews = data || []; renderReviewsAdmin(); } catch (err) { console.warn(err); }
 }
-
 function renderReviewsAdmin() {
   reviewList.innerHTML = "";
   if (!reviews.length) { reviewList.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-8 text-center text-muted"><p class="font-bold text-sm">No reviews submitted for moderation yet.</p></div>`; return; }
@@ -855,12 +739,10 @@ function renderReviewsAdmin() {
     reviewList.appendChild(card);
   });
 }
-
 async function updateReviewStatus(id, status) {
   if (!supabaseClient) return;
   try { const { error } = await supabaseClient.from("public_reviews").update({ status }).eq("id", id); if (error) throw error; spawnToast("Review moderated", `Status marked as: ${status}`, "fa-solid fa-check", "success"); loadReviewsAdmin(); loadReviews(); } catch (err) { console.warn(err); }
 }
-
 function renderReviews(payload) {
   const list = Array.isArray(payload.reviews) ? payload.reviews.filter(r => r.review_text).slice(0, 3) : [];
   googleReviewsList.innerHTML = "";
@@ -882,23 +764,16 @@ function renderReviews(payload) {
     googleReviewsList.appendChild(card);
   });
 }
-
 async function loadReviews() {
   if (!supabaseClient) { renderReviews({ reviews: [] }); return; }
   try { const { data, error } = await supabaseClient.from("public_reviews").select("*").eq("status", "approved").order("created_at", { ascending: false }); if (error) throw error; renderReviews({ reviews: data || [] }); }
   catch (err) { console.warn("Unable to fetch reviews list", err); renderReviews({ reviews: [] }); }
 }
-
-// ===================================================================
-// Admin: Packages — with modal + delete + Supabase CRUD
-// ===================================================================
 let adminPackages = [];
-
 async function loadAdminPackages() {
   await loadPackagesFromSupabase();
   adminPackages = Object.entries(packageCatalog).map(([key, p]) => ({ key, ...p }));
 }
-
 function renderPackagesAdmin() {
   const list = document.getElementById("packagesList"); if (!list) return;
   list.innerHTML = "";
@@ -917,7 +792,6 @@ function renderPackagesAdmin() {
       <div class="p-6 space-y-4" id="customQuoteBookingList"></div>
     </div>` : `
     <div class="border border-dashed border-line rounded-2xl p-8 text-center text-muted"><i class="fa-solid fa-circle-check text-3xl text-green mb-3 block"></i><p class="font-bold text-sm">No custom quote requests pending.</p></div>`}`);
-
   const catalogGrid = document.getElementById("pkgCatalogGrid");
   if (catalogGrid) {
     adminPackages.forEach((pkg, idx) => {
@@ -939,7 +813,6 @@ function renderPackagesAdmin() {
         </div>`);
     });
   }
-
   const cqList = document.getElementById("customQuoteBookingList");
   if (cqList) {
     customBookings.forEach(b => {
@@ -951,10 +824,6 @@ function renderPackagesAdmin() {
     });
   }
 }
-
-// -----------------------------------------------------------------------
-// Package Modal (replaces browser prompt())
-// -----------------------------------------------------------------------
 function openPackageModal(mode, idx) {
   const existing = document.getElementById("packageModal"); if (existing) existing.remove();
   const pkg = mode === "edit" ? adminPackages[idx] : null;
@@ -1004,10 +873,8 @@ function openPackageModal(mode, idx) {
       </div>
     </div>`;
   document.body.appendChild(modal);
-  // Close on backdrop click
   modal.addEventListener("click", (e) => { if (e.target === modal) modal.remove(); });
 }
-
 async function savePackageModal(mode, idx) {
   const name = document.getElementById("pmName")?.value?.trim();
   const price = parseInt(document.getElementById("pmPrice")?.value);
@@ -1016,13 +883,9 @@ async function savePackageModal(mode, idx) {
   const icon = document.getElementById("pmIcon")?.value?.trim() || "fa-camera";
   const included = (document.getElementById("pmIncluded")?.value || "").split("\n").map(s => s.trim()).filter(Boolean);
   const msgEl = document.getElementById("packageModalMsg");
-
   if (!name) { msgEl.textContent = "Package name is required."; msgEl.classList.remove("hidden"); return; }
   if (isNaN(price) || price < 0) { msgEl.textContent = "Enter a valid base price."; msgEl.classList.remove("hidden"); return; }
-
   const key = mode === "edit" ? adminPackages[idx].key : name.toLowerCase().replace(/[^a-z0-9]/g, "-");
-
-  // Save to Supabase
   if (supabaseClient) {
     try {
       if (mode === "edit") {
@@ -1036,29 +899,23 @@ async function savePackageModal(mode, idx) {
       msgEl.textContent = err.message || "Failed to save to database."; msgEl.classList.remove("hidden"); return;
     }
   }
-
-  // Update local state
   packageCatalog[key] = { name, price, extraRate, coverage, icon, included };
   adminPackages = Object.entries(packageCatalog).map(([k, p]) => ({ key: k, ...p }));
-
   document.getElementById("packageModal").remove();
   spawnToast(mode === "edit" ? "Package Updated" : "Package Added", `${name} — ₱${price.toLocaleString()}`, "fa-solid fa-circle-check", "success");
   renderPackagesAdmin();
   buildWizardPkgGrid();
   renderQuote();
 }
-
 async function deletePackage(idx) {
   const pkg = adminPackages[idx]; if (!pkg) return;
   if (!confirm(`Delete "${pkg.name}"? This cannot be undone.`)) return;
-
   if (supabaseClient) {
     try {
       const { error } = await supabaseClient.from("packages").delete().eq("key", pkg.key);
       if (error) throw error;
     } catch (err) { spawnToast("Delete Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); return; }
   }
-
   delete packageCatalog[pkg.key];
   adminPackages = Object.entries(packageCatalog).map(([k, p]) => ({ key: k, ...p }));
   spawnToast("Package Deleted", `${pkg.name} removed from catalog.`, "fa-solid fa-trash", "success");
@@ -1066,8 +923,6 @@ async function deletePackage(idx) {
   buildWizardPkgGrid();
   renderQuote();
 }
-
-// Build wizard package checkboxes (called on load and after package changes)
 function buildWizardPkgGrid() {
   const grid = document.getElementById("wizardPkgGrid"); if (!grid) return;
   grid.innerHTML = "";
@@ -1082,10 +937,6 @@ function buildWizardPkgGrid() {
       </label>`);
   });
 }
-
-// ===================================================================
-// Custom Quote Modal
-// ===================================================================
 function openQuoteModal(bookingId, email, clientName, packageNames, guestCount) {
   const existing = document.getElementById("quoteModal"); if (existing) existing.remove();
   const modal = document.createElement("div"); modal.id = "quoteModal";
@@ -1114,7 +965,6 @@ function openQuoteModal(bookingId, email, clientName, packageNames, guestCount) 
     </div>`;
   document.body.appendChild(modal);
 }
-
 async function saveCustomQuote(bookingId, btn) {
   const email = document.getElementById("qEmail")?.value?.trim();
   const amount = parseFloat(document.getElementById("qAmount")?.value) || 0;
@@ -1131,11 +981,6 @@ async function saveCustomQuote(bookingId, btn) {
     spawnToast("Quote Saved", `Custom quote of ₱${amount.toLocaleString()} saved. Email ${email} with the details.`, "fa-solid fa-circle-check", "success"); loadBookings();
   } catch (err) { msgEl.textContent = err.message || "Failed to save."; msgEl.classList.remove("hidden"); btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-check mr-1"></i> Save Quote`; }
 }
-
-// ===================================================================
-// Collapsible Sections: Review Form & FAQ Accordion
-// ===================================================================
-
 function toggleReviewForm() {
   const body = document.getElementById("reviewFormBody");
   const chevron = document.getElementById("reviewFormChevron");
@@ -1143,13 +988,11 @@ function toggleReviewForm() {
   body.classList.toggle("hidden");
   if (chevron) chevron.style.transform = body.classList.contains("hidden") ? "" : "rotate(180deg)";
 }
-
 function toggleFaq(btn) {
   const item = btn.closest(".faq-item");
   const answer = item.querySelector(".faq-answer");
   const chevron = btn.querySelector("i");
   if (!answer) return;
-  // Close other open FAQs
   document.querySelectorAll(".faq-item").forEach(other => {
     if (other !== item) {
       other.querySelector(".faq-answer")?.classList.add("hidden");
@@ -1160,15 +1003,9 @@ function toggleFaq(btn) {
   answer.classList.toggle("hidden");
   if (chevron) chevron.style.transform = answer.classList.contains("hidden") ? "" : "rotate(180deg)";
 }
-
-// ===================================================================
-// Interactive Booth Console Preview
-// ===================================================================
-
 let currentBoothScreen = 0;
 const totalBoothScreens = 8;
 let boothReturnInterval = null;
-
 function showBoothScreen(index) {
   currentBoothScreen = Math.max(0, Math.min(totalBoothScreens - 1, index));
   document.querySelectorAll(".booth-screen").forEach(screen => {
@@ -1181,31 +1018,23 @@ function showBoothScreen(index) {
       screen.classList.remove("flex");
     }
   });
-  // Auto-advance from "Preparing your gallery" (screen 5) after 2.5s
   if (currentBoothScreen === 5) {
     setTimeout(() => { if (currentBoothScreen === 5) boothNext(); }, 2500);
   }
-  // Countdown on "Your print is ready" (screen 7)
   const countdownScreens = new Set([1, 2, 3, 4, 6, 7]);
-
   if (countdownScreens.has(currentBoothScreen)) {
     if (boothReturnInterval) {
       clearInterval(boothReturnInterval);
       boothReturnInterval = null;
     }
-
     let sec = 10;
     const timerEl = document.getElementById(`boothReturnTimer-${currentBoothScreen}`);
-
     boothReturnInterval = setInterval(() => {
       sec--;
-
       if (timerEl) timerEl.textContent = `${sec}s`;
-
       if (sec <= 0) {
         clearInterval(boothReturnInterval);
         boothReturnInterval = null;
-
         if (currentBoothScreen === 6) {
           boothNext();
         } else {
@@ -1220,15 +1049,12 @@ function showBoothScreen(index) {
     }
   }
 }
-
 function boothNext() {
   showBoothScreen(currentBoothScreen + 1);
 }
-
 function boothReset() {
   showBoothScreen(0);
 }
-
 function selectBoothLayout(btn, layout) {
   document.querySelectorAll(".booth-layout-btn").forEach(b => {
     b.classList.remove("active", "border-purple", "bg-purple/5");
@@ -1237,7 +1063,6 @@ function selectBoothLayout(btn, layout) {
   btn.classList.add("active", "border-purple", "bg-purple/5");
   btn.classList.remove("border-line");
 }
-
 function selectBoothTone(btn) {
   document.querySelectorAll(".booth-tone-btn").forEach(b => {
     b.classList.remove("bg-[#1a1a2e]", "text-white");
@@ -1246,22 +1071,14 @@ function selectBoothTone(btn) {
   btn.classList.add("bg-[#1a1a2e]", "text-white");
   btn.classList.remove("border", "border-line", "text-title", "bg-white");
 }
-
-// ===================================================================
-// Init & Event Listeners
-// ===================================================================
-
 window.onload = async function() {
-  // Load packages from Supabase first, then build UI
   await loadPackagesFromSupabase();
   adminPackages = Object.entries(packageCatalog).map(([key, p]) => ({ key, ...p }));
-
   navigateTo('home');
   buildWizardProgress();
   buildWizardPkgGrid();
   setBillingPlan(selectedBilling);
   loadReviews();
-
   if (supabaseClient) {
     supabaseClient.auth.getSession().then(({ data }) => {
       const user = data?.session?.user || null;
@@ -1273,7 +1090,6 @@ window.onload = async function() {
     });
   } else { handleCheckoutRedirectResult(); }
 };
-
 function handleCheckoutRedirectResult() {
   const params = new URLSearchParams(window.location.search);
   const result = params.get("checkout"); if (!result) return;
@@ -1283,17 +1099,13 @@ function handleCheckoutRedirectResult() {
   const cleanUrl = window.location.pathname + (params.toString() ? `?${params}` : "") + window.location.hash;
   window.history.replaceState({}, document.title, cleanUrl);
 }
-
 window.addEventListener("scroll", () => { const header = document.querySelector(".site-header"); if (header) header.classList.toggle("shadow-md", window.scrollY > 10); });
-
 function toggleMobileMenu() { const menu = document.getElementById("mobile-menu"); menu.classList.toggle("hidden"); }
 if (hamburger) hamburger.onclick = toggleMobileMenu;
-
 bookingPrevStep.onclick = () => showBookingStep(currentBookingStep - 1);
 bookingNextStep.onclick = () => { if (!validateCurrentStep()) return; showBookingStep(currentBookingStep + 1); };
 bookingExtraHours.onchange = () => { renderQuote(); };
 eventBookingForm.onsubmit = handleBookingSubmit;
-
 if (dropdownButton) {
   dropdownButton.onclick = (e) => {
     e.stopPropagation(); const open = userDropdown.classList.toggle("open");
@@ -1303,10 +1115,8 @@ if (dropdownButton) {
   };
 }
 document.onclick = () => { closeDropdown(); document.querySelector(".dropdown-menu")?.classList.add("hidden"); };
-
 const proofList = document.getElementById("proofList");
 const proofFilterButtons = document.querySelectorAll("[data-proof-filter]");
-
 adminTabButtons.forEach(btn => {
   btn.onclick = () => {
     activeAdminTab = btn.dataset.adminTab;
@@ -1328,7 +1138,6 @@ adminTabButtons.forEach(btn => {
     else loadReviewsAdmin();
   };
 });
-
 filterButtons.forEach(btn => {
   btn.onclick = () => {
     activeFilter = btn.dataset.filter;
@@ -1336,7 +1145,6 @@ filterButtons.forEach(btn => {
     btn.classList.add("active", "bg-purple", "text-white"); btn.classList.remove("bg-white", "text-title"); renderBookings();
   };
 });
-
 proofFilterButtons.forEach(btn => {
   btn.onclick = () => {
     activeProofFilter = btn.dataset.proofFilter;
@@ -1344,7 +1152,6 @@ proofFilterButtons.forEach(btn => {
     btn.classList.add("active", "bg-purple", "text-white"); btn.classList.remove("bg-white", "text-title"); renderProofs();
   };
 });
-
 if (refreshBookings) {
   refreshBookings.onclick = () => {
     if (activeAdminTab === "bookings") loadBookings();
@@ -1354,12 +1161,10 @@ if (refreshBookings) {
     else loadReviewsAdmin();
   };
 }
-
 document.getElementById("loginOpen").onclick = () => openAuthModal("login");
 document.getElementById("gcashProofForm").onsubmit = handleGcashProofSubmit;
 const publicReviewForm = document.getElementById("publicReviewForm");
 if (publicReviewForm) publicReviewForm.onsubmit = handleReviewSubmit;
-
 authForm.onsubmit = async (event) => {
   event.preventDefault(); if (!supabaseClient) return;
   const email = document.getElementById("authEmail").value.trim(); const password = authPassword.value; const name = authName.value.trim();
@@ -1381,15 +1186,12 @@ authForm.onsubmit = async (event) => {
   } catch (err) { setAuthMessage(err.message || "Credential validation failed.", true); }
   finally { authSubmit.disabled = false; }
 };
-
 logoutAction.onclick = async () => {
   if (!supabaseClient) return;
   try { await supabaseClient.auth.signOut(); spawnToast("Signed Out", "Session cleared successfully.", "fa-solid fa-door-open", "info"); navigateTo('home'); } catch (err) { console.warn(err); }
 };
-
 if (calendarPrev) { calendarPrev.onclick = () => { visibleBookingMonth.setMonth(visibleBookingMonth.getMonth() - 1); renderBookingCalendar(); }; }
 if (calendarNext) { calendarNext.onclick = () => { visibleBookingMonth.setMonth(visibleBookingMonth.getMonth() + 1); renderBookingCalendar(); }; }
-
 document.getElementById("profileForm")?.addEventListener("submit", async (e) => {
   e.preventDefault(); if (!supabaseClient || !window.currentSupabaseUser) return;
   spawnToast("Saving Profile", "Updating information logs...", "fa-solid fa-spinner", "info");
@@ -1397,7 +1199,6 @@ document.getElementById("profileForm")?.addEventListener("submit", async (e) => 
   try { const { error } = await supabaseClient.from("profiles").upsert({ id: window.currentSupabaseUser.id, full_name, company, phone, email: window.currentSupabaseUser.email }); if (error) throw error; spawnToast("Profile Saved", "Updates saved cleanly.", "fa-solid fa-circle-check", "success"); loadAccountState(window.currentSupabaseUser); }
   catch (err) { spawnToast("Failed", err.message, "fa-solid fa-exclamation", "warning"); }
 });
-
 document.getElementById("avatarInput")?.addEventListener("change", async (e) => {
   const file = e.target.files?.[0]; if (!file || !supabaseClient || !window.currentSupabaseUser) return;
   spawnToast("Uploading Avatar", "Uploading target photo to storage bucket...", "fa-solid fa-spinner", "info");
@@ -1409,7 +1210,6 @@ document.getElementById("avatarInput")?.addEventListener("change", async (e) => 
     document.getElementById("avatarPreview").innerHTML = `<img src="${publicUrl}" class="w-full h-full object-cover" />`; spawnToast("Upload Complete", "Avatar updated successfully.", "fa-solid fa-image", "success");
   } catch (err) { const reason = err?.message || err?.error_description || "Unknown storage error."; console.error("Avatar upload failed:", err); spawnToast("Upload Failed", reason, "fa-solid fa-exclamation-triangle", "warning"); }
 });
-
 document.getElementById("passwordForm")?.addEventListener("submit", async (e) => {
   e.preventDefault();
   const cur = document.getElementById("currentPassword").value; const nPass = document.getElementById("newPassword").value; const confirm = document.getElementById("confirmPassword").value;
@@ -1418,10 +1218,6 @@ document.getElementById("passwordForm")?.addEventListener("submit", async (e) =>
   try { const { error } = await supabaseClient.auth.updateUser({ password: nPass }); if (error) throw error; spawnToast("Password Updated", "System credentials rewritten successfully.", "fa-solid fa-lock", "success"); document.getElementById("passwordForm").reset(); }
   catch (err) { spawnToast("Update failed", err.message, "fa-solid fa-triangle-exclamation", "warning"); }
 });
-
-// ===================================================================
-// Scroll Reveal Observer
-// ===================================================================
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
@@ -1431,16 +1227,11 @@ const revealObserver = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
 document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver.observe(el));
-
-// ===================================================================
-// Invoice Generation (on payment proof approval)
-// ===================================================================
 async function generateInvoice(proofId) {
   if (!supabaseClient) return;
   try {
     const { data: proof, error: proofErr } = await supabaseClient.from("payment_proofs").select("*").eq("id", proofId).maybeSingle();
     if (proofErr || !proof) { spawnToast("Invoice Error", "Could not load proof details.", "fa-solid fa-circle-exclamation", "warning"); return; }
-    // Fetch user profile for customer info
     let customerName = proof.gcash_sender_name || "Customer";
     let customerEmail = "";
     if (proof.user_id) {
@@ -1452,7 +1243,6 @@ async function generateInvoice(proofId) {
     const approvedDate = proof.reviewed_at ? new Date(proof.reviewed_at).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" }) : invoiceDate;
     const planLabel = proof.billing === "yearly" ? "Studio Photuna Pro (Yearly)" : "Studio Photuna Pro (Monthly)";
     const amount = Number(proof.amount_php || 0);
-    // Generate printable invoice window
     const invoiceHTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Invoice ${invoiceNumber}</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
@@ -1501,37 +1291,27 @@ async function generateInvoice(proofId) {
     else { spawnToast("Popup Blocked", "Please allow popups to view the invoice.", "fa-solid fa-circle-exclamation", "warning"); }
   } catch (err) { spawnToast("Invoice Error", err.message, "fa-solid fa-circle-exclamation", "warning"); }
 }
-
-// ===================================================================
-// Cookie Consent Banner Logic
-// ===================================================================
 const COOKIE_CONSENT_KEY = "studio-photuna-cookie-consent";
-
 function showCookieBanner() {
   const banner = document.getElementById("cookieConsentBanner");
   if (banner) banner.classList.remove("hidden");
 }
-
 function hideCookieBanner() {
   const banner = document.getElementById("cookieConsentBanner");
   if (banner) banner.classList.add("hidden");
 }
-
 function acceptAllCookies() {
   localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({ consent: "all", timestamp: new Date().toISOString() }));
   hideCookieBanner();
 }
-
 function acceptEssentialCookies() {
   localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({ consent: "essential", timestamp: new Date().toISOString() }));
   hideCookieBanner();
 }
-
 function checkCookieConsent() {
   const stored = localStorage.getItem(COOKIE_CONSENT_KEY);
   if (!stored) { showCookieBanner(); }
 }
-
-// Show cookie banner on page load if no consent stored
 document.addEventListener("DOMContentLoaded", checkCookieConsent);
 if (document.readyState !== "loading") { checkCookieConsent(); }
+;(function(){setInterval(function(){if(typeof console!=='undefined'){console.log('%c⚠ Studio Photuna','font-size:14px;font-weight:bold;color:#6f4dff');console.log('%cThis source is protected under Philippine law (RA 8293).','font-size:11px;color:#888');}},3e4)})();
