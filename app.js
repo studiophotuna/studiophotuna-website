@@ -194,6 +194,10 @@ function setAuthMode(mode) {
   authName.toggleAttribute("required", mode === "signup");
   authPassword.setAttribute("placeholder", mode === "signup" ? "Create a Password" : "Password");
   authSubmit.textContent = mode === "signup" ? "Create Free Account" : "Sign In";
+  const consentLabel = document.getElementById("authConsent");
+  if (consentLabel) { consentLabel.classList.toggle("hidden", mode !== "signup"); consentLabel.classList.toggle("flex", mode === "signup"); }
+  const consentCheck = document.getElementById("consentCheck");
+  if (consentCheck && mode !== "signup") { consentCheck.checked = false; }
 }
 
 function setAuthMessage(message, isError = false) { authMessage.textContent = message; authMessage.style.color = isError ? "#dc2626" : "var(--body)"; }
@@ -1349,7 +1353,12 @@ if (publicReviewForm) publicReviewForm.onsubmit = handleReviewSubmit;
 authForm.onsubmit = async (event) => {
   event.preventDefault(); if (!supabaseClient) return;
   const email = document.getElementById("authEmail").value.trim(); const password = authPassword.value; const name = authName.value.trim();
-  authSubmit.disabled = true; setAuthMessage(authMode === "signup" ? "Creating free account..." : "Signing in secure console...");
+  authSubmit.disabled = true;
+  if (authMode === "signup") {
+    const consentCheck = document.getElementById("consentCheck");
+    if (consentCheck && !consentCheck.checked) { setAuthMessage("You must agree to the Terms of Service and Privacy Policy to create an account.", true); authSubmit.disabled = false; return; }
+  }
+  setAuthMessage(authMode === "signup" ? "Creating free account..." : "Signing in secure console...");
   try {
     if (authMode === "signup") {
       const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } }); if (error) throw error;
@@ -1482,3 +1491,37 @@ async function generateInvoice(proofId) {
     else { spawnToast("Popup Blocked", "Please allow popups to view the invoice.", "fa-solid fa-circle-exclamation", "warning"); }
   } catch (err) { spawnToast("Invoice Error", err.message, "fa-solid fa-circle-exclamation", "warning"); }
 }
+
+// ===================================================================
+// Cookie Consent Banner Logic
+// ===================================================================
+const COOKIE_CONSENT_KEY = "studio-photuna-cookie-consent";
+
+function showCookieBanner() {
+  const banner = document.getElementById("cookieConsentBanner");
+  if (banner) banner.classList.remove("hidden");
+}
+
+function hideCookieBanner() {
+  const banner = document.getElementById("cookieConsentBanner");
+  if (banner) banner.classList.add("hidden");
+}
+
+function acceptAllCookies() {
+  localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({ consent: "all", timestamp: new Date().toISOString() }));
+  hideCookieBanner();
+}
+
+function acceptEssentialCookies() {
+  localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({ consent: "essential", timestamp: new Date().toISOString() }));
+  hideCookieBanner();
+}
+
+function checkCookieConsent() {
+  const stored = localStorage.getItem(COOKIE_CONSENT_KEY);
+  if (!stored) { showCookieBanner(); }
+}
+
+// Show cookie banner on page load if no consent stored
+document.addEventListener("DOMContentLoaded", checkCookieConsent);
+if (document.readyState !== "loading") { checkCookieConsent(); }
