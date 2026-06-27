@@ -1,16 +1,25 @@
 // ===================================================================
 // app.js — Studio Photuna main application script
-// Extracted from index.html with Supabase-driven package management
 // ===================================================================
 
-// Supabase Keys
-const SUPABASE_URL = "https://elthktbvojsmvhtxxqnz.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsdGhrdGJ2b2pzbXZodHh4cW56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzYzMjUsImV4cCI6MjA5MDI1MjMyNX0.5QrzeI0WKJclFLHEBgZH7WxsHPdKBJmdEtpqlyXg9PQ";
+// Runtime configuration — loaded from server-side API to keep keys out of source
 const ACCOUNT_SNAPSHOT_KEY = "studio-photuna-account-snapshot";
+let supabaseClient = null;
+let _supabaseReady = null;
 
-const supabaseClient = window.supabase?.createClient
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
+// Fetch config from Vercel serverless endpoint (keys stay out of source)
+_supabaseReady = (async function initSupabase() {
+  try {
+    const r = await fetch('/api/config');
+    if (!r.ok) throw new Error('Config endpoint returned ' + r.status);
+    const c = await r.json();
+    if (c.u && c.k && window.supabase?.createClient) {
+      supabaseClient = window.supabase.createClient(c.u, c.k);
+    }
+  } catch (e) {
+    console.warn('Config load deferred — running in local/preview mode.');
+  }
+})();
 
 // DOM Target Selectors
 const userDropdown = document.getElementById("userDropdown");
@@ -1255,6 +1264,8 @@ function selectBoothTone(btn) {
 // ===================================================================
 
 window.onload = async function() {
+  // Wait for Supabase client to be initialized from server config
+  if (_supabaseReady) await _supabaseReady;
   // Load packages from Supabase first, then build UI
   await loadPackagesFromSupabase();
   adminPackages = Object.entries(packageCatalog).map(([key, p]) => ({ key, ...p }));
