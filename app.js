@@ -1188,26 +1188,39 @@ function showBoothScreen(index) {
   if (currentBoothScreen === 5) {
     setTimeout(() => { if (currentBoothScreen === 5) boothNext(); }, 2500);
   }
-  // Auto-advance from "Printing" (screen 6) after 3s
-  if (currentBoothScreen === 6) {
-    setTimeout(() => { if (currentBoothScreen === 6) boothNext(); }, 3000);
-  }
   // Countdown on "Your print is ready" (screen 7)
-  if (currentBoothScreen === 7) {
-    if (boothReturnInterval) clearInterval(boothReturnInterval);
-    let sec = 11;
-    const timerEl = document.getElementById("boothReturnTimer");
+  const countdownScreens = new Set([1, 2, 3, 4, 6, 7]);
+
+  if (countdownScreens.has(currentBoothScreen)) {
+    if (boothReturnInterval) {
+      clearInterval(boothReturnInterval);
+      boothReturnInterval = null;
+    }
+
+    let sec = 10;
+    const timerEl = document.getElementById(`boothReturnTimer-${currentBoothScreen}`);
+
     boothReturnInterval = setInterval(() => {
       sec--;
-      if (timerEl) timerEl.textContent = "returning in " + sec + "s";
+
+      if (timerEl) timerEl.textContent = `${sec}s`;
+
       if (sec <= 0) {
         clearInterval(boothReturnInterval);
         boothReturnInterval = null;
-        boothReset();
+
+        if (currentBoothScreen === 6) {
+          boothNext();
+        } else {
+          boothReset();
+        }
       }
     }, 1000);
   } else {
-    if (boothReturnInterval) { clearInterval(boothReturnInterval); boothReturnInterval = null; }
+    if (boothReturnInterval) {
+      clearInterval(boothReturnInterval);
+      boothReturnInterval = null;
+    }
   }
 }
 
