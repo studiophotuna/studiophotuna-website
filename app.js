@@ -730,7 +730,8 @@ function renderProofs() {
     const submittedAt = new Date(p.created_at).toLocaleDateString("en-PH", { year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
     const statusCls = p.status === "approved" ? "bg-green-100 text-green-800" : p.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-800";
     const card = document.createElement("div"); card.className = "border border-line rounded-2xl bg-white shadow-sm overflow-hidden"; card.id = `proof-${p.id}`;
-    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusCls}">${p.status}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${p.billing}</span></div><span class="text-[10px] text-muted font-bold">Submitted ${submittedAt}</span></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 items-start"><div class="lg:col-span-8 space-y-4"><div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs"><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Plan</span><strong class="text-title capitalize">${p.billing}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Amount</span><strong class="text-title">₱${Number(p.amount_php).toLocaleString("en-PH", {minimumFractionDigits:2})}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">GCash Ref #</span><strong class="text-title font-mono">${p.gcash_reference_number}</strong></div><div class="bg-grey rounded-xl p-3 col-span-2"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Sender Name</span><strong class="text-title">${p.gcash_sender_name || "—"}</strong></div></div><div class="border border-line rounded-xl overflow-hidden"><div class="px-4 py-2 bg-grey border-b border-line flex items-center justify-between"><span class="text-[10px] uppercase font-black text-muted">Screenshot</span><button type="button" onclick="viewProofScreenshot('${p.id}','${p.screenshot_path}')" class="text-[10px] text-purple font-black hover:underline flex items-center gap-1"><i class="fa-solid fa-eye"></i> View Screenshot</button></div><div id="screenshot-${p.id}" class="hidden p-4 bg-white"><img class="max-w-full rounded-lg border border-line" alt="Payment screenshot loading…" /><p class="text-[10px] text-muted mt-2">Cross-check the reference number and amount in your GCash app before approving.</p></div></div>${p.admin_note ? `<div class="text-xs border-t border-line pt-3"><span class="text-[10px] uppercase font-bold text-muted block">Admin Note</span><p class="text-body">${p.admin_note}</p></div>` : ""}</div><div class="lg:col-span-4 space-y-3 bg-grey border border-line rounded-2xl p-5"><p class="text-[10px] uppercase font-extrabold text-muted tracking-wider">Review Proof</p><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Admin Note (optional)</label><textarea id="proof-note-${p.id}" class="w-full border border-line rounded-lg px-3 py-2 text-xs bg-white resize-none h-16" placeholder="Reason for rejection, reference mismatch…">${p.admin_note || ""}</textarea></div><div class="grid grid-cols-2 gap-2 ${p.status !== "pending" ? "opacity-60 pointer-events-none" : ""}"><button onclick="reviewProof('${p.id}','${p.user_id}','${p.billing}', 'approved')" class="btn-animation bg-green-600 hover:bg-green-700 text-white text-[10px] font-black py-2.5 rounded-xl flex items-center justify-center gap-1"><i class="fa-solid fa-check"></i> Approve</button><button onclick="reviewProof('${p.id}','${p.user_id}','${p.billing}', 'rejected')" class="btn-animation bg-red-500 hover:bg-red-600 text-white text-[10px] font-black py-2.5 rounded-xl flex items-center justify-center gap-1"><i class="fa-solid fa-xmark"></i> Reject</button></div>${p.status !== "pending" ? `<p class="text-[10px] text-center text-muted">Already reviewed on ${p.reviewed_at ? new Date(p.reviewed_at).toLocaleDateString("en-PH") : "—"}</p>` : ""}</div></div>`;
+    const invoiceBtn = p.status === "approved" ? `<button onclick="generateInvoice('${p.id}')" class="btn-animation text-white text-[10px] font-black py-2.5 rounded-xl flex items-center justify-center gap-1 col-span-2" style="background:#6f4dff"><i class="fa-solid fa-file-invoice"></i> View Invoice</button>` : "";
+    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusCls}">${p.status}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${p.billing}</span></div><span class="text-[10px] text-muted font-bold">Submitted ${submittedAt}</span></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 items-start"><div class="lg:col-span-8 space-y-4"><div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs"><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Plan</span><strong class="text-title capitalize">${p.billing}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Amount</span><strong class="text-title">₱${Number(p.amount_php).toLocaleString("en-PH", {minimumFractionDigits:2})}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">GCash Ref #</span><strong class="text-title font-mono">${p.gcash_reference_number}</strong></div><div class="bg-grey rounded-xl p-3 col-span-2"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Sender Name</span><strong class="text-title">${p.gcash_sender_name || "—"}</strong></div></div><div class="border border-line rounded-xl overflow-hidden"><div class="px-4 py-2 bg-grey border-b border-line flex items-center justify-between"><span class="text-[10px] uppercase font-black text-muted">Screenshot</span><button type="button" onclick="viewProofScreenshot('${p.id}','${p.screenshot_path}')" class="text-[10px] text-purple font-black hover:underline flex items-center gap-1"><i class="fa-solid fa-eye"></i> View Screenshot</button></div><div id="screenshot-${p.id}" class="hidden p-4 bg-white"><img class="max-w-full rounded-lg border border-line" alt="Payment screenshot loading…" /><p class="text-[10px] text-muted mt-2">Cross-check the reference number and amount in your GCash app before approving.</p></div></div>${p.admin_note ? `<div class="text-xs border-t border-line pt-3"><span class="text-[10px] uppercase font-bold text-muted block">Admin Note</span><p class="text-body">${p.admin_note}</p></div>` : ""}</div><div class="lg:col-span-4 space-y-3 bg-grey border border-line rounded-2xl p-5"><p class="text-[10px] uppercase font-extrabold text-muted tracking-wider">Review Proof</p><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Admin Note (optional)</label><textarea id="proof-note-${p.id}" class="w-full border border-line rounded-lg px-3 py-2 text-xs bg-white resize-none h-16" placeholder="Reason for rejection, reference mismatch…">${p.admin_note || ""}</textarea></div><div class="grid grid-cols-2 gap-2 ${p.status !== "pending" ? "opacity-60 pointer-events-none" : ""}"><button onclick="reviewProof('${p.id}','${p.user_id}','${p.billing}', 'approved')" class="btn-animation text-white text-[10px] font-black py-2.5 rounded-xl flex items-center justify-center gap-1" style="background:#16a34a"><i class="fa-solid fa-check"></i> Approve</button><button onclick="reviewProof('${p.id}','${p.user_id}','${p.billing}', 'rejected')" class="btn-animation text-white text-[10px] font-black py-2.5 rounded-xl flex items-center justify-center gap-1" style="background:#ef4444"><i class="fa-solid fa-xmark"></i> Reject</button></div>${invoiceBtn}${p.status !== "pending" ? `<p class="text-[10px] text-center text-muted">Already reviewed on ${p.reviewed_at ? new Date(p.reviewed_at).toLocaleDateString("en-PH") : "—"}</p>` : ""}</div></div>`;
     proofList.appendChild(card);
   });
 }
@@ -754,7 +755,8 @@ async function reviewProof(proofId, userId, billing, action) {
       const months = billing === "yearly" ? 12 : 1; const periodEnd = new Date(); periodEnd.setMonth(periodEnd.getMonth() + months); const isYearly = billing === "yearly";
       const { error: licenseErr } = await supabaseClient.from("licenses").update({ state: "active", plan: isYearly ? "pro_yearly" : "pro_monthly", current_period_end: periodEnd.toISOString(), last_payment_verified_at: new Date().toISOString(), watermark: false, max_events: isYearly ? null : 10, templates: isYearly ? null : 5, priority_support: isYearly }).eq("user_id", userId); if (licenseErr) throw licenseErr;
       await supabaseClient.from("profiles").update({ subscription_plan: isYearly ? "pro_yearly" : "pro_monthly" }).eq("id", userId);
-      spawnToast("Approved", "License + features activated successfully.", "fa-solid fa-circle-check", "success");
+      spawnToast("Approved", "License activated. Generating invoice...", "fa-solid fa-circle-check", "success");
+      setTimeout(() => generateInvoice(proofId), 600);
     } else { spawnToast("Rejected", "Proof marked as rejected.", "fa-solid fa-circle-info", "info"); }
     loadProofs();
   } catch (err) { spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); }
@@ -1397,3 +1399,86 @@ document.getElementById("passwordForm")?.addEventListener("submit", async (e) =>
   try { const { error } = await supabaseClient.auth.updateUser({ password: nPass }); if (error) throw error; spawnToast("Password Updated", "System credentials rewritten successfully.", "fa-solid fa-lock", "success"); document.getElementById("passwordForm").reset(); }
   catch (err) { spawnToast("Update failed", err.message, "fa-solid fa-triangle-exclamation", "warning"); }
 });
+
+// ===================================================================
+// Scroll Reveal Observer
+// ===================================================================
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add("in-view");
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver.observe(el));
+
+// ===================================================================
+// Invoice Generation (on payment proof approval)
+// ===================================================================
+async function generateInvoice(proofId) {
+  if (!supabaseClient) return;
+  try {
+    const { data: proof, error: proofErr } = await supabaseClient.from("payment_proofs").select("*").eq("id", proofId).maybeSingle();
+    if (proofErr || !proof) { spawnToast("Invoice Error", "Could not load proof details.", "fa-solid fa-circle-exclamation", "warning"); return; }
+    // Fetch user profile for customer info
+    let customerName = proof.gcash_sender_name || "Customer";
+    let customerEmail = "";
+    if (proof.user_id) {
+      const { data: profile } = await supabaseClient.from("profiles").select("full_name, email, company, phone").eq("id", proof.user_id).maybeSingle();
+      if (profile) { customerName = profile.full_name || customerName; customerEmail = profile.email || ""; }
+    }
+    const invoiceNumber = `INV-${new Date().getFullYear()}${String(new Date().getMonth()+1).padStart(2,"0")}${String(new Date().getDate()).padStart(2,"0")}-${proofId.substring(0,6).toUpperCase()}`;
+    const invoiceDate = new Date().toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" });
+    const approvedDate = proof.reviewed_at ? new Date(proof.reviewed_at).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" }) : invoiceDate;
+    const planLabel = proof.billing === "yearly" ? "Studio Photuna Pro (Yearly)" : "Studio Photuna Pro (Monthly)";
+    const amount = Number(proof.amount_php || 0);
+    // Generate printable invoice window
+    const invoiceHTML = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Invoice ${invoiceNumber}</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Inter',system-ui,sans-serif;color:#111827;padding:48px;max-width:800px;margin:0 auto;font-size:14px}
+  .header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:48px;padding-bottom:24px;border-bottom:2px solid #6f4dff}
+  .logo{font-size:28px;font-weight:900;color:#111827;line-height:1}
+  .logo small{font-size:10px;color:#5f6678;font-weight:600;display:block;margin-top:4px;letter-spacing:1px;text-transform:uppercase}
+  .invoice-title{text-align:right}
+  .invoice-title h1{font-size:32px;font-weight:900;color:#6f4dff;text-transform:uppercase;letter-spacing:2px}
+  .invoice-title p{font-size:12px;color:#5f6678;margin-top:4px}
+  .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:40px}
+  .info-block h3{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:#8b92a6;margin-bottom:8px}
+  .info-block p{font-size:13px;line-height:1.6;color:#111827}
+  table{width:100%;border-collapse:collapse;margin-bottom:32px}
+  thead th{text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#8b92a6;padding:12px 16px;border-bottom:2px solid #dedfe6}
+  tbody td{padding:16px;font-size:13px;border-bottom:1px solid #f4f5f8}
+  tbody td:last-child{text-align:right;font-weight:700}
+  thead th:last-child{text-align:right}
+  .total-row{background:#f4f5f8;border-radius:12px}
+  .total-row td{font-size:16px;font-weight:900;color:#111827;border:none;padding:16px}
+  .footer{margin-top:48px;padding-top:24px;border-top:1px solid #dedfe6;text-align:center;color:#8b92a6;font-size:11px;line-height:1.8}
+  .badge{display:inline-block;background:#22c55e;color:white;font-size:10px;font-weight:700;padding:4px 12px;border-radius:999px;text-transform:uppercase;letter-spacing:1px}
+  @media print{body{padding:24px}button{display:none!important}}
+</style></head><body>
+  <div class="header">
+    <div class="logo">studio<br>photuna.<small>Photobooth Software</small></div>
+    <div class="invoice-title"><h1>Invoice</h1><p>${invoiceNumber}</p></div>
+  </div>
+  <div class="info-grid">
+    <div class="info-block"><h3>Bill To</h3><p><strong>${customerName}</strong>${customerEmail ? "<br>" + customerEmail : ""}</p></div>
+    <div class="info-block" style="text-align:right"><h3>Invoice Details</h3><p>Date: ${invoiceDate}<br>Status: <span class="badge">Paid</span><br>Payment: GCash<br>Ref #: ${proof.gcash_reference_number}</p></div>
+  </div>
+  <table><thead><tr><th>Description</th><th>Qty</th><th>Amount</th></tr></thead>
+  <tbody><tr><td>${planLabel}<br><span style="font-size:11px;color:#5f6678">Subscription license — ${proof.billing === "yearly" ? "12 months" : "1 month"} access</span></td><td>1</td><td>&#8369;${amount.toLocaleString("en-PH",{minimumFractionDigits:2})}</td></tr></tbody>
+  <tfoot><tr class="total-row"><td colspan="2">Total Paid</td><td style="text-align:right;font-size:18px">&#8369;${amount.toLocaleString("en-PH",{minimumFractionDigits:2})}</td></tr></tfoot></table>
+  <div class="footer">
+    <p><strong>Studio Photuna</strong></p>
+    <p>This invoice was generated automatically upon payment verification.</p>
+    <p>For questions, contact support@studiophotuna.com</p>
+    <br><button onclick="window.print()" style="background:#6f4dff;color:white;border:none;padding:10px 24px;border-radius:999px;font-weight:700;font-size:13px;cursor:pointer">Print / Save as PDF</button>
+  </div>
+</body></html>`;
+    const invoiceWindow = window.open("", "_blank", "width=850,height=1100");
+    if (invoiceWindow) { invoiceWindow.document.write(invoiceHTML); invoiceWindow.document.close(); }
+    else { spawnToast("Popup Blocked", "Please allow popups to view the invoice.", "fa-solid fa-circle-exclamation", "warning"); }
+  } catch (err) { spawnToast("Invoice Error", err.message, "fa-solid fa-circle-exclamation", "warning"); }
+}
