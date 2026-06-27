@@ -15,13 +15,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Font Awesome for sleek modern iconography -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <script>
       tailwind.config = {
+        safelist: [
+          'bg-green-100','text-green-800','bg-green-600','hover:bg-green-700',
+          'bg-red-100','text-red-700','bg-red-500','hover:bg-red-600',
+          'bg-yellow-100','text-yellow-800',
+          'bg-purple','text-purple','bg-purple/10',
+          'opacity-60','pointer-events-none',
+          'bg-blue-500','hover:bg-blue-600'
+        ],
         theme: {
           extend: {
             fontFamily: {
@@ -93,6 +101,57 @@
         opacity: 1;
         transform: translateY(0);
       }
+      /* Staggered fade-in for feature cards */
+      .feature-card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+      .feature-card.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      /* Smooth section separator gradient */
+      .section-glow {
+        position: relative;
+      }
+      .section-glow::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #6f4dff, transparent);
+        border-radius: 999px;
+      }
+      /* Smooth hover lift for cards */
+      .hover-lift {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 60px rgba(17, 24, 39, 0.1);
+      }
+      /* Pulse glow for CTAs */
+      @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(111, 77, 255, 0.3); }
+        50% { box-shadow: 0 0 0 8px rgba(111, 77, 255, 0); }
+      }
+      .cta-glow {
+        animation: pulse-glow 3s ease-in-out infinite;
+      }
+      /* Booth screen transitions */
+      .booth-screen {
+        transition: opacity 0.3s ease;
+      }
+      .booth-screen.active {
+        opacity: 1;
+      }
+      .booth-screen.hidden {
+        opacity: 0;
+      }
     </style>
   </head>
   <body class="bg-white text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar">
@@ -150,20 +209,311 @@
            ============================================== -->
       <section id="view-home" class="view-container">
         <!-- Hero Section -->
-        <section class="relative overflow-clip py-20 px-6">
+        <section class="relative overflow-clip py-20 sm:py-28 px-6" style="background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(111,77,255,0.08) 0%, transparent 70%);">
+          <!-- Subtle decorative blobs -->
+          <div class="absolute top-20 left-10 w-72 h-72 bg-purple/5 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute bottom-10 right-10 w-96 h-96 bg-purple/3 rounded-full blur-3xl pointer-events-none"></div>
+
           <div class="max-w-7xl mx-auto">
-            <div class="text-center max-w-4xl mx-auto space-y-6">
-              <h1 class="text-[#111827] font-black leading-[1.05] tracking-tight text-5xl sm:text-7xl md:text-8xl">
-                Launch a Korean-Style Photobooth Business
+            <div class="text-center max-w-4xl mx-auto space-y-8">
+              <span class="inline-flex items-center gap-2 bg-purple/10 text-purple text-xs font-black uppercase tracking-widest px-4 py-2 rounded-full">
+                <i class="fa-solid fa-sparkles"></i> Photobooth Software for Operators
+              </span>
+              <h1 class="text-[#111827] font-black leading-[1.05] tracking-tight text-4xl sm:text-6xl md:text-7xl lg:text-8xl">
+                Launch a Korean-Style<br class="hidden sm:block"> Photobooth Business
               </h1>
-              <p class="text-xl leading-relaxed text-body max-w-3xl mx-auto font-medium">
-                Studio Photuna helps operators set up events, design templates, run the booth flow, print, share with QR, and track reports without buying an expensive custom kiosk system.
+              <p class="text-lg sm:text-xl leading-relaxed text-body max-w-3xl mx-auto font-medium">
+                Studio Photuna helps operators set up events, design templates, run the booth flow, print, share with QR, and track reports — without buying an expensive custom kiosk system.
               </p>
+              <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+                <a href="#" onclick="navigateTo('download');" class="btn-animation inline-flex items-center gap-2 bg-purple hover:bg-purple-dark text-white px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors shadow-lg shadow-purple/20">
+                  <i class="fa-solid fa-download"></i> Download Now
+                </a>
+                <a href="#features" onclick="scrollAndHighlight('features');" class="btn-animation inline-flex items-center gap-2 border border-line bg-white hover:bg-grey text-title px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors">
+                  <i class="fa-solid fa-play text-purple text-xs"></i> See Features
+                </a>
+              </div>
             </div>
 
-            <!-- Showcase of app_image_1.jpg -->
-            <div class="mt-16 relative rounded-3xl overflow-hidden border border-line bg-white shadow-luxe max-w-5xl mx-auto">
-              <img class="w-full h-auto object-cover" src="app_image_1.jpg" alt="Studio Photuna workspace dashboard" onerror="this.onerror=null; this.src='https://placehold.co/1200x650/f4f5f8/5f6678?text=Interactive+Booth+Console+Preview'" />
+            <!-- Interactive Booth Console Preview — replaces static hero image -->
+            <div class="mt-16 max-w-5xl mx-auto reveal">
+              <div class="bg-[#111827] rounded-3xl p-3 sm:p-4 shadow-luxe">
+                <div class="flex justify-center pb-2">
+                  <div class="w-2.5 h-2.5 rounded-full bg-gray-600 ring-1 ring-gray-500"></div>
+                </div>
+                <div class="bg-white rounded-2xl overflow-hidden relative" style="aspect-ratio: 16/10;">
+
+                  <!-- Screen 0: Tap to Start -->
+                  <div class="booth-screen active flex flex-col items-center justify-center text-center h-full" data-screen="0" style="background: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23f0ede8%22/%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.12%22/%3E%3C/svg%3E'); background-size: cover;">
+                    <div class="space-y-6">
+                      <h2 class="text-4xl sm:text-5xl md:text-6xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span class="text-[#1a1a2e]">.</span><span class="text-[10px] align-top">&#10057;</span></h2>
+                      <button onclick="boothNext()" class="btn-animation bg-[#1a1a2e] text-white font-bold px-10 sm:px-12 py-3 sm:py-4 rounded-full text-sm sm:text-base shadow-lg hover:bg-[#2a2a3e] transition-colors">
+                        Tap to Start
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Screen 1: Choose your Template -->
+                  <div class="booth-screen hidden flex-col h-full p-4 sm:p-6 md:p-10" data-screen="1">
+                    <div class="flex items-start justify-between mb-2 sm:mb-4">
+                      <div>
+                        <h2 class="text-2xl sm:text-3xl md:text-4xl font-light text-[#1a1a2e] italic leading-tight">Choose<br>your <span class="font-bold not-italic">Template</span></h2>
+                      </div>
+                      <div class="text-right space-y-1 sm:space-y-2">
+                        <p class="text-[10px] sm:text-xs text-body max-w-[160px] sm:max-w-[200px] hidden sm:block">After you've selected your template, we'll jump straight to the camera.</p>
+                        <span id="boothTimer1" class="inline-block bg-[#1a1a2e] text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full">47s</span>
+                      </div>
+                    </div>
+                    <div class="flex-1 flex items-center justify-center gap-4 sm:gap-6 md:gap-12">
+                      <button onclick="selectBoothLayout(this, 'sample'); boothNext()" class="booth-layout-btn group flex flex-col items-center gap-2 sm:gap-3 transition-transform hover:scale-105">
+                        <div class="relative w-16 sm:w-20 md:w-28 h-28 sm:h-36 md:h-48">
+                          <div class="absolute inset-0 bg-gradient-to-b from-sky-200 to-green-400 rounded-lg border border-gray-200 shadow-md transform -rotate-6"></div>
+                          <div class="absolute inset-0 bg-gradient-to-b from-sky-200 to-green-400 rounded-lg border border-gray-200 shadow-md transform rotate-3"></div>
+                        </div>
+                        <span class="text-xs sm:text-sm font-medium text-title">Sample</span>
+                      </button>
+                      <button onclick="selectBoothLayout(this, 'classic'); boothNext()" class="booth-layout-btn group flex flex-col items-center gap-2 sm:gap-3 transition-transform hover:scale-105">
+                        <div class="w-20 sm:w-24 md:w-32 h-28 sm:h-36 md:h-48 bg-white rounded-lg border border-gray-200 shadow-md p-1.5 sm:p-2 grid grid-cols-2 grid-rows-3 gap-0.5 sm:gap-1">
+                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
+                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
+                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
+                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
+                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
+                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
+                        </div>
+                        <span class="text-xs sm:text-sm font-medium text-title">Classic</span>
+                      </button>
+                      <button onclick="selectBoothLayout(this, '6x2classic'); boothNext()" class="booth-layout-btn group flex flex-col items-center gap-2 sm:gap-3 transition-transform hover:scale-105">
+                        <div class="relative w-24 sm:w-28 md:w-36 h-20 sm:h-24 md:h-28">
+                          <div class="absolute top-0 left-0 w-12 sm:w-16 md:w-20 h-full bg-white rounded-lg border border-gray-200 shadow-md p-0.5 sm:p-1 transform -rotate-6">
+                            <div class="w-full h-full grid grid-rows-4 gap-0.5">
+                              <div class="bg-gradient-to-r from-sky-200 to-green-300 rounded-sm"></div>
+                              <div class="bg-gradient-to-r from-sky-200 to-green-300 rounded-sm"></div>
+                              <div class="bg-gradient-to-r from-sky-200 to-green-300 rounded-sm"></div>
+                              <div class="bg-gradient-to-r from-sky-200 to-green-300 rounded-sm"></div>
+                            </div>
+                          </div>
+                          <div class="absolute top-4 right-0 w-16 sm:w-20 md:w-24 h-10 sm:h-14 md:h-16 bg-white rounded-lg border border-gray-200 shadow-md p-0.5 sm:p-1 grid grid-cols-3 gap-0.5">
+                            <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded-sm"></div>
+                            <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded-sm"></div>
+                            <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded-sm"></div>
+                          </div>
+                        </div>
+                        <span class="text-xs sm:text-sm font-medium text-title">6&times;2 Classic</span>
+                      </button>
+                    </div>
+                    <div class="flex justify-center mt-1 sm:mt-2">
+                      <div class="w-8 sm:w-10 h-1 sm:h-1.5 bg-[#1a1a2e] rounded-full"></div>
+                    </div>
+                    <div class="absolute bottom-3 right-4 sm:bottom-4 sm:right-6 md:bottom-6 md:right-10">
+                      <h3 class="text-base sm:text-xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span>.</span><span class="text-[6px] align-top">&#10057;</span></h3>
+                    </div>
+                  </div>
+
+                  <!-- Screen 2: Select photos to retake -->
+                  <div class="booth-screen hidden flex-col h-full p-3 sm:p-5 md:p-8" data-screen="2">
+                    <div class="flex items-start justify-between mb-2 sm:mb-3">
+                      <div>
+                        <h3 class="text-base sm:text-xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span>.</span><span class="text-[6px] align-top">&#10057;</span></h3>
+                      </div>
+                      <div class="text-right space-y-1">
+                        <span class="inline-block bg-[#1a1a2e] text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full">Retakes left: 2</span>
+                        <div><span class="text-[10px] sm:text-xs text-body border border-line px-2 sm:px-2.5 py-0.5 rounded-md">18s</span></div>
+                      </div>
+                    </div>
+                    <div class="flex items-center justify-between mb-1 sm:mb-2">
+                      <div>
+                        <p class="text-sm sm:text-base font-bold text-title">Select photos to retake</p>
+                        <p class="text-[10px] sm:text-xs text-body hidden sm:block">Tap any photo to mark it for retake, or continue when you are happy with the set.</p>
+                      </div>
+                      <div class="text-right">
+                        <p class="text-[10px] sm:text-xs text-body">Selected</p>
+                        <p class="text-xl sm:text-2xl font-black text-title">0</p>
+                      </div>
+                    </div>
+                    <hr class="border-purple/30 mb-2 sm:mb-3">
+                    <div class="flex-1 grid grid-cols-3 sm:grid-cols-4 gap-1.5 sm:gap-2 auto-rows-fr">
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-400 text-lg sm:text-2xl"></i></div>
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center hidden sm:flex"><i class="fa-solid fa-face-grin text-gray-400 text-lg sm:text-2xl"></i></div>
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-face-laugh text-gray-400 text-lg sm:text-2xl"></i></div>
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-400 text-lg sm:text-2xl"></i></div>
+                    </div>
+                    <div class="flex justify-end gap-2 sm:gap-3 mt-2 sm:mt-3">
+                      <button class="bg-gray-200 text-title font-bold px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm flex items-center gap-1 sm:gap-2 hover:bg-gray-300 transition-colors">
+                        <i class="fa-solid fa-rotate-left text-[10px] sm:text-xs"></i> Retake
+                      </button>
+                      <button onclick="boothNext()" class="btn-animation bg-[#1a1a2e] text-white font-bold px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm flex items-center gap-1 sm:gap-2 hover:bg-[#2a2a3e] transition-colors">
+                        <i class="fa-solid fa-circle-check text-[10px] sm:text-xs"></i> Continue
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Screen 3: Arrange photos + strip preview -->
+                  <div class="booth-screen hidden flex-col h-full p-3 sm:p-5 md:p-8" data-screen="3">
+                    <div class="flex items-center justify-between mb-2 sm:mb-3">
+                      <h3 class="text-base sm:text-xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span>.</span><span class="text-[6px] align-top">&#10057;</span></h3>
+                      <span class="bg-[#1a1a2e] text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full">44s</span>
+                    </div>
+                    <div class="flex-1 flex gap-3 sm:gap-6">
+                      <!-- Photo grid -->
+                      <div class="flex-1 grid grid-cols-2 gap-1.5 sm:gap-2 auto-rows-fr">
+                        <div class="bg-gray-200 rounded-lg sm:rounded-xl flex items-center justify-center relative"><span class="absolute top-1 left-1 sm:top-2 sm:left-2 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-400 text-white text-[8px] sm:text-[10px] flex items-center justify-center font-bold">1</span><i class="fa-solid fa-user text-gray-400 text-sm sm:text-xl"></i></div>
+                        <div class="bg-gray-200 rounded-lg sm:rounded-xl flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-sm sm:text-xl"></i></div>
+                        <div class="bg-gray-200 rounded-lg sm:rounded-xl flex items-center justify-center relative"><span class="absolute top-1 left-1 sm:top-2 sm:left-2 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-400 text-white text-[8px] sm:text-[10px] flex items-center justify-center font-bold">2</span><i class="fa-solid fa-face-smile text-gray-400 text-sm sm:text-xl"></i></div>
+                        <div class="bg-gray-200 rounded-lg sm:rounded-xl flex items-center justify-center relative"><span class="absolute top-1 left-1 sm:top-2 sm:left-2 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-400 text-white text-[8px] sm:text-[10px] flex items-center justify-center font-bold">3</span><i class="fa-solid fa-face-grin text-gray-400 text-sm sm:text-xl"></i></div>
+                        <div class="bg-gray-200 rounded-lg sm:rounded-xl flex items-center justify-center"><i class="fa-solid fa-face-laugh text-gray-400 text-sm sm:text-xl"></i></div>
+                        <div class="bg-gray-200 rounded-lg sm:rounded-xl flex items-center justify-center relative"><span class="absolute top-1 left-1 sm:top-2 sm:left-2 w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gray-400 text-white text-[8px] sm:text-[10px] flex items-center justify-center font-bold">4</span><i class="fa-solid fa-face-grin-stars text-gray-400 text-sm sm:text-xl"></i></div>
+                      </div>
+                      <!-- Strip preview -->
+                      <div class="flex gap-1 sm:gap-2">
+                        <div class="w-14 sm:w-20 md:w-24 bg-white border border-gray-300 rounded-md sm:rounded-lg p-0.5 sm:p-1 shadow-sm flex flex-col">
+                          <div class="flex-1 grid grid-rows-4 gap-0.5 sm:gap-1 mb-0.5 sm:mb-1">
+                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-300 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-300 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-300 text-[8px] sm:text-[10px]"></i></div>
+                          </div>
+                          <div class="bg-[#1a1a2e] rounded-sm h-3 sm:h-4 flex items-center justify-center"><span class="text-white text-[4px] sm:text-[5px] font-bold">studio photuna.</span></div>
+                        </div>
+                        <div class="w-14 sm:w-20 md:w-24 bg-white border border-gray-300 rounded-md sm:rounded-lg p-0.5 sm:p-1 shadow-sm flex flex-col hidden sm:flex">
+                          <div class="flex-1 grid grid-rows-4 gap-0.5 sm:gap-1 mb-0.5 sm:mb-1">
+                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-300 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-300 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-300 text-[8px] sm:text-[10px]"></i></div>
+                          </div>
+                          <div class="bg-[#1a1a2e] rounded-sm h-3 sm:h-4 flex items-center justify-center"><span class="text-white text-[4px] sm:text-[5px] font-bold">studio photuna.</span></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="flex justify-center gap-3 sm:gap-4 mt-2 sm:mt-3">
+                      <span class="bg-[#1a1a2e] text-white font-bold px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm">Photos 4/4</span>
+                      <button onclick="boothNext()" class="btn-animation bg-[#1a1a2e] text-white font-bold px-6 sm:px-8 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm hover:bg-[#2a2a3e] transition-colors">Next &rarr;</button>
+                    </div>
+                  </div>
+
+                  <!-- Screen 4: Tone & Frame -->
+                  <div class="booth-screen hidden flex-col h-full p-3 sm:p-5 md:p-8" data-screen="4">
+                    <div class="flex items-center justify-between mb-2 sm:mb-4">
+                      <h3 class="text-base sm:text-xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span>.</span><span class="text-[6px] align-top">&#10057;</span></h3>
+                      <span class="bg-[#1a1a2e] text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full">73s</span>
+                    </div>
+                    <div class="flex-1 flex gap-4 sm:gap-6 md:gap-10">
+                      <!-- Options -->
+                      <div class="flex-1 space-y-3 sm:space-y-5">
+                        <div>
+                          <h4 class="text-xl sm:text-2xl font-black text-[#1a1a2e] italic mb-2 sm:mb-3">Tone</h4>
+                          <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
+                            <button class="booth-tone-btn px-2 sm:px-3 py-1.5 sm:py-2 rounded-full border border-line text-[10px] sm:text-xs font-semibold text-title bg-white hover:bg-gray-50 transition-all">Normal</button>
+                            <button class="booth-tone-btn px-2 sm:px-3 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-semibold bg-[#1a1a2e] text-white" onclick="selectBoothTone(this)">B&amp;W <span class="inline-block w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-white ml-0.5 sm:ml-1"></span></button>
+                            <button class="booth-tone-btn px-2 sm:px-3 py-1.5 sm:py-2 rounded-full border border-line text-[10px] sm:text-xs font-semibold text-title bg-white hover:bg-gray-50 transition-all">Sepia</button>
+                            <button class="booth-tone-btn px-2 sm:px-3 py-1.5 sm:py-2 rounded-full border border-line text-[10px] sm:text-xs font-semibold text-title bg-white hover:bg-gray-50 transition-all">Vintage</button>
+                            <button class="booth-tone-btn px-2 sm:px-3 py-1.5 sm:py-2 rounded-full border border-line text-[10px] sm:text-xs font-semibold text-title bg-white hover:bg-gray-50 transition-all">Warm</button>
+                            <button class="booth-tone-btn px-2 sm:px-3 py-1.5 sm:py-2 rounded-full border border-line text-[10px] sm:text-xs font-semibold text-title bg-white hover:bg-gray-50 transition-all">Cool</button>
+                          </div>
+                        </div>
+                        <div>
+                          <h4 class="text-xl sm:text-2xl font-black text-[#1a1a2e] italic mb-2 sm:mb-3">Frame</h4>
+                          <button class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-semibold bg-[#1a1a2e] text-white">Sample <span class="inline-block w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-white ml-0.5 sm:ml-1"></span></button>
+                        </div>
+                        <button onclick="boothNext()" class="btn-animation w-full bg-[#1a1a2e] text-white font-bold py-2.5 sm:py-3.5 rounded-full text-xs sm:text-sm hover:bg-[#2a2a3e] transition-colors mt-1 sm:mt-2">Print &rarr;</button>
+                      </div>
+                      <!-- Grayscale strip preview -->
+                      <div class="flex gap-1 sm:gap-2">
+                        <div class="w-14 sm:w-20 md:w-24 bg-white border border-gray-300 rounded-md sm:rounded-lg p-0.5 sm:p-1 shadow-sm flex flex-col">
+                          <div class="flex-1 grid grid-rows-4 gap-0.5 sm:gap-1 mb-0.5 sm:mb-1 grayscale">
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                          </div>
+                          <div class="h-4 sm:h-5 flex items-center justify-center"><span class="text-[#1a1a2e] text-[5px] sm:text-[6px] font-black">studio photuna.</span></div>
+                        </div>
+                        <div class="w-14 sm:w-20 md:w-24 bg-white border border-gray-300 rounded-md sm:rounded-lg p-0.5 sm:p-1 shadow-sm flex flex-col hidden sm:flex">
+                          <div class="flex-1 grid grid-rows-4 gap-0.5 sm:gap-1 mb-0.5 sm:mb-1 grayscale">
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                          </div>
+                          <div class="h-4 sm:h-5 flex items-center justify-center"><span class="text-[#1a1a2e] text-[5px] sm:text-[6px] font-black">studio photuna.</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Screen 5: Preparing your gallery -->
+                  <div class="booth-screen hidden flex-col items-center justify-center text-center h-full" data-screen="5">
+                    <div class="space-y-3 sm:space-y-4" id="boothPreparing">
+                      <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-[#1a1a2e]" style="font-family: 'Playfair Display', serif;">Preparing your gallery</h2>
+                      <p class="text-xs sm:text-sm text-body">Generating your QR code and getting your photos ready.</p>
+                      <div class="flex items-center justify-center gap-2 mt-3 sm:mt-4">
+                        <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#1a1a2e] animate-bounce" style="animation-delay: 0ms;"></span>
+                        <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#1a1a2e] animate-bounce" style="animation-delay: 200ms;"></span>
+                        <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#1a1a2e] animate-bounce" style="animation-delay: 400ms;"></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Screen 6: We are now Printing -->
+                  <div class="booth-screen hidden flex-col h-full p-3 sm:p-5 md:p-8" data-screen="6">
+                    <div class="flex-1 flex items-center gap-4 sm:gap-8">
+                      <!-- Left side: print status + QR -->
+                      <div class="flex-1 flex flex-col items-center text-center space-y-2 sm:space-y-4">
+                        <span class="bg-[#1a1a2e] text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full">22s</span>
+                        <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#1a1a2e] leading-tight" style="font-family: 'Playfair Display', serif;">We are now<br><em>Printing...</em></h2>
+                        <div class="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 border-2 border-line rounded-xl flex items-center justify-center bg-white">
+                          <i class="fa-solid fa-qrcode text-4xl sm:text-5xl md:text-6xl text-[#1a1a2e]"></i>
+                        </div>
+                        <p class="text-[10px] sm:text-xs text-body max-w-[200px] sm:max-w-[280px]">Thank you for choosing <strong>Studio Photuna</strong>. Scan the QR code to download your photos and GIF samples.</p>
+                      </div>
+                      <!-- Right side: strip preview -->
+                      <div class="flex gap-1 sm:gap-2">
+                        <div class="w-14 sm:w-20 md:w-24 bg-white border border-gray-300 rounded-md sm:rounded-lg p-0.5 sm:p-1 shadow-sm flex flex-col">
+                          <div class="flex-1 grid grid-rows-4 gap-0.5 sm:gap-1 mb-0.5 sm:mb-1 grayscale">
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                          </div>
+                          <div class="h-4 sm:h-5 flex items-center justify-center"><span class="text-[#1a1a2e] text-[5px] sm:text-[6px] font-black">studio photuna.</span></div>
+                        </div>
+                        <div class="w-14 sm:w-20 md:w-24 bg-white border border-gray-300 rounded-md sm:rounded-lg p-0.5 sm:p-1 shadow-sm flex flex-col hidden sm:flex">
+                          <div class="flex-1 grid grid-rows-4 gap-0.5 sm:gap-1 mb-0.5 sm:mb-1 grayscale">
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-400 text-[8px] sm:text-[10px]"></i></div>
+                          </div>
+                          <div class="h-4 sm:h-5 flex items-center justify-center"><span class="text-[#1a1a2e] text-[5px] sm:text-[6px] font-black">studio photuna.</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Screen 7: Your print is ready -->
+                  <div class="booth-screen hidden flex-col items-center justify-center text-center h-full" data-screen="7">
+                    <div class="space-y-3 sm:space-y-5">
+                      <h3 class="text-2xl sm:text-3xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span>.</span><span class="text-[8px] align-top">&#10057;</span></h3>
+                      <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#1a1a2e]"><span class="text-xl sm:text-2xl">&#10024;</span> Your print is ready <span class="text-lg sm:text-xl">&#10024;</span></h2>
+                      <p class="text-xs sm:text-sm text-body max-w-sm mx-auto px-4">Thanks for posing with us! We loved capturing your moment. Enjoy your photo and we hope to see you again soon.</p>
+                      <p class="text-[10px] sm:text-xs text-muted" id="boothReturnTimer">returning in 11s</p>
+                      <button onclick="boothReset()" class="btn-animation bg-[#1a1a2e] text-white font-bold px-8 sm:px-10 py-3 sm:py-3.5 rounded-full text-xs sm:text-sm hover:bg-[#2a2a3e] transition-colors">
+                        New Session &rarr;
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <!-- Monitor stand -->
+              <div class="flex flex-col items-center -mt-1">
+                <div class="w-12 sm:w-16 h-5 sm:h-6 bg-[#111827] rounded-b-sm"></div>
+                <div class="w-24 sm:w-32 h-1.5 sm:h-2 bg-[#1f2937] rounded-b-full"></div>
+              </div>
+              <p class="text-center text-xs text-muted font-bold mt-4">Interactive demo — click through the screens your guests will see.</p>
             </div>
           </div>
         </section>
@@ -316,33 +666,33 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <article class="bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover:translate-y-[-4px] hover:shadow-md transition-all">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg font-bold">01</div>
+              <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 0ms;">
+                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-calendar-days"></i></div>
                 <h3 class="text-xl font-bold text-title">Event workspace</h3>
                 <p class="text-sm text-body leading-relaxed">Create client event profiles, map layouts, customize active booth variables, and organize each booking details.</p>
               </article>
-              <article class="bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover:translate-y-[-4px] hover:shadow-md transition-all">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg font-bold">02</div>
+              <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 80ms;">
+                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-palette"></i></div>
                 <h3 class="text-xl font-bold text-title">Template editor</h3>
                 <p class="text-sm text-body leading-relaxed">Design custom photo strip layouts, configure 4x6, 6x4, 2x6, and 6x2 strip setups with customized camera placeholder matrices.</p>
               </article>
-              <article class="bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover:translate-y-[-4px] hover:shadow-md transition-all">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg font-bold">03</div>
+              <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 160ms;">
+                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                 <h3 class="text-xl font-bold text-title">Brand controls</h3>
                 <p class="text-sm text-body leading-relaxed">Style custom splash welcome triggers, logo offsets, custom frames, overlay borders, and interactive prompt buttons for each client.</p>
               </article>
-              <article class="bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover:translate-y-[-4px] hover:shadow-md transition-all">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg font-bold">04</div>
+              <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 240ms;">
+                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-display"></i></div>
                 <h3 class="text-xl font-bold text-title">Guest flow console</h3>
                 <p class="text-sm text-body leading-relaxed">Run the welcome lobby, template triggers, payment terminals, capture counters, image retake screens, and custom QR downloads.</p>
               </article>
-              <article class="bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover:translate-y-[-4px] hover:shadow-md transition-all">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg font-bold">05</div>
+              <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 320ms;">
+                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-print"></i></div>
                 <h3 class="text-xl font-bold text-title">Printer & outputs</h3>
                 <p class="text-sm text-body leading-relaxed">Configure DSLR camera linkages, physical flash synchronization, dye-sub printers, margins, orientation, and copies.</p>
               </article>
-              <article class="bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover:translate-y-[-4px] hover:shadow-md transition-all">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg font-bold">06</div>
+              <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 400ms;">
+                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-chart-line"></i></div>
                 <h3 class="text-xl font-bold text-title">Active analytics</h3>
                 <p class="text-sm text-body leading-relaxed">Track session count history, live revenues, print sheets, weekly trend analysis, and template favorite profiles in real-time.</p>
               </article>
@@ -369,298 +719,6 @@
             </div>
             <div class="relative rounded-2xl overflow-hidden border border-line bg-white shadow-lg p-6">
               <img class="w-full h-auto object-cover rounded-xl border border-line/50" src="app_image_2.png" alt="Studio Photuna Live Setup welcome interface screen" onerror="this.onerror=null; this.src='https://placehold.co/800x600/f4f5f8/5f6678?text=Hardware+Settings+Preview'" />
-            </div>
-          </div>
-        </section>
-
-        <!-- Interactive Booth Console Preview -->
-        <section id="booth-preview" class="py-24 px-6 border-t border-line">
-          <div class="max-w-7xl mx-auto space-y-12">
-            <div class="text-center max-w-2xl mx-auto space-y-4">
-              <h2 class="text-4xl font-extrabold tracking-tight text-title">Try the booth experience</h2>
-              <p class="text-base text-body">Preview how your guests interact with the Studio Photuna kiosk during events. Click through the screens below.</p>
-            </div>
-
-            <div class="max-w-4xl mx-auto">
-              <!-- Landscape Kiosk Frame -->
-              <div class="bg-[#111827] rounded-3xl p-4 shadow-luxe">
-                <!-- Monitor bezel top with camera dot -->
-                <div class="flex justify-center pb-2">
-                  <div class="w-2.5 h-2.5 rounded-full bg-gray-600 ring-1 ring-gray-500"></div>
-                </div>
-                <div class="bg-white rounded-2xl overflow-hidden relative" style="aspect-ratio: 16/10;">
-
-                  <!-- Screen 0: Tap to Start -->
-                  <div class="booth-screen active flex flex-col items-center justify-center text-center h-full" data-screen="0" style="background: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23f0ede8%22/%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.12%22/%3E%3C/svg%3E'); background-size: cover;">
-                    <div class="space-y-6">
-                      <h2 class="text-5xl md:text-6xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span class="text-[#1a1a2e]">.</span><span class="text-[10px] align-top">&#10057;</span></h2>
-                      <button onclick="boothNext()" class="btn-animation bg-[#1a1a2e] text-white font-bold px-12 py-4 rounded-full text-base shadow-lg hover:bg-[#2a2a3e] transition-colors">
-                        Tap to Start
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Screen 1: Choose your Template -->
-                  <div class="booth-screen hidden flex-col h-full p-6 md:p-10" data-screen="1">
-                    <div class="flex items-start justify-between mb-4">
-                      <div>
-                        <h2 class="text-3xl md:text-4xl font-light text-[#1a1a2e] italic leading-tight">Choose<br>your <span class="font-bold not-italic">Template</span></h2>
-                      </div>
-                      <div class="text-right space-y-2">
-                        <p class="text-xs text-body max-w-[200px]">After you've selected your template, we'll jump straight to the camera.</p>
-                        <span id="boothTimer1" class="inline-block bg-[#1a1a2e] text-white text-sm font-bold px-4 py-1.5 rounded-full">47s</span>
-                      </div>
-                    </div>
-                    <div class="flex-1 flex items-center justify-center gap-6 md:gap-12">
-                      <button onclick="selectBoothLayout(this, 'sample'); boothNext()" class="booth-layout-btn group flex flex-col items-center gap-3 transition-transform hover:scale-105">
-                        <div class="relative w-20 md:w-28 h-36 md:h-48">
-                          <div class="absolute inset-0 bg-gradient-to-b from-sky-200 to-green-400 rounded-lg border border-gray-200 shadow-md transform -rotate-6"></div>
-                          <div class="absolute inset-0 bg-gradient-to-b from-sky-200 to-green-400 rounded-lg border border-gray-200 shadow-md transform rotate-3"></div>
-                        </div>
-                        <span class="text-sm font-medium text-title">Sample</span>
-                      </button>
-                      <button onclick="selectBoothLayout(this, 'classic'); boothNext()" class="booth-layout-btn group flex flex-col items-center gap-3 transition-transform hover:scale-105">
-                        <div class="w-24 md:w-32 h-36 md:h-48 bg-white rounded-lg border border-gray-200 shadow-md p-2 grid grid-cols-2 grid-rows-3 gap-1">
-                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
-                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
-                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
-                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
-                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
-                          <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded"></div>
-                        </div>
-                        <span class="text-sm font-medium text-title">Classic</span>
-                      </button>
-                      <button onclick="selectBoothLayout(this, '6x2classic'); boothNext()" class="booth-layout-btn group flex flex-col items-center gap-3 transition-transform hover:scale-105">
-                        <div class="relative w-28 md:w-36 h-24 md:h-28">
-                          <div class="absolute top-0 left-0 w-16 md:w-20 h-full bg-white rounded-lg border border-gray-200 shadow-md p-1 transform -rotate-6">
-                            <div class="w-full h-full grid grid-rows-4 gap-0.5">
-                              <div class="bg-gradient-to-r from-sky-200 to-green-300 rounded-sm"></div>
-                              <div class="bg-gradient-to-r from-sky-200 to-green-300 rounded-sm"></div>
-                              <div class="bg-gradient-to-r from-sky-200 to-green-300 rounded-sm"></div>
-                              <div class="bg-gradient-to-r from-sky-200 to-green-300 rounded-sm"></div>
-                            </div>
-                          </div>
-                          <div class="absolute top-4 right-0 w-20 md:w-24 h-14 md:h-16 bg-white rounded-lg border border-gray-200 shadow-md p-1 grid grid-cols-3 gap-0.5">
-                            <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded-sm"></div>
-                            <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded-sm"></div>
-                            <div class="bg-gradient-to-b from-sky-200 to-green-300 rounded-sm"></div>
-                          </div>
-                        </div>
-                        <span class="text-sm font-medium text-title">6&times;2 Classic</span>
-                      </button>
-                    </div>
-                    <div class="flex justify-center mt-2">
-                      <div class="w-10 h-1.5 bg-[#1a1a2e] rounded-full"></div>
-                    </div>
-                    <div class="absolute bottom-4 right-6 md:bottom-6 md:right-10">
-                      <h3 class="text-xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span>.</span><span class="text-[6px] align-top">&#10057;</span></h3>
-                    </div>
-                  </div>
-
-                  <!-- Screen 2: Select photos to retake -->
-                  <div class="booth-screen hidden flex-col h-full p-5 md:p-8" data-screen="2">
-                    <div class="flex items-start justify-between mb-3">
-                      <div>
-                        <h3 class="text-xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span>.</span><span class="text-[6px] align-top">&#10057;</span></h3>
-                      </div>
-                      <div class="text-right space-y-1">
-                        <span class="inline-block bg-[#1a1a2e] text-white text-xs font-bold px-3 py-1 rounded-full">Retakes left: 2</span>
-                        <div><span class="text-xs text-body border border-line px-2.5 py-0.5 rounded-md">18s</span></div>
-                      </div>
-                    </div>
-                    <div class="flex items-center justify-between mb-2">
-                      <div>
-                        <p class="text-base font-bold text-title">Select photos to retake</p>
-                        <p class="text-xs text-body">Tap any photo to mark it for retake, or continue when you are happy with the set.</p>
-                      </div>
-                      <div class="text-right">
-                        <p class="text-xs text-body">Selected</p>
-                        <p class="text-2xl font-black text-title">0</p>
-                      </div>
-                    </div>
-                    <hr class="border-purple/30 mb-3">
-                    <div class="flex-1 grid grid-cols-4 gap-2 auto-rows-fr">
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-2xl"></i></div>
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-2xl"></i></div>
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-400 text-2xl"></i></div>
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-400 text-2xl"></i></div>
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-face-laugh text-gray-400 text-2xl"></i></div>
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-400 text-2xl"></i></div>
-                    </div>
-                    <div class="flex justify-end gap-3 mt-3">
-                      <button class="bg-gray-200 text-title font-bold px-6 py-2.5 rounded-full text-sm flex items-center gap-2 hover:bg-gray-300 transition-colors">
-                        <i class="fa-solid fa-rotate-left text-xs"></i> Retake
-                      </button>
-                      <button onclick="boothNext()" class="btn-animation bg-[#1a1a2e] text-white font-bold px-6 py-2.5 rounded-full text-sm flex items-center gap-2 hover:bg-[#2a2a3e] transition-colors">
-                        <i class="fa-solid fa-circle-check text-xs"></i> Continue
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- Screen 3: Arrange photos + strip preview -->
-                  <div class="booth-screen hidden flex-col h-full p-5 md:p-8" data-screen="3">
-                    <div class="flex items-center justify-between mb-3">
-                      <h3 class="text-xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span>.</span><span class="text-[6px] align-top">&#10057;</span></h3>
-                      <span class="bg-[#1a1a2e] text-white text-sm font-bold px-4 py-1.5 rounded-full">44s</span>
-                    </div>
-                    <div class="flex-1 flex gap-6">
-                      <!-- Photo grid -->
-                      <div class="flex-1 grid grid-cols-2 gap-2 auto-rows-fr">
-                        <div class="bg-gray-200 rounded-xl flex items-center justify-center relative"><span class="absolute top-2 left-2 w-5 h-5 rounded-full bg-gray-400 text-white text-[10px] flex items-center justify-center font-bold">1</span><i class="fa-solid fa-user text-gray-400 text-xl"></i></div>
-                        <div class="bg-gray-200 rounded-xl flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-xl"></i></div>
-                        <div class="bg-gray-200 rounded-xl flex items-center justify-center relative"><span class="absolute top-2 left-2 w-5 h-5 rounded-full bg-gray-400 text-white text-[10px] flex items-center justify-center font-bold">2</span><i class="fa-solid fa-face-smile text-gray-400 text-xl"></i></div>
-                        <div class="bg-gray-200 rounded-xl flex items-center justify-center relative"><span class="absolute top-2 left-2 w-5 h-5 rounded-full bg-gray-400 text-white text-[10px] flex items-center justify-center font-bold">3</span><i class="fa-solid fa-face-grin text-gray-400 text-xl"></i></div>
-                        <div class="bg-gray-200 rounded-xl flex items-center justify-center"><i class="fa-solid fa-face-laugh text-gray-400 text-xl"></i></div>
-                        <div class="bg-gray-200 rounded-xl flex items-center justify-center relative"><span class="absolute top-2 left-2 w-5 h-5 rounded-full bg-gray-400 text-white text-[10px] flex items-center justify-center font-bold">4</span><i class="fa-solid fa-face-grin-stars text-gray-400 text-xl"></i></div>
-                      </div>
-                      <!-- Strip preview -->
-                      <div class="flex gap-2">
-                        <div class="w-20 md:w-24 bg-white border border-gray-300 rounded-lg p-1 shadow-sm flex flex-col">
-                          <div class="flex-1 grid grid-rows-4 gap-1 mb-1">
-                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[10px]"></i></div>
-                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-300 text-[10px]"></i></div>
-                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-300 text-[10px]"></i></div>
-                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-300 text-[10px]"></i></div>
-                          </div>
-                          <div class="bg-[#1a1a2e] rounded-sm h-4 flex items-center justify-center"><span class="text-white text-[5px] font-bold">studio photuna.</span></div>
-                        </div>
-                        <div class="w-20 md:w-24 bg-white border border-gray-300 rounded-lg p-1 shadow-sm flex flex-col">
-                          <div class="flex-1 grid grid-rows-4 gap-1 mb-1">
-                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[10px]"></i></div>
-                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-300 text-[10px]"></i></div>
-                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-300 text-[10px]"></i></div>
-                            <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-300 text-[10px]"></i></div>
-                          </div>
-                          <div class="bg-[#1a1a2e] rounded-sm h-4 flex items-center justify-center"><span class="text-white text-[5px] font-bold">studio photuna.</span></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="flex justify-center gap-4 mt-3">
-                      <span class="bg-[#1a1a2e] text-white font-bold px-6 py-2.5 rounded-full text-sm">Photos 4/4</span>
-                      <button onclick="boothNext()" class="btn-animation bg-[#1a1a2e] text-white font-bold px-8 py-2.5 rounded-full text-sm hover:bg-[#2a2a3e] transition-colors">Next &rarr;</button>
-                    </div>
-                  </div>
-
-                  <!-- Screen 4: Tone & Frame -->
-                  <div class="booth-screen hidden flex-col h-full p-5 md:p-8" data-screen="4">
-                    <div class="flex items-center justify-between mb-4">
-                      <h3 class="text-xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span>.</span><span class="text-[6px] align-top">&#10057;</span></h3>
-                      <span class="bg-[#1a1a2e] text-white text-sm font-bold px-4 py-1.5 rounded-full">73s</span>
-                    </div>
-                    <div class="flex-1 flex gap-6 md:gap-10">
-                      <!-- Options -->
-                      <div class="flex-1 space-y-5">
-                        <div>
-                          <h4 class="text-2xl font-black text-[#1a1a2e] italic mb-3">Tone</h4>
-                          <div class="grid grid-cols-3 gap-2">
-                            <button class="booth-tone-btn px-3 py-2 rounded-full border border-line text-xs font-semibold text-title bg-white hover:bg-gray-50 transition-all">Normal</button>
-                            <button class="booth-tone-btn px-3 py-2 rounded-full text-xs font-semibold bg-[#1a1a2e] text-white" onclick="selectBoothTone(this)">Black &amp; White <span class="inline-block w-2 h-2 rounded-full bg-white ml-1"></span></button>
-                            <button class="booth-tone-btn px-3 py-2 rounded-full border border-line text-xs font-semibold text-title bg-white hover:bg-gray-50 transition-all">Sepia</button>
-                            <button class="booth-tone-btn px-3 py-2 rounded-full border border-line text-xs font-semibold text-title bg-white hover:bg-gray-50 transition-all">Vintage</button>
-                            <button class="booth-tone-btn px-3 py-2 rounded-full border border-line text-xs font-semibold text-title bg-white hover:bg-gray-50 transition-all">Warm</button>
-                            <button class="booth-tone-btn px-3 py-2 rounded-full border border-line text-xs font-semibold text-title bg-white hover:bg-gray-50 transition-all">Cool</button>
-                          </div>
-                        </div>
-                        <div>
-                          <h4 class="text-2xl font-black text-[#1a1a2e] italic mb-3">Frame</h4>
-                          <button class="px-4 py-2 rounded-full text-xs font-semibold bg-[#1a1a2e] text-white">Sample <span class="inline-block w-2 h-2 rounded-full bg-white ml-1"></span></button>
-                        </div>
-                        <button onclick="boothNext()" class="btn-animation w-full bg-[#1a1a2e] text-white font-bold py-3.5 rounded-full text-sm hover:bg-[#2a2a3e] transition-colors mt-2">Print &rarr;</button>
-                      </div>
-                      <!-- Grayscale strip preview -->
-                      <div class="flex gap-2">
-                        <div class="w-20 md:w-24 bg-white border border-gray-300 rounded-lg p-1 shadow-sm flex flex-col">
-                          <div class="flex-1 grid grid-rows-4 gap-1 mb-1 grayscale">
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-400 text-[10px]"></i></div>
-                          </div>
-                          <div class="h-5 flex items-center justify-center"><span class="text-[#1a1a2e] text-[6px] font-black">studio photuna.</span></div>
-                        </div>
-                        <div class="w-20 md:w-24 bg-white border border-gray-300 rounded-lg p-1 shadow-sm flex flex-col">
-                          <div class="flex-1 grid grid-rows-4 gap-1 mb-1 grayscale">
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-400 text-[10px]"></i></div>
-                          </div>
-                          <div class="h-5 flex items-center justify-center"><span class="text-[#1a1a2e] text-[6px] font-black">studio photuna.</span></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Screen 5: Preparing your gallery -->
-                  <div class="booth-screen hidden flex-col items-center justify-center text-center h-full" data-screen="5">
-                    <div class="space-y-4" id="boothPreparing">
-                      <h2 class="text-4xl md:text-5xl font-black text-[#1a1a2e]" style="font-family: 'Playfair Display', serif;">Preparing your gallery</h2>
-                      <p class="text-sm text-body">Generating your QR code and getting your photos ready.</p>
-                      <div class="flex items-center justify-center gap-2 mt-4">
-                        <span class="w-2.5 h-2.5 rounded-full bg-[#1a1a2e] animate-bounce" style="animation-delay: 0ms;"></span>
-                        <span class="w-2.5 h-2.5 rounded-full bg-[#1a1a2e] animate-bounce" style="animation-delay: 200ms;"></span>
-                        <span class="w-2.5 h-2.5 rounded-full bg-[#1a1a2e] animate-bounce" style="animation-delay: 400ms;"></span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Screen 6: We are now Printing -->
-                  <div class="booth-screen hidden flex-col h-full p-5 md:p-8" data-screen="6">
-                    <div class="flex-1 flex items-center gap-8">
-                      <!-- Left side: print status + QR -->
-                      <div class="flex-1 flex flex-col items-center text-center space-y-4">
-                        <span class="bg-[#1a1a2e] text-white text-sm font-bold px-4 py-1.5 rounded-full">22s</span>
-                        <h2 class="text-3xl md:text-4xl font-black text-[#1a1a2e] leading-tight" style="font-family: 'Playfair Display', serif;">We are now<br><em>Printing...</em></h2>
-                        <div class="w-28 h-28 md:w-32 md:h-32 border-2 border-line rounded-xl flex items-center justify-center bg-white">
-                          <i class="fa-solid fa-qrcode text-5xl md:text-6xl text-[#1a1a2e]"></i>
-                        </div>
-                        <p class="text-xs text-body max-w-[280px]">Thank you for choosing <strong>Studio Photuna</strong> to create this special memory. To download your photos and GIF samples, simply scan the QR code.</p>
-                      </div>
-                      <!-- Right side: strip preview -->
-                      <div class="flex gap-2">
-                        <div class="w-20 md:w-24 bg-white border border-gray-300 rounded-lg p-1 shadow-sm flex flex-col">
-                          <div class="flex-1 grid grid-rows-4 gap-1 mb-1 grayscale">
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-400 text-[10px]"></i></div>
-                          </div>
-                          <div class="h-5 flex items-center justify-center"><span class="text-[#1a1a2e] text-[6px] font-black">studio photuna.</span></div>
-                        </div>
-                        <div class="w-20 md:w-24 bg-white border border-gray-300 rounded-lg p-1 shadow-sm flex flex-col">
-                          <div class="flex-1 grid grid-rows-4 gap-1 mb-1 grayscale">
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-smile text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin text-gray-400 text-[10px]"></i></div>
-                            <div class="bg-gray-300 rounded-sm flex items-center justify-center"><i class="fa-solid fa-face-grin-stars text-gray-400 text-[10px]"></i></div>
-                          </div>
-                          <div class="h-5 flex items-center justify-center"><span class="text-[#1a1a2e] text-[6px] font-black">studio photuna.</span></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Screen 7: Your print is ready -->
-                  <div class="booth-screen hidden flex-col items-center justify-center text-center h-full" data-screen="7">
-                    <div class="space-y-5">
-                      <h3 class="text-3xl font-black text-[#1a1a2e] leading-none" style="font-family: 'Inter', sans-serif;">studio<br>photuna<span>.</span><span class="text-[8px] align-top">&#10057;</span></h3>
-                      <h2 class="text-3xl md:text-4xl font-black text-[#1a1a2e]"><span class="text-2xl">&#10024;</span> Your print is ready <span class="text-xl">&#10024;</span></h2>
-                      <p class="text-sm text-body max-w-sm mx-auto">Thanks for posing with us! We loved capturing your moment. Enjoy your photo and we hope to see you again soon.</p>
-                      <p class="text-xs text-muted" id="boothReturnTimer">returning in 11s</p>
-                      <button onclick="boothReset()" class="btn-animation bg-[#1a1a2e] text-white font-bold px-10 py-3.5 rounded-full text-sm hover:bg-[#2a2a3e] transition-colors">
-                        New Session &rarr;
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-              <!-- Monitor stand -->
-              <div class="flex flex-col items-center -mt-1">
-                <div class="w-16 h-6 bg-[#111827] rounded-b-sm"></div>
-                <div class="w-32 h-2 bg-[#1f2937] rounded-b-full"></div>
-              </div>
-              <p class="text-center text-xs text-muted font-bold mt-4">Interactive demo — experience the actual booth flow your guests will see.</p>
             </div>
           </div>
         </section>
