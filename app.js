@@ -770,7 +770,10 @@ async function reviewProof(proofId, userId, billing, action) {
         const months = isYearly ? 12 : 1;
         const periodEnd = new Date();
         periodEnd.setMonth(periodEnd.getMonth() + months);
-        const { error: licenseErr } = await supabaseClient.from("licenses").update({ state: "active", plan: isYearly ? "pro_yearly" : "pro_monthly", current_period_end: periodEnd.toISOString(), last_payment_verified_at: new Date().toISOString(), watermark: false, max_events: isYearly ? null : 10, templates: isYearly ? null : 5, priority_support: isYearly }).eq("user_id", userId);
+        // Per-tier entitlements:
+        //   pro_monthly -> 20 events, 30 templates, no priority support
+        //   pro_yearly  -> 50 events, 100 templates, priority support
+        const { error: licenseErr } = await supabaseClient.from("licenses").update({ state: "active", plan: isYearly ? "pro_yearly" : "pro_monthly", current_period_end: periodEnd.toISOString(), last_payment_verified_at: new Date().toISOString(), watermark: false, max_events: isYearly ? 50 : 20, templates: isYearly ? 100 : 30, priority_support: isYearly }).eq("user_id", userId);
         if (licenseErr) throw licenseErr;
         await supabaseClient.from("profiles").update({ subscription_plan: isYearly ? "pro_yearly" : "pro_monthly" }).eq("id", userId);
       }
