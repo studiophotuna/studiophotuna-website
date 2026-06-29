@@ -94,11 +94,11 @@ const COMBO_DISCOUNT = 2500;
 
 // Fallback packages used if Supabase fetch fails
 const FALLBACK_PACKAGES = {
-  "enclosed": { name: "Enclosed Photobooth", price: 23000, extraRate: 2000, coverage: "3 hours", icon: "fa-camera", included: ["Private enclosed photobooth setup","Custom strip template overlay designs","Soft lighting configuration","QR live download access","On-site technical representative","Complimentary travel within Metro Manila"] },
-  "high-angle": { name: "High-Angle Photobooth", price: 20000, extraRate: 1500, coverage: "3 hours", icon: "fa-angles-up", included: ["High-angle perspective photobooth set","Custom strip template overlay designs","Soft overhead flash configuration","QR live download access","On-site technical representative","Complimentary travel within Metro Manila"] },
-  "polaroid": { name: "Polaroid Phone App", price: 5000, extraRate: 500, coverage: "3 hours", icon: "fa-mobile-screen", included: ["Polaroid-style phone app experience","Instant digital prints via phone","QR cloud sync storage"] },
-  "phone-booth": { name: "Phone Booth", price: 4500, extraRate: 500, coverage: "3 hours", icon: "fa-phone-volume", included: ["Retro physical phone set","Digital audio guest recording log","Basic support frame","QR cloud sync storage"] },
-  "cafe": { name: "Cafe Booth", price: 20000, extraRate: 1500, coverage: "3 hours", icon: "fa-mug-hot", included: ["Cafe-themed photobooth setup","Custom strip template overlay designs","QR live download access","On-site technical representative","Complimentary travel within Metro Manila"] }
+  "enclosed": { name: "Enclosed Photobooth", price: 23000, extraRate: 2000, coverage: "3 hours", icon: "fa-camera", included: ["Private enclosed photobooth setup", "Custom strip template overlay designs", "Soft lighting configuration", "QR live download access", "On-site technical representative", "Complimentary travel within Metro Manila"] },
+  "high-angle": { name: "High-Angle Photobooth", price: 20000, extraRate: 1500, coverage: "3 hours", icon: "fa-angles-up", included: ["High-angle perspective photobooth set", "Custom strip template overlay designs", "Soft overhead flash configuration", "QR live download access", "On-site technical representative", "Complimentary travel within Metro Manila"] },
+  "polaroid": { name: "Polaroid Phone App", price: 5000, extraRate: 500, coverage: "3 hours", icon: "fa-mobile-screen", included: ["Polaroid-style phone app experience", "Instant digital prints via phone", "QR cloud sync storage"] },
+  "phone-booth": { name: "Phone Booth", price: 4500, extraRate: 500, coverage: "3 hours", icon: "fa-phone-volume", included: ["Retro physical phone set", "Digital audio guest recording log", "Basic support frame", "QR cloud sync storage"] },
+  "cafe": { name: "Cafe Booth", price: 20000, extraRate: 1500, coverage: "3 hours", icon: "fa-mug-hot", included: ["Cafe-themed photobooth setup", "Custom strip template overlay designs", "QR live download access", "On-site technical representative", "Complimentary travel within Metro Manila"] }
 };
 
 async function loadPackagesFromSupabase() {
@@ -194,10 +194,6 @@ function setAuthMode(mode) {
   authName.toggleAttribute("required", mode === "signup");
   authPassword.setAttribute("placeholder", mode === "signup" ? "Create a Password" : "Password");
   authSubmit.textContent = mode === "signup" ? "Create Free Account" : "Sign In";
-  const consentLabel = document.getElementById("authConsent");
-  if (consentLabel) { consentLabel.classList.toggle("hidden", mode !== "signup"); consentLabel.classList.toggle("flex", mode === "signup"); }
-  const consentCheck = document.getElementById("consentCheck");
-  if (consentCheck && mode !== "signup") { consentCheck.checked = false; }
 }
 
 function setAuthMessage(message, isError = false) { authMessage.textContent = message; authMessage.style.color = isError ? "#dc2626" : "var(--body)"; }
@@ -219,7 +215,11 @@ async function loadAccountState(user) {
     document.getElementById("accountPlan").textContent = formatStatus(license?.plan || profile?.subscription_plan || "free");
     document.getElementById("accountStatus").textContent = formatStatus(license?.state || "unsubscribed");
     document.getElementById("accountTrial").textContent = license?.trial_redeemed ? "Yes" : "No";
-    document.getElementById("accountGallery").textContent = license?.gallery_addon ? "Yes" : "No";
+    document.getElementById("accountGallery").textContent = (() => {
+      // Show the gallery tier (Free / Plus / Business); fall back to the legacy boolean.
+      const tier = license?.gallery_tier || (license?.gallery_addon ? "plus" : "free");
+      return tier.charAt(0).toUpperCase() + tier.slice(1);
+    })();
     document.getElementById("profileFullName").value = profile?.full_name || "";
     document.getElementById("profileCompany").value = profile?.company || "";
     document.getElementById("profilePhone").value = profile?.phone || "";
@@ -360,8 +360,8 @@ function setGcashModalBilling(billing) {
     btn.classList.toggle("active", isActive); btn.classList.toggle("bg-white", isActive); btn.classList.toggle("text-title", isActive); btn.classList.toggle("shadow-sm", isActive); btn.classList.toggle("text-muted", !isActive);
   });
   const amount = PHP_AMOUNTS[gcashModalBilling] || 0;
-  const perMonth = gcashModalBilling === "yearly" ? ` · ₱${Math.round(amount/12).toLocaleString("en-PH")}/mo` : "";
-  document.getElementById("gcashAmountDue").textContent = `₱${amount.toLocaleString("en-PH", {minimumFractionDigits:2})}${perMonth}`;
+  const perMonth = gcashModalBilling === "yearly" ? ` · ₱${Math.round(amount / 12).toLocaleString("en-PH")}/mo` : "";
+  document.getElementById("gcashAmountDue").textContent = `₱${amount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}${perMonth}`;
 }
 
 function closeGcashModal() { gcashModal.classList.add("hidden"); gcashModal.classList.remove("grid"); gcashModal.setAttribute("aria-hidden", "true"); }
@@ -496,7 +496,7 @@ function renderQuote() {
       quoteSummaryList.innerHTML = pkgs.map(p => `<li class="flex justify-between"><span>${p.name}</span><strong>PHP ${p.price.toLocaleString()}</strong></li>`).join("")
         + (discount ? `<li class="flex justify-between text-yellow-300"><span>Combo Discount</span><strong>-PHP ${discount.toLocaleString()}</strong></li>` : "")
         + `<li class="flex justify-between"><span>Overtime (${extraHours} hrs)</span><strong>PHP ${extraCost.toLocaleString()}</strong></li>`
-        + `<li class="flex justify-between border-t border-white/10 pt-1 mt-1 font-bold"><span>50% Deposit</span><strong>PHP ${pkgs.length ? ((total)/2).toLocaleString() : "0"}</strong></li>`;
+        + `<li class="flex justify-between border-t border-white/10 pt-1 mt-1 font-bold"><span>50% Deposit</span><strong>PHP ${pkgs.length ? ((total) / 2).toLocaleString() : "0"}</strong></li>`;
     }
   }
   if (quoteTotal) { quoteTotal.textContent = isCustom ? "Custom Quote" : `PHP ${total.toLocaleString()}`; }
@@ -599,7 +599,7 @@ async function loadBookings() {
   if (!supabaseClient) { setMessage(adminMessage, "Supabase client not available.", true); return; }
   if (!window.currentSupabaseUser) {
     setMessage(adminMessage, "Verifying session...");
-    try { const { data } = await supabaseClient.auth.getSession(); window.currentSupabaseUser = data?.session?.user || null; if (window.currentSupabaseUser) loadAccountState(window.currentSupabaseUser); } catch (_) {}
+    try { const { data } = await supabaseClient.auth.getSession(); window.currentSupabaseUser = data?.session?.user || null; if (window.currentSupabaseUser) loadAccountState(window.currentSupabaseUser); } catch (_) { }
     if (!window.currentSupabaseUser) { setMessage(adminMessage, "Sign in to access admin dashboard.", true); return; }
   }
   if (adminMeta) adminMeta.textContent = "Logged in as " + window.currentSupabaseUser.email;
@@ -610,7 +610,7 @@ async function loadBookings() {
     bookings = data || [];
     const msg = bookings.length ? `${bookings.length} booking(s) loaded.` : "No bookings found. If you expect records here, make sure your profile has role = 'admin' and that 06_admin_rls_policies.sql has been run.";
     setMessage(adminMessage, msg, !bookings.length);
-    supabaseClient.from("payment_proofs").select("id,status").eq("status","pending").then(({ data }) => { proofs = proofs.length ? proofs : (data || []); updateStats(); });
+    supabaseClient.from("payment_proofs").select("id,status").eq("status", "pending").then(({ data }) => { proofs = proofs.length ? proofs : (data || []); updateStats(); });
     renderBookings();
   } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
 }
@@ -620,7 +620,7 @@ function setMessage(element, text, isError = false) { if (!element) return; elem
 function updateStats() {
   const pending = bookings.filter(b => b.status === "pending").length;
   const approved = bookings.filter(b => b.status === "approved").length;
-  const paid = bookings.filter(b => ["partial_paid","paid"].includes(b.reservation_status)).length;
+  const paid = bookings.filter(b => ["partial_paid", "paid"].includes(b.reservation_status)).length;
   const customQuotes = bookings.filter(b => b.is_custom_quote).length;
   document.getElementById("statPending").textContent = pending;
   document.getElementById("statApproved").textContent = approved;
@@ -649,11 +649,11 @@ function renderBookings() {
   filtered.forEach(b => {
     const statusCls = STATUS_COLORS[b.status] || "bg-grey text-body";
     const paymentCls = PAYMENT_COLORS[b.reservation_status] || "bg-grey text-body";
-    const submittedAt = b.created_at ? new Date(b.created_at).toLocaleDateString("en-PH", { year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" }) : "—";
+    const submittedAt = b.created_at ? new Date(b.created_at).toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
     const isCustom = !!b.is_custom_quote;
     const card = document.createElement("div");
     card.className = "border border-line rounded-2xl bg-white shadow-sm overflow-hidden" + (isCustom ? " ring-2 ring-purple/30" : "");
-    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3 flex-wrap"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusCls}">${b.status}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${paymentCls}">${b.reservation_status}</span>${isCustom ? `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple"><i class="fa-solid fa-envelope mr-1"></i>Custom Quote</span>` : ""}</div><span class="text-[10px] text-muted font-bold">Submitted ${submittedAt}</span></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 items-start"><div class="lg:col-span-8 space-y-4"><div><h3 class="text-xl font-black text-title">${b.full_name}</h3>${b.email ? `<p class="text-xs text-muted">${b.email}</p>` : ""}</div><div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs"><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Event Date</span><strong class="text-title">${b.event_date || "—"}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Event Type</span><strong class="text-title">${b.event_type || "—"}</strong></div><div class="bg-grey rounded-xl p-3 ${isCustom ? "border border-orange-200 bg-orange-50" : ""}"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Guests</span><strong class="${isCustom ? "text-orange-600" : "text-title"}">${b.estimated_guests || "—"}${isCustom ? " ⚠" : ""}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Package(s)</span><strong class="text-title">${b.package_name || "—"}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Est. Total</span><strong class="text-title">${isCustom ? "Custom" : (b.estimated_total ? "₱" + Number(b.estimated_total).toLocaleString() : "—")}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Hours</span><strong class="text-title">${b.hours || "—"}</strong></div></div><div class="text-xs space-y-1 border-t border-line pt-3"><span class="text-[10px] uppercase font-bold text-muted block">Venue</span><strong class="text-title">${b.venue_location || "—"}</strong></div>${b.notes ? `<div class="text-xs space-y-1 border-t border-line pt-3"><span class="text-[10px] uppercase font-bold text-muted block">Client Notes</span><p class="text-body">${b.notes}</p></div>` : ""}</div><div class="lg:col-span-4 space-y-3 bg-grey border border-line rounded-2xl p-5"><p class="text-[10px] uppercase font-extrabold text-muted tracking-wider">Admin Actions</p>${isCustom ? `<div class="bg-purple/10 border border-purple/20 rounded-xl p-3 space-y-2"><p class="text-[10px] font-black text-purple uppercase tracking-wider"><i class="fa-solid fa-envelope mr-1"></i>Custom Quote Required</p><p class="text-[10px] text-body">${b.estimated_guests}+ guests — send custom rate to client email.</p><button onclick="openQuoteModal('${b.id}','${(b.email||b.phone||"").replace(/'/g,"\\'")}','${(b.full_name||"").replace(/'/g,"\\'")}','${(b.package_name||"").replace(/'/g,"\\'")}',${b.estimated_guests||0})" class="btn-animation w-full bg-purple text-white text-[10px] font-black py-2 rounded-lg flex items-center justify-center gap-1"><i class="fa-solid fa-paper-plane"></i> Send Custom Quote</button></div>` : ""}<div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Booking Status</label><select class="status-select w-full border border-line rounded-lg px-3 py-2 text-xs bg-white">${["pending","approved","declined","cancelled"].map(s => `<option value="${s}" ${b.status===s?"selected":""}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join("")}</select></div><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Payment Status</label><select class="payment-select w-full border border-line rounded-lg px-3 py-2 text-xs bg-white"><option value="unpaid" ${b.reservation_status==="unpaid"?"selected":""}>Unpaid</option><option value="partial_paid" ${b.reservation_status==="partial_paid"?"selected":""}>50% Paid</option><option value="paid" ${b.reservation_status==="paid"?"selected":""}>Fully Paid</option></select></div><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Admin Note (optional)</label><textarea class="admin-note w-full border border-line rounded-lg px-3 py-2 text-xs bg-white resize-none h-20" placeholder="Internal note visible only to admins…">${b.admin_note || ""}</textarea></div><button onclick="saveAdminBookingChange('${b.id}', this)" class="btn-animation w-full bg-purple text-white hover:bg-purple-dark text-xs font-bold py-2.5 rounded-xl">Save Changes</button></div></div>`;
+    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3 flex-wrap"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusCls}">${b.status}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${paymentCls}">${b.reservation_status}</span>${isCustom ? `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple"><i class="fa-solid fa-envelope mr-1"></i>Custom Quote</span>` : ""}</div><span class="text-[10px] text-muted font-bold">Submitted ${submittedAt}</span></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 items-start"><div class="lg:col-span-8 space-y-4"><div><h3 class="text-xl font-black text-title">${b.full_name}</h3>${b.email ? `<p class="text-xs text-muted">${b.email}</p>` : ""}</div><div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs"><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Event Date</span><strong class="text-title">${b.event_date || "—"}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Event Type</span><strong class="text-title">${b.event_type || "—"}</strong></div><div class="bg-grey rounded-xl p-3 ${isCustom ? "border border-orange-200 bg-orange-50" : ""}"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Guests</span><strong class="${isCustom ? "text-orange-600" : "text-title"}">${b.estimated_guests || "—"}${isCustom ? " ⚠" : ""}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Package(s)</span><strong class="text-title">${b.package_name || "—"}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Est. Total</span><strong class="text-title">${isCustom ? "Custom" : (b.estimated_total ? "₱" + Number(b.estimated_total).toLocaleString() : "—")}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Hours</span><strong class="text-title">${b.hours || "—"}</strong></div></div><div class="text-xs space-y-1 border-t border-line pt-3"><span class="text-[10px] uppercase font-bold text-muted block">Venue</span><strong class="text-title">${b.venue_location || "—"}</strong></div>${b.notes ? `<div class="text-xs space-y-1 border-t border-line pt-3"><span class="text-[10px] uppercase font-bold text-muted block">Client Notes</span><p class="text-body">${b.notes}</p></div>` : ""}</div><div class="lg:col-span-4 space-y-3 bg-grey border border-line rounded-2xl p-5"><p class="text-[10px] uppercase font-extrabold text-muted tracking-wider">Admin Actions</p>${isCustom ? `<div class="bg-purple/10 border border-purple/20 rounded-xl p-3 space-y-2"><p class="text-[10px] font-black text-purple uppercase tracking-wider"><i class="fa-solid fa-envelope mr-1"></i>Custom Quote Required</p><p class="text-[10px] text-body">${b.estimated_guests}+ guests — send custom rate to client email.</p><button onclick="openQuoteModal('${b.id}','${(b.email || b.phone || "").replace(/'/g, "\\'")}','${(b.full_name || "").replace(/'/g, "\\'")}','${(b.package_name || "").replace(/'/g, "\\'")}',${b.estimated_guests || 0})" class="btn-animation w-full bg-purple text-white text-[10px] font-black py-2 rounded-lg flex items-center justify-center gap-1"><i class="fa-solid fa-paper-plane"></i> Send Custom Quote</button></div>` : ""}<div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Booking Status</label><select class="status-select w-full border border-line rounded-lg px-3 py-2 text-xs bg-white">${["pending", "approved", "declined", "cancelled"].map(s => `<option value="${s}" ${b.status === s ? "selected" : ""}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join("")}</select></div><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Payment Status</label><select class="payment-select w-full border border-line rounded-lg px-3 py-2 text-xs bg-white"><option value="unpaid" ${b.reservation_status === "unpaid" ? "selected" : ""}>Unpaid</option><option value="partial_paid" ${b.reservation_status === "partial_paid" ? "selected" : ""}>50% Paid</option><option value="paid" ${b.reservation_status === "paid" ? "selected" : ""}>Fully Paid</option></select></div><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Admin Note (optional)</label><textarea class="admin-note w-full border border-line rounded-lg px-3 py-2 text-xs bg-white resize-none h-20" placeholder="Internal note visible only to admins…">${b.admin_note || ""}</textarea></div><button onclick="saveAdminBookingChange('${b.id}', this)" class="btn-animation w-full bg-purple text-white hover:bg-purple-dark text-xs font-bold py-2.5 rounded-xl">Save Changes</button></div></div>`;
     bookingList.appendChild(card);
   });
 }
@@ -688,11 +688,11 @@ function renderTickets() {
   const ticketList = document.getElementById("ticketList"); if (!ticketList) return; ticketList.innerHTML = "";
   if (!tickets.length) { ticketList.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-10 text-center text-muted space-y-2"><i class="fa-solid fa-ticket text-4xl text-line"></i><p class="font-bold text-sm">No support tickets yet.</p></div>`; return; }
   tickets.forEach(t => {
-    const submittedAt = new Date(t.created_at).toLocaleDateString("en-PH", { year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
+    const submittedAt = new Date(t.created_at).toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
     const statusCls = t.status === "open" ? "bg-yellow-100 text-yellow-800" : t.status === "resolved" ? "bg-green-100 text-green-800" : "bg-gray-200 text-gray-600";
     const replies = t.ticket_replies || [];
     const card = document.createElement("div"); card.className = "border border-line rounded-2xl bg-white shadow-sm overflow-hidden";
-    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusCls}">${t.status}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${t.category || "General"}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-red-50 text-red-600">${t.priority || "normal"}</span></div><span class="text-[10px] text-muted font-bold">${submittedAt}</span></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6"><div class="lg:col-span-8 space-y-4"><div><p class="font-black text-title">${t.full_name || "Anonymous"}</p><p class="text-xs text-muted">${t.email || ""}</p></div><div class="bg-grey rounded-xl p-4 text-sm text-body">${t.message}</div>${replies.length ? `<div class="space-y-2 border-t border-line pt-4"><p class="text-[10px] uppercase font-black text-muted">Thread (${replies.length})</p>${replies.map(r => `<div class="rounded-xl p-3 text-xs ${r.is_admin ? "bg-purple/10 text-purple border border-purple/20 ml-4" : "bg-grey text-body"}"><p class="font-bold mb-1">${r.is_admin ? "You (Admin)" : t.full_name || "Guest"} · ${new Date(r.created_at).toLocaleDateString("en-PH", {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</p><p>${r.message}</p></div>`).join("")}</div>` : ""}</div><div class="lg:col-span-4 space-y-3 bg-grey border border-line rounded-2xl p-5"><p class="text-[10px] uppercase font-extrabold text-muted tracking-wider">Reply</p><textarea id="reply-${t.id}" rows="4" class="w-full border border-line rounded-xl px-3 py-2 text-xs bg-white resize-none" placeholder="Type your reply to ${t.full_name || "the guest"}…"></textarea><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Status after reply</label><select id="reply-status-${t.id}" class="w-full border border-line rounded-lg px-3 py-2 text-xs bg-white"><option value="open" ${t.status==="open"?"selected":""}>Keep Open</option><option value="in_progress" ${t.status==="in_progress"?"selected":""}>In Progress</option><option value="resolved" ${t.status==="resolved"?"selected":""}>Resolved</option><option value="closed" ${t.status==="closed"?"selected":""}>Closed</option></select></div><button onclick="replyToTicket('${t.id}', this)" class="btn-animation w-full bg-purple text-white text-xs font-black py-2.5 rounded-xl flex items-center justify-center gap-2"><i class="fa-solid fa-paper-plane"></i> Send Reply</button></div></div>`;
+    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusCls}">${t.status}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${t.category || "General"}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-red-50 text-red-600">${t.priority || "normal"}</span></div><span class="text-[10px] text-muted font-bold">${submittedAt}</span></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6"><div class="lg:col-span-8 space-y-4"><div><p class="font-black text-title">${t.full_name || "Anonymous"}</p><p class="text-xs text-muted">${t.email || ""}</p></div><div class="bg-grey rounded-xl p-4 text-sm text-body">${t.message}</div>${replies.length ? `<div class="space-y-2 border-t border-line pt-4"><p class="text-[10px] uppercase font-black text-muted">Thread (${replies.length})</p>${replies.map(r => `<div class="rounded-xl p-3 text-xs ${r.is_admin ? "bg-purple/10 text-purple border border-purple/20 ml-4" : "bg-grey text-body"}"><p class="font-bold mb-1">${r.is_admin ? "You (Admin)" : t.full_name || "Guest"} · ${new Date(r.created_at).toLocaleDateString("en-PH", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</p><p>${r.message}</p></div>`).join("")}</div>` : ""}</div><div class="lg:col-span-4 space-y-3 bg-grey border border-line rounded-2xl p-5"><p class="text-[10px] uppercase font-extrabold text-muted tracking-wider">Reply</p><textarea id="reply-${t.id}" rows="4" class="w-full border border-line rounded-xl px-3 py-2 text-xs bg-white resize-none" placeholder="Type your reply to ${t.full_name || "the guest"}…"></textarea><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Status after reply</label><select id="reply-status-${t.id}" class="w-full border border-line rounded-lg px-3 py-2 text-xs bg-white"><option value="open" ${t.status === "open" ? "selected" : ""}>Keep Open</option><option value="in_progress" ${t.status === "in_progress" ? "selected" : ""}>In Progress</option><option value="resolved" ${t.status === "resolved" ? "selected" : ""}>Resolved</option><option value="closed" ${t.status === "closed" ? "selected" : ""}>Closed</option></select></div><button onclick="replyToTicket('${t.id}', this)" class="btn-animation w-full bg-purple text-white text-xs font-black py-2.5 rounded-xl flex items-center justify-center gap-2"><i class="fa-solid fa-paper-plane"></i> Send Reply</button></div></div>`;
     ticketList.appendChild(card);
   });
 }
@@ -731,11 +731,11 @@ function renderProofs() {
   const filtered = proofs.filter(p => activeProofFilter === "all" || p.status === activeProofFilter);
   if (!filtered.length) { proofList.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-10 text-center text-muted space-y-2"><i class="fa-solid fa-receipt text-4xl text-line"></i><p class="font-bold text-sm">No payment proofs match this filter.</p></div>`; return; }
   filtered.forEach(p => {
-    const submittedAt = new Date(p.created_at).toLocaleDateString("en-PH", { year:"numeric", month:"short", day:"numeric", hour:"2-digit", minute:"2-digit" });
+    const submittedAt = new Date(p.created_at).toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
     const statusCls = p.status === "approved" ? "bg-green-100 text-green-800" : p.status === "rejected" ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-800";
     const card = document.createElement("div"); card.className = "border border-line rounded-2xl bg-white shadow-sm overflow-hidden"; card.id = `proof-${p.id}`;
     const invoiceBtn = p.status === "approved" ? `<button onclick="generateInvoice('${p.id}')" class="btn-animation text-white text-[10px] font-black py-2.5 rounded-xl flex items-center justify-center gap-1 col-span-2" style="background:#6f4dff"><i class="fa-solid fa-file-invoice"></i> View Invoice</button>` : "";
-    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusCls}">${p.status}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${p.billing}</span></div><span class="text-[10px] text-muted font-bold">Submitted ${submittedAt}</span></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 items-start"><div class="lg:col-span-8 space-y-4"><div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs"><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Plan</span><strong class="text-title capitalize">${p.billing}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Amount</span><strong class="text-title">₱${Number(p.amount_php).toLocaleString("en-PH", {minimumFractionDigits:2})}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">GCash Ref #</span><strong class="text-title font-mono">${p.gcash_reference_number}</strong></div><div class="bg-grey rounded-xl p-3 col-span-2"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Sender Name</span><strong class="text-title">${p.gcash_sender_name || "—"}</strong></div></div><div class="border border-line rounded-xl overflow-hidden"><div class="px-4 py-2 bg-grey border-b border-line flex items-center justify-between"><span class="text-[10px] uppercase font-black text-muted">Screenshot</span><button type="button" onclick="viewProofScreenshot('${p.id}','${p.screenshot_path}')" class="text-[10px] text-purple font-black hover:underline flex items-center gap-1"><i class="fa-solid fa-eye"></i> View Screenshot</button></div><div id="screenshot-${p.id}" class="hidden p-4 bg-white"><img class="max-w-full rounded-lg border border-line" alt="Payment screenshot loading…" /><p class="text-[10px] text-muted mt-2">Cross-check the reference number and amount in your GCash app before approving.</p></div></div>${p.admin_note ? `<div class="text-xs border-t border-line pt-3"><span class="text-[10px] uppercase font-bold text-muted block">Admin Note</span><p class="text-body">${p.admin_note}</p></div>` : ""}</div><div class="lg:col-span-4 space-y-3 bg-grey border border-line rounded-2xl p-5"><p class="text-[10px] uppercase font-extrabold text-muted tracking-wider">Review Proof</p><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Admin Note (optional)</label><textarea id="proof-note-${p.id}" class="w-full border border-line rounded-lg px-3 py-2 text-xs bg-white resize-none h-16" placeholder="Reason for rejection, reference mismatch…">${p.admin_note || ""}</textarea></div><div class="grid grid-cols-2 gap-2 ${p.status !== "pending" ? "opacity-60 pointer-events-none" : ""}"><button onclick="reviewProof('${p.id}','${p.user_id}','${p.billing}', 'approved')" class="btn-animation text-white text-[10px] font-black py-2.5 rounded-xl flex items-center justify-center gap-1" style="background:#16a34a"><i class="fa-solid fa-check"></i> Approve</button><button onclick="reviewProof('${p.id}','${p.user_id}','${p.billing}', 'rejected')" class="btn-animation text-white text-[10px] font-black py-2.5 rounded-xl flex items-center justify-center gap-1" style="background:#ef4444"><i class="fa-solid fa-xmark"></i> Reject</button></div>${invoiceBtn}${p.status !== "pending" ? `<p class="text-[10px] text-center text-muted">Already reviewed on ${p.reviewed_at ? new Date(p.reviewed_at).toLocaleDateString("en-PH") : "—"}</p>` : ""}</div></div>`;
+    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusCls}">${p.status}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${p.billing}</span></div><span class="text-[10px] text-muted font-bold">Submitted ${submittedAt}</span></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 items-start"><div class="lg:col-span-8 space-y-4"><div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs"><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Plan</span><strong class="text-title capitalize">${p.billing}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Amount</span><strong class="text-title">₱${Number(p.amount_php).toLocaleString("en-PH", { minimumFractionDigits: 2 })}</strong></div><div class="bg-grey rounded-xl p-3"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">GCash Ref #</span><strong class="text-title font-mono">${p.gcash_reference_number}</strong></div><div class="bg-grey rounded-xl p-3 col-span-2"><span class="text-[10px] uppercase font-bold text-muted block mb-0.5">Sender Name</span><strong class="text-title">${p.gcash_sender_name || "—"}</strong></div></div><div class="border border-line rounded-xl overflow-hidden"><div class="px-4 py-2 bg-grey border-b border-line flex items-center justify-between"><span class="text-[10px] uppercase font-black text-muted">Screenshot</span><button type="button" onclick="viewProofScreenshot('${p.id}','${p.screenshot_path}')" class="text-[10px] text-purple font-black hover:underline flex items-center gap-1"><i class="fa-solid fa-eye"></i> View Screenshot</button></div><div id="screenshot-${p.id}" class="hidden p-4 bg-white"><img class="max-w-full rounded-lg border border-line" alt="Payment screenshot loading…" /><p class="text-[10px] text-muted mt-2">Cross-check the reference number and amount in your GCash app before approving.</p></div></div>${p.admin_note ? `<div class="text-xs border-t border-line pt-3"><span class="text-[10px] uppercase font-bold text-muted block">Admin Note</span><p class="text-body">${p.admin_note}</p></div>` : ""}</div><div class="lg:col-span-4 space-y-3 bg-grey border border-line rounded-2xl p-5"><p class="text-[10px] uppercase font-extrabold text-muted tracking-wider">Review Proof</p><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Admin Note (optional)</label><textarea id="proof-note-${p.id}" class="w-full border border-line rounded-lg px-3 py-2 text-xs bg-white resize-none h-16" placeholder="Reason for rejection, reference mismatch…">${p.admin_note || ""}</textarea></div><div class="grid grid-cols-2 gap-2 ${p.status !== "pending" ? "opacity-60 pointer-events-none" : ""}"><button onclick="reviewProof('${p.id}','${p.user_id}','${p.billing}', 'approved')" class="btn-animation text-white text-[10px] font-black py-2.5 rounded-xl flex items-center justify-center gap-1" style="background:#16a34a"><i class="fa-solid fa-check"></i> Approve</button><button onclick="reviewProof('${p.id}','${p.user_id}','${p.billing}', 'rejected')" class="btn-animation text-white text-[10px] font-black py-2.5 rounded-xl flex items-center justify-center gap-1" style="background:#ef4444"><i class="fa-solid fa-xmark"></i> Reject</button></div>${invoiceBtn}${p.status !== "pending" ? `<p class="text-[10px] text-center text-muted">Already reviewed on ${p.reviewed_at ? new Date(p.reviewed_at).toLocaleDateString("en-PH") : "—"}</p>` : ""}</div></div>`;
     proofList.appendChild(card);
   });
 }
@@ -771,15 +771,14 @@ async function reviewProof(proofId, userId, billing, action) {
         if (licenseErr) throw licenseErr;
       } else {
         // PRO SUBSCRIPTION — monthly / yearly. Do NOT touch gallery fields here.
+        // Per-tier entitlements:
+        //   pro_monthly -> 20 events, 30 templates, no priority support
+        //   pro_yearly  -> 50 events, 100 templates, priority support
         const isYearly = billing === "yearly";
         const months = isYearly ? 12 : 1;
         const periodEnd = new Date();
         periodEnd.setMonth(periodEnd.getMonth() + months);
-        // Per-tier entitlements:
-        //   pro_monthly -> 20 events, 30 templates, no priority support
-        //   pro_yearly  -> 50 events, 100 templates, priority support
-        const { error: licenseErr } = await supabaseClient.from("licenses").update({ state: "active", plan: isYearly ? "pro_yearly" : "pro_monthly", current_period_end: periodEnd.toISOString(), last_payment_verified_at: new Date().toISOString(), watermark: false, max_events: isYearly ? 50 : 20, templates: isYearly ? 100 : 30, priority_support: isYearly }).eq("user_id", userId);
-        if (licenseErr) throw licenseErr;
+        const { error: licenseErr } = await supabaseClient.from("licenses").update({ state: "active", plan: isYearly ? "pro_yearly" : "pro_monthly", current_period_end: periodEnd.toISOString(), last_payment_verified_at: new Date().toISOString(), watermark: false, max_events: isYearly ? 50 : 20, templates: isYearly ? 100 : 30, priority_support: isYearly }).eq("user_id", userId); if (licenseErr) throw licenseErr;
         await supabaseClient.from("profiles").update({ subscription_plan: isYearly ? "pro_yearly" : "pro_monthly" }).eq("id", userId);
       }
       spawnToast("Approved", "License activated. Generating invoice...", "fa-solid fa-circle-check", "success");
@@ -868,7 +867,7 @@ async function handleReviewSubmit(event) {
 
 async function loadReviewsAdmin() {
   if (!supabaseClient) return;
-  if (!window.currentSupabaseUser) { try { const { data } = await supabaseClient.auth.getSession(); window.currentSupabaseUser = data?.session?.user || null; } catch (_) {} if (!window.currentSupabaseUser) return; }
+  if (!window.currentSupabaseUser) { try { const { data } = await supabaseClient.auth.getSession(); window.currentSupabaseUser = data?.session?.user || null; } catch (_) { } if (!window.currentSupabaseUser) return; }
   try { const { data, error } = await supabaseClient.from("public_reviews").select("*").order("created_at", { ascending: false }); if (error) throw error; reviews = data || []; renderReviewsAdmin(); } catch (err) { console.warn(err); }
 }
 
@@ -959,8 +958,8 @@ function renderPackagesAdmin() {
           <p class="text-xl font-black text-purple">₱${pkg.price.toLocaleString()}</p>
           <p class="text-[10px] text-muted font-bold uppercase">+₱${pkg.extraRate.toLocaleString()}/extra hr · ${pkg.coverage}</p>
           <ul class="text-[10px] text-body space-y-0.5 border-t border-line pt-2">
-            ${pkg.included.slice(0,3).map(i => `<li>• ${i}</li>`).join("")}
-            ${pkg.included.length > 3 ? `<li class="text-muted">+${pkg.included.length-3} more…</li>` : ""}
+            ${pkg.included.slice(0, 3).map(i => `<li>• ${i}</li>`).join("")}
+            ${pkg.included.length > 3 ? `<li class="text-muted">+${pkg.included.length - 3} more…</li>` : ""}
           </ul>
         </div>`);
     });
@@ -972,7 +971,7 @@ function renderPackagesAdmin() {
       cqList.insertAdjacentHTML("beforeend", `
         <div class="border border-line rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div class="space-y-1"><p class="font-extrabold text-title">${b.full_name} <span class="text-[10px] font-bold text-muted ml-2">${b.email || b.phone || ""}</span></p><p class="text-xs text-body">${b.package_name || "No package selected"} · ${b.estimated_guests} guests · ${b.event_date}</p><p class="text-xs text-muted">${b.venue_location || ""}</p></div>
-          <button onclick="openQuoteModal('${b.id}','${(b.email||"").replace(/'/g,"\\'")}','${(b.full_name||"").replace(/'/g,"\\'")}','${(b.package_name||"").replace(/'/g,"\\'")}',${b.estimated_guests||0})" class="btn-animation shrink-0 bg-purple text-white text-xs font-black px-4 py-2.5 rounded-xl flex items-center gap-2"><i class="fa-solid fa-paper-plane"></i> Send Custom Quote</button>
+          <button onclick="openQuoteModal('${b.id}','${(b.email || "").replace(/'/g, "\\'")}','${(b.full_name || "").replace(/'/g, "\\'")}','${(b.package_name || "").replace(/'/g, "\\'")}',${b.estimated_guests || 0})" class="btn-animation shrink-0 bg-purple text-white text-xs font-black px-4 py-2.5 rounded-xl flex items-center gap-2"><i class="fa-solid fa-paper-plane"></i> Send Custom Quote</button>
         </div>`);
     });
   }
@@ -1277,7 +1276,7 @@ function selectBoothTone(btn) {
 // Init & Event Listeners
 // ===================================================================
 
-window.onload = async function() {
+window.onload = async function () {
   // Load packages from Supabase first, then build UI
   await loadPackagesFromSupabase();
   adminPackages = Object.entries(packageCatalog).map(([key, p]) => ({ key, ...p }));
@@ -1389,12 +1388,7 @@ if (publicReviewForm) publicReviewForm.onsubmit = handleReviewSubmit;
 authForm.onsubmit = async (event) => {
   event.preventDefault(); if (!supabaseClient) return;
   const email = document.getElementById("authEmail").value.trim(); const password = authPassword.value; const name = authName.value.trim();
-  authSubmit.disabled = true;
-  if (authMode === "signup") {
-    const consentCheck = document.getElementById("consentCheck");
-    if (consentCheck && !consentCheck.checked) { setAuthMessage("You must agree to the Terms of Service and Privacy Policy to create an account.", true); authSubmit.disabled = false; return; }
-  }
-  setAuthMessage(authMode === "signup" ? "Creating free account..." : "Signing in secure console...");
+  authSubmit.disabled = true; setAuthMessage(authMode === "signup" ? "Creating free account..." : "Signing in secure console...");
   try {
     if (authMode === "signup") {
       const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } }); if (error) throw error;
@@ -1473,15 +1467,14 @@ async function generateInvoice(proofId) {
       const { data: profile } = await supabaseClient.from("profiles").select("full_name, email, company, phone").eq("id", proof.user_id).maybeSingle();
       if (profile) { customerName = profile.full_name || customerName; customerEmail = profile.email || ""; }
     }
-    const invoiceNumber = `INV-${new Date().getFullYear()}${String(new Date().getMonth()+1).padStart(2,"0")}${String(new Date().getDate()).padStart(2,"0")}-${proofId.substring(0,6).toUpperCase()}`;
+    const invoiceNumber = `INV-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, "0")}${String(new Date().getDate()).padStart(2, "0")}-${proofId.substring(0, 6).toUpperCase()}`;
     const invoiceDate = new Date().toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" });
     const approvedDate = proof.reviewed_at ? new Date(proof.reviewed_at).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric" }) : invoiceDate;
     const planLabel = (() => {
       const b = String(proof.billing || "");
       if (b.startsWith("gallery_")) {
         const tier = b.slice("gallery_".length);
-        const tierName = tier.charAt(0).toUpperCase() + tier.slice(1);
-        return `Studio Photuna Gallery (${tierName})`;
+        return `Studio Photuna Gallery (${tier.charAt(0).toUpperCase() + tier.slice(1)})`;
       }
       return b === "yearly" ? "Studio Photuna Pro (Yearly)" : "Studio Photuna Pro (Monthly)";
     })();
@@ -1521,8 +1514,8 @@ async function generateInvoice(proofId) {
     <div class="info-block" style="text-align:right"><h3>Invoice Details</h3><p>Date: ${invoiceDate}<br>Status: <span class="badge">Paid</span><br>Payment: GCash<br>Ref #: ${proof.gcash_reference_number}</p></div>
   </div>
   <table><thead><tr><th>Description</th><th>Qty</th><th>Amount</th></tr></thead>
-  <tbody><tr><td>${planLabel}<br><span style="font-size:11px;color:#5f6678">${String(proof.billing || "").startsWith("gallery_") ? "Gallery add-on — billed monthly" : `Subscription license — ${proof.billing === "yearly" ? "12 months" : "1 month"} access`}</span></td><td>1</td><td>&#8369;${amount.toLocaleString("en-PH",{minimumFractionDigits:2})}</td></tr></tbody>
-  <tfoot><tr class="total-row"><td colspan="2">Total Paid</td><td style="text-align:right;font-size:18px">&#8369;${amount.toLocaleString("en-PH",{minimumFractionDigits:2})}</td></tr></tfoot></table>
+  <tbody><tr><td>${planLabel}<br><span style="font-size:11px;color:#5f6678">${String(proof.billing || "").startsWith("gallery_") ? "Gallery add-on — billed monthly" : `Subscription license — ${proof.billing === "yearly" ? "12 months" : "1 month"} access`}</span></td><td>1</td><td>&#8369;${amount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</td></tr></tbody>
+  <tfoot><tr class="total-row"><td colspan="2">Total Paid</td><td style="text-align:right;font-size:18px">&#8369;${amount.toLocaleString("en-PH", { minimumFractionDigits: 2 })}</td></tr></tfoot></table>
   <div class="footer">
     <p><strong>Studio Photuna</strong></p>
     <p>This invoice was generated automatically upon payment verification.</p>
@@ -1535,37 +1528,3 @@ async function generateInvoice(proofId) {
     else { spawnToast("Popup Blocked", "Please allow popups to view the invoice.", "fa-solid fa-circle-exclamation", "warning"); }
   } catch (err) { spawnToast("Invoice Error", err.message, "fa-solid fa-circle-exclamation", "warning"); }
 }
-
-// ===================================================================
-// Cookie Consent Banner Logic
-// ===================================================================
-const COOKIE_CONSENT_KEY = "studio-photuna-cookie-consent";
-
-function showCookieBanner() {
-  const banner = document.getElementById("cookieConsentBanner");
-  if (banner) banner.classList.remove("hidden");
-}
-
-function hideCookieBanner() {
-  const banner = document.getElementById("cookieConsentBanner");
-  if (banner) banner.classList.add("hidden");
-}
-
-function acceptAllCookies() {
-  localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({ consent: "all", timestamp: new Date().toISOString() }));
-  hideCookieBanner();
-}
-
-function acceptEssentialCookies() {
-  localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify({ consent: "essential", timestamp: new Date().toISOString() }));
-  hideCookieBanner();
-}
-
-function checkCookieConsent() {
-  const stored = localStorage.getItem(COOKIE_CONSENT_KEY);
-  if (!stored) { showCookieBanner(); }
-}
-
-// Show cookie banner on page load if no consent stored
-document.addEventListener("DOMContentLoaded", checkCookieConsent);
-if (document.readyState !== "loading") { checkCookieConsent(); }
