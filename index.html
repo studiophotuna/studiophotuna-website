@@ -1299,36 +1299,36 @@
 
         <!-- Metrics Cards Grid -->
         <div class="stats grid grid-cols-2 md:grid-cols-6 gap-4">
-          <div class="stat-card border border-line rounded-2xl bg-white p-5 shadow-sm">
-            <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-1">Pending</small>
-            <strong class="text-3xl font-black text-title" id="statPending">0</strong>
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-yellow-100 text-yellow-800 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-hourglass-half"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Pending</small><strong class="text-2xl font-black text-title" id="statPending">0</strong></div>
           </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-5 shadow-sm">
-            <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-1">Approved</small>
-            <strong class="text-3xl font-black text-title" id="statApproved">0</strong>
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-green-100 text-green-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Approved</small><strong class="text-2xl font-black text-title" id="statApproved">0</strong></div>
           </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-5 shadow-sm">
-            <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-1">50% Paid</small>
-            <strong class="text-3xl font-black text-title" id="statPaid">0</strong>
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-money-bill-wave"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">50% Paid</small><strong class="text-2xl font-black text-title" id="statPaid">0</strong></div>
           </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-5 shadow-sm">
-            <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-1">Total Bookings</small>
-            <strong class="text-3xl font-black text-title" id="statTotal">0</strong>
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-purple/10 text-purple flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Total Bookings</small><strong class="text-2xl font-black text-title" id="statTotal">0</strong></div>
           </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-5 shadow-sm">
-            <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-1">Pending Proofs</small>
-            <strong class="text-3xl font-black text-orange-500" id="statProofsPending">0</strong>
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-receipt"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Pending Proofs</small><strong class="text-2xl font-black text-orange-500" id="statProofsPending">0</strong></div>
           </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-5 shadow-sm">
-            <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-1">Custom Quotes</small>
-            <strong class="text-3xl font-black text-purple" id="statCustomQuotes">0</strong>
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-purple/10 text-purple flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-envelope"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Custom Quotes</small><strong class="text-2xl font-black text-purple" id="statCustomQuotes">0</strong></div>
           </div>
         </div>
 
         <!-- Toolbar -->
         <div class="bg-white border border-line rounded-3xl p-6 shadow-sm space-y-5">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-line pb-4">
-            <h2 class="text-xl font-extrabold text-title" id="adminPanelTitle">Manage Bookings</h2>
+            <h2 class="text-xl font-extrabold text-title" id="adminPanelTitle">Bookings</h2>
             <!-- Main tabs -->
             <div class="admin-tabs inline-flex flex-wrap gap-1.5 bg-grey p-1.5 rounded-2xl border border-line">
               <button type="button" class="active bg-white px-4 py-2 rounded-full text-xs font-black text-purple shadow-sm" data-admin-tab="bookings">Bookings</button>
