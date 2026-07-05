@@ -32,23 +32,17 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { type, ticket_id, reply_message } = await req.json();
-    if (!ticket_id) return json({ error: "ticket_id is required." }, 400);
+    const { type, ticket_id, reply_message, to_email, to_name } = await req.json();
     if (!["confirmation", "reply"].includes(type)) {
       return json({ error: "type must be 'confirmation' or 'reply'." }, 400);
     }
 
-    // Always re-read the ticket from the database instead of trusting
-    // whatever the client sends -- the client only ever supplies the id.
-    const { data: ticket, error: ticketErr } = await supabaseAdmin
-      .from("support_tickets")
-      .select("id, name, email, category, message")
-      .eq("id", ticket_id)
-      .single();
-    if (ticketErr || !ticket) return json({ error: "Ticket not found." }, 404);
-    if (!ticket.email) return json({ error: "This ticket has no email on file." }, 400);
-
     if (type === "confirmation") {
+      if (!ticket_id) return json({ error: "ticket_id is required." }, 400);
+      const ticket = await loadTicket(ticket_id);
+      if (!ticket) return json({ error: "Ticket not found." }, 404);
+      if (!ticket.email) return json({ error: "This ticket has no email on file." }, 400);
+
       await sendEmail({
         to: ticket.email,
         subject: "We've received your Studio Photuna support request",
@@ -57,7 +51,9 @@ serve(async (req) => {
       return json({ sent: true });
     }
 
-    // type === "reply" -- only an authenticated admin may trigger this.
+    // type === "reply" -- only an authenticated admin may trigger this,
+    // whether it's replying to a ticket thread or to a standalone inbound
+    // email that never matched a ticket.
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) return json({ error: "Missing Authorization header." }, 401);
     const token = authHeader.replace("Bearer ", "");
@@ -78,17 +74,46 @@ serve(async (req) => {
       return json({ error: "reply_message is required." }, 400);
     }
 
-    await sendEmail({
-      to: ticket.email,
-      subject: `Re: Your Studio Photuna support ticket`,
-      html: replyHtml(ticket, reply_message.trim()),
-    });
-    return json({ sent: true });
+    if (ticket_id) {
+      const ticket = await loadTicket(ticket_id);
+      if (!ticket) return json({ error: "Ticket not found." }, 404);
+      if (!ticket.email) return json({ error: "This ticket has no email on file." }, 400);
+
+      await sendEmail({
+        to: ticket.email,
+        subject: `Re: Your Studio Photuna support ticket`,
+        html: replyHtml(ticket.name, ticket.message, reply_message.trim()),
+      });
+      return json({ sent: true });
+    }
+
+    if (to_email) {
+      await sendEmail({
+        to: to_email,
+        subject: `Re: Your message to Studio Photuna support`,
+        html: replyHtml(to_name, null, reply_message.trim()),
+      });
+      return json({ sent: true });
+    }
+
+    return json({ error: "ticket_id or to_email is required." }, 400);
   } catch (err) {
     console.error(err);
     return json({ error: err.message ?? "Unexpected error sending ticket email." }, 500);
   }
 });
+
+async function loadTicket(ticketId: string) {
+  // Always re-read the ticket from the database instead of trusting
+  // whatever the client sends -- the client only ever supplies the id.
+  const { data: ticket, error } = await supabaseAdmin
+    .from("support_tickets")
+    .select("id, name, email, category, message")
+    .eq("id", ticketId)
+    .single();
+  if (error || !ticket) return null;
+  return ticket;
+}
 
 async function sendEmail({ to, subject, html }: { to: string; subject: string; html: string }) {
   const apiKey = Deno.env.get("RESEND_API_KEY");
@@ -131,12 +156,12 @@ function confirmationHtml(ticket: Record<string, any>) {
   `;
 }
 
-function replyHtml(ticket: Record<string, any>, message: string) {
+function replyHtml(name: string | null | undefined, originalMessage: string | null | undefined, message: string) {
   return `
-    <p>Hi ${escapeHtml(ticket.name) || "there"},</p>
-    <p>You have a new reply on your Studio Photuna support ticket:</p>
+    <p>Hi ${escapeHtml(name) || "there"},</p>
+    <p>You have a new reply from Studio Photuna support:</p>
     <blockquote style="border-left:3px solid #6f4dff;margin:0;padding-left:12px;color:#5f6678;">${escapeHtml(message)}</blockquote>
-    <p style="color:#8b92a6;font-size:12px;">Your original message: "${escapeHtml(ticket.message)}"</p>
+    ${originalMessage ? `<p style="color:#8b92a6;font-size:12px;">Your original message: "${escapeHtml(originalMessage)}"</p>` : ""}
     <p>Reply to this email if you need anything else.</p>
     <p>&mdash; Studio Photuna Support</p>
   `;
