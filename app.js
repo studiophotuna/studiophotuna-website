@@ -577,21 +577,23 @@ async function handleSupportSubmit(event) {
   event.preventDefault();
   const supportBtn = document.getElementById("supportSubmitBtn");
   supportBtn.disabled = true; supportBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Sending Ticket...';
-  const ticketPayload = { name: document.getElementById("supportName").value.trim(), email: document.getElementById("supportEmail").value.trim(), category: document.getElementById("supportCategory").value, priority: document.getElementById("supportPriority").value, message: document.getElementById("supportMessage").value.trim(), status: "open" };
+  // Generate the id client-side instead of reading it back via .select()
+  // after insert: guests submit this form as the anon role, and
+  // support_tickets has no anon SELECT policy (by design, so guests can't
+  // browse each other's tickets), so RETURNING comes back empty for them
+  // and .single() would throw even though the insert itself succeeded.
+  const ticketId = crypto.randomUUID();
+  const ticketPayload = { id: ticketId, name: document.getElementById("supportName").value.trim(), email: document.getElementById("supportEmail").value.trim(), category: document.getElementById("supportCategory").value, priority: document.getElementById("supportPriority").value, message: document.getElementById("supportMessage").value.trim(), status: "open" };
   try {
-    let inserted = null;
     if (supabaseClient) {
-      const { data, error } = await supabaseClient.from("support_tickets").insert(ticketPayload).select().single();
+      const { error } = await supabaseClient.from("support_tickets").insert(ticketPayload);
       if (error) throw error;
-      inserted = data;
     }
     const form = document.getElementById("supportTicketForm");
     form.innerHTML = `<div class="text-center py-10 space-y-4"><div class="w-16 h-16 rounded-full bg-green/10 flex items-center justify-center mx-auto text-3xl text-green"><i class="fa-solid fa-envelope-circle-check"></i></div><h3 class="text-xl font-black text-title">Ticket Submitted!</h3><p class="text-sm text-body max-w-sm mx-auto">Your support request has been received. A confirmation will be sent to <strong>${ticketPayload.email}</strong> from <span class="text-purple">notification@studiophotuna.com</span>.</p><button type="button" onclick="resetSupportForm()" class="btn-animation mt-4 border border-line hover:bg-grey px-6 py-2.5 rounded-full font-extrabold text-sm text-title transition-colors">Submit Another Ticket</button></div>`;
     spawnToast("Ticket Created", "Sending your confirmation email…", "fa-solid fa-envelope-circle-check", "success");
-    if (inserted?.id) {
-      const { error: emailErr } = await supabaseClient.functions.invoke("send-ticket-email", { body: { type: "confirmation", ticket_id: inserted.id } });
-      if (emailErr) { console.warn("Ticket confirmation email failed (non-fatal):", emailErr); spawnToast("Ticket Saved", "Your ticket was received, but the confirmation email couldn't be sent. Our team can still see it.", "fa-solid fa-triangle-exclamation", "warning"); }
-    }
+    const { error: emailErr } = await supabaseClient.functions.invoke("send-ticket-email", { body: { type: "confirmation", ticket_id: ticketId } });
+    if (emailErr) { console.warn("Ticket confirmation email failed (non-fatal):", emailErr); spawnToast("Ticket Saved", "Your ticket was received, but the confirmation email couldn't be sent. Our team can still see it.", "fa-solid fa-triangle-exclamation", "warning"); }
   } catch (err) { spawnToast("Failed", err.message || "Submission error. Try again.", "fa-solid fa-circle-exclamation", "warning"); supportBtn.disabled = false; supportBtn.innerHTML = 'Submit Support Request'; }
 }
 
