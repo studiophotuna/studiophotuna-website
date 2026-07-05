@@ -830,15 +830,28 @@ async function loadAnalytics() {
   if (!supabaseClient || !window.currentSupabaseUser) return;
   setMessage(adminMessage, "Loading analytics...");
   try {
-    const [profilesRes, proofsRes, licensesRes] = await Promise.all([
+    const [profilesRes, proofsRes, licensesRes, bookingsRes, boothsRes, ticketsRes, repliesRes, galleriesRes] = await Promise.all([
       supabaseClient.from("profiles").select("created_at"),
       supabaseClient.from("payment_proofs").select("amount_php, billing, created_at, reviewed_at").eq("status", "approved"),
       supabaseClient.from("licenses").select("plan, state, gallery_addon"),
+      supabaseClient.from("event_bookings").select("created_at, status"),
+      supabaseClient.from("booths").select("is_online"),
+      supabaseClient.from("support_tickets").select("created_at"),
+      supabaseClient.from("ticket_replies").select("created_at, is_admin"),
+      supabaseClient.from("galleries").select("created_at"),
     ]);
     if (profilesRes.error) throw profilesRes.error;
     if (proofsRes.error) throw proofsRes.error;
     if (licensesRes.error) throw licensesRes.error;
-    renderAnalytics(profilesRes.data || [], proofsRes.data || [], licensesRes.data || []);
+    if (bookingsRes.error) throw bookingsRes.error;
+    if (boothsRes.error) throw boothsRes.error;
+    if (ticketsRes.error) throw ticketsRes.error;
+    if (repliesRes.error) throw repliesRes.error;
+    if (galleriesRes.error) throw galleriesRes.error;
+    renderAnalytics(
+      profilesRes.data || [], proofsRes.data || [], licensesRes.data || [],
+      bookingsRes.data || [], boothsRes.data || [], ticketsRes.data || [], repliesRes.data || [], galleriesRes.data || []
+    );
     setMessage(adminMessage, "Analytics loaded.");
   } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
 }
@@ -877,7 +890,7 @@ function renderBarChart(buckets, barColorClass, valueFormatter) {
   return `<div class="flex items-end gap-2 overflow-x-auto pb-1">${bars}</div>`;
 }
 
-function renderAnalytics(profiles, proofs, licenses) {
+function renderAnalytics(profiles, proofs, licenses, bookings, booths, tickets, replies, galleries) {
   const panel = document.getElementById("analyticsPanel"); if (!panel) return;
 
   const totalSignups = profiles.length;
@@ -894,7 +907,29 @@ function renderAnalytics(profiles, proofs, licenses) {
 
   const peso = (n) => "₱" + Number(n).toLocaleString("en-PH");
 
+  // -- Booking activity -----------------------------------------------
+  const bookingBuckets = bucketByWeek(bookings, "created_at");
+  const approvedBookings = bookings.filter(b => b.status === "approved").length;
+  const declinedBookings = bookings.filter(b => b.status === "declined").length;
+  const cancelledBookings = bookings.filter(b => b.status === "cancelled").length;
+  const pendingBookings = bookings.length - approvedBookings - declinedBookings - cancelledBookings;
+  const decidedBookings = approvedBookings + declinedBookings;
+  const approvalRate = decidedBookings ? Math.round((approvedBookings / decidedBookings) * 100) : null;
+
+  // -- Support load ------------------------------------------------------
+  const ticketBuckets = bucketByWeek(tickets, "created_at");
+  const adminReplies = replies.filter(r => r.is_admin).length;
+  const guestReplies = replies.length - adminReplies;
+
+  // -- Booth / device usage -----------------------------------------------
+  const boothsOnline = booths.filter(b => b.is_online).length;
+  const boothOnlinePct = booths.length ? Math.round((boothsOnline / booths.length) * 100) : 0;
+
+  // -- Gallery / session activity -------------------------------------------
+  const galleryBuckets = bucketByWeek(galleries, "created_at");
+
   panel.innerHTML = `
+    <p class="text-[10px] uppercase font-black tracking-widest text-muted mb-3">Growth &amp; Revenue</p>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
       <div class="border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-purple/10 text-purple flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-user-plus"></i></div>
@@ -931,6 +966,53 @@ function renderAnalytics(profiles, proofs, licenses) {
     </div>
 
     <p class="text-[11px] text-muted mt-4">Revenue reflects manually-approved GCash payment proofs only. Stripe/PayMongo revenue will appear here once that integration is active.</p>
+
+    <p class="text-[10px] uppercase font-black tracking-widest text-muted mt-8 mb-3">Booking Activity</p>
+    <div class="border border-line rounded-2xl bg-white p-5 shadow-sm">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <p class="text-sm font-extrabold text-title">Event bookings per week</p>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-blue-100 text-blue-700">${pendingBookings} Pending</span>
+          <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-green-100 text-green-700">${approvedBookings} Approved</span>
+          <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-red-100 text-red-700">${declinedBookings} Declined</span>
+          <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-grey-2 text-muted">${cancelledBookings} Cancelled</span>
+          ${approvalRate !== null ? `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${approvalRate}% Approval Rate</span>` : ""}
+        </div>
+      </div>
+      ${bookingBuckets.some(b => b.total > 0) ? renderBarChart(bookingBuckets, "bg-blue-500", (v) => `${v} booking${v === 1 ? "" : "s"}`) : `<p class="text-xs text-muted text-center py-10">No bookings yet.</p>`}
+    </div>
+
+    <p class="text-[10px] uppercase font-black tracking-widest text-muted mt-8 mb-3">Support &amp; Operations</p>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="border border-line rounded-2xl bg-white p-5 shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <p class="text-sm font-extrabold text-title">Support tickets per week</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${adminReplies} Admin ${adminReplies === 1 ? "Reply" : "Replies"}</span>
+            <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-grey-2 text-muted">${guestReplies} Guest ${guestReplies === 1 ? "Reply" : "Replies"}</span>
+          </div>
+        </div>
+        ${ticketBuckets.some(b => b.total > 0) ? renderBarChart(ticketBuckets, "bg-slate-500", (v) => `${v} ticket${v === 1 ? "" : "s"}`) : `<p class="text-xs text-muted text-center py-10">No support tickets yet.</p>`}
+      </div>
+      <div class="border border-line rounded-2xl bg-white p-5 shadow-sm">
+        <p class="text-sm font-extrabold text-title mb-4">Booth / device usage</p>
+        <div class="flex items-baseline gap-2 mb-3">
+          <strong class="text-2xl font-black text-title">${boothsOnline}</strong>
+          <span class="text-sm text-muted font-bold">of ${booths.length} booths online</span>
+        </div>
+        <div class="w-full h-2.5 rounded-full bg-blue-100 overflow-hidden">
+          <div class="h-full rounded-full bg-blue-500" style="width: ${boothOnlinePct}%"></div>
+        </div>
+        <p class="text-[11px] text-muted mt-3">A booth counts as online if the desktop app last checked in recently. Idle booths are still registered but not currently running an event.</p>
+      </div>
+    </div>
+
+    <p class="text-[10px] uppercase font-black tracking-widest text-muted mt-8 mb-3">Usage</p>
+    <div class="border border-line rounded-2xl bg-white p-5 shadow-sm">
+      <p class="text-sm font-extrabold text-title mb-4">Galleries created per week</p>
+      ${galleryBuckets.some(b => b.total > 0) ? renderBarChart(galleryBuckets, "bg-orange-500", (v) => `${v} galler${v === 1 ? "y" : "ies"}`) : `<p class="text-xs text-muted text-center py-10">No galleries yet.</p>`}
+      <p class="text-[11px] text-muted mt-4">Galleries are created per finished event session and are a proxy for actual guest-facing usage, distinct from signups or revenue.</p>
+    </div>
   `;
 }
 
