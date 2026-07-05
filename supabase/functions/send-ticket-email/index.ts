@@ -109,7 +109,7 @@ async function sendEmail({ to, subject, html }: { to: string; subject: string; h
     body: JSON.stringify({
       from: fromAddress,
       to: [to],
-      reply_to: "notification@studiophotuna.com",
+      reply_to: "support@studiophotuna.com",
       subject,
       html,
     }),

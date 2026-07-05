@@ -724,6 +724,47 @@ async function replyToTicket(ticketId, btn) {
 }
 
 // ===================================================================
+// Admin: Inbox (replies guests send to support@studiophotuna.com,
+// captured via the receive-inbound-email webhook)
+// ===================================================================
+let inboxEmails = [];
+
+async function loadInboxEmails() {
+  if (!supabaseClient || !window.currentSupabaseUser) return;
+  setMessage(adminMessage, "Loading inbox...");
+  try {
+    const { data, error } = await supabaseClient.from("inbound_emails").select("*").order("received_at", { ascending: false });
+    if (error) throw error;
+    inboxEmails = data || [];
+    const unreadCount = inboxEmails.filter(e => !e.is_read).length;
+    const badge = document.getElementById("inboxTabBadge"); if (badge) { badge.textContent = unreadCount; badge.classList.toggle("hidden", !unreadCount); }
+    setMessage(adminMessage, inboxEmails.length ? `${inboxEmails.length} email(s) loaded.` : "No received emails yet.");
+    renderInboxEmails();
+  } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
+}
+
+function renderInboxEmails() {
+  const inboxList = document.getElementById("inboxList"); if (!inboxList) return; inboxList.innerHTML = "";
+  if (!inboxEmails.length) { inboxList.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-10 text-center text-muted space-y-2"><i class="fa-solid fa-inbox text-4xl text-line"></i><p class="font-bold text-sm">No received emails yet.</p><p class="text-xs">Replies guests send to support@studiophotuna.com will show up here.</p></div>`; return; }
+  inboxEmails.forEach(e => {
+    const receivedAt = new Date(e.received_at).toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+    const card = document.createElement("div");
+    card.className = "border border-line rounded-2xl bg-white shadow-sm overflow-hidden" + (e.is_read ? "" : " ring-2 ring-purple/20");
+    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3 flex-wrap">${e.is_read ? "" : `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">New</span>`}${e.ticket_id ? `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-green-100 text-green-800"><i class="fa-solid fa-link mr-1"></i>Linked to ticket</span>` : ""}</div><span class="text-[10px] text-muted font-bold">${receivedAt}</span></div><div class="p-6 space-y-3"><div><p class="font-black text-title">${e.from_name || e.from_address || "Unknown sender"}</p><p class="text-xs text-muted">${e.from_address || ""}</p></div><p class="text-sm font-bold text-title">${e.subject || "(no subject)"}</p><div class="bg-grey rounded-xl p-4 text-sm text-body whitespace-pre-wrap">${e.text_body || "(no plain-text body available)"}</div>${!e.is_read ? `<button onclick="markInboxEmailRead('${e.id}', this)" class="btn-animation border border-line hover:bg-grey px-4 py-2 rounded-full font-bold text-xs text-title transition-colors"><i class="fa-solid fa-envelope-open mr-1"></i> Mark as Read</button>` : ""}</div>`;
+    inboxList.appendChild(card);
+  });
+}
+
+async function markInboxEmailRead(id, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = "Marking..."; }
+  try {
+    const { error } = await supabaseClient.from("inbound_emails").update({ is_read: true }).eq("id", id);
+    if (error) throw error;
+    loadInboxEmails();
+  } catch (err) { spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-envelope-open mr-1"></i> Mark as Read`; } }
+}
+
+// ===================================================================
 // Admin: Payment Proofs
 // ===================================================================
 let proofs = [];
@@ -1356,6 +1397,7 @@ adminTabButtons.forEach(btn => {
     const ticketList = document.getElementById("ticketList"); if (ticketList) ticketList.classList.toggle("hidden", activeAdminTab !== "tickets");
     const packagesList = document.getElementById("packagesList"); if (packagesList) packagesList.classList.toggle("hidden", activeAdminTab !== "packages");
     reviewList.classList.toggle("hidden", activeAdminTab !== "reviews");
+    const inboxList = document.getElementById("inboxList"); if (inboxList) inboxList.classList.toggle("hidden", activeAdminTab !== "inbox");
     const bookingSubToolbar = document.getElementById("bookingSubToolbar");
     const proofsSubToolbar = document.getElementById("proofsSubToolbar");
     if (bookingSubToolbar) bookingSubToolbar.classList.toggle("hidden", activeAdminTab !== "bookings");
@@ -1364,6 +1406,7 @@ adminTabButtons.forEach(btn => {
     else if (activeAdminTab === "proofs") loadProofs();
     else if (activeAdminTab === "tickets") loadTickets();
     else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
+    else if (activeAdminTab === "inbox") loadInboxEmails();
     else loadReviewsAdmin();
   };
 });
@@ -1390,6 +1433,7 @@ if (refreshBookings) {
     else if (activeAdminTab === "proofs") loadProofs();
     else if (activeAdminTab === "tickets") loadTickets();
     else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
+    else if (activeAdminTab === "inbox") loadInboxEmails();
     else loadReviewsAdmin();
   };
 }
