@@ -724,6 +724,72 @@ async function replyToTicket(ticketId, btn) {
 }
 
 // ===================================================================
+// Admin: Inbox (replies guests send to support@studiophotuna.com,
+// captured via the receive-inbound-email webhook)
+// ===================================================================
+let inboxEmails = [];
+
+async function loadInboxEmails() {
+  if (!supabaseClient || !window.currentSupabaseUser) return;
+  setMessage(adminMessage, "Loading inbox...");
+  try {
+    const { data, error } = await supabaseClient.from("inbound_emails").select("*").order("received_at", { ascending: false });
+    if (error) throw error;
+    inboxEmails = data || [];
+    const unreadCount = inboxEmails.filter(e => !e.is_read).length;
+    const badge = document.getElementById("inboxTabBadge"); if (badge) { badge.textContent = unreadCount; badge.classList.toggle("hidden", !unreadCount); }
+    setMessage(adminMessage, inboxEmails.length ? `${inboxEmails.length} email(s) loaded.` : "No received emails yet.");
+    renderInboxEmails();
+  } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
+}
+
+function renderInboxEmails() {
+  const inboxList = document.getElementById("inboxList"); if (!inboxList) return; inboxList.innerHTML = "";
+  if (!inboxEmails.length) { inboxList.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-10 text-center text-muted space-y-2"><i class="fa-solid fa-inbox text-4xl text-line"></i><p class="font-bold text-sm">No received emails yet.</p><p class="text-xs">Replies guests send to support@studiophotuna.com will show up here.</p></div>`; return; }
+  inboxEmails.forEach(e => {
+    const receivedAt = new Date(e.received_at).toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+    const card = document.createElement("div");
+    card.className = "border border-line rounded-2xl bg-white shadow-sm overflow-hidden" + (e.is_read ? "" : " ring-2 ring-purple/20");
+    const replyBlock = e.admin_reply
+      ? `<div class="rounded-xl p-3 text-xs bg-purple/10 text-purple border border-purple/20"><p class="font-bold mb-1">You replied · ${new Date(e.replied_at).toLocaleDateString("en-PH", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</p><p>${e.admin_reply}</p></div>`
+      : `<div class="space-y-2"><textarea id="inbox-reply-${e.id}" rows="3" class="w-full border border-line rounded-xl px-3 py-2 text-xs bg-white resize-none" placeholder="Type your reply to ${e.from_name || e.from_address || "this sender"}…"></textarea><button onclick="replyToInboxEmail('${e.id}', this)" class="btn-animation w-full sm:w-auto bg-purple text-white text-xs font-black px-4 py-2.5 rounded-xl flex items-center justify-center gap-2"><i class="fa-solid fa-paper-plane"></i> Send Reply</button></div>`;
+    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3 flex-wrap">${e.is_read ? "" : `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">New</span>`}${e.ticket_id ? `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-green-100 text-green-800"><i class="fa-solid fa-link mr-1"></i>Linked to ticket</span>` : ""}</div><span class="text-[10px] text-muted font-bold">${receivedAt}</span></div><div class="p-6 space-y-3"><div><p class="font-black text-title">${e.from_name || e.from_address || "Unknown sender"}</p><p class="text-xs text-muted">${e.from_address || ""}</p></div><p class="text-sm font-bold text-title">${e.subject || "(no subject)"}</p><div class="bg-grey rounded-xl p-4 text-sm text-body whitespace-pre-wrap">${e.text_body || "(no plain-text body available)"}</div>${!e.is_read ? `<button onclick="markInboxEmailRead('${e.id}', this)" class="btn-animation border border-line hover:bg-grey px-4 py-2 rounded-full font-bold text-xs text-title transition-colors"><i class="fa-solid fa-envelope-open mr-1"></i> Mark as Read</button>` : ""}${replyBlock}</div>`;
+    inboxList.appendChild(card);
+  });
+}
+
+async function markInboxEmailRead(id, btn) {
+  if (btn) { btn.disabled = true; btn.textContent = "Marking..."; }
+  try {
+    const { error } = await supabaseClient.from("inbound_emails").update({ is_read: true }).eq("id", id);
+    if (error) throw error;
+    loadInboxEmails();
+  } catch (err) { spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-envelope-open mr-1"></i> Mark as Read`; } }
+}
+
+async function replyToInboxEmail(id, btn) {
+  const message = document.getElementById(`inbox-reply-${id}`)?.value?.trim();
+  if (!message) { spawnToast("Empty Reply", "Type a message before sending.", "fa-solid fa-circle-info", "warning"); return; }
+  const email = inboxEmails.find(e => e.id === id);
+  if (!email) return;
+  btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Sending…`;
+  try {
+    const body = email.ticket_id
+      ? { type: "reply", ticket_id: email.ticket_id, reply_message: message }
+      : { type: "reply", to_email: email.from_address, to_name: email.from_name, reply_message: message };
+    const { error: emailErr } = await supabaseClient.functions.invoke("send-ticket-email", { body });
+    if (emailErr) throw emailErr;
+    if (email.ticket_id) {
+      await supabaseClient.from("ticket_replies").insert({ ticket_id: email.ticket_id, message, is_admin: true });
+    }
+    const { error: updateErr } = await supabaseClient.from("inbound_emails").update({ admin_reply: message, replied_at: new Date().toISOString(), is_read: true }).eq("id", id);
+    if (updateErr) throw updateErr;
+    spawnToast("Reply Sent", "Your reply has been emailed.", "fa-solid fa-circle-check", "success");
+    loadInboxEmails();
+  } catch (err) { spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send Reply`; }
+}
+
+// ===================================================================
 // Admin: Payment Proofs
 // ===================================================================
 let proofs = [];
@@ -1356,6 +1422,7 @@ adminTabButtons.forEach(btn => {
     const ticketList = document.getElementById("ticketList"); if (ticketList) ticketList.classList.toggle("hidden", activeAdminTab !== "tickets");
     const packagesList = document.getElementById("packagesList"); if (packagesList) packagesList.classList.toggle("hidden", activeAdminTab !== "packages");
     reviewList.classList.toggle("hidden", activeAdminTab !== "reviews");
+    const inboxList = document.getElementById("inboxList"); if (inboxList) inboxList.classList.toggle("hidden", activeAdminTab !== "inbox");
     const bookingSubToolbar = document.getElementById("bookingSubToolbar");
     const proofsSubToolbar = document.getElementById("proofsSubToolbar");
     if (bookingSubToolbar) bookingSubToolbar.classList.toggle("hidden", activeAdminTab !== "bookings");
@@ -1364,6 +1431,7 @@ adminTabButtons.forEach(btn => {
     else if (activeAdminTab === "proofs") loadProofs();
     else if (activeAdminTab === "tickets") loadTickets();
     else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
+    else if (activeAdminTab === "inbox") loadInboxEmails();
     else loadReviewsAdmin();
   };
 });
@@ -1390,6 +1458,7 @@ if (refreshBookings) {
     else if (activeAdminTab === "proofs") loadProofs();
     else if (activeAdminTab === "tickets") loadTickets();
     else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
+    else if (activeAdminTab === "inbox") loadInboxEmails();
     else loadReviewsAdmin();
   };
 }
