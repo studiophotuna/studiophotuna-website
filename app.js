@@ -816,6 +816,125 @@ async function replyToInboxEmail(id, btn) {
 }
 
 // ===================================================================
+// Admin: Analytics
+//
+// Derived straight from tables that already have real data (profiles,
+// payment_proofs, licenses) rather than the empty analytics_registrations /
+// analytics_subscriptions / analytics_revenue tables sitting unused in the
+// schema -- those are shaped for Stripe webhook events, and Stripe isn't
+// wired up yet (GCash-only for now), so nothing will ever write to them
+// until that integration exists.
+// ===================================================================
+
+async function loadAnalytics() {
+  if (!supabaseClient || !window.currentSupabaseUser) return;
+  setMessage(adminMessage, "Loading analytics...");
+  try {
+    const [profilesRes, proofsRes, licensesRes] = await Promise.all([
+      supabaseClient.from("profiles").select("created_at"),
+      supabaseClient.from("payment_proofs").select("amount_php, billing, created_at, reviewed_at").eq("status", "approved"),
+      supabaseClient.from("licenses").select("plan, state, gallery_addon"),
+    ]);
+    if (profilesRes.error) throw profilesRes.error;
+    if (proofsRes.error) throw proofsRes.error;
+    if (licensesRes.error) throw licensesRes.error;
+    renderAnalytics(profilesRes.data || [], proofsRes.data || [], licensesRes.data || []);
+    setMessage(adminMessage, "Analytics loaded.");
+  } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
+}
+
+function bucketByWeek(items, dateField, valueField) {
+  const weekStart = (d) => { const dt = new Date(d); const day = dt.getUTCDay(); const diff = (day === 0 ? 6 : day - 1); dt.setUTCDate(dt.getUTCDate() - diff); dt.setUTCHours(0, 0, 0, 0); return dt.getTime(); };
+  const totals = new Map();
+  items.forEach(item => {
+    if (!item[dateField]) return;
+    const key = weekStart(item[dateField]);
+    const value = valueField ? Number(item[valueField]) || 0 : 1;
+    totals.set(key, (totals.get(key) || 0) + value);
+  });
+  const timestamps = [...totals.keys()];
+  const earliest = timestamps.length ? Math.min(...timestamps) : weekStart(new Date());
+  const buckets = [];
+  for (let t = earliest; t <= weekStart(new Date()); t += 7 * 24 * 60 * 60 * 1000) {
+    buckets.push({ weekStart: t, total: totals.get(t) || 0 });
+  }
+  return buckets.slice(-16); // cap at the most recent 16 weeks so the chart stays readable
+}
+
+function renderBarChart(buckets, barColorClass, valueFormatter) {
+  const max = Math.max(1, ...buckets.map(b => b.total));
+  const bars = buckets.map((b, i) => {
+    const heightPct = Math.max(Math.round((b.total / max) * 100), b.total > 0 ? 6 : 0);
+    const label = new Date(b.weekStart).toLocaleDateString("en-PH", { month: "short", day: "numeric" });
+    const isLast = i === buckets.length - 1;
+    return `<div class="group relative flex-1 min-w-[20px] flex flex-col items-center justify-end" style="height: 128px;">
+      ${isLast ? `<span class="text-[10px] font-black text-title mb-1 whitespace-nowrap">${valueFormatter(b.total)}</span>` : ""}
+      <div class="w-full max-w-[22px] rounded-t-[4px] ${barColorClass} transition-all" style="height: ${heightPct}%"></div>
+      <div class="hidden group-hover:flex absolute -top-7 left-1/2 -translate-x-1/2 bg-title text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap z-10">${valueFormatter(b.total)}</div>
+      <span class="mt-1.5 text-[9px] text-muted font-bold whitespace-nowrap">${label}</span>
+    </div>`;
+  }).join("");
+  return `<div class="flex items-end gap-2 overflow-x-auto pb-1">${bars}</div>`;
+}
+
+function renderAnalytics(profiles, proofs, licenses) {
+  const panel = document.getElementById("analyticsPanel"); if (!panel) return;
+
+  const totalSignups = profiles.length;
+  const totalRevenue = proofs.reduce((sum, p) => sum + (Number(p.amount_php) || 0), 0);
+  const activeLicenses = licenses.filter(l => l.state === "active");
+  const monthlyCount = activeLicenses.filter(l => (l.plan || "").toLowerCase().includes("month")).length;
+  const yearlyCount = activeLicenses.filter(l => (l.plan || "").toLowerCase().includes("year")).length;
+  const galleryAddonCount = licenses.filter(l => l.gallery_addon).length;
+
+  const signupBuckets = bucketByWeek(profiles, "created_at");
+  // reviewed_at is always set by reviewProof() the moment a proof is approved,
+  // so bucketing by it (rather than created_at) reflects when revenue actually landed.
+  const revenueBuckets = bucketByWeek(proofs, "reviewed_at", "amount_php");
+
+  const peso = (n) => "₱" + Number(n).toLocaleString("en-PH");
+
+  panel.innerHTML = `
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-purple/10 text-purple flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-user-plus"></i></div>
+        <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Total Signups</small><strong class="text-2xl font-black text-title">${totalSignups}</strong></div>
+      </div>
+      <div class="border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-green-100 text-green-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-sack-dollar"></i></div>
+        <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Total Revenue</small><strong class="text-2xl font-black text-title">${peso(totalRevenue)}</strong></div>
+      </div>
+      <div class="border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-id-badge"></i></div>
+        <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Active Subscribers</small><strong class="text-2xl font-black text-title">${activeLicenses.length}</strong></div>
+      </div>
+      <div class="border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-images"></i></div>
+        <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Gallery Add-ons</small><strong class="text-2xl font-black text-title">${galleryAddonCount}</strong></div>
+      </div>
+    </div>
+
+    <div class="flex flex-wrap gap-2 mt-4">
+      <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${monthlyCount} Monthly</span>
+      <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${yearlyCount} Yearly</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+      <div class="border border-line rounded-2xl bg-white p-5 shadow-sm">
+        <p class="text-sm font-extrabold text-title mb-4">Signups per week</p>
+        ${signupBuckets.some(b => b.total > 0) ? renderBarChart(signupBuckets, "bg-purple", (v) => `${v} signup${v === 1 ? "" : "s"}`) : `<p class="text-xs text-muted text-center py-10">No signups yet.</p>`}
+      </div>
+      <div class="border border-line rounded-2xl bg-white p-5 shadow-sm">
+        <p class="text-sm font-extrabold text-title mb-4">Revenue per week (approved GCash payments)</p>
+        ${revenueBuckets.some(b => b.total > 0) ? renderBarChart(revenueBuckets, "bg-green-500", peso) : `<p class="text-xs text-muted text-center py-10">No approved payments yet.</p>`}
+      </div>
+    </div>
+
+    <p class="text-[11px] text-muted mt-4">Revenue reflects manually-approved GCash payment proofs only. Stripe/PayMongo revenue will appear here once that integration is active.</p>
+  `;
+}
+
+// ===================================================================
 // Admin: Payment Proofs
 // ===================================================================
 let proofs = [];
@@ -1438,8 +1557,8 @@ document.onclick = () => { closeDropdown(); document.querySelector(".dropdown-me
 const proofList = document.getElementById("proofList");
 const proofFilterButtons = document.querySelectorAll("[data-proof-filter]");
 
-const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", reviews: "Reviews", inbox: "Inbox" };
-const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], reviews: ["reviews"] };
+const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics" };
+const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], reviews: ["reviews"], analytics: ["analytics"] };
 let activeAdminGroup = "bookings";
 const adminGroupButtons = document.querySelectorAll(".admin-group-tabs [data-admin-group]");
 const adminSubtabsRow = document.getElementById("adminSubtabsRow");
@@ -1450,6 +1569,7 @@ function loadActiveAdminTab() {
   else if (activeAdminTab === "tickets") loadTickets();
   else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
   else if (activeAdminTab === "inbox") loadInboxEmails();
+  else if (activeAdminTab === "analytics") loadAnalytics();
   else loadReviewsAdmin();
 }
 
@@ -1467,6 +1587,7 @@ function activateAdminTab(tab) {
   const packagesList = document.getElementById("packagesList"); if (packagesList) packagesList.classList.toggle("hidden", activeAdminTab !== "packages");
   reviewList.classList.toggle("hidden", activeAdminTab !== "reviews");
   const inboxList = document.getElementById("inboxList"); if (inboxList) inboxList.classList.toggle("hidden", activeAdminTab !== "inbox");
+  const analyticsPanel = document.getElementById("analyticsPanel"); if (analyticsPanel) analyticsPanel.classList.toggle("hidden", activeAdminTab !== "analytics");
   const bookingSubToolbar = document.getElementById("bookingSubToolbar");
   const proofsSubToolbar = document.getElementById("proofsSubToolbar");
   const inboxSubToolbar = document.getElementById("inboxSubToolbar");
