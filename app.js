@@ -642,6 +642,16 @@ function updateStats() {
   document.getElementById("statProofsPending").textContent = pendingProofs;
   const badge = document.getElementById("proofsTabBadge"); if (badge) { badge.textContent = pendingProofs; badge.classList.toggle("hidden", !pendingProofs); }
   const cqBadge = document.getElementById("customQuoteTabBadge"); if (cqBadge) { cqBadge.textContent = customQuotes; cqBadge.classList.toggle("hidden", !customQuotes); }
+  updateSupportGroupBadge();
+}
+
+function updateSupportGroupBadge() {
+  const total = ["proofsTabBadge", "ticketsTabBadge", "inboxTabBadge"].reduce((sum, id) => {
+    const el = document.getElementById(id);
+    return sum + (el && !el.classList.contains("hidden") ? parseInt(el.textContent, 10) || 0 : 0);
+  }, 0);
+  const groupBadge = document.getElementById("supportGroupBadge");
+  if (groupBadge) { groupBadge.textContent = total; groupBadge.classList.toggle("hidden", !total); }
 }
 
 const STATUS_COLORS = { pending: "bg-yellow-100 text-yellow-800", approved: "bg-green-100 text-green-800", declined: "bg-red-100 text-red-800", cancelled: "bg-gray-200 text-gray-700" };
@@ -691,6 +701,7 @@ async function loadTickets() {
     if (error) throw error; tickets = data || [];
     const openCount = tickets.filter(t => t.status === "open").length;
     const badge = document.getElementById("ticketsTabBadge"); if (badge) { badge.textContent = openCount; badge.classList.toggle("hidden", !openCount); }
+    updateSupportGroupBadge();
     setMessage(adminMessage, tickets.length ? `${tickets.length} ticket(s) loaded.` : "No support tickets yet."); renderTickets();
   } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
 }
@@ -728,6 +739,7 @@ async function replyToTicket(ticketId, btn) {
 // captured via the receive-inbound-email webhook)
 // ===================================================================
 let inboxEmails = [];
+let activeInboxFilter = "all";
 
 async function loadInboxEmails() {
   if (!supabaseClient || !window.currentSupabaseUser) return;
@@ -738,15 +750,27 @@ async function loadInboxEmails() {
     inboxEmails = data || [];
     const unreadCount = inboxEmails.filter(e => !e.is_read).length;
     const badge = document.getElementById("inboxTabBadge"); if (badge) { badge.textContent = unreadCount; badge.classList.toggle("hidden", !unreadCount); }
+    updateSupportGroupBadge();
     setMessage(adminMessage, inboxEmails.length ? `${inboxEmails.length} email(s) loaded.` : "No received emails yet.");
     renderInboxEmails();
   } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
 }
 
+const INBOX_RECIPIENTS = {
+  "support@studiophotuna.com": { label: "Support", cls: "bg-grey text-body" },
+  "dpo@studiophotuna.com": { label: "DPO Request", cls: "bg-red-100 text-red-700" },
+  "notification@studiophotuna.com": { label: "Notification", cls: "bg-purple/10 text-purple" },
+};
+
+function inboxRecipientInfo(toAddress) {
+  return INBOX_RECIPIENTS[(toAddress || "").toLowerCase()] || { label: toAddress || "Unknown recipient", cls: "bg-grey text-body" };
+}
+
 function renderInboxEmails() {
   const inboxList = document.getElementById("inboxList"); if (!inboxList) return; inboxList.innerHTML = "";
-  if (!inboxEmails.length) { inboxList.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-10 text-center text-muted space-y-2"><i class="fa-solid fa-inbox text-4xl text-line"></i><p class="font-bold text-sm">No received emails yet.</p><p class="text-xs">Replies guests send to support@studiophotuna.com will show up here.</p></div>`; return; }
-  inboxEmails.forEach(e => {
+  const filtered = inboxEmails.filter(e => activeInboxFilter === "all" || (e.to_address || "").toLowerCase() === activeInboxFilter);
+  if (!filtered.length) { inboxList.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-10 text-center text-muted space-y-2"><i class="fa-solid fa-inbox text-4xl text-line"></i><p class="font-bold text-sm">No received emails match this filter.</p><p class="text-xs">Mail sent to support@, dpo@, or notification@studiophotuna.com shows up here.</p></div>`; return; }
+  filtered.forEach(e => {
     const receivedAt = new Date(e.received_at).toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
     const card = document.createElement("div");
     card.className = "border border-line rounded-2xl bg-white shadow-sm overflow-hidden" + (e.is_read ? "" : " ring-2 ring-purple/20");
@@ -754,7 +778,8 @@ function renderInboxEmails() {
       ? `<div class="rounded-xl p-3 text-xs bg-purple/10 text-purple border border-purple/20"><p class="font-bold mb-1">You replied · ${new Date(e.replied_at).toLocaleDateString("en-PH", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</p><p>${e.admin_reply}</p></div>`
       : `<div class="space-y-2"><textarea id="inbox-reply-${e.id}" rows="3" class="w-full border border-line rounded-xl px-3 py-2 text-xs bg-white resize-none" placeholder="Type your reply to ${e.from_name || e.from_address || "this sender"}…"></textarea><button onclick="replyToInboxEmail('${e.id}', this)" class="btn-animation w-full sm:w-auto bg-purple text-white text-xs font-black px-4 py-2.5 rounded-xl flex items-center justify-center gap-2"><i class="fa-solid fa-paper-plane"></i> Send Reply</button></div>`;
     const fetchErrorNote = e.fetch_error ? `<div class="rounded-xl p-3 text-xs bg-yellow-100 text-yellow-800"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Couldn't load the full message: ${e.fetch_error}</div>` : "";
-    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3 flex-wrap">${e.is_read ? "" : `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">New</span>`}${e.ticket_id ? `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-green-100 text-green-800"><i class="fa-solid fa-link mr-1"></i>Linked to ticket</span>` : ""}</div><span class="text-[10px] text-muted font-bold">${receivedAt}</span></div><div class="p-6 space-y-3"><div><p class="font-black text-title">${e.from_name || e.from_address || "Unknown sender"}</p><p class="text-xs text-muted">${e.from_address || ""}</p></div><p class="text-sm font-bold text-title">${e.subject || "(no subject)"}</p><div class="bg-grey rounded-xl p-4 text-sm text-body whitespace-pre-wrap">${e.text_body || "(no plain-text body available)"}</div>${fetchErrorNote}${!e.is_read ? `<button onclick="markInboxEmailRead('${e.id}', this)" class="btn-animation border border-line hover:bg-grey px-4 py-2 rounded-full font-bold text-xs text-title transition-colors"><i class="fa-solid fa-envelope-open mr-1"></i> Mark as Read</button>` : ""}${replyBlock}</div>`;
+    const recipient = inboxRecipientInfo(e.to_address);
+    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3 flex-wrap">${e.is_read ? "" : `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">New</span>`}<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${recipient.cls}"><i class="fa-solid fa-inbox mr-1"></i>${recipient.label}</span>${e.ticket_id ? `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-green-100 text-green-800"><i class="fa-solid fa-link mr-1"></i>Linked to ticket</span>` : ""}</div><span class="text-[10px] text-muted font-bold">${receivedAt}</span></div><div class="p-6 space-y-3"><div><p class="font-black text-title">${e.from_name || e.from_address || "Unknown sender"}</p><p class="text-xs text-muted">${e.from_address || ""} <span class="text-line">&rarr;</span> ${e.to_address || "—"}</p></div><p class="text-sm font-bold text-title">${e.subject || "(no subject)"}</p><div class="bg-grey rounded-xl p-4 text-sm text-body whitespace-pre-wrap">${e.text_body || "(no plain-text body available)"}</div>${fetchErrorNote}${!e.is_read ? `<button onclick="markInboxEmailRead('${e.id}', this)" class="btn-animation border border-line hover:bg-grey px-4 py-2 rounded-full font-bold text-xs text-title transition-colors"><i class="fa-solid fa-envelope-open mr-1"></i> Mark as Read</button>` : ""}${replyBlock}</div>`;
     inboxList.appendChild(card);
   });
 }
@@ -1414,31 +1439,59 @@ const proofList = document.getElementById("proofList");
 const proofFilterButtons = document.querySelectorAll("[data-proof-filter]");
 
 const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", reviews: "Reviews", inbox: "Inbox" };
+const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], reviews: ["reviews"] };
+let activeAdminGroup = "bookings";
+const adminGroupButtons = document.querySelectorAll(".admin-group-tabs [data-admin-group]");
+const adminSubtabsRow = document.getElementById("adminSubtabsRow");
 
-adminTabButtons.forEach(btn => {
-  btn.onclick = () => {
-    activeAdminTab = btn.dataset.adminTab;
-    if (adminPanelTitle) adminPanelTitle.textContent = ADMIN_TAB_TITLES[activeAdminTab] || "Bookings";
-    adminTabButtons.forEach(b => { b.classList.remove("active", "bg-white", "text-purple", "shadow-sm"); b.classList.add("text-body"); });
-    btn.classList.add("active", "bg-white", "text-purple", "shadow-sm"); btn.classList.remove("text-body");
-    bookingList.classList.toggle("hidden", activeAdminTab !== "bookings");
-    proofList.classList.toggle("hidden", activeAdminTab !== "proofs");
-    const ticketList = document.getElementById("ticketList"); if (ticketList) ticketList.classList.toggle("hidden", activeAdminTab !== "tickets");
-    const packagesList = document.getElementById("packagesList"); if (packagesList) packagesList.classList.toggle("hidden", activeAdminTab !== "packages");
-    reviewList.classList.toggle("hidden", activeAdminTab !== "reviews");
-    const inboxList = document.getElementById("inboxList"); if (inboxList) inboxList.classList.toggle("hidden", activeAdminTab !== "inbox");
-    const bookingSubToolbar = document.getElementById("bookingSubToolbar");
-    const proofsSubToolbar = document.getElementById("proofsSubToolbar");
-    if (bookingSubToolbar) bookingSubToolbar.classList.toggle("hidden", activeAdminTab !== "bookings");
-    if (proofsSubToolbar) { proofsSubToolbar.classList.toggle("hidden", activeAdminTab !== "proofs"); proofsSubToolbar.classList.toggle("flex", activeAdminTab === "proofs"); }
-    if (activeAdminTab === "bookings") loadBookings();
-    else if (activeAdminTab === "proofs") loadProofs();
-    else if (activeAdminTab === "tickets") loadTickets();
-    else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
-    else if (activeAdminTab === "inbox") loadInboxEmails();
-    else loadReviewsAdmin();
-  };
-});
+function loadActiveAdminTab() {
+  if (activeAdminTab === "bookings") loadBookings();
+  else if (activeAdminTab === "proofs") loadProofs();
+  else if (activeAdminTab === "tickets") loadTickets();
+  else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
+  else if (activeAdminTab === "inbox") loadInboxEmails();
+  else loadReviewsAdmin();
+}
+
+function activateAdminTab(tab) {
+  activeAdminTab = tab;
+  if (adminPanelTitle) adminPanelTitle.textContent = ADMIN_TAB_TITLES[activeAdminTab] || "Bookings";
+  adminTabButtons.forEach(b => {
+    const isActive = b.dataset.adminTab === activeAdminTab;
+    b.classList.toggle("active", isActive); b.classList.toggle("border-purple/40", isActive); b.classList.toggle("bg-purple/5", isActive); b.classList.toggle("text-purple", isActive);
+    b.classList.toggle("border-line", !isActive); b.classList.toggle("bg-white", !isActive); b.classList.toggle("text-body", !isActive);
+  });
+  bookingList.classList.toggle("hidden", activeAdminTab !== "bookings");
+  proofList.classList.toggle("hidden", activeAdminTab !== "proofs");
+  const ticketList = document.getElementById("ticketList"); if (ticketList) ticketList.classList.toggle("hidden", activeAdminTab !== "tickets");
+  const packagesList = document.getElementById("packagesList"); if (packagesList) packagesList.classList.toggle("hidden", activeAdminTab !== "packages");
+  reviewList.classList.toggle("hidden", activeAdminTab !== "reviews");
+  const inboxList = document.getElementById("inboxList"); if (inboxList) inboxList.classList.toggle("hidden", activeAdminTab !== "inbox");
+  const bookingSubToolbar = document.getElementById("bookingSubToolbar");
+  const proofsSubToolbar = document.getElementById("proofsSubToolbar");
+  const inboxSubToolbar = document.getElementById("inboxSubToolbar");
+  if (bookingSubToolbar) bookingSubToolbar.classList.toggle("hidden", activeAdminTab !== "bookings");
+  if (proofsSubToolbar) { proofsSubToolbar.classList.toggle("hidden", activeAdminTab !== "proofs"); proofsSubToolbar.classList.toggle("flex", activeAdminTab === "proofs"); }
+  if (inboxSubToolbar) { inboxSubToolbar.classList.toggle("hidden", activeAdminTab !== "inbox"); inboxSubToolbar.classList.toggle("flex", activeAdminTab === "inbox"); }
+  loadActiveAdminTab();
+}
+
+function activateAdminGroup(group, preferredTab) {
+  activeAdminGroup = group;
+  const tabsInGroup = ADMIN_GROUPS[group] || [];
+  adminGroupButtons.forEach(b => {
+    const isActive = b.dataset.adminGroup === group;
+    b.classList.toggle("active", isActive); b.classList.toggle("bg-white", isActive); b.classList.toggle("text-purple", isActive); b.classList.toggle("shadow-sm", isActive);
+    b.classList.toggle("text-body", !isActive);
+  });
+  adminTabButtons.forEach(b => { b.classList.toggle("hidden", b.dataset.adminGroup !== group); });
+  if (adminSubtabsRow) adminSubtabsRow.classList.toggle("hidden", tabsInGroup.length <= 1);
+  const targetTab = (preferredTab && tabsInGroup.includes(preferredTab)) ? preferredTab : tabsInGroup[0];
+  activateAdminTab(targetTab);
+}
+
+adminGroupButtons.forEach(btn => { btn.onclick = () => activateAdminGroup(btn.dataset.adminGroup); });
+adminTabButtons.forEach(btn => { btn.onclick = () => activateAdminTab(btn.dataset.adminTab); });
 
 filterButtons.forEach(btn => {
   btn.onclick = () => {
@@ -1456,15 +1509,21 @@ proofFilterButtons.forEach(btn => {
   };
 });
 
-if (refreshBookings) {
-  refreshBookings.onclick = () => {
-    if (activeAdminTab === "bookings") loadBookings();
-    else if (activeAdminTab === "proofs") loadProofs();
-    else if (activeAdminTab === "tickets") loadTickets();
-    else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
-    else if (activeAdminTab === "inbox") loadInboxEmails();
-    else loadReviewsAdmin();
+const inboxFilterButtons = document.querySelectorAll("[data-inbox-filter]");
+inboxFilterButtons.forEach(btn => {
+  btn.onclick = () => {
+    activeInboxFilter = btn.dataset.inboxFilter;
+    // Each button keeps its own color (grey/red/purple) permanently -- a ring
+    // marks which is selected instead of overwriting bg/text, since swapping
+    // in a flat purple fill clashed with the DPO button's intentional red.
+    inboxFilterButtons.forEach(b => b.classList.remove("active", "ring-2", "ring-offset-1", "ring-purple"));
+    btn.classList.add("active", "ring-2", "ring-offset-1", "ring-purple");
+    renderInboxEmails();
   };
+});
+
+if (refreshBookings) {
+  refreshBookings.onclick = () => loadActiveAdminTab();
 }
 
 document.getElementById("loginOpen").onclick = () => openAuthModal("login");

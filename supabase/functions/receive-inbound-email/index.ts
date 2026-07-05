@@ -16,7 +16,14 @@
 //   supabase functions deploy receive-inbound-email --no-verify-jwt
 //
 // Required secrets:
-//   RESEND_API_KEY            same key used by the other ticket functions
+//   RESEND_RECEIVING_API_KEY   a Resend key with permission to read received
+//                               emails (GET /emails/receiving/:id). A key
+//                               scoped to "Sending access only" -- e.g. the
+//                               one send-ticket-email uses -- gets a 401
+//                               here. Create a separate key for this if you'd
+//                               rather not widen the sending key's scope.
+//   RESEND_API_KEY             fallback if RESEND_RECEIVING_API_KEY isn't
+//                               set (must then have receiving read access)
 //   RESEND_WEBHOOK_SECRET      the "whsec_..." signing secret shown when you
 //                               create the webhook in the Resend dashboard
 // (SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY are auto-injected.)
@@ -132,8 +139,12 @@ Deno.serve(async (req) => {
 });
 
 async function fetchReceivedEmail(emailId: string) {
-  const apiKey = Deno.env.get("RESEND_API_KEY");
-  if (!apiKey) throw new Error("RESEND_API_KEY is not configured.");
+  // Reading a received email's body needs Resend key permissions beyond
+  // "sending" (the scope RESEND_API_KEY is set to for the other functions).
+  // Prefer a dedicated, more-privileged key here if one is configured, so
+  // the sending-only key used elsewhere doesn't need to be widened.
+  const apiKey = Deno.env.get("RESEND_RECEIVING_API_KEY") || Deno.env.get("RESEND_API_KEY");
+  if (!apiKey) throw new Error("RESEND_RECEIVING_API_KEY / RESEND_API_KEY is not configured.");
 
   const res = await fetch(`https://api.resend.com/emails/receiving/${emailId}`, {
     headers: { Authorization: `Bearer ${apiKey}` },

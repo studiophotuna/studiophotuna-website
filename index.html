@@ -1327,24 +1327,34 @@
 
         <!-- Toolbar -->
         <div class="bg-white border border-line rounded-3xl p-6 shadow-sm space-y-5">
-          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-line pb-4">
-            <h2 class="text-xl font-extrabold text-title" id="adminPanelTitle">Bookings</h2>
-            <!-- Main tabs -->
-            <div class="admin-tabs inline-flex flex-wrap gap-1.5 bg-grey p-1.5 rounded-2xl border border-line">
-              <button type="button" class="active bg-white px-4 py-2 rounded-full text-xs font-black text-purple shadow-sm" data-admin-tab="bookings">Bookings</button>
-              <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="proofs">
-                Payment Proofs <span id="proofsTabBadge" class="hidden ml-1 bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
-              </button>
-              <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="tickets">
-                Support Tickets <span id="ticketsTabBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
-              </button>
-              <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="packages">
+          <div class="flex flex-col gap-4 border-b border-line pb-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h2 class="text-xl font-extrabold text-title" id="adminPanelTitle">Bookings</h2>
+              <!-- Section groups -->
+              <div class="admin-group-tabs inline-flex flex-wrap gap-1.5 bg-grey p-1.5 rounded-2xl border border-line">
+                <button type="button" class="active bg-white px-4 py-2 rounded-full text-xs font-black text-purple shadow-sm" data-admin-group="bookings"><i class="fa-solid fa-calendar-check mr-1.5"></i>Bookings</button>
+                <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="support">
+                  <i class="fa-solid fa-headset mr-1.5"></i>Support <span id="supportGroupBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
+                </button>
+                <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="reviews"><i class="fa-solid fa-star mr-1.5"></i>Reviews</button>
+              </div>
+            </div>
+            <!-- Topic sub-tabs (only shown for groups with more than one topic) -->
+            <div id="adminSubtabsRow" class="flex flex-wrap gap-1.5">
+              <button type="button" class="admin-tab active border border-purple/40 bg-purple/5 text-purple px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="bookings" data-admin-group="bookings">Bookings</button>
+              <button type="button" class="admin-tab border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="packages" data-admin-group="bookings">
                 Packages <span id="customQuoteTabBadge" class="hidden ml-1 bg-purple text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
               </button>
-              <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="reviews">Reviews</button>
-              <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-tab="inbox">
+              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="proofs" data-admin-group="support">
+                Payment Proofs <span id="proofsTabBadge" class="hidden ml-1 bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
+              </button>
+              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="tickets" data-admin-group="support">
+                Support Tickets <span id="ticketsTabBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
+              </button>
+              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="inbox" data-admin-group="support">
                 Inbox <span id="inboxTabBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
               </button>
+              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="reviews" data-admin-group="reviews">Reviews</button>
             </div>
           </div>
 
@@ -1367,6 +1377,14 @@
             <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="pending">Pending</button>
             <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="approved">Approved</button>
             <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="rejected">Rejected</button>
+          </div>
+
+          <!-- Inbox sub-toolbar: filter by which mailbox received it -->
+          <div id="inboxSubToolbar" class="hidden flex-wrap gap-1.5">
+            <button type="button" class="active ring-2 ring-offset-1 ring-purple border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-inbox-filter="all">All</button>
+            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-inbox-filter="support@studiophotuna.com">Support</button>
+            <button type="button" class="border border-red-200 rounded-full bg-red-50 text-red-700 px-4 py-2 text-xs font-bold" data-inbox-filter="dpo@studiophotuna.com">DPO Requests</button>
+            <button type="button" class="border border-purple/40 rounded-full bg-purple/5 text-purple px-4 py-2 text-xs font-bold" data-inbox-filter="notification@studiophotuna.com">Notification</button>
           </div>
 
           <div class="message text-center text-xs font-bold" id="adminMessage"></div>
