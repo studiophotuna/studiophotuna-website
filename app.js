@@ -833,7 +833,7 @@ async function loadAnalytics() {
     const [profilesRes, proofsRes, licensesRes, bookingsRes, boothsRes, ticketsRes, repliesRes, galleriesRes] = await Promise.all([
       supabaseClient.from("profiles").select("created_at"),
       supabaseClient.from("payment_proofs").select("amount_php, billing, created_at, reviewed_at").eq("status", "approved"),
-      supabaseClient.from("licenses").select("plan, state, gallery_addon"),
+      supabaseClient.from("licenses").select("user_id, plan, state, gallery_addon, current_period_end"),
       supabaseClient.from("event_bookings").select("created_at, status"),
       supabaseClient.from("booths").select("is_online"),
       supabaseClient.from("support_tickets").select("created_at"),
@@ -907,6 +907,24 @@ function renderAnalytics(profiles, proofs, licenses, bookings, booths, tickets, 
 
   const peso = (n) => "₱" + Number(n).toLocaleString("en-PH");
 
+  // -- Subscription health (MRR, churn, trial-to-paid conversion) ---------
+  // A `licenses` row is only ever created once a payment goes through
+  // (submit-payment-proof / stripe-webhook upsert it), never at signup --
+  // so its mere existence already means "this profile converted." There is
+  // also no distinct "cancelled"/"expired" state ever written; a lapsed
+  // subscriber just stays state="active" with a past current_period_end.
+  // "Lapsed" below reconstructs churn from that date instead of a status
+  // string, since the app never records one.
+  const now = Date.now();
+  const isLapsed = (l) => l.current_period_end && new Date(l.current_period_end).getTime() < now;
+  const activeAndCurrent = activeLicenses.filter(l => !isLapsed(l));
+  const activeAndLapsed = activeLicenses.filter(l => isLapsed(l));
+  const mrr = activeAndCurrent.reduce((sum, l) => sum + ((l.plan || "").toLowerCase().includes("year") ? PHP_AMOUNTS.yearly / 12 : PHP_AMOUNTS.monthly), 0);
+  const churnDenominator = activeAndCurrent.length + activeAndLapsed.length;
+  const churnRate = churnDenominator ? Math.round((activeAndLapsed.length / churnDenominator) * 100) : null;
+  const convertedProfileCount = new Set(activeLicenses.map(l => l.user_id)).size;
+  const conversionRate = totalSignups ? Math.round((convertedProfileCount / totalSignups) * 100) : null;
+
   // -- Booking activity -----------------------------------------------
   const bookingBuckets = bucketByWeek(bookings, "created_at");
   const approvedBookings = bookings.filter(b => b.status === "approved").length;
@@ -952,6 +970,34 @@ function renderAnalytics(profiles, proofs, licenses, bookings, booths, tickets, 
     <div class="flex flex-wrap gap-2 mt-4">
       <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${monthlyCount} Monthly</span>
       <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${yearlyCount} Yearly</span>
+    </div>
+
+    <p class="text-[10px] uppercase font-black tracking-widest text-muted mt-8 mb-3">Subscription Health</p>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-green-100 text-green-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="min-w-0">
+          <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">MRR</small>
+          <strong class="text-2xl font-black text-title">${peso(mrr)}</strong>
+          <p class="text-[10px] text-muted mt-0.5">Recurring revenue at today's run-rate</p>
+        </div>
+      </div>
+      <div class="border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-user-slash"></i></div>
+        <div class="min-w-0">
+          <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Churn Rate</small>
+          <strong class="text-2xl font-black text-title">${churnRate !== null ? `${churnRate}%` : "—"}</strong>
+          <p class="text-[10px] text-muted mt-0.5">${churnRate !== null ? `${activeAndLapsed.length} of ${churnDenominator} paid subscribers lapsed` : "No paid subscribers have lapsed yet"}</p>
+        </div>
+      </div>
+      <div class="border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-purple/10 text-purple flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-right-left"></i></div>
+        <div class="min-w-0">
+          <small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Trial &rarr; Paid</small>
+          <strong class="text-2xl font-black text-title">${conversionRate !== null ? `${conversionRate}%` : "—"}</strong>
+          <p class="text-[10px] text-muted mt-0.5">${convertedProfileCount} of ${totalSignups} signups converted to a paid plan</p>
+        </div>
+      </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
