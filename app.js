@@ -642,6 +642,16 @@ function updateStats() {
   document.getElementById("statProofsPending").textContent = pendingProofs;
   const badge = document.getElementById("proofsTabBadge"); if (badge) { badge.textContent = pendingProofs; badge.classList.toggle("hidden", !pendingProofs); }
   const cqBadge = document.getElementById("customQuoteTabBadge"); if (cqBadge) { cqBadge.textContent = customQuotes; cqBadge.classList.toggle("hidden", !customQuotes); }
+  updateSupportGroupBadge();
+}
+
+function updateSupportGroupBadge() {
+  const total = ["proofsTabBadge", "ticketsTabBadge", "inboxTabBadge"].reduce((sum, id) => {
+    const el = document.getElementById(id);
+    return sum + (el && !el.classList.contains("hidden") ? parseInt(el.textContent, 10) || 0 : 0);
+  }, 0);
+  const groupBadge = document.getElementById("supportGroupBadge");
+  if (groupBadge) { groupBadge.textContent = total; groupBadge.classList.toggle("hidden", !total); }
 }
 
 const STATUS_COLORS = { pending: "bg-yellow-100 text-yellow-800", approved: "bg-green-100 text-green-800", declined: "bg-red-100 text-red-800", cancelled: "bg-gray-200 text-gray-700" };
@@ -691,6 +701,7 @@ async function loadTickets() {
     if (error) throw error; tickets = data || [];
     const openCount = tickets.filter(t => t.status === "open").length;
     const badge = document.getElementById("ticketsTabBadge"); if (badge) { badge.textContent = openCount; badge.classList.toggle("hidden", !openCount); }
+    updateSupportGroupBadge();
     setMessage(adminMessage, tickets.length ? `${tickets.length} ticket(s) loaded.` : "No support tickets yet."); renderTickets();
   } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
 }
@@ -738,6 +749,7 @@ async function loadInboxEmails() {
     inboxEmails = data || [];
     const unreadCount = inboxEmails.filter(e => !e.is_read).length;
     const badge = document.getElementById("inboxTabBadge"); if (badge) { badge.textContent = unreadCount; badge.classList.toggle("hidden", !unreadCount); }
+    updateSupportGroupBadge();
     setMessage(adminMessage, inboxEmails.length ? `${inboxEmails.length} email(s) loaded.` : "No received emails yet.");
     renderInboxEmails();
   } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
@@ -1414,31 +1426,57 @@ const proofList = document.getElementById("proofList");
 const proofFilterButtons = document.querySelectorAll("[data-proof-filter]");
 
 const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", reviews: "Reviews", inbox: "Inbox" };
+const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], reviews: ["reviews"] };
+let activeAdminGroup = "bookings";
+const adminGroupButtons = document.querySelectorAll(".admin-group-tabs [data-admin-group]");
+const adminSubtabsRow = document.getElementById("adminSubtabsRow");
 
-adminTabButtons.forEach(btn => {
-  btn.onclick = () => {
-    activeAdminTab = btn.dataset.adminTab;
-    if (adminPanelTitle) adminPanelTitle.textContent = ADMIN_TAB_TITLES[activeAdminTab] || "Bookings";
-    adminTabButtons.forEach(b => { b.classList.remove("active", "bg-white", "text-purple", "shadow-sm"); b.classList.add("text-body"); });
-    btn.classList.add("active", "bg-white", "text-purple", "shadow-sm"); btn.classList.remove("text-body");
-    bookingList.classList.toggle("hidden", activeAdminTab !== "bookings");
-    proofList.classList.toggle("hidden", activeAdminTab !== "proofs");
-    const ticketList = document.getElementById("ticketList"); if (ticketList) ticketList.classList.toggle("hidden", activeAdminTab !== "tickets");
-    const packagesList = document.getElementById("packagesList"); if (packagesList) packagesList.classList.toggle("hidden", activeAdminTab !== "packages");
-    reviewList.classList.toggle("hidden", activeAdminTab !== "reviews");
-    const inboxList = document.getElementById("inboxList"); if (inboxList) inboxList.classList.toggle("hidden", activeAdminTab !== "inbox");
-    const bookingSubToolbar = document.getElementById("bookingSubToolbar");
-    const proofsSubToolbar = document.getElementById("proofsSubToolbar");
-    if (bookingSubToolbar) bookingSubToolbar.classList.toggle("hidden", activeAdminTab !== "bookings");
-    if (proofsSubToolbar) { proofsSubToolbar.classList.toggle("hidden", activeAdminTab !== "proofs"); proofsSubToolbar.classList.toggle("flex", activeAdminTab === "proofs"); }
-    if (activeAdminTab === "bookings") loadBookings();
-    else if (activeAdminTab === "proofs") loadProofs();
-    else if (activeAdminTab === "tickets") loadTickets();
-    else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
-    else if (activeAdminTab === "inbox") loadInboxEmails();
-    else loadReviewsAdmin();
-  };
-});
+function loadActiveAdminTab() {
+  if (activeAdminTab === "bookings") loadBookings();
+  else if (activeAdminTab === "proofs") loadProofs();
+  else if (activeAdminTab === "tickets") loadTickets();
+  else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
+  else if (activeAdminTab === "inbox") loadInboxEmails();
+  else loadReviewsAdmin();
+}
+
+function activateAdminTab(tab) {
+  activeAdminTab = tab;
+  if (adminPanelTitle) adminPanelTitle.textContent = ADMIN_TAB_TITLES[activeAdminTab] || "Bookings";
+  adminTabButtons.forEach(b => {
+    const isActive = b.dataset.adminTab === activeAdminTab;
+    b.classList.toggle("active", isActive); b.classList.toggle("border-purple/40", isActive); b.classList.toggle("bg-purple/5", isActive); b.classList.toggle("text-purple", isActive);
+    b.classList.toggle("border-line", !isActive); b.classList.toggle("bg-white", !isActive); b.classList.toggle("text-body", !isActive);
+  });
+  bookingList.classList.toggle("hidden", activeAdminTab !== "bookings");
+  proofList.classList.toggle("hidden", activeAdminTab !== "proofs");
+  const ticketList = document.getElementById("ticketList"); if (ticketList) ticketList.classList.toggle("hidden", activeAdminTab !== "tickets");
+  const packagesList = document.getElementById("packagesList"); if (packagesList) packagesList.classList.toggle("hidden", activeAdminTab !== "packages");
+  reviewList.classList.toggle("hidden", activeAdminTab !== "reviews");
+  const inboxList = document.getElementById("inboxList"); if (inboxList) inboxList.classList.toggle("hidden", activeAdminTab !== "inbox");
+  const bookingSubToolbar = document.getElementById("bookingSubToolbar");
+  const proofsSubToolbar = document.getElementById("proofsSubToolbar");
+  if (bookingSubToolbar) bookingSubToolbar.classList.toggle("hidden", activeAdminTab !== "bookings");
+  if (proofsSubToolbar) { proofsSubToolbar.classList.toggle("hidden", activeAdminTab !== "proofs"); proofsSubToolbar.classList.toggle("flex", activeAdminTab === "proofs"); }
+  loadActiveAdminTab();
+}
+
+function activateAdminGroup(group, preferredTab) {
+  activeAdminGroup = group;
+  const tabsInGroup = ADMIN_GROUPS[group] || [];
+  adminGroupButtons.forEach(b => {
+    const isActive = b.dataset.adminGroup === group;
+    b.classList.toggle("active", isActive); b.classList.toggle("bg-white", isActive); b.classList.toggle("text-purple", isActive); b.classList.toggle("shadow-sm", isActive);
+    b.classList.toggle("text-body", !isActive);
+  });
+  adminTabButtons.forEach(b => { b.classList.toggle("hidden", b.dataset.adminGroup !== group); });
+  if (adminSubtabsRow) adminSubtabsRow.classList.toggle("hidden", tabsInGroup.length <= 1);
+  const targetTab = (preferredTab && tabsInGroup.includes(preferredTab)) ? preferredTab : tabsInGroup[0];
+  activateAdminTab(targetTab);
+}
+
+adminGroupButtons.forEach(btn => { btn.onclick = () => activateAdminGroup(btn.dataset.adminGroup); });
+adminTabButtons.forEach(btn => { btn.onclick = () => activateAdminTab(btn.dataset.adminTab); });
 
 filterButtons.forEach(btn => {
   btn.onclick = () => {
@@ -1457,14 +1495,7 @@ proofFilterButtons.forEach(btn => {
 });
 
 if (refreshBookings) {
-  refreshBookings.onclick = () => {
-    if (activeAdminTab === "bookings") loadBookings();
-    else if (activeAdminTab === "proofs") loadProofs();
-    else if (activeAdminTab === "tickets") loadTickets();
-    else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
-    else if (activeAdminTab === "inbox") loadInboxEmails();
-    else loadReviewsAdmin();
-  };
+  refreshBookings.onclick = () => loadActiveAdminTab();
 }
 
 document.getElementById("loginOpen").onclick = () => openAuthModal("login");
