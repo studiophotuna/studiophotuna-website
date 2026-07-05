@@ -1379,6 +1379,14 @@
             <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="rejected">Rejected</button>
           </div>
 
+          <!-- Inbox sub-toolbar: filter by which mailbox received it -->
+          <div id="inboxSubToolbar" class="hidden flex-wrap gap-1.5">
+            <button type="button" class="active ring-2 ring-offset-1 ring-purple border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-inbox-filter="all">All</button>
+            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-inbox-filter="support@studiophotuna.com">Support</button>
+            <button type="button" class="border border-red-200 rounded-full bg-red-50 text-red-700 px-4 py-2 text-xs font-bold" data-inbox-filter="dpo@studiophotuna.com">DPO Requests</button>
+            <button type="button" class="border border-purple/40 rounded-full bg-purple/5 text-purple px-4 py-2 text-xs font-bold" data-inbox-filter="notification@studiophotuna.com">Notification</button>
+          </div>
+
           <div class="message text-center text-xs font-bold" id="adminMessage"></div>
         </div>
 
