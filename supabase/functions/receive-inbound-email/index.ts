@@ -52,44 +52,79 @@ Deno.serve(async (req) => {
       return json({ ignored: true });
     }
 
-    const emailId: string | undefined = event?.data?.email_id ?? event?.data?.id;
-    if (!emailId) return json({ error: "No email_id in payload." }, 400);
+    const svixId = req.headers.get("svix-id") ?? crypto.randomUUID();
+    const emailId: string | undefined =
+      event?.data?.email_id ?? event?.data?.id ?? event?.data?.email?.id;
 
-    const email = await fetchReceivedEmail(emailId);
+    // Store a baseline row from the webhook metadata FIRST, using whatever
+    // id we have (falling back to the event's own delivery id so a missing
+    // email_id never loses the row). This guarantees something lands in
+    // Admin Bookings > Inbox even if the enrichment step below fails --
+    // the alternative (bailing out before any insert) is exactly what made
+    // a real guest reply vanish with no trace anywhere.
+    const metaFrom = event?.data?.from;
+    const metaTo = event?.data?.to;
+    let fromAddress = extractAddress(metaFrom);
+    let fromName = extractName(metaFrom);
+    let toAddress = Array.isArray(metaTo) ? extractAddress(metaTo[0]) : extractAddress(metaTo);
+    let subject: string | null = event?.data?.subject ?? null;
+    let textBody: string | null = null;
+    let htmlBody: string | null = null;
+    let fetchError: string | null = null;
+    let raw: unknown = event;
 
-    const fromAddress = extractAddress(email.from);
-    const fromName = extractName(email.from);
-    const toAddress = Array.isArray(email.to) ? extractAddress(email.to[0]) : extractAddress(email.to);
+    if (emailId) {
+      try {
+        const email = await fetchReceivedEmail(emailId);
+        fromAddress = extractAddress(email.from) ?? fromAddress;
+        fromName = extractName(email.from) ?? fromName;
+        toAddress = (Array.isArray(email.to) ? extractAddress(email.to[0]) : extractAddress(email.to)) ?? toAddress;
+        subject = email.subject ?? subject;
+        textBody = email.text ?? null;
+        htmlBody = email.html ?? null;
+        raw = email;
+      } catch (err) {
+        console.error("Failed to fetch full received email, storing metadata only:", err);
+        fetchError = err.message ?? String(err);
+      }
+    } else {
+      fetchError = "No email_id found in webhook payload -- stored metadata only.";
+    }
 
     let ticketId: string | null = null;
     if (fromAddress) {
-      const { data: ticket } = await supabaseAdmin
-        .from("support_tickets")
-        .select("id")
-        .eq("email", fromAddress)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-      ticketId = ticket?.id ?? null;
+      try {
+        const { data: ticket } = await supabaseAdmin
+          .from("support_tickets")
+          .select("id")
+          .eq("email", fromAddress)
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle();
+        ticketId = ticket?.id ?? null;
+      } catch (err) {
+        console.error("Ticket lookup failed (non-fatal):", err);
+      }
     }
 
     const { error: insertErr } = await supabaseAdmin.from("inbound_emails").upsert(
       {
-        resend_email_id: emailId,
+        resend_email_id: emailId ?? `no-email-id-${svixId}`,
         from_address: fromAddress,
         from_name: fromName,
         to_address: toAddress,
-        subject: email.subject ?? null,
-        text_body: email.text ?? null,
-        html_body: email.html ?? null,
+        subject,
+        text_body: textBody,
+        html_body: htmlBody,
         ticket_id: ticketId,
-        raw: email,
+        fetch_error: fetchError,
+        raw,
       },
       { onConflict: "resend_email_id" }
     );
     if (insertErr) throw insertErr;
 
-    return json({ stored: true });
+    return json({ stored: true, enriched: !fetchError });
   } catch (err) {
     console.error(err);
     return json({ error: err.message ?? "Unexpected error processing inbound email." }, 500);
