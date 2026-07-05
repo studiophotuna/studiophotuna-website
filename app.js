@@ -393,9 +393,9 @@ async function handleGcashProofSubmit(evt) {
     const { error: uploadError } = await supabaseClient.storage.from("payment-proofs").upload(path, file, { contentType: file.type || "image/jpeg" });
     if (uploadError) throw uploadError;
     submitBtn.textContent = "Submitting...";
-    const { error: insertError } = await supabaseClient.from("payment_proofs").insert({ user_id: window.currentSupabaseUser.id, billing: gcashModalBilling, amount_php: PHP_AMOUNTS[gcashModalBilling] || 0, gcash_reference_number: referenceNumber, gcash_sender_name: senderName || null, screenshot_path: path, status: "pending" });
-    if (insertError) throw insertError;
-    await supabaseClient.from("licenses").upsert({ user_id: window.currentSupabaseUser.id, payment_provider: "manual_gcash", state: "pending_verification" }, { onConflict: "user_id" });
+    const { data: submitData, error: submitError } = await supabaseClient.functions.invoke("submit-payment-proof", { body: { billing: gcashModalBilling, amount_php: PHP_AMOUNTS[gcashModalBilling] || 0, gcash_reference_number: referenceNumber, gcash_sender_name: senderName || null, screenshot_path: path } });
+    if (submitError) throw submitError;
+    if (submitData?.error) throw new Error(submitData.error);
     spawnToast("Payment Proof Submitted", "We'll verify and activate your plan shortly.", "fa-solid fa-circle-check", "success");
     closeGcashModal(); await loadAccountState(user); navigateTo("account");
   } catch (err) {
