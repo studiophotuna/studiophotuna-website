@@ -15,7 +15,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Font Awesome for sleek modern iconography -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -33,7 +33,7 @@
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Inter', 'system-ui', 'sans-serif'],
+              sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
             },
             colors: {
               title: '#111827',
@@ -49,6 +49,11 @@
               },
               purple: '#6f4dff',
               'purple-dark': '#4b32c3',
+              brand: {
+                DEFAULT: '#0c66e4',
+                50: '#eaf2fe', 100: '#d3e4fd', 200: '#a8c9fb', 300: '#7aadf7', 400: '#3d89ef',
+                500: '#0c66e4', 600: '#0a52b8', 700: '#083e8c', 800: '#062b61', 900: '#041b3d', 950: '#020f22',
+              },
               yellow: {
                 DEFAULT: '#f7d54a',
                 50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15',
@@ -73,6 +78,8 @@
         --line: #dedfe6;
         --purple: #6f4dff;
         --purple-dark: #4b32c3;
+        --brand: #0c66e4;
+        --brand-dark: #0a52b8;
         --white: #ffffff;
         --shadow: 0 30px 90px rgba(17, 24, 39, 0.12);
       }
@@ -173,11 +180,11 @@
         </a>
         
         <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-purple transition-colors">Home</a>
-          <a href="#features" onclick="navigateTo('home'); scrollAndHighlight('features');" class="hover:text-purple transition-colors">Features</a>
-          <a href="#pricing" onclick="navigateTo('home'); scrollAndHighlight('pricing');" class="hover:text-purple transition-colors">Pricing</a>
-          <a href="#" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-purple transition-colors">Download</a>
-          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-purple transition-colors">Support</a>
+          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Home</a>
+          <a href="#features" onclick="navigateTo('home'); scrollAndHighlight('features');" class="hover:text-brand transition-colors">Features</a>
+          <a href="#pricing" onclick="navigateTo('home'); scrollAndHighlight('pricing');" class="hover:text-brand transition-colors">Pricing</a>
+          <a href="#" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-brand transition-colors">Download</a>
+          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Support</a>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
@@ -188,7 +195,7 @@
               <i class="fa-solid fa-chevron-down text-xs text-muted"></i>
             </button>
             <div class="dropdown-menu absolute top-full right-0 mt-2 w-56 border border-line rounded-2xl bg-white p-2 shadow-luxe hidden flex-col gap-1 z-50" role="menu">
-              <a href="#" onclick="navigateTo('account'); closeDropdown(); return false;" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-circle-user text-purple"></i> View Account</a>
+              <a href="#" onclick="navigateTo('account'); closeDropdown(); return false;" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-circle-user text-brand"></i> View Account</a>
               <a href="#" onclick="navigateTo('bookings-admin'); closeDropdown(); return false;" id="adminBookingsOpen" class="hidden flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-chart-line text-green"></i> Admin Bookings</a>
               <div class="h-[1px] my-1 bg-line"></div>
               <button type="button" id="logoutAction" class="w-full text-left flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition-colors"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
@@ -197,7 +204,7 @@
 
           <!-- Auth Actions (Signed Out State) -->
           <button class="btn-animation inline-flex min-h-[46px] items-center justify-center border border-line rounded-full bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Login</button>
-          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-purple hover:bg-purple-dark text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex" href="#pricing" onclick="navigateTo('home'); scrollAndHighlight('pricing');">Choose Plans</a>
+          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-brand hover:bg-brand-600 text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex" href="#pricing" onclick="navigateTo('home'); scrollAndHighlight('pricing');">Choose Plans</a>
           <button class="hamburger md:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
       </div>
@@ -219,28 +226,28 @@
            ============================================== -->
       <section id="view-home" class="view-container">
         <!-- Hero Section -->
-        <section class="relative overflow-clip py-20 sm:py-28 px-6" style="background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(111,77,255,0.08) 0%, transparent 70%);">
+        <section class="relative overflow-clip py-20 sm:py-28 px-6" style="background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(12,102,228,0.06) 0%, transparent 70%);">
           <!-- Subtle decorative blobs -->
-          <div class="absolute top-20 left-10 w-72 h-72 bg-purple/5 rounded-full blur-3xl pointer-events-none"></div>
-          <div class="absolute bottom-10 right-10 w-96 h-96 bg-purple/3 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute top-20 left-10 w-72 h-72 bg-brand/5 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute bottom-10 right-10 w-96 h-96 bg-brand/3 rounded-full blur-3xl pointer-events-none"></div>
 
           <div class="max-w-7xl mx-auto">
             <div class="text-center max-w-7xl mx-auto space-y-8">
               <h1 class="text-[#111827] font-black leading-[1.05] tracking-tight text-4xl sm:text-6xl md:text-7xl lg:text-8xl">
-                The Software for your<br class="hidden sm:block"> Korean-Style <span class="text-purple">Photobooth</span> Business
+                The Software for your<br class="hidden sm:block"> Korean-Style <span class="text-brand">Photobooth</span> Business
               </h1>
               <p class="text-lg sm:text-xl leading-relaxed text-body max-w-3xl mx-auto font-medium">
                 Studio Photuna is the all-in-one photo booth business software for operators — set up events, design templates, run the guest booth flow, print, and share photos by QR, all from one Windows app you run on hardware you already own.
               </p>
               <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-                <button onclick="openAuthModal('signup')" class="btn-animation inline-flex items-center gap-2 bg-purple hover:bg-purple-dark text-white px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors shadow-lg shadow-purple/20">
+                <button onclick="openAuthModal('signup')" class="btn-animation inline-flex items-center gap-2 bg-brand hover:bg-brand-600 text-white px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors shadow-lg shadow-brand/20">
                   <i class="fa-solid fa-rocket"></i> Start Free Trial
                 </button>
                 <a href="#" onclick="navigateTo('download');" class="btn-animation inline-flex items-center gap-2 border border-line bg-white hover:bg-grey text-title px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors">
-                  <i class="fa-solid fa-download text-purple text-xs"></i> Download Now
+                  <i class="fa-solid fa-download text-brand text-xs"></i> Download Now
                 </a>
               </div>
-              <div id="heroProofCard" class="inline-flex items-center gap-3 bg-purple text-white rounded-2xl px-5 py-3 shadow-lg shadow-purple/20 max-w-xl mx-auto">
+              <div id="heroProofCard" class="inline-flex items-center gap-3 bg-brand text-white rounded-2xl px-5 py-3 shadow-lg shadow-brand/20 max-w-xl mx-auto">
                 <span class="text-sm shrink-0" id="heroProofIcon" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span>
                 <p class="text-sm font-semibold text-left" id="heroProofText">14-day free trial · No credit card required · Cancel anytime</p>
               </div>
@@ -335,14 +342,14 @@
                         <p class="text-xl sm:text-2xl font-black text-title">0</p>
                       </div>
                     </div>
-                    <hr class="border-purple/30 mb-2 sm:mb-3">
+                    <hr class="border-brand/30 mb-2 sm:mb-3">
                     <div class="flex-1 grid grid-cols-3 sm:grid-cols-4 gap-1.5 sm:gap-2 auto-rows-fr">
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center hidden sm:flex"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
-                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-purple cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-brand cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-brand cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-brand cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-brand cursor-pointer transition-all flex items-center justify-center hidden sm:flex"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-brand cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
+                      <div class="bg-gray-200 rounded-lg border-2 border-transparent hover:border-brand cursor-pointer transition-all flex items-center justify-center"><i class="fa-solid fa-user text-gray-400 text-lg sm:text-2xl"></i></div>
                     </div>
                     <div class="flex justify-end gap-2 sm:gap-3 mt-2 sm:mt-3">
                       <button class="bg-gray-200 text-title font-bold px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm flex items-center gap-1 sm:gap-2 hover:bg-gray-300 transition-colors">
@@ -525,24 +532,24 @@
         </section>
 
         <!-- Value Proposition -->
-        <section class="py-20 px-6 bg-grey border-t border-line">
+        <section class="py-20 px-6 bg-white border-t border-line">
           <div class="max-w-5xl mx-auto text-center space-y-4">
             <h2 class="text-4xl font-extrabold tracking-tight text-title">Why photo booth operators choose Studio Photuna</h2>
             <p class="text-base text-body max-w-3xl mx-auto">Running a Korean-style photobooth business usually means stitching together a booking spreadsheet, a separate template design tool, and a clunky kiosk build. Studio Photuna replaces all of it with one photo booth business software you install on a Windows PC — so you spend less time managing tools and more time booked on events.</p>
           </div>
           <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
             <div class="text-center space-y-2 px-4">
-              <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg mx-auto mb-2"><i class="fa-solid fa-plug"></i></div>
+              <div class="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto mb-2"><i class="fa-solid fa-plug"></i></div>
               <h3 class="text-lg font-bold text-title">Built for operators, not developers</h3>
               <p class="text-sm text-body">No coding, no custom kiosk hardware. Plug in a DSLR and a dye-sub printer, and you're ready to run your first session.</p>
             </div>
             <div class="text-center space-y-2 px-4">
-              <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg mx-auto mb-2"><i class="fa-solid fa-layer-group"></i></div>
+              <div class="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto mb-2"><i class="fa-solid fa-layer-group"></i></div>
               <h3 class="text-lg font-bold text-title">One subscription, the whole workflow</h3>
               <p class="text-sm text-body">Event setup, template design, guest flow, printing, and reporting all live inside a single Pro plan.</p>
             </div>
             <div class="text-center space-y-2 px-4">
-              <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg mx-auto mb-2"><i class="fa-solid fa-share-nodes"></i></div>
+              <div class="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto mb-2"><i class="fa-solid fa-share-nodes"></i></div>
               <h3 class="text-lg font-bold text-title">A guest experience worth reposting</h3>
               <p class="text-sm text-body">Branded welcome screens, tone presets, and instant QR delivery make every strip feel premium.</p>
             </div>
@@ -553,7 +560,7 @@
         <section class="py-16 px-6 bg-white border-t border-line">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
-              <span class="text-xs uppercase tracking-widest font-extrabold text-purple">Interactive Client Screens</span>
+              <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Interactive Client Screens</span>
               <h2 class="text-4xl font-extrabold tracking-tight text-title">Frictionless workflow for guests & admins</h2>
               <p class="text-base text-body">From a branded "Tap to Start" trigger to a printed strip and QR gallery hand-off — every guest screen is timed, on-brand, and built to reset itself for the next walk-up.</p>
             </div>
@@ -568,7 +575,7 @@
                     <img src="interact_image_1.png" alt="Branded Tap to Start welcome screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Welcome+Screen'" />
                   </div>
                   <h4 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-purple/10 text-purple flex items-center justify-center text-xs">1</span>
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">1</span>
                     Branded Welcome Trigger
                   </h4>
                   <p class="text-sm text-body">A full-bleed, on-brand "Tap to Start" lobby screen invites guests to launch a session with zero staff intervention.</p>
@@ -580,7 +587,7 @@
                     <img src="interact_image_2.png" alt="Choose your template screen with countdown" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Choose+Template'" />
                   </div>
                   <h4 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-purple/10 text-purple flex items-center justify-center text-xs">2</span>
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">2</span>
                     Template Selection
                   </h4>
                   <p class="text-sm text-body">Guests pick a Sample, Classic, or 6×2 layout under a live countdown so the queue keeps moving.</p>
@@ -592,7 +599,7 @@
                     <img src="Interact_image_3.png" alt="Select photos to retake review screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Retake+Review'" />
                   </div>
                   <h4 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-purple/10 text-purple flex items-center justify-center text-xs">3</span>
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">3</span>
                     Retake Review
                   </h4>
                   <p class="text-sm text-body">Captured shots load instantly with a configurable retake allowance, so guests only redo the frames they want.</p>
@@ -604,7 +611,7 @@
                     <img src="interact_image_4.png" alt="Strip assembly preview screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Strip+Preview'" />
                   </div>
                   <h4 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-purple/10 text-purple flex items-center justify-center text-xs">4</span>
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">4</span>
                     Strip Assembly Preview
                   </h4>
                   <p class="text-sm text-body">Approved photos are arranged live into the final strip layout side-by-side, exactly as it will print.</p>
@@ -616,7 +623,7 @@
                     <img src="interact_image_5.png" alt="Tone and frame customization screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Tone+%26+Frame'" />
                   </div>
                   <h4 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-purple/10 text-purple flex items-center justify-center text-xs">5</span>
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">5</span>
                     Tone & Frame Studio
                   </h4>
                   <p class="text-sm text-body">One-tap tone presets — Normal, B&W, Sepia, Vintage, Warm, Cool — plus frame styles update the live strip preview.</p>
@@ -628,7 +635,7 @@
                     <img src="interact_image_6.png" alt="Preparing your gallery loading screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Preparing+Gallery'" />
                   </div>
                   <h4 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-purple/10 text-purple flex items-center justify-center text-xs">6</span>
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">6</span>
                     Gallery Generation
                   </h4>
                   <p class="text-sm text-body">While the strip prints, the system quietly generates the QR code and online gallery in the background.</p>
@@ -640,7 +647,7 @@
                     <img src="interact_image_7.png" alt="Now printing screen with QR code" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Printing+%2B+QR'" />
                   </div>
                   <h4 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-purple/10 text-purple flex items-center justify-center text-xs">7</span>
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">7</span>
                     Live Print + QR Hand-off
                   </h4>
                   <p class="text-sm text-body">A scannable QR code appears immediately so guests can download photos and GIFs while the print finishes.</p>
@@ -652,7 +659,7 @@
                     <img src="interact_image_8.png" alt="Print ready thank you screen with auto reset" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Print+Ready'" />
                   </div>
                   <h4 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-purple/10 text-purple flex items-center justify-center text-xs">8</span>
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">8</span>
                     Auto-Reset for Next Guest
                   </h4>
                   <p class="text-sm text-body">A thank-you screen confirms the print is ready, then the kiosk resets itself for the next walk-up — no admin needed.</p>
@@ -664,21 +671,21 @@
             <!-- Frictionless safeguards strip -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
               <div class="flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5">
-                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-purple"><i class="fa-solid fa-stopwatch"></i></div>
+                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-stopwatch"></i></div>
                 <div>
                   <p class="text-sm font-bold text-title">On-screen countdowns</p>
                   <p class="text-xs text-body">Every step shows a live timer so sessions move on their own.</p>
                 </div>
               </div>
               <div class="flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5">
-                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-purple"><i class="fa-solid fa-rotate-left"></i></div>
+                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-rotate-left"></i></div>
                 <div>
                   <p class="text-sm font-bold text-title">Configurable retake limits</p>
                   <p class="text-xs text-body">Cap retakes per session to keep queues fair and fast.</p>
                 </div>
               </div>
               <div class="flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5">
-                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-purple"><i class="fa-solid fa-qrcode"></i></div>
+                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-qrcode"></i></div>
                 <div>
                   <p class="text-sm font-bold text-title">Instant QR delivery</p>
                   <p class="text-xs text-body">Photos and GIFs are ready to scan before the print even finishes.</p>
@@ -689,7 +696,7 @@
         </section>
 
         <!-- Dynamic Core Features Grid -->
-        <section id="features" class="py-24 px-6 bg-grey border-y border-line">
+        <section id="features" class="py-24 px-6 bg-white border-y border-line">
           <div class="max-w-7xl mx-auto space-y-16">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="text-4xl font-extrabold tracking-tight text-title">Run every booking from one operator workspace</h2>
@@ -698,32 +705,32 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 0ms;">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-calendar-days"></i></div>
+                <div class="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-calendar-days"></i></div>
                 <h3 class="text-xl font-bold text-title">Event workspace</h3>
                 <p class="text-sm text-body leading-relaxed">Create a profile for every client event, map your layout, and organize booking details — no more juggling spreadsheets between gigs.</p>
               </article>
               <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 80ms;">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-palette"></i></div>
+                <div class="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-palette"></i></div>
                 <h3 class="text-xl font-bold text-title">Template editor</h3>
                 <p class="text-sm text-body leading-relaxed">Design custom photo strip layouts in 4x6, 6x4, 2x6, and 6x2 formats with a drag-and-drop camera placeholder editor.</p>
               </article>
               <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 160ms;">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <div class="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                 <h3 class="text-xl font-bold text-title">Brand controls</h3>
                 <p class="text-sm text-body leading-relaxed">Style welcome screens, logos, frames, and overlay borders so every event looks like it was custom-built for that client.</p>
               </article>
               <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 240ms;">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-display"></i></div>
+                <div class="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-display"></i></div>
                 <h3 class="text-xl font-bold text-title">Guest flow console</h3>
                 <p class="text-sm text-body leading-relaxed">Run the welcome lobby, template picker, payment terminal, capture counter, retake screen, and QR download — guests self-serve from tap to print.</p>
               </article>
               <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 320ms;">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-print"></i></div>
+                <div class="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-print"></i></div>
                 <h3 class="text-xl font-bold text-title">Printer & outputs</h3>
                 <p class="text-sm text-body leading-relaxed">Connect your DSLR and dye-sub printer once, then control margins, orientation, and copies per session.</p>
               </article>
               <article class="feature-card bg-white border border-line rounded-2xl p-8 space-y-4 shadow-sm hover-lift" style="transition-delay: 400ms;">
-                <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="w-12 h-12 rounded-xl bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-chart-line"></i></div>
                 <h3 class="text-xl font-bold text-title">Active analytics</h3>
                 <p class="text-sm text-body leading-relaxed">Track session counts, live revenue, print sheets, and your most-booked templates in real time.</p>
               </article>
@@ -743,7 +750,7 @@
                 <li class="flex items-center gap-3 font-semibold text-title"><i class="fa-solid fa-circle-check text-green-500"></i> QR sharing and online gallery add-ons</li>
               </ul>
               <div class="pt-4">
-                <a href="#" onclick="navigateTo('download');" class="btn-animation inline-flex items-center gap-2 bg-purple hover:bg-purple-dark text-white px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-colors shadow-sm">
+                <a href="#" onclick="navigateTo('download');" class="btn-animation inline-flex items-center gap-2 bg-brand hover:bg-brand-600 text-white px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-colors shadow-sm">
                   Download Now! <i class="fa-solid fa-calendar-plus"></i>
                 </a>
               </div>
@@ -755,7 +762,7 @@
         </section>
 
         <!-- Fixed Interactive Pro Plan pricing -->
-        <section id="pricing" class="py-24 px-6 bg-grey border-t border-line">
+        <section id="pricing" class="py-24 px-6 bg-white border-t border-line">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="text-4xl font-extrabold tracking-tight text-title">Simple pricing for every stage of growth</h2>
@@ -766,14 +773,14 @@
               <!-- Trial Card -->
               <div class="bg-white border border-line rounded-3xl p-8 flex flex-col justify-between hover:shadow-md transition-shadow">
                 <div class="space-y-4">
-                  <span class="badge bg-purple/10 text-purple text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full inline-block">Trial</span>
+                  <span class="badge bg-brand/10 text-brand text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full inline-block">Trial</span>
                   <h3 class="text-2xl font-bold text-title">14-Day Free Trial</h3>
                   <div class="text-5xl font-black text-title">₱0</div>
                   <p class="text-sm text-body">Test every operator workspace feature before committing to plans.</p>
                   <ul class="space-y-2.5 pt-4 text-sm text-title/90 font-medium">
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple"></i> Custom template mapping</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple"></i> Local printer integration</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-purple"></i> Event dashboard configuration</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand"></i> Custom template mapping</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand"></i> Local printer integration</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand"></i> Event dashboard configuration</li>
                   </ul>
                 </div>
                 <button onclick="openAuthModal('signup')" class="btn-animation mt-8 w-full border border-line hover:bg-grey py-3.5 rounded-full font-extrabold text-sm text-title transition-colors">
@@ -782,8 +789,8 @@
               </div>
 
               <!-- Pro Card with fully functioning toggles -->
-              <div class="bg-title border-2 border-purple rounded-3xl p-8 flex flex-col justify-between shadow-luxe text-white transform md:scale-105 relative">
-                <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-purple text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full" id="proPlanBadge">
+              <div class="bg-title border-2 border-brand rounded-3xl p-8 flex flex-col justify-between shadow-luxe text-white transform md:scale-105 relative">
+                <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-brand text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full" id="proPlanBadge">
                   Best Value
                 </span>
                 <div class="space-y-4">
@@ -800,11 +807,11 @@
                   
                   <ul class="space-y-2.5 pt-4 text-sm font-semibold" id="proPlanDetails">
                     <li class="flex items-center gap-2"><i class="fa-solid fa-star text-yellow"></i> Best value choice</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-purple"></i> Every new feature, the moment it ships</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-purple"></i> Priority support — real answers, not a ticket queue</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-brand"></i> Every new feature, the moment it ships</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-brand"></i> Priority support — real answers, not a ticket queue</li>
                   </ul>
                 </div>
-                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-8 w-full bg-purple hover:bg-purple-dark text-white py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
+                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-8 w-full bg-brand hover:bg-brand-600 text-white py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
                   Choose Pro Plan
                 </button>
               </div>
@@ -838,11 +845,11 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div class="space-y-1.5">
                     <label class="text-xs font-extrabold text-title uppercase" for="reviewName">Your Name *</label>
-                    <input id="reviewName" type="text" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" placeholder="Your full name" required />
+                    <input id="reviewName" type="text" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none" placeholder="Your full name" required />
                   </div>
                   <div class="space-y-1.5">
                     <label class="text-xs font-extrabold text-title uppercase" for="reviewEventType">Event Type</label>
-                    <select id="reviewEventType" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none">
+                    <select id="reviewEventType" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none">
                       <option value="Wedding Client">Wedding</option>
                       <option value="Corporate Event">Corporate Event</option>
                       <option value="Birthday Party">Birthday Party</option>
@@ -866,9 +873,9 @@
                 </div>
                 <div class="space-y-1.5">
                   <label class="text-xs font-extrabold text-title uppercase" for="reviewText">Your Review *</label>
-                  <textarea id="reviewText" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none h-28 resize-none" placeholder="Tell us about your experience with Studio Photuna..." required></textarea>
+                  <textarea id="reviewText" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none h-28 resize-none" placeholder="Tell us about your experience with Studio Photuna..." required></textarea>
                 </div>
-                <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3.5 rounded-xl text-sm uppercase transition-colors shadow-sm" type="submit" id="reviewSubmitBtn">
+                <button class="btn-animation w-full bg-brand hover:bg-brand-600 text-white font-extrabold py-3.5 rounded-xl text-sm uppercase transition-colors shadow-sm" type="submit" id="reviewSubmitBtn">
                   <i class="fa-solid fa-paper-plane mr-2"></i>Submit Review
                 </button>
                 <p class="text-xs text-center text-muted font-medium">Your review will be visible after moderation by our team.</p>
@@ -879,7 +886,7 @@
           </div>
         </section>
 
-        <section id="faq" class="py-24 px-6 bg-grey border-t border-line">
+        <section id="faq" class="py-24 px-6 bg-white border-t border-line">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="text-4xl font-extrabold tracking-tight text-title">Frequently asked questions</h2>
@@ -2519,36 +2526,36 @@
           
           <!-- Only Facebook, Instagram, and TikTok -->
           <div class="socials flex gap-3">
-            <a href="https://www.facebook.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white border border-line flex items-center justify-center text-xs text-title hover:text-purple transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white border border-line flex items-center justify-center text-xs text-title hover:text-purple transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-            <a href="https://www.tiktok.com/@studio.photuna" target="_blank" class="w-8 h-8 rounded-full bg-white border border-line flex items-center justify-center text-xs text-title hover:text-purple transition-colors" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="https://www.facebook.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white border border-line flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white border border-line flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://www.tiktok.com/@studio.photuna" target="_blank" class="w-8 h-8 rounded-full bg-white border border-line flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
           </div>
         </div>
         <div>
           <h4 class="font-extrabold text-title text-sm uppercase tracking-wider mb-4">Company</h4>
           <nav class="flex flex-col gap-2.5 text-sm">
-            <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-purple">Home</a>
-            <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-purple">Book an Event</a>
-            <a href="#features" onclick="navigateTo('home'); scrollAndHighlight('features'); return false;" class="hover:text-purple">Features</a>
-            <a href="#pricing" onclick="navigateTo('home'); scrollAndHighlight('pricing'); return false;" class="hover:text-purple">Pricing</a>
+            <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-brand">Home</a>
+            <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-brand">Book an Event</a>
+            <a href="#features" onclick="navigateTo('home'); scrollAndHighlight('features'); return false;" class="hover:text-brand">Features</a>
+            <a href="#pricing" onclick="navigateTo('home'); scrollAndHighlight('pricing'); return false;" class="hover:text-brand">Pricing</a>
           </nav>
         </div>
         <div>
           <h4 class="font-extrabold text-title text-sm uppercase tracking-wider mb-4">Product</h4>
           <nav class="flex flex-col gap-2.5 text-sm font-medium">
-            <a href="#" onclick="navigateTo('account'); return false;" class="hover:text-purple">My Account</a>
-            <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-purple">Download the App</a>
-            <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-purple">Help & Support</a>
+            <a href="#" onclick="navigateTo('account'); return false;" class="hover:text-brand">My Account</a>
+            <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-brand">Download the App</a>
+            <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-brand">Help & Support</a>
           </nav>
         </div>
         <div>
           <h4 class="font-extrabold text-title text-sm uppercase tracking-wider mb-4">Legal</h4>
           <nav class="flex flex-col gap-2.5 text-sm">
-            <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-purple">Terms of Service</a>
-            <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-purple">Privacy Policy</a>
-            <a href="#" onclick="navigateTo('refund-policy'); return false;" class="hover:text-purple">Refund Policy</a>
-            <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="hover:text-purple">Cookie Policy</a>
-            <a href="#" onclick="navigateTo('data-processing'); return false;" class="hover:text-purple">Data Processing</a>
+            <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand">Terms of Service</a>
+            <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand">Privacy Policy</a>
+            <a href="#" onclick="navigateTo('refund-policy'); return false;" class="hover:text-brand">Refund Policy</a>
+            <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="hover:text-brand">Cookie Policy</a>
+            <a href="#" onclick="navigateTo('data-processing'); return false;" class="hover:text-brand">Data Processing</a>
           </nav>
         </div>
       </div>
