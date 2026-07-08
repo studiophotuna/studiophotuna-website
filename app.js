@@ -1248,15 +1248,17 @@ function renderReviews(payload) {
       { rating: 5, name: "Liam Mendoza", review_text: "Highly recommend the 14-day free trial app configurations. Calibrating connected DSLR camera variables worked smoothly, and local test sheets printed flawlessly.", event_type: "Photobooth Operator" },
       { rating: 5, name: "Sloane Perez", review_text: "Our guests loved the retro filters and quick QR-scans on their phone. Exceptional technical support during our corporate anniversary event setup!", event_type: "Corporate Event Operator" }
     ];
-    defaults.forEach(r => {
-      const card = document.createElement("article"); card.className = "review-card bg-white border border-line rounded-2xl p-6 space-y-3 shadow-sm";
-      card.innerHTML = `<div class="stars text-yellow-500 text-sm font-bold">${'★'.repeat(r.rating)}</div><h3 class="font-bold text-title text-base">${r.name}</h3><p class="text-sm text-body leading-relaxed font-medium">"${r.review_text}"</p><span class="block text-xs text-muted font-bold">${r.event_type}</span>`;
+    defaults.forEach((r, i) => {
+      const card = document.createElement("article"); card.className = "review-card relative bg-white border border-line rounded-2xl p-6 pt-8 space-y-3 shadow-sm";
+      const tilt = i % 2 === 0 ? "-4deg" : "3deg";
+      card.innerHTML = `<div class="absolute -top-2.5 left-6 w-12 h-5 bg-coral/70 rounded-sm" style="transform: rotate(${tilt});" aria-hidden="true"></div><div class="stars text-yellow-500 text-sm font-bold">${'★'.repeat(r.rating)}</div><h3 class="font-bold text-title text-base">${r.name}</h3><p class="text-sm text-body leading-relaxed font-medium">"${r.review_text}"</p><span class="block text-xs text-muted font-bold">${r.event_type}</span>`;
       googleReviewsList.appendChild(card);
     }); return;
   }
-  list.forEach(r => {
-    const card = document.createElement("article"); card.className = "review-card bg-white border border-line rounded-2xl p-6 space-y-3 shadow-sm";
-    card.innerHTML = `<div class="stars text-yellow-500 text-sm font-bold">${'★'.repeat(r.rating)}</div><h3 class="font-bold text-title text-base">${r.name}</h3><p class="text-sm text-body leading-relaxed font-medium">"${r.review_text}"</p><span class="block text-xs text-muted font-bold">${r.event_type || "Client"}</span>`;
+  list.forEach((r, i) => {
+    const card = document.createElement("article"); card.className = "review-card relative bg-white border border-line rounded-2xl p-6 pt-8 space-y-3 shadow-sm";
+    const tilt = i % 2 === 0 ? "-4deg" : "3deg";
+    card.innerHTML = `<div class="absolute -top-2.5 left-6 w-12 h-5 bg-coral/70 rounded-sm" style="transform: rotate(${tilt});" aria-hidden="true"></div><div class="stars text-yellow-500 text-sm font-bold">${'★'.repeat(r.rating)}</div><h3 class="font-bold text-title text-base">${r.name}</h3><p class="text-sm text-body leading-relaxed font-medium">"${r.review_text}"</p><span class="block text-xs text-muted font-bold">${r.event_type || "Client"}</span>`;
     googleReviewsList.appendChild(card);
   });
   // Once a real approved review exists, the hero proof card upgrades from a
