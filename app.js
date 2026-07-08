@@ -147,7 +147,7 @@ function navigateTo(viewId) {
   if (activeView) activeView.classList.remove('hidden');
   closeDropdown();
   document.getElementById("mobile-menu").classList.add("hidden");
-  document.querySelectorAll('nav a').forEach(a => { a.classList.remove('text-purple'); });
+  document.querySelectorAll('nav a[data-nav], #mobile-menu a[data-nav]').forEach(a => { a.classList.toggle('text-purple', a.dataset.nav === viewId); });
   if (viewId === 'book-event') { showBookingStep(0); renderBookingCalendar(); loadBookingAvailability(); }
   else if (viewId === 'bookings-admin') { if (adminMessage) setMessage(adminMessage, "Loading bookings..."); loadBookings(); loadReviewsAdmin(); }
   else if (viewId === 'account') { loadAccountState(window.currentSupabaseUser); }
@@ -1259,6 +1259,14 @@ function renderReviews(payload) {
     card.innerHTML = `<div class="stars text-yellow-500 text-sm font-bold">${'★'.repeat(r.rating)}</div><h3 class="font-bold text-title text-base">${r.name}</h3><p class="text-sm text-body leading-relaxed font-medium">"${r.review_text}"</p><span class="block text-xs text-muted font-bold">${r.event_type || "Client"}</span>`;
     googleReviewsList.appendChild(card);
   });
+  // Once a real approved review exists, the hero proof card upgrades from a
+  // generic trial/pricing line to an actual quote instead of a fabricated one.
+  const heroProofText = document.getElementById("heroProofText");
+  const heroProofIcon = document.getElementById("heroProofIcon");
+  if (heroProofText && list[0]) {
+    heroProofText.textContent = `"${list[0].review_text}" — ${list[0].name}`;
+    if (heroProofIcon) heroProofIcon.innerHTML = '<span class="text-yellow-300">' + '★'.repeat(list[0].rating || 5) + '</span>';
+  }
 }
 
 async function loadReviews() {

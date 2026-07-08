@@ -173,11 +173,11 @@
         </a>
         
         <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-purple transition-colors">Home</a>
+          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-purple transition-colors">Home</a>
           <a href="#features" onclick="navigateTo('home'); scrollAndHighlight('features');" class="hover:text-purple transition-colors">Features</a>
           <a href="#pricing" onclick="navigateTo('home'); scrollAndHighlight('pricing');" class="hover:text-purple transition-colors">Pricing</a>
-          <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-purple transition-colors">Download</a>
-          <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-purple transition-colors">Support</a>
+          <a href="#" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-purple transition-colors">Download</a>
+          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-purple transition-colors">Support</a>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
@@ -205,11 +205,11 @@
 
     <!-- Mobile Dropdown Panel -->
     <div id="mobile-menu" class="hidden md:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
-      <a href="#" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
+      <a href="#" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
       <a href="#pricing" onclick="navigateTo('home'); scrollAndHighlight('pricing'); toggleMobileMenu();" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
-      <a href="#" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
-      <a href="#" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help & Support</a>
-      <a href="#" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
+      <a href="#" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
+      <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help & Support</a>
+      <a href="#" data-nav="account" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
     </div>
 
     <main class="min-h-screen pt-20">
@@ -227,7 +227,7 @@
           <div class="max-w-7xl mx-auto">
             <div class="text-center max-w-7xl mx-auto space-y-8">
               <h1 class="text-[#111827] font-black leading-[1.05] tracking-tight text-4xl sm:text-6xl md:text-7xl lg:text-8xl">
-                The Software for your<br class="hidden sm:block"> Korean-Style Photobooth Business
+                The Software for your<br class="hidden sm:block"> Korean-Style <span class="text-purple">Photobooth</span> Business
               </h1>
               <p class="text-lg sm:text-xl leading-relaxed text-body max-w-3xl mx-auto font-medium">
                 Studio Photuna is the all-in-one photo booth business software for operators — set up events, design templates, run the guest booth flow, print, and share photos by QR, all from one Windows app you run on hardware you already own.
@@ -239,6 +239,10 @@
                 <a href="#" onclick="navigateTo('download');" class="btn-animation inline-flex items-center gap-2 border border-line bg-white hover:bg-grey text-title px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors">
                   <i class="fa-solid fa-download text-purple text-xs"></i> Download Now
                 </a>
+              </div>
+              <div id="heroProofCard" class="inline-flex items-center gap-3 bg-purple text-white rounded-2xl px-5 py-3 shadow-lg shadow-purple/20 max-w-xl mx-auto">
+                <span class="text-sm shrink-0" id="heroProofIcon" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span>
+                <p class="text-sm font-semibold text-left" id="heroProofText">14-day free trial · No credit card required · Cancel anytime</p>
               </div>
             </div>
 
@@ -521,21 +525,24 @@
         </section>
 
         <!-- Value Proposition -->
-        <section class="py-20 px-6 bg-white border-t border-line">
+        <section class="py-20 px-6 bg-grey border-t border-line">
           <div class="max-w-5xl mx-auto text-center space-y-4">
             <h2 class="text-4xl font-extrabold tracking-tight text-title">Why photo booth operators choose Studio Photuna</h2>
             <p class="text-base text-body max-w-3xl mx-auto">Running a Korean-style photobooth business usually means stitching together a booking spreadsheet, a separate template design tool, and a clunky kiosk build. Studio Photuna replaces all of it with one photo booth business software you install on a Windows PC — so you spend less time managing tools and more time booked on events.</p>
           </div>
           <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
             <div class="text-center space-y-2 px-4">
+              <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg mx-auto mb-2"><i class="fa-solid fa-plug"></i></div>
               <h3 class="text-lg font-bold text-title">Built for operators, not developers</h3>
               <p class="text-sm text-body">No coding, no custom kiosk hardware. Plug in a DSLR and a dye-sub printer, and you're ready to run your first session.</p>
             </div>
             <div class="text-center space-y-2 px-4">
+              <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg mx-auto mb-2"><i class="fa-solid fa-layer-group"></i></div>
               <h3 class="text-lg font-bold text-title">One subscription, the whole workflow</h3>
               <p class="text-sm text-body">Event setup, template design, guest flow, printing, and reporting all live inside a single Pro plan.</p>
             </div>
             <div class="text-center space-y-2 px-4">
+              <div class="w-12 h-12 rounded-xl bg-purple/10 flex items-center justify-center text-purple text-lg mx-auto mb-2"><i class="fa-solid fa-share-nodes"></i></div>
               <h3 class="text-lg font-bold text-title">A guest experience worth reposting</h3>
               <p class="text-sm text-body">Branded welcome screens, tone presets, and instant QR delivery make every strip feel premium.</p>
             </div>
