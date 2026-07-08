@@ -47,8 +47,8 @@
                 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80',
                 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', 950: '#052e16',
               },
-              purple: '#6f4dff',
-              'purple-dark': '#4b32c3',
+              purple: '#0c66e4',
+              'purple-dark': '#0a52b8',
               brand: {
                 DEFAULT: '#0c66e4',
                 50: '#eaf2fe', 100: '#d3e4fd', 200: '#a8c9fb', 300: '#7aadf7', 400: '#3d89ef',
@@ -76,8 +76,8 @@
         --muted: #8b92a6;
         --grey: #f4f5f8;
         --line: #dedfe6;
-        --purple: #6f4dff;
-        --purple-dark: #4b32c3;
+        --purple: #0c66e4;
+        --purple-dark: #0a52b8;
         --brand: #0c66e4;
         --brand-dark: #0a52b8;
         --white: #ffffff;
@@ -117,7 +117,7 @@
         border-radius: 999px;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #6f4dff;
+        background: #0c66e4;
       }
       .reveal {
         opacity: 0;
@@ -150,7 +150,7 @@
         transform: translateX(-50%);
         width: 120px;
         height: 2px;
-        background: linear-gradient(90deg, transparent, #6f4dff, transparent);
+        background: linear-gradient(90deg, transparent, #0c66e4, transparent);
         border-radius: 999px;
       }
       /* Smooth hover lift for cards */
@@ -267,7 +267,7 @@
 
             <!-- Interactive Booth Console Preview — replaces static hero image; hidden on mobile -->
             <div class="hidden sm:block mt-16 max-w-5xl mx-auto reveal">
-              <div class="bg-[#111827] rounded-3xl p-3 sm:p-4 shadow-luxe">
+              <div class="bg-black rounded-3xl p-3 sm:p-4 shadow-luxe">
                 <div class="flex justify-center pb-2">
                   <div class="w-2.5 h-2.5 rounded-full bg-gray-600 ring-1 ring-gray-500"></div>
                 </div>
@@ -544,7 +544,7 @@
         </section>
 
         <!-- Value Proposition -->
-        <section class="py-20 px-6 bg-white border-t border-line">
+        <section class="py-20 px-6 bg-white">
           <div class="max-w-5xl mx-auto text-center space-y-4">
             <h2 class="h2-display text-title">Why photo booth operators choose Studio Photuna</h2>
             <p class="text-base text-body max-w-3xl mx-auto">Running a Korean-style photobooth business usually means stitching together a booking spreadsheet, a separate template design tool, and a clunky kiosk build. Studio Photuna replaces all of it with one photo booth business software you install on a Windows PC — so you spend less time managing tools and more time booked on events.</p>
@@ -569,7 +569,7 @@
         </section>
 
         <!-- Live Photobooth Interface Showcase Gallery -->
-        <section class="py-16 px-6 bg-white border-t border-line">
+        <section class="py-16 px-6 bg-white">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Interactive Client Screens</span>
@@ -708,10 +708,10 @@
         </section>
 
         <!-- Dynamic Core Features Grid -->
-        <section id="features" class="py-24 px-6 bg-title">
+        <section id="features" class="py-24 px-6 bg-black">
           <div class="max-w-7xl mx-auto space-y-16">
             <div class="text-center max-w-2xl mx-auto space-y-4">
-              <h2 class="h2-display text-white">Run every booking from one operator workspace</h2>
+              <h2 class="h2-display text-white" style="font-weight: 800;">Run every booking from one operator workspace</h2>
               <p class="text-base text-white/70">Set up the business side, event flow, guest experience, and delivery workflow in one practical Windows app.</p>
             </div>
 
@@ -774,7 +774,7 @@
         </section>
 
         <!-- Fixed Interactive Pro Plan pricing -->
-        <section id="pricing" class="py-24 px-6 bg-white border-t border-line">
+        <section id="pricing" class="py-24 px-6 bg-white">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">Simple pricing for every stage of growth</h2>
@@ -801,7 +801,7 @@
               </div>
 
               <!-- Pro Card with fully functioning toggles -->
-              <div class="bg-title border-2 border-brand rounded-3xl p-8 flex flex-col justify-between shadow-luxe text-white transform md:scale-105 relative">
+              <div class="bg-black border-2 border-brand rounded-3xl p-8 flex flex-col justify-between shadow-luxe text-white transform md:scale-105 relative">
                 <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-brand text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full" id="proPlanBadge">
                   Best Value
                 </span>
@@ -898,10 +898,10 @@
           </div>
         </section>
 
-        <section id="faq" class="py-24 px-6 bg-title">
+        <section id="faq" class="py-24 px-6 bg-black">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
-              <h2 class="h2-display text-white">Frequently asked questions</h2>
+              <h2 class="h2-display text-white" style="font-weight: 800;">Frequently asked questions</h2>
               <p class="text-base text-white/70">Everything aspiring and active operators ask before subscribing.</p>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="faqAccordion">
@@ -2603,7 +2603,7 @@
           <input id="authEmail" name="email" type="email" placeholder="Email address" autocomplete="email" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
           <input id="authPassword" name="password" type="password" placeholder="Password" autocomplete="current-password" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
           <label id="authConsent" class="hidden flex items-start gap-2 text-xs text-body cursor-pointer">
-            <input type="checkbox" id="consentCheck" class="mt-0.5 accent-[#6f4dff]" />
+            <input type="checkbox" id="consentCheck" class="mt-0.5 accent-[#0c66e4]" />
             <span>I agree to the <a href="#" onclick="navigateTo('operator-agreement'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Terms of Service</a> and <a href="#" onclick="navigateTo('privacy-framework'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Privacy Policy</a>, including the processing of my personal data in accordance with the Data Privacy Act of 2012 (RA 10173).</span>
           </label>
           <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors shadow-sm" type="submit" id="authSubmit">Login</button>
