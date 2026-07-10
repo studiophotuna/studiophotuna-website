@@ -198,6 +198,22 @@ function setAuthMode(mode) {
 
 function setAuthMessage(message, isError = false) { authMessage.textContent = message; authMessage.style.color = isError ? "#dc2626" : "var(--body)"; }
 
+function initialsFor(name, email) {
+  const source = (name || "").trim() || (email || "").split("@")[0] || "";
+  const parts = source.split(/[\s._-]+/).filter(Boolean);
+  if (!parts.length) return "?";
+  return parts.length === 1 ? parts[0].slice(0, 2).toUpperCase() : (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function renderAvatar(container, avatarUrl, name, email) {
+  if (!container) return;
+  if (avatarUrl) {
+    container.innerHTML = `<img src="${avatarUrl}" alt="Profile photo" class="w-full h-full object-cover" />`;
+  } else {
+    container.textContent = initialsFor(name, email);
+  }
+}
+
 async function loadAccountState(user) {
   if (!user) { document.getElementById('signedOutPanel').classList.remove('hidden'); document.getElementById('accountPanel').classList.add('hidden'); updateAuthUi(null); return; }
   document.getElementById('signedOutPanel').classList.add('hidden'); document.getElementById('accountPanel').classList.remove('hidden');
@@ -210,6 +226,7 @@ async function loadAccountState(user) {
     currentProfile = profile; currentLicense = license;
     document.getElementById("profileName").textContent = profile?.full_name || user.email;
     document.getElementById("profileMeta").textContent = user.email;
+    renderAvatar(document.getElementById("avatarPreview"), profile?.avatar_url, profile?.full_name, user.email);
     document.getElementById("accountCompany").textContent = profile?.company || "-";
     document.getElementById("accountPhone").textContent = profile?.phone || "-";
     document.getElementById("accountPlan").textContent = formatStatus(license?.plan || profile?.subscription_plan || "free");
@@ -269,6 +286,7 @@ function formatStatus(value) { if (!value) return "None"; return String(value).r
 function updateAuthUi(user) {
   if (user) {
     userPill.textContent = user.email; userDropdown.classList.remove("hidden"); userDropdown.classList.add("inline-block");
+    renderAvatar(document.getElementById("navAvatar"), currentProfile?.avatar_url, currentProfile?.full_name, user.email);
     document.getElementById("loginOpen").style.display = "none";
     if (adminBookingsOpen) { adminBookingsOpen.classList.toggle("hidden", !isAdminProfile(currentProfile)); adminBookingsOpen.classList.toggle("flex", isAdminProfile(currentProfile)); }
   } else {
@@ -1829,9 +1847,57 @@ document.getElementById("avatarInput")?.addEventListener("change", async (e) => 
     const { error: uploadError } = await supabaseClient.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type || "image/jpeg" }); if (uploadError) throw uploadError;
     const { data } = supabaseClient.storage.from("avatars").getPublicUrl(path); const publicUrl = `${data.publicUrl}?v=${Date.now()}`;
     const { error: updateError } = await supabaseClient.from("profiles").update({ avatar_url: publicUrl }).eq("id", window.currentSupabaseUser.id); if (updateError) throw updateError;
-    document.getElementById("avatarPreview").innerHTML = `<img src="${publicUrl}" class="w-full h-full object-cover" />`; spawnToast("Upload Complete", "Avatar updated successfully.", "fa-solid fa-image", "success");
+    if (currentProfile) currentProfile.avatar_url = publicUrl;
+    renderAvatar(document.getElementById("avatarPreview"), publicUrl);
+    renderAvatar(document.getElementById("navAvatar"), publicUrl);
+    spawnToast("Upload Complete", "Avatar updated successfully.", "fa-solid fa-image", "success");
   } catch (err) { const reason = err?.message || err?.error_description || "Unknown storage error."; console.error("Avatar upload failed:", err); spawnToast("Upload Failed", reason, "fa-solid fa-exclamation-triangle", "warning"); }
 });
+
+// ===================================================================
+// Account: Delete Account (Data Privacy Act of 2012 / RA 10173 erasure right)
+// ===================================================================
+function openDeleteAccountModal() {
+  const modal = document.getElementById("deleteAccountModal");
+  const input = document.getElementById("deleteAccountConfirmInput");
+  const btn = document.getElementById("deleteAccountConfirmBtn");
+  document.getElementById("deleteAccountMessage").textContent = "";
+  if (input) input.value = "";
+  if (btn) btn.disabled = true;
+  modal.classList.remove("hidden"); modal.classList.add("grid"); modal.setAttribute("aria-hidden", "false");
+}
+
+function closeDeleteAccountModal() {
+  const modal = document.getElementById("deleteAccountModal");
+  modal.classList.add("hidden"); modal.classList.remove("grid"); modal.setAttribute("aria-hidden", "true");
+}
+
+document.getElementById("deleteAccountConfirmInput")?.addEventListener("input", (e) => {
+  const btn = document.getElementById("deleteAccountConfirmBtn");
+  if (btn) btn.disabled = e.target.value.trim() !== "DELETE";
+});
+
+async function confirmDeleteAccount() {
+  if (!supabaseClient || !window.currentSupabaseUser) return;
+  const btn = document.getElementById("deleteAccountConfirmBtn");
+  const message = document.getElementById("deleteAccountMessage");
+  btn.disabled = true; btn.textContent = "Deleting...";
+  message.className = "text-center text-xs font-bold mt-3 text-body"; message.textContent = "Deleting your account -- this may take a few seconds.";
+  try {
+    const { data, error } = await supabaseClient.functions.invoke("delete-account", { body: {} });
+    if (error) throw error;
+    if (data?.error) throw new Error(data.error);
+    closeDeleteAccountModal();
+    spawnToast("Account Deleted", "Your account and personal data have been permanently removed.", "fa-solid fa-circle-check", "success");
+    await supabaseClient.auth.signOut();
+    window.currentSupabaseUser = null; currentProfile = null; currentLicense = null;
+    navigateTo("home");
+  } catch (err) {
+    console.error("Account deletion failed:", err);
+    message.className = "text-center text-xs font-bold mt-3 text-red-600"; message.textContent = err.message || "Could not delete your account. Please try again or contact dpo@studiophotuna.com.";
+    btn.disabled = false; btn.textContent = "Permanently Delete My Account";
+  }
+}
 
 document.getElementById("passwordForm")?.addEventListener("submit", async (e) => {
   e.preventDefault();
