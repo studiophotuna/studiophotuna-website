@@ -1813,7 +1813,10 @@ authForm.onsubmit = async (event) => {
   try {
     if (authMode === "signup") {
       const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } }); if (error) throw error;
-      if (data?.user?.id) { await supabaseClient.from("profiles").upsert({ id: data.user.id, full_name: name, email, subscription_plan: "free" }); }
+      if (data?.user?.id) {
+        const { error: profileErr } = await supabaseClient.from("profiles").upsert({ id: data.user.id, full_name: name, email, subscription_plan: "free" });
+        if (profileErr) console.warn("Profile row creation failed on signup (non-fatal, account still created):", profileErr);
+      }
       setAuthMessage("Signup confirmed. Enjoy your Pro access!", false); spawnToast("Signup Successful", "Verification complete.", "fa-solid fa-circle-check", "success"); setTimeout(closeAuthModal, 1500);
     } else {
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password }); if (error) throw error;
@@ -1846,7 +1849,10 @@ document.getElementById("avatarInput")?.addEventListener("change", async (e) => 
   try {
     const { error: uploadError } = await supabaseClient.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type || "image/jpeg" }); if (uploadError) throw uploadError;
     const { data } = supabaseClient.storage.from("avatars").getPublicUrl(path); const publicUrl = `${data.publicUrl}?v=${Date.now()}`;
-    const { error: updateError } = await supabaseClient.from("profiles").update({ avatar_url: publicUrl }).eq("id", window.currentSupabaseUser.id); if (updateError) throw updateError;
+    // upsert (not update) so this still works even if the user's profile
+    // row hasn't been created yet; .select().single() forces a visible
+    // error instead of a silent no-op if RLS ever blocks the write again.
+    const { error: updateError } = await supabaseClient.from("profiles").upsert({ id: window.currentSupabaseUser.id, avatar_url: publicUrl }).select().single(); if (updateError) throw updateError;
     if (currentProfile) currentProfile.avatar_url = publicUrl;
     renderAvatar(document.getElementById("avatarPreview"), publicUrl);
     renderAvatar(document.getElementById("navAvatar"), publicUrl);

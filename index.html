@@ -202,9 +202,10 @@
         <div class="header-actions flex items-center gap-4">
           <!-- User Dropdown (Signed In State) -->
           <div class="relative hidden" id="userDropdown">
-            <button class="dropdown-trigger inline-flex min-height-[44px] items-center gap-2 border border-line rounded-full bg-grey hover:bg-grey-2 pl-1.5 pr-4 py-1.5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="dropdownButton" aria-haspopup="true" aria-expanded="false">
+            <button class="dropdown-trigger inline-flex min-height-[44px] items-center gap-2 border border-line rounded-full bg-grey hover:bg-grey-2 pl-1.5 pr-2 sm:pr-4 py-1.5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="dropdownButton" aria-haspopup="true" aria-expanded="false">
               <span id="navAvatar" class="w-7 h-7 rounded-full bg-purple/10 border border-line flex items-center justify-center text-[10px] font-black text-purple overflow-hidden shrink-0" aria-hidden="true"></span>
-              <span id="userPill" class="max-w-[120px] truncate">Account</span>
+              <span class="sr-only sm:hidden">Account menu</span>
+              <span id="userPill" class="hidden sm:inline max-w-[120px] truncate">Account</span>
               <i class="fa-solid fa-chevron-down text-xs text-muted"></i>
             </button>
             <div class="dropdown-menu absolute top-full right-0 mt-2 w-56 border border-line rounded-2xl bg-white p-2 shadow-luxe hidden flex-col gap-1 z-50" role="menu">
