@@ -1699,6 +1699,11 @@ function boothNext() {
 }
 
 function boothReset() {
+  // Also resets the end-of-demo feedback step so a fresh pass through the
+  // demo shows the reaction prompt again instead of a stale signup CTA.
+  document.querySelectorAll(".booth-feedback-btn").forEach(b => { b.classList.remove("border-brand", "bg-brand/10"); b.classList.add("border-line"); });
+  document.getElementById("boothFeedbackCta")?.classList.add("hidden");
+  document.getElementById("boothFeedbackPrompt")?.classList.remove("hidden");
   showBoothScreen(0);
 }
 
@@ -1718,6 +1723,20 @@ function selectBoothTone(btn) {
   });
   btn.classList.add("bg-[#1a1a2e]", "text-white");
   btn.classList.remove("border", "border-line", "text-title", "bg-white");
+}
+
+// End-of-demo "how was your experience" reaction. Picking one stops the
+// auto-return countdown (so the signup CTA it reveals doesn't get yanked
+// away) and swaps the reaction prompt for the signup ask -- the guest just
+// made a small real choice in the live demo, so asking them to sign up
+// right after reads as "keep this experience" rather than a cold ask.
+function selectBoothFeedback(btn) {
+  document.querySelectorAll(".booth-feedback-btn").forEach(b => { b.classList.remove("border-brand", "bg-brand/10"); b.classList.add("border-line"); });
+  btn.classList.add("border-brand", "bg-brand/10");
+  btn.classList.remove("border-line");
+  if (boothReturnInterval) { clearInterval(boothReturnInterval); boothReturnInterval = null; }
+  document.getElementById("boothFeedbackPrompt")?.classList.add("hidden");
+  document.getElementById("boothFeedbackCta")?.classList.remove("hidden");
 }
 
 // ===================================================================
@@ -1901,7 +1920,10 @@ authForm.onsubmit = async (event) => {
         const { error: profileErr } = await supabaseClient.from("profiles").upsert({ id: data.user.id, full_name: name, email, subscription_plan: "free" });
         if (profileErr) console.warn("Profile row creation failed on signup (non-fatal, account still created):", profileErr);
       }
-      setAuthMessage("Signup confirmed. Enjoy your Pro access!", false); spawnToast("Signup Successful", "Verification complete.", "fa-solid fa-circle-check", "success"); setTimeout(closeAuthModal, 1500);
+      // New accounts need the desktop app, so send them straight to the
+      // download page next -- the natural next step after signing up.
+      setAuthMessage("Signup confirmed. Taking you to the download page...", false); spawnToast("Signup Successful", "Let's get the app installed.", "fa-solid fa-circle-check", "success");
+      setTimeout(() => { closeAuthModal(); navigateTo("download"); }, 1500);
     } else {
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password }); if (error) throw error;
       setAuthMessage("Access verified.", false); spawnToast("Welcome Back", "Session established securely.", "fa-solid fa-circle-check", "success"); setTimeout(closeAuthModal, 1200);

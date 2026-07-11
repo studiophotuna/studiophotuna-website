@@ -516,16 +516,30 @@
                     </div>
                   </div>
 
-                  <!-- Screen 7: Your print is ready -->
+                  <!-- Screen 7: Your print is ready -> guest feedback -> signup CTA -->
                   <div class="booth-screen hidden flex-col items-center justify-center text-center h-full" data-screen="7">
                     <div class="space-y-3 sm:space-y-5">
                       <img src="logo-dark.png" alt="Studio Photuna" class="h-11 w-auto mx-auto block" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
                       <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#1a1a2e]" style="font-family: 'Playfair Display', serif;"><span class="text-xl sm:text-2xl">&#10024;</span> Your print is ready <span class="text-lg sm:text-xl">&#10024;</span></h2>
-                      <p class="text-xs sm:text-sm text-body max-w-sm mx-auto px-4">Thanks for posing with us! We loved capturing your moment. Enjoy your photo and we hope to see you again soon.</p>
-                      <p class="text-[10px] sm:text-xs text-muted">returning in <span class="text-[10px] sm:text-xs text-muted" id="boothReturnTimer-7">10s</span></p>
-                      <button onclick="boothReset()" class="btn-animation bg-[#1a1a2e] text-white font-bold px-8 sm:px-10 py-3 sm:py-3.5 rounded-full text-xs sm:text-sm hover:bg-[#2a2a3e] transition-colors">
-                        New Session &rarr;
-                      </button>
+                      <p class="text-xs sm:text-sm text-body max-w-sm mx-auto px-4">Thanks for posing with us! We loved capturing your moment.</p>
+
+                      <div id="boothFeedbackPrompt" class="space-y-2 sm:space-y-3">
+                        <p class="text-xs sm:text-sm font-bold text-title">How was your experience?</p>
+                        <div class="flex items-center justify-center gap-2 sm:gap-3">
+                          <button type="button" onclick="selectBoothFeedback(this)" class="booth-feedback-btn text-xl sm:text-2xl w-11 h-11 sm:w-14 sm:h-14 rounded-full border border-line bg-white hover:border-brand transition-all" aria-label="Loved it">&#128525;</button>
+                          <button type="button" onclick="selectBoothFeedback(this)" class="booth-feedback-btn text-xl sm:text-2xl w-11 h-11 sm:w-14 sm:h-14 rounded-full border border-line bg-white hover:border-brand transition-all" aria-label="It was fun">&#128522;</button>
+                          <button type="button" onclick="selectBoothFeedback(this)" class="booth-feedback-btn text-xl sm:text-2xl w-11 h-11 sm:w-14 sm:h-14 rounded-full border border-line bg-white hover:border-brand transition-all" aria-label="It's okay">&#128528;</button>
+                        </div>
+                        <p class="text-[10px] sm:text-xs text-muted">returning in <span class="text-[10px] sm:text-xs text-muted" id="boothReturnTimer-7">10s</span></p>
+                      </div>
+
+                      <div id="boothFeedbackCta" class="hidden space-y-3">
+                        <p class="text-xs sm:text-sm text-body max-w-xs mx-auto px-4">Loved that? Bring this exact experience to your own events.</p>
+                        <button type="button" onclick="openAuthModal('signup')" class="btn-animation bg-brand hover:bg-brand-600 text-white font-extrabold px-8 sm:px-10 py-3 sm:py-3.5 rounded-full text-xs sm:text-sm uppercase tracking-wider transition-colors">
+                          Sign Up Free
+                        </button>
+                        <button type="button" onclick="boothReset()" class="block mx-auto text-[10px] sm:text-xs text-muted hover:text-title font-bold">Try another session</button>
+                      </div>
                     </div>
                   </div>
 
