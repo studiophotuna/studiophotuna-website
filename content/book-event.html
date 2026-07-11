@@ -1,0 +1,248 @@
+      <div class="px-6 py-12 max-w-7xl mx-auto">
+        <div class="space-y-8">
+          <div class="text-center space-y-3">
+            <h1 class="text-[#111827] font-black leading-tight text-4xl sm:text-6xl">Book Studio Photuna for your event</h1>
+            <p class="text-lg text-body max-w-2xl mx-auto">Complete our simplified booking wizard to review pricing, check real-time availability, and secure your event details.</p>
+          </div>
+
+          <!-- Two-column layout: Wizard (main) + Progress & Info (right sidebar) -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:items-start">
+
+            <!-- Main: Wizard Shell (spans 2 columns, visually first) -->
+            <div class="lg:col-span-2 lg:order-1">
+          <!-- Wizard Shell Container -->
+          <div class="bg-white border border-line rounded-3xl shadow-luxe overflow-hidden">
+            
+            <!-- Wizard Header Bar -->
+            <div class="bg-title p-6 space-y-3 relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-purple/20 via-transparent to-yellow/5 pointer-events-none"></div>
+              <div class="relative z-10 flex items-center justify-between gap-4">
+                <div>
+                  <h2 class="text-2xl font-extrabold text-white leading-tight">Request a booking quote</h2>
+                  <p class="text-xs text-white/60 mt-1">Read rules, select dates, and complete the configuration in one flow.</p>
+                </div>
+                <div class="hidden sm:grid grid-cols-2 gap-2 shrink-0">
+                  <div class="border border-white/10 bg-white/5 rounded-xl p-3 text-center">
+                    <strong class="text-base font-bold text-white block">3 hrs</strong>
+                    <span class="text-[10px] text-white/50">Standard</span>
+                  </div>
+                  <div class="border border-white/10 bg-white/5 rounded-xl p-3 text-center">
+                    <strong class="text-base font-bold text-white block">50%</strong>
+                    <span class="text-[10px] text-white/50">Deposit</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Form Body -->
+            <div class="p-6 sm:p-8 bg-white text-body">
+                <!-- Wizard Progress Dots -->
+                <div class="wizard-progress grid grid-cols-5 gap-2 mb-6" id="bookingWizardProgress" aria-label="Booking progress"></div>
+
+                <form class="booking-form space-y-4" id="eventBookingForm">
+
+                  <!-- STEP 2: CHOOSE DATE -->
+                  <div class="flow-step active" data-step="0">
+                    <h4 class="font-extrabold text-title text-sm mb-2 uppercase tracking-wider">1. Choose an available date</h4>
+                    <div class="availability-card bg-grey p-4 border border-line rounded-xl space-y-3">
+                      <div class="availability-head flex items-center justify-between">
+                        <strong id="bookingCalendarMonth" class="text-title font-bold text-sm">Availability</strong>
+                        <div class="calendar-controls flex gap-1">
+                          <button type="button" id="calendarPrev" class="w-8 h-8 rounded-full border border-line bg-white text-title flex items-center justify-center font-bold hover:bg-grey">&lt;</button>
+                          <button type="button" id="calendarNext" class="w-8 h-8 rounded-full border border-line bg-white text-title flex items-center justify-center font-bold hover:bg-grey">&gt;</button>
+                        </div>
+                      </div>
+                      <div class="calendar-weekdays grid grid-cols-7 text-center text-[10px] text-muted font-bold uppercase tracking-wider">
+                        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                      </div>
+                      <div class="calendar-grid grid grid-cols-7 gap-1" id="bookingCalendar"></div>
+                      <div class="calendar-status text-xs text-muted font-bold pt-2 border-t border-line" id="availabilityStatus">Checking schedule availability...</div>
+                    </div>
+                  </div>
+
+                  <!-- STEP 3: PACKAGE & OVERTIME -->
+                  <div class="flow-step" data-step="1">
+                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">2. Select packages and coverage</h4>
+                    <div class="space-y-3 mb-4">
+                      <div class="flex items-center justify-between">
+                        <p class="text-xs font-bold text-body">Select one or more packages</p>
+                        <p class="text-[10px] font-bold text-purple">Combo discount: ₱2,500 off when 2+ selected</p>
+                      </div>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="wizardPkgGrid">
+                        <!-- Rendered by JS -->
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingExtraHours">Extra hours</label>
+                        <select id="bookingExtraHours" name="extraHours" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none">
+                          <option value="0">No extra hours</option>
+                          <option value="1">+1 hour</option>
+                          <option value="2">+2 hours</option>
+                          <option value="3">+3 hours</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="border border-line rounded-xl p-4 bg-grey space-y-1.5" id="packageBreakdown">
+                      <h4 class="font-bold text-title text-sm">Select packages to see inclusions</h4>
+                    </div>
+                  </div>
+
+                  <!-- STEP 4: EVENT SCHEDULE DETAILS -->
+                  <div class="flow-step" data-step="2">
+                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">3. Event schedule</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingDateDisplay">Date of event</label>
+                        <input id="bookingDateDisplay" type="text" placeholder="Select on calendar (Step 1)" class="w-full border border-line rounded-xl px-4 py-3 text-xs bg-grey" readonly required />
+                        <input id="bookingDate" name="date" type="hidden" required />
+                      </div>
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingTime">Start time</label>
+                        <input id="bookingTime" name="time" type="time" value="08:00" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                      </div>
+                    </div>
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingVenueCity">Metro Manila city</label>
+                      <select id="bookingVenueCity" name="venueCity" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required>
+                        <option value="">Select city</option>
+                        <option>Manila</option>
+                        <option>Makati</option>
+                        <option>Taguig</option>
+                        <option>Pasig</option>
+                        <option>Quezon City</option>
+                        <option>Mandaluyong</option>
+                        <option>San Juan</option>
+                        <option>Pasay</option>
+                        <option>Paranaque</option>
+                        <option>Muntinlupa</option>
+                        <option>Las Pinas</option>
+                        <option>Marikina</option>
+                        <option>Caloocan</option>
+                      </select>
+                    </div>
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingVenueName">Venue name</label>
+                      <input id="bookingVenueName" name="venueName" placeholder="Example: The Blue Leaf Events Pavilion" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                    </div>
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingVenueAddress">Full venue address</label>
+                      <input id="bookingVenueAddress" name="venueAddress" placeholder="Street, barangay, or building" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                    </div>
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingMapsLink">Google Maps Link (Optional)</label>
+                      <input id="bookingMapsLink" name="mapsLink" type="url" placeholder="Optional pinned location url" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" />
+                    </div>
+                  </div>
+
+                  <!-- STEP 5: CONTACT & ESTIMATED HEADCOUNT -->
+                  <div class="flow-step" data-step="3">
+                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">4. Contact and event details</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingName">Full Name</label>
+                        <input id="bookingName" name="name" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                      </div>
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingPhone">Contact Number</label>
+                        <input id="bookingPhone" name="phone" placeholder="09XXXXXXXXX" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingEmail">Email Address</label>
+                        <input id="bookingEmail" name="email" type="email" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" />
+                      </div>
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingGuests">Estimated Guests</label>
+                        <input id="bookingGuests" name="guests" type="number" min="20" max="500" placeholder="120" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                      </div>
+                    </div>
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingType">Type of Event</label>
+                      <select id="bookingType" name="eventType" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required>
+                        <option value="">Select event type</option>
+                        <option>Wedding</option>
+                        <option>Birthday</option>
+                        <option>Corporate event</option>
+                        <option>Baptism</option>
+                        <option>Holiday party</option>
+                        <option>Other</option>
+                      </select>
+                    </div>
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingNotes">Event Theme / Notes</label>
+                      <textarea id="bookingNotes" name="notes" placeholder="Tell us about your event theme, background colors, and styling rules..." class="w-full border border-line rounded-xl px-4 py-3 text-xs h-20 resize-none focus:border-purple outline-none"></textarea>
+                    </div>
+                  </div>
+
+                  <!-- STEP 6: TERMS & CONFIRMATION -->
+                  <div class="flow-step" data-step="4">
+                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">5. Confirm understanding</h4>
+                    <label class="terms-row flex items-start gap-2.5 font-bold text-title text-xs">
+                      <input id="bookingTerms" type="checkbox" class="mt-0.5" required />
+                      <span>I have read and understood the service area restrictions, cancellation rules, setup times, and overtime parameters.</span>
+                    </label>
+                    <div class="bg-grey border border-line p-3 rounded-xl text-xs text-body leading-relaxed mt-4 font-medium">
+                      Payments can be processed via GCash, bank transfer, or cash. Balance is payable on or before event day unless coordinated otherwise. Confirmation replies will arrive from <span class="text-purple">notification@studiophotuna.com</span>.
+                    </div>
+                  </div>
+
+                  <!-- LIVE QUOTE SUMMARY BLOCK -->
+                  <div class="quote-summary border border-line rounded-xl p-4 bg-title text-white space-y-3 mt-4 hidden" id="quoteSummary" aria-live="polite">
+                    <h4 class="font-bold text-sm border-b border-white/15 pb-2">Estimated Total</h4>
+                    <ul class="space-y-1 text-xs" id="quoteSummaryList">
+                      <!-- Populated via JS calculations -->
+                    </ul>
+                    <div class="quote-total flex justify-between items-baseline pt-2 border-t border-white/15 font-bold">
+                      <span class="text-xs">Estimated invoice</span>
+                      <strong class="text-2xl text-yellow" id="quoteTotal">PHP 0</strong>
+                    </div>
+                  </div>
+
+                  <!-- Wizard Actions -->
+                  <div class="wizard-actions flex gap-3 pt-4" id="bookingWizardActions">
+                    <button class="btn-animation w-1/3 border border-line hover:bg-grey py-3 rounded-full font-extrabold text-sm text-title" type="button" id="bookingPrevStep">Back</button>
+                    <button class="btn-animation w-2/3 bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm" type="button" id="bookingNextStep">Next</button>
+                    <button class="btn-animation w-2/3 bg-green hover:bg-green-600 text-white font-extrabold py-3 rounded-full text-sm hidden" type="submit" id="bookingSubmit">Send Booking Request</button>
+                  </div>
+
+                  <div class="booking-message text-center text-xs font-extrabold mt-3" id="bookingMessage"></div>
+
+                </form>
+            </div><!-- end form body -->
+          </div><!-- end wizard shell -->
+            </div><!-- end main wizard column -->
+
+            <!-- Right sidebar: Application progress + condensed info -->
+            <div class="space-y-6 lg:col-span-1 lg:order-2">
+              <!-- Application Progress -->
+              <div class="bg-white border border-line rounded-2xl p-6">
+                <h3 class="text-title font-bold text-sm uppercase tracking-wider mb-4">Application Progress</h3>
+                <div id="bookingProgressList"><!-- rendered by JS, see renderBookingProgress() --></div>
+              </div>
+
+              <!-- What to expect (condensed) -->
+              <div class="bg-grey border border-line rounded-2xl p-6 space-y-3">
+                <h3 class="text-title font-bold text-sm">What to expect</h3>
+                <ul class="space-y-2.5 text-xs">
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-location-dot text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body"><strong class="text-title">Metro Manila only</strong> — no bookings outside service area.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-clock text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body"><strong class="text-title">3 hrs standard</strong>, overtime available.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-peso-sign text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body"><strong class="text-title">50% deposit</strong> required, non-refundable.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-envelope text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body">Confirmations from <a href="mailto:notification@studiophotuna.com" class="text-title font-bold hover:text-purple">notification@studiophotuna.com</a></span></li>
+                </ul>
+              </div>
+
+              <!-- Quick FAQ -->
+              <div class="bg-white border border-line rounded-2xl p-6 space-y-3">
+                <h3 class="text-title font-bold text-sm">Quick FAQ</h3>
+                <ul class="space-y-2.5 text-xs text-body">
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i><span><strong>Does this confirm my slot?</strong> Only after your 50% deposit is verified.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i><span><strong>When do you arrive?</strong> 1–2 hours before your event start.</span></li>
+                </ul>
+                <p class="text-xs text-center pt-2 border-t border-line">Have a question? <a href="#" onclick="navigateTo('help-support'); return false;" class="text-purple font-bold hover:underline">Contact support</a></p>
+              </div>
+            </div>
+          </div><!-- end grid -->
+        </div>
+      </div>

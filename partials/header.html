@@ -1,0 +1,38 @@
+    <header class="site-header fixed top-0 left-0 w-full z-40 bg-white/90 backdrop-blur-md border-b border-[#dedfe6]/70 transition-all duration-300">
+      <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <a class="logo flex items-center gap-3" href="#" onclick="navigateTo('home'); return false;" aria-label="Studio Photuna">
+          <img src="logo-dark.png" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+        </a>
+        
+        <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
+          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-purple transition-colors">Home</a>
+          <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-purple transition-colors">Features</a>
+          <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-purple transition-colors">Pricing</a>
+          <a href="#" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-purple transition-colors">Download</a>
+          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-purple transition-colors">Support</a>
+        </nav>
+
+        <div class="header-actions flex items-center gap-4">
+          <!-- User Dropdown (Signed In State) -->
+          <div class="relative hidden" id="userDropdown">
+            <button class="dropdown-trigger inline-flex min-height-[44px] items-center gap-2 border border-line rounded-full bg-grey hover:bg-grey-2 pl-1.5 pr-2 sm:pr-4 py-1.5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="dropdownButton" aria-haspopup="true" aria-expanded="false">
+              <span id="navAvatar" class="w-7 h-7 rounded-full bg-purple/10 border border-line flex items-center justify-center text-[10px] font-black text-purple overflow-hidden shrink-0" aria-hidden="true"></span>
+              <span class="sr-only sm:hidden">Account menu</span>
+              <span id="userPill" class="hidden sm:inline max-w-[120px] truncate">Account</span>
+              <i class="fa-solid fa-chevron-down text-xs text-muted"></i>
+            </button>
+            <div class="dropdown-menu absolute top-full right-0 mt-2 w-56 border border-line rounded-2xl bg-white p-2 shadow-luxe hidden flex-col gap-1 z-50" role="menu">
+              <a href="#" onclick="navigateTo('account'); closeDropdown(); return false;" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-circle-user text-purple"></i> View Account</a>
+              <a href="#" onclick="navigateTo('bookings-admin'); closeDropdown(); return false;" id="adminBookingsOpen" class="hidden flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-chart-line text-green"></i> Admin Bookings</a>
+              <div class="h-[1px] my-1 bg-line"></div>
+              <button type="button" id="logoutAction" class="w-full text-left flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition-colors"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
+          </div>
+
+          <!-- Auth Actions (Signed Out State) -->
+          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center border border-line rounded-full bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Login</button>
+          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-purple hover:bg-purple-dark text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex" href="/#pricing" onclick="goToSection('pricing'); return false;">Choose Plans</a>
+          <button class="hamburger md:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
+        </div>
+      </div>
+    </header>

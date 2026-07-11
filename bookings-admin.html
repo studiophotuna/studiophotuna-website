@@ -1,16 +1,71 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex, nofollow" />
-    <title>Bookings Admin | Studio Photuna</title>
+    <title>Admin Dashboard | Studio Photuna</title>
+    <meta name="description" content="Studio Photuna operator dashboard: manage bookings, payment proofs, support tickets, and reviews." />
     <link rel="icon" type="image/png" href="./favicon.png" />
     <link rel="apple-touch-icon" href="./favicon.png" />
+    
+    <!-- Tailwind CSS for fluid responsive grids and structures -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Font Awesome for sleek modern iconography -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+      tailwind.config = {
+        safelist: [
+          'bg-green-100','text-green-800','bg-green-600','hover:bg-green-700',
+          'bg-red-100','text-red-700','bg-red-500','hover:bg-red-600',
+          'bg-yellow-100','text-yellow-800',
+          'bg-purple','text-purple','bg-purple/10',
+          'opacity-60','pointer-events-none',
+          'bg-blue-500','hover:bg-blue-600'
+        ],
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+              title: '#111827',
+              body: '#5f6678',
+              muted: '#8b92a6',
+              grey: '#f4f5f8',
+              'grey-2': '#eef0f5',
+              line: '#dedfe6',
+              green: {
+                DEFAULT: '#22c55e',
+                50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80',
+                500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', 950: '#052e16',
+              },
+              purple: '#0c66e4',
+              'purple-dark': '#0a52b8',
+              brand: {
+                DEFAULT: '#0c66e4',
+                50: '#eaf2fe', 100: '#d3e4fd', 200: '#a8c9fb', 300: '#7aadf7', 400: '#3d89ef',
+                500: '#0c66e4', 600: '#0a52b8', 700: '#083e8c', 800: '#062b61', 900: '#041b3d', 950: '#020f22',
+              },
+              yellow: {
+                DEFAULT: '#f7d54a',
+                50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15',
+                500: '#eab308', 600: '#ca8a04', 700: '#a16207', 800: '#854d0e', 900: '#713f12', 950: '#422006',
+              },
+              white: '#ffffff',
+            },
+            boxShadow: {
+              'luxe': '0 30px 90px rgba(17, 24, 39, 0.12)',
+            }
+          }
+        }
+      }
+    </script>
+
     <style>
       :root {
         --title: #111827;
@@ -18,1124 +73,470 @@
         --muted: #8b92a6;
         --grey: #f4f5f8;
         --line: #dedfe6;
-        --purple: #6f4dff;
-        --purple-dark: #4b32c3;
-        --green: #16a34a;
-        --red: #dc2626;
-        --yellow: #f7d54a;
+        --purple: #0c66e4;
+        --purple-dark: #0a52b8;
+        --brand: #0c66e4;
+        --brand-dark: #0a52b8;
         --white: #ffffff;
         --shadow: 0 30px 90px rgba(17, 24, 39, 0.12);
       }
 
-      * { box-sizing: border-box; }
-
-      body {
-        margin: 0;
-        color: var(--body);
-        background: var(--white);
-        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      /* Section H2 spec: 3.75rem / font-weight 600 at desktop, scaled down
+         responsively for smaller viewports. */
+      .h2-display {
+        font-weight: 600;
+        font-size: 1.875rem;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
       }
+      @media (min-width: 640px) { .h2-display { font-size: 2.25rem; } }
+      @media (min-width: 768px) { .h2-display { font-size: 3rem; } }
+      @media (min-width: 1024px) { .h2-display { font-size: 3.75rem; } }
 
-      a { color: inherit; text-decoration: none; }
-      button, input, select, textarea { font: inherit; }
-
-      .container {
-        width: min(1230px, calc(100% - 40px));
-        margin: 0 auto;
+      .btn-animation {
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       }
-
-      .site-header {
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        padding: 10px 0;
-        border-bottom: 1px solid rgba(222, 223, 230, 0.7);
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(18px);
+      .btn-animation:hover {
+        transform: translateY(-2px);
       }
-
-      .header-row {
-        display: flex;
-        min-height: 64px;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
+      .btn-animation:active {
+        transform: translateY(0);
       }
-
-      .logo img {
-        display: block;
-        height: 44px;
-        width: auto;
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
       }
-
-      .header-actions {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 12px;
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f4f5f8;
       }
-
-      .btn {
-        display: inline-flex;
-        min-height: 48px;
-        align-items: center;
-        justify-content: center;
-        border: 0;
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #dedfe6;
         border-radius: 999px;
-        background: var(--purple);
-        color: var(--white);
-        padding: 0 22px;
-        font-size: 14px;
-        font-weight: 900;
-        cursor: pointer;
-        transition: background 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
       }
-
-      .btn:hover {
-        background: var(--purple-dark);
-        transform: translateY(-1px);
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #0c66e4;
       }
-
-      .btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
+      .reveal {
+        opacity: 0;
+        transform: translateY(26px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
       }
-
-      .btn.secondary {
-        border: 1px solid var(--line);
-        background: var(--white);
-        color: var(--title);
+      .reveal.in-view {
+        opacity: 1;
+        transform: translateY(0);
       }
-
-      .btn.secondary:hover {
-        background: var(--grey);
+      /* Staggered fade-in for feature cards */
+      .feature-card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
       }
-
-      .btn.danger {
-        background: var(--red);
+      .feature-card.in-view {
+        opacity: 1;
+        transform: translateY(0);
       }
-
-      .btn.success {
-        background: var(--green);
-      }
-
-      .hero {
+      /* Smooth section separator gradient */
+      .section-glow {
         position: relative;
-        overflow: clip;
-        padding: 76px 0 34px;
       }
-
-      .hero::after {
+      .section-glow::before {
+        content: '';
         position: absolute;
-        right: -160px;
-        top: 42px;
-        width: 330px;
-        height: 250px;
-        border-radius: 60px;
-        background: radial-gradient(circle at 70% 30%, rgba(111, 77, 255, 0.18), transparent 48%), var(--grey);
-        content: "";
-        transform: rotate(10deg);
-      }
-
-      .hero-inner {
-        position: relative;
-        z-index: 2;
-        display: grid;
-        grid-template-columns: 1fr auto;
-        gap: 28px;
-        align-items: end;
-      }
-
-      .eyebrow {
-        display: inline-flex;
-        width: fit-content;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #0c66e4, transparent);
         border-radius: 999px;
-        background: #ece8ff;
-        color: var(--purple);
-        padding: 8px 12px;
-        font-size: 12px;
-        font-weight: 900;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
       }
-
-      h1 {
-        max-width: 820px;
-        margin: 18px 0 14px;
-        color: var(--title);
-        font-size: clamp(42px, 6vw, 78px);
-        line-height: 1.02;
-        letter-spacing: -0.065em;
+      /* Smooth hover lift for cards */
+      .hover-lift {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
       }
-
-      .hero p {
-        max-width: 720px;
-        margin: 0;
-        font-size: 18px;
-        line-height: 1.75;
+      .hover-lift:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 60px rgba(17, 24, 39, 0.1);
       }
-
-      .stats {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 16px;
-        margin: 28px 0 26px;
+      /* Pulse glow for CTAs */
+      @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(111, 77, 255, 0.3); }
+        50% { box-shadow: 0 0 0 8px rgba(111, 77, 255, 0); }
       }
-
-      .stat-card,
-      .panel,
-      .booking-card {
-        border: 1px solid var(--line);
-        border-radius: 24px;
-        background: var(--white);
-        box-shadow: var(--shadow);
+      .cta-glow {
+        animation: pulse-glow 3s ease-in-out infinite;
       }
-
-      .stat-card {
-        padding: 20px;
+      /* Booth screen transitions */
+      .booth-screen {
+        transition: opacity 0.3s ease;
       }
-
-      .stat-card small {
-        display: block;
-        margin-bottom: 10px;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 900;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
+      .booth-screen.active {
+        opacity: 1;
       }
-
-      .stat-card strong {
-        display: block;
-        color: var(--title);
-        font-size: 34px;
-        letter-spacing: -0.05em;
-      }
-
-      .panel {
-        padding: 26px;
-        margin-bottom: 28px;
-      }
-
-      .login-panel {
-        max-width: 520px;
-        margin: 34px auto 90px;
-      }
-
-      .panel h2 {
-        margin: 0 0 10px;
-        color: var(--title);
-        font-size: 32px;
-        letter-spacing: -0.045em;
-      }
-
-      .form-grid {
-        display: grid;
-        gap: 14px;
-        margin-top: 22px;
-      }
-
-      label {
-        display: grid;
-        gap: 7px;
-        color: var(--title);
-        font-size: 13px;
-        font-weight: 900;
-      }
-
-      input,
-      select,
-      textarea {
-        width: 100%;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        background: var(--white);
-        color: var(--title);
-        padding: 12px 14px;
-        outline: none;
-      }
-
-      textarea {
-        min-height: 84px;
-        resize: vertical;
-      }
-
-      input:focus,
-      select:focus,
-      textarea:focus {
-        border-color: var(--purple);
-        box-shadow: 0 0 0 4px rgba(111, 77, 255, 0.12);
-      }
-
-      .toolbar {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 14px;
-        margin-bottom: 18px;
-      }
-
-      .filters {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-      }
-
-      .filters button {
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: var(--white);
-        color: var(--title);
-        padding: 10px 14px;
-        font-size: 13px;
-        font-weight: 900;
-        cursor: pointer;
-      }
-
-      .filters button.active {
-        border-color: var(--purple);
-        background: #ece8ff;
-        color: var(--purple);
-      }
-
-      .admin-tabs {
-        display: inline-flex;
-        gap: 8px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: var(--grey);
-        padding: 6px;
-      }
-
-      .admin-tabs button {
-        border: 0;
-        border-radius: 999px;
-        background: transparent;
-        color: var(--title);
-        padding: 10px 14px;
-        font-size: 13px;
-        font-weight: 900;
-        cursor: pointer;
-      }
-
-      .admin-tabs button.active {
-        background: var(--white);
-        color: var(--purple);
-      }
-
-      .booking-list {
-        display: grid;
-        gap: 16px;
-        margin-bottom: 90px;
-      }
-
-      .review-admin-card {
-        grid-template-columns: 1fr 280px;
-      }
-
-      .booking-card {
-        display: grid;
-        grid-template-columns: 1fr 320px;
-        gap: 20px;
-        padding: 22px;
-      }
-
-      .booking-main h3 {
-        margin: 0 0 10px;
-        color: var(--title);
-        font-size: 24px;
-        letter-spacing: -0.04em;
-      }
-
-      .meta-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        margin: 16px 0;
-      }
-
-      .meta {
-        border-radius: 16px;
-        background: var(--grey);
-        padding: 12px;
-      }
-
-      .meta small {
-        display: block;
-        margin-bottom: 4px;
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 900;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .meta strong {
-        display: block;
-        overflow-wrap: anywhere;
-        color: var(--title);
-        font-size: 14px;
-      }
-
-      .status-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 12px;
-      }
-
-      .pill {
-        display: inline-flex;
-        border-radius: 999px;
-        background: var(--grey);
-        color: var(--title);
-        padding: 7px 10px;
-        font-size: 12px;
-        font-weight: 900;
-      }
-
-      .pill.pending { background: #fef3c7; color: #92400e; }
-      .pill.approved { background: #dcfce7; color: #166534; }
-      .pill.declined,
-      .pill.cancelled { background: #fee2e2; color: #991b1b; }
-      .pill.paid,
-      .pill.partial_paid { background: #e0f2fe; color: #075985; }
-
-      .booking-actions {
-        display: grid;
-        gap: 12px;
-      }
-
-      .action-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-      }
-
-      .empty-state {
-        border: 1px dashed var(--line);
-        border-radius: 24px;
-        background: var(--grey);
-        padding: 42px;
-        text-align: center;
-      }
-
-      .empty-state h3 {
-        margin: 0 0 8px;
-        color: var(--title);
-        font-size: 24px;
-      }
-
-      .message {
-        min-height: 20px;
-        color: var(--body);
-        font-size: 13px;
-        font-weight: 800;
-      }
-
-      .hidden { display: none !important; }
-
-      @media (max-width: 980px) {
-        .hero-inner,
-        .stats,
-        .booking-card,
-        .meta-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .header-row {
-          align-items: flex-start;
-        }
-      }
-
-      @media (max-width: 640px) {
-        .container {
-          width: min(100% - 28px, 1230px);
-        }
-
-        .header-row,
-        .toolbar {
-          display: grid;
-        }
-
-        .header-actions {
-          justify-content: start;
-        }
-
-        .action-grid {
-          grid-template-columns: 1fr;
-        }
+      .booth-screen.hidden {
+        opacity: 0;
       }
     </style>
+
   </head>
-  <body>
-    <header class="site-header">
-      <div class="container header-row">
-        <a class="logo" href="./#top" aria-label="Studio Photuna">
-          <img src="./logo-dark.png" alt="Studio Photuna" />
+  <body class="bg-white text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="bookings-admin">
+
+    <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <header class="site-header fixed top-0 left-0 w-full z-40 bg-white/90 backdrop-blur-md border-b border-[#dedfe6]/70 transition-all duration-300">
+      <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <a class="logo flex items-center gap-3" href="#" onclick="navigateTo('home'); return false;" aria-label="Studio Photuna">
+          <img src="logo-dark.png" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
         </a>
-        <div class="header-actions">
-          <a class="btn secondary" href="./book-event">Public Booking Page</a>
-          <button class="btn secondary hidden" type="button" id="refreshBookings">Refresh</button>
-          <button class="btn secondary hidden" type="button" id="logoutButton">Logout</button>
+        
+        <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
+          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-purple transition-colors">Home</a>
+          <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-purple transition-colors">Features</a>
+          <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-purple transition-colors">Pricing</a>
+          <a href="#" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-purple transition-colors">Download</a>
+          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-purple transition-colors">Support</a>
+        </nav>
+
+        <div class="header-actions flex items-center gap-4">
+          <!-- User Dropdown (Signed In State) -->
+          <div class="relative hidden" id="userDropdown">
+            <button class="dropdown-trigger inline-flex min-height-[44px] items-center gap-2 border border-line rounded-full bg-grey hover:bg-grey-2 pl-1.5 pr-2 sm:pr-4 py-1.5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="dropdownButton" aria-haspopup="true" aria-expanded="false">
+              <span id="navAvatar" class="w-7 h-7 rounded-full bg-purple/10 border border-line flex items-center justify-center text-[10px] font-black text-purple overflow-hidden shrink-0" aria-hidden="true"></span>
+              <span class="sr-only sm:hidden">Account menu</span>
+              <span id="userPill" class="hidden sm:inline max-w-[120px] truncate">Account</span>
+              <i class="fa-solid fa-chevron-down text-xs text-muted"></i>
+            </button>
+            <div class="dropdown-menu absolute top-full right-0 mt-2 w-56 border border-line rounded-2xl bg-white p-2 shadow-luxe hidden flex-col gap-1 z-50" role="menu">
+              <a href="#" onclick="navigateTo('account'); closeDropdown(); return false;" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-circle-user text-purple"></i> View Account</a>
+              <a href="#" onclick="navigateTo('bookings-admin'); closeDropdown(); return false;" id="adminBookingsOpen" class="hidden flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-chart-line text-green"></i> Admin Bookings</a>
+              <div class="h-[1px] my-1 bg-line"></div>
+              <button type="button" id="logoutAction" class="w-full text-left flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition-colors"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
+          </div>
+
+          <!-- Auth Actions (Signed Out State) -->
+          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center border border-line rounded-full bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Login</button>
+          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-purple hover:bg-purple-dark text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex" href="/#pricing" onclick="goToSection('pricing'); return false;">Choose Plans</a>
+          <button class="hamburger md:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
       </div>
     </header>
 
-    <main>
-      <section class="hero">
-        <div class="container hero-inner">
+    <div id="mobile-menu" class="hidden md:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
+      <a href="#" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
+      <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
+      <a href="#" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
+      <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help & Support</a>
+      <a href="#" data-nav="account" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
+    </div>
+
+    <main class="min-h-screen pt-20">
+      <div class="px-6 py-12 max-w-7xl mx-auto space-y-8">
+        <div class="border-b border-line pb-4 flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
           <div>
-            <span class="eyebrow">Admin only</span>
-            <h1>Event booking requests</h1>
-            <p>Review customer inquiries, approve dates, and mark the 50% reservation fee as paid. Approved and paid dates automatically become unavailable on the public booking calendar.</p>
+            <h1 class="text-[#111827] font-black tracking-tight text-4xl sm:text-5xl mt-2">Admin Dashboard</h1>
+            <p class="text-sm text-body" id="adminMeta">Logged in as admin...</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn-animation border border-line bg-white hover:bg-grey px-4 py-2.5 rounded-full text-xs font-extrabold text-title flex items-center gap-1" type="button" id="refreshBookings">
+              <i class="fa-solid fa-arrows-rotate text-purple"></i> Refresh
+            </button>
           </div>
         </div>
-      </section>
 
-      <section class="container login-panel panel" id="loginPanel">
-        <h2>Login as admin</h2>
-        <p>Use a Studio Photuna account with admin or superadmin role in Supabase profiles.</p>
-        <form class="form-grid" id="loginForm">
-          <label>
-            Email
-            <input type="email" id="loginEmail" autocomplete="email" required />
-          </label>
-          <label>
-            Password
-            <input type="password" id="loginPassword" autocomplete="current-password" required />
-          </label>
-          <button class="btn" type="submit" id="loginSubmit">Login</button>
-          <div class="message" id="loginMessage" aria-live="polite"></div>
-        </form>
-      </section>
-
-      <section class="container hidden" id="adminPanel">
-        <div class="stats">
-          <div class="stat-card"><small>Pending</small><strong id="statPending">0</strong></div>
-          <div class="stat-card"><small>Approved</small><strong id="statApproved">0</strong></div>
-          <div class="stat-card"><small>50% Paid</small><strong id="statPaid">0</strong></div>
-          <div class="stat-card"><small>Total</small><strong id="statTotal">0</strong></div>
+        <!-- Metrics Cards Grid -->
+        <div class="stats grid grid-cols-2 md:grid-cols-6 gap-4">
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-yellow-100 text-yellow-800 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-hourglass-half"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Pending</small><strong class="text-2xl font-black text-title" id="statPending">0</strong></div>
+          </div>
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-green-100 text-green-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-circle-check"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Approved</small><strong class="text-2xl font-black text-title" id="statApproved">0</strong></div>
+          </div>
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-money-bill-wave"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">50% Paid</small><strong class="text-2xl font-black text-title" id="statPaid">0</strong></div>
+          </div>
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-purple/10 text-purple flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-calendar-check"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Total Bookings</small><strong class="text-2xl font-black text-title" id="statTotal">0</strong></div>
+          </div>
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-receipt"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Pending Proofs</small><strong class="text-2xl font-black text-orange-500" id="statProofsPending">0</strong></div>
+          </div>
+          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-purple/10 text-purple flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-envelope"></i></div>
+            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Custom Quotes</small><strong class="text-2xl font-black text-purple" id="statCustomQuotes">0</strong></div>
+          </div>
         </div>
 
-        <div class="panel">
-          <div class="toolbar">
-            <div>
-              <h2 id="adminPanelTitle">Manage bookings</h2>
-              <p id="adminMeta">Loading admin profile...</p>
+        <!-- Toolbar -->
+        <div class="bg-white border border-line rounded-3xl p-6 shadow-sm space-y-5">
+          <div class="flex flex-col gap-4 border-b border-line pb-4">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h2 class="text-xl font-extrabold text-title" id="adminPanelTitle">Bookings</h2>
+              <!-- Section groups -->
+              <div class="admin-group-tabs inline-flex flex-wrap gap-1.5 bg-grey p-1.5 rounded-2xl border border-line">
+                <button type="button" class="active bg-white px-4 py-2 rounded-full text-xs font-black text-purple shadow-sm" data-admin-group="bookings"><i class="fa-solid fa-calendar-check mr-1.5"></i>Bookings</button>
+                <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="support">
+                  <i class="fa-solid fa-headset mr-1.5"></i>Support <span id="supportGroupBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
+                </button>
+                <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="reviews"><i class="fa-solid fa-star mr-1.5"></i>Reviews</button>
+                <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="analytics"><i class="fa-solid fa-chart-line mr-1.5"></i>Analytics</button>
+              </div>
             </div>
-            <div class="admin-tabs" aria-label="Admin sections">
-              <button type="button" class="active" data-admin-tab="bookings">Bookings</button>
-              <button type="button" data-admin-tab="reviews">Reviews</button>
-            </div>
-            <div class="filters" aria-label="Booking filters">
-              <button type="button" class="active" data-filter="all">All</button>
-              <button type="button" data-filter="pending">Pending</button>
-              <button type="button" data-filter="approved">Approved</button>
-              <button type="button" data-filter="declined">Declined</button>
+            <!-- Topic sub-tabs (only shown for groups with more than one topic) -->
+            <div id="adminSubtabsRow" class="flex flex-wrap gap-1.5">
+              <button type="button" class="admin-tab active border border-purple/40 bg-purple/5 text-purple px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="bookings" data-admin-group="bookings">Bookings</button>
+              <button type="button" class="admin-tab border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="packages" data-admin-group="bookings">
+                Packages <span id="customQuoteTabBadge" class="hidden ml-1 bg-purple text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
+              </button>
+              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="proofs" data-admin-group="support">
+                Payment Proofs <span id="proofsTabBadge" class="hidden ml-1 bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
+              </button>
+              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="tickets" data-admin-group="support">
+                Support Tickets <span id="ticketsTabBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
+              </button>
+              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="inbox" data-admin-group="support">
+                Inbox <span id="inboxTabBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
+              </button>
+              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="reviews" data-admin-group="reviews">Reviews</button>
+              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="analytics" data-admin-group="analytics">Analytics</button>
             </div>
           </div>
-          <div class="message" id="adminMessage" aria-live="polite"></div>
+
+          <!-- Booking sub-toolbar: search + filters (hidden on other tabs) -->
+          <div id="bookingSubToolbar" class="flex flex-col sm:flex-row gap-3">
+            <input id="bookingSearch" type="text" placeholder="Search by name, email, event type…" class="flex-1 border border-line rounded-xl px-4 py-2.5 text-xs focus:border-purple outline-none" oninput="renderBookings()" />
+            <div class="filters flex flex-wrap gap-1.5">
+              <button type="button" class="active border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="all">All</button>
+              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="pending">Pending</button>
+              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="approved">Approved</button>
+              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="declined">Declined</button>
+              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="cancelled">Cancelled</button>
+              <button type="button" class="border border-purple/40 rounded-full bg-purple/5 text-purple px-4 py-2 text-xs font-bold" data-filter="custom_quote">Custom Quotes</button>
+            </div>
+          </div>
+
+          <!-- Proofs sub-toolbar -->
+          <div id="proofsSubToolbar" class="hidden flex-wrap gap-1.5">
+            <button type="button" class="active border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="all">All</button>
+            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="pending">Pending</button>
+            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="approved">Approved</button>
+            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="rejected">Rejected</button>
+          </div>
+
+          <!-- Inbox sub-toolbar: filter by which mailbox received it -->
+          <div id="inboxSubToolbar" class="hidden flex-wrap gap-1.5">
+            <button type="button" class="active ring-2 ring-offset-1 ring-purple border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-inbox-filter="all">All</button>
+            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-inbox-filter="support@studiophotuna.com">Support</button>
+            <button type="button" class="border border-red-200 rounded-full bg-red-50 text-red-700 px-4 py-2 text-xs font-bold" data-inbox-filter="dpo@studiophotuna.com">DPO Requests</button>
+            <button type="button" class="border border-purple/40 rounded-full bg-purple/5 text-purple px-4 py-2 text-xs font-bold" data-inbox-filter="notification@studiophotuna.com">Notification</button>
+          </div>
+
+          <div class="message text-center text-xs font-bold" id="adminMessage"></div>
         </div>
 
-        <div class="booking-list" id="bookingList"></div>
-        <div class="booking-list hidden" id="reviewList"></div>
-      </section>
+        <!-- Content lists -->
+        <div class="booking-list grid grid-cols-1 gap-5" id="bookingList"></div>
+        <div class="grid grid-cols-1 gap-5 hidden" id="proofList"></div>
+        <div class="grid grid-cols-1 gap-5 hidden" id="ticketList"></div>
+        <div class="grid grid-cols-1 gap-5 hidden" id="packagesList"></div>
+        <div class="booking-list grid grid-cols-1 gap-5 hidden" id="reviewList"></div>
+        <div class="grid grid-cols-1 gap-5 hidden" id="inboxList"></div>
+        <div class="hidden" id="analyticsPanel"></div>
+      </div>
+
     </main>
 
-    <script>
-      const SUPABASE_URL = "https://elthktbvojsmvhtxxqnz.supabase.co";
-      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsdGhrdGJ2b2pzbXZodHh4cW56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzYzMjUsImV4cCI6MjA5MDI1MjMyNX0.5QrzeI0WKJclFLHEBgZH7WxsHPdKBJmdEtpqlyXg9PQ";
+    <footer class="py-16 px-6 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="bg-grey rounded-3xl p-8 md:p-14">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+            <div class="space-y-4">
+              <img src="logo-dark.png" alt="Studio Photuna" class="h-10 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x40/111827/ffffff?text=Studio+Photuna'" />
+              <p class="text-sm text-body font-medium">Studio Photuna is photo booth business software that helps operators launch, run, and grow a Korean-style photobooth business — from event setup to guest delivery — on hardware they already own.</p>
 
-      const supabaseClient = window.supabase?.createClient
-        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-        : null;
-
-      const loginPanel = document.getElementById("loginPanel");
-      const adminPanel = document.getElementById("adminPanel");
-      const loginForm = document.getElementById("loginForm");
-      const loginSubmit = document.getElementById("loginSubmit");
-      const loginMessage = document.getElementById("loginMessage");
-      const adminMessage = document.getElementById("adminMessage");
-      const adminMeta = document.getElementById("adminMeta");
-      const adminPanelTitle = document.getElementById("adminPanelTitle");
-      const bookingList = document.getElementById("bookingList");
-      const reviewList = document.getElementById("reviewList");
-      const refreshBookings = document.getElementById("refreshBookings");
-      const logoutButton = document.getElementById("logoutButton");
-      const filterButtons = document.querySelectorAll("[data-filter]");
-      const adminTabButtons = document.querySelectorAll("[data-admin-tab]");
-
-      let currentUser = null;
-      let currentProfile = null;
-      let bookings = [];
-      let reviews = [];
-      let activeFilter = "all";
-      let activeAdminTab = "bookings";
-      let authRefreshTimer = null;
-
-      function setMessage(element, text, isError = false) {
-        element.textContent = text || "";
-        element.style.color = isError ? "var(--red)" : "var(--body)";
-      }
-
-      function withTimeout(promise, label, ms = 12000) {
-        return Promise.race([
-          promise,
-          new Promise((_, reject) => {
-            setTimeout(() => reject(new Error(`${label} timed out. Please refresh and try again.`)), ms);
-          })
-        ]);
-      }
-
-      function formatDate(value) {
-        if (!value) return "Not set";
-        return new Date(`${value}T00:00:00`).toLocaleDateString("en", {
-          year: "numeric",
-          month: "short",
-          day: "numeric"
-        });
-      }
-
-      function formatDateTime(value) {
-        if (!value) return "Not recorded";
-        return new Date(value).toLocaleString("en", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "numeric",
-          minute: "2-digit"
-        });
-      }
-
-      function formatPeso(value) {
-        if (value === null || value === undefined || value === "") return "Not set";
-        return `PHP ${Number(value || 0).toLocaleString("en-PH")}`;
-      }
-
-      function normalizeStatus(value) {
-        return String(value || "").replace(/[_-]/g, " ");
-      }
-
-      function escapeHtml(value) {
-        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#039;"
-        }[char]));
-      }
-
-      function isAdmin(profile) {
-        return ["admin", "superadmin"].includes(String(profile?.role || "").toLowerCase());
-      }
-
-      function showLoggedOut() {
-        currentUser = null;
-        currentProfile = null;
-        bookings = [];
-        reviews = [];
-        loginPanel.classList.remove("hidden");
-        adminPanel.classList.add("hidden");
-        refreshBookings.classList.add("hidden");
-        logoutButton.classList.add("hidden");
-        bookingList.innerHTML = "";
-      }
-
-      function showAdmin() {
-        loginPanel.classList.add("hidden");
-        adminPanel.classList.remove("hidden");
-        refreshBookings.classList.remove("hidden");
-        logoutButton.classList.remove("hidden");
-        adminMeta.textContent = `${currentUser.email} - ${currentProfile.role}`;
-      }
-
-      function updateStats() {
-        const pending = bookings.filter((item) => item.status === "pending").length;
-        const approved = bookings.filter((item) => item.status === "approved").length;
-        const paid = bookings.filter((item) => ["partial_paid", "paid"].includes(item.reservation_status)).length;
-        const pendingReviews = reviews.filter((item) => item.status === "pending").length;
-        const approvedReviews = reviews.filter((item) => item.status === "approved").length;
-        document.getElementById("statPending").textContent = activeAdminTab === "reviews" ? pendingReviews : pending;
-        document.getElementById("statApproved").textContent = activeAdminTab === "reviews" ? approvedReviews : approved;
-        document.getElementById("statPaid").textContent = paid;
-        document.getElementById("statTotal").textContent = activeAdminTab === "reviews" ? reviews.length : bookings.length;
-      }
-
-      function filteredBookings() {
-        if (activeFilter === "all") return bookings;
-        return bookings.filter((booking) => booking.status === activeFilter);
-      }
-
-      function fieldValue(card, selector) {
-        return card.querySelector(selector)?.value || "";
-      }
-
-      function starString(rating) {
-        const rounded = Math.round(Number(rating) || 0);
-        return "★★★★★".slice(0, rounded).padEnd(5, "☆");
-      }
-
-      function renderBookings() {
-        updateStats();
-        const visible = filteredBookings();
-        bookingList.innerHTML = "";
-
-        if (!visible.length) {
-          bookingList.innerHTML = `
-            <div class="empty-state">
-              <h3>No bookings found</h3>
-              <p>There are no booking requests for the selected filter.</p>
-            </div>
-          `;
-          return;
-        }
-
-        visible.forEach((booking) => {
-          const safe = {
-            fullName: escapeHtml(booking.full_name),
-            packageName: escapeHtml(booking.package_name),
-            eventType: escapeHtml(booking.event_type),
-            startTime: escapeHtml(booking.start_time || "Not set"),
-            phone: escapeHtml(booking.contact_number),
-            email: escapeHtml(booking.email || "Not provided"),
-            guests: escapeHtml(booking.estimated_guests || "Not provided"),
-            packagePrice: escapeHtml(formatPeso(booking.package_price)),
-            extraHours: escapeHtml(booking.extra_hours || 0),
-            extraHourRate: escapeHtml(formatPeso(booking.extra_hour_rate)),
-            extraHoursTotal: escapeHtml(formatPeso(booking.extra_hours_total)),
-            estimatedTotal: escapeHtml(formatPeso(booking.estimated_total)),
-            venue: escapeHtml(booking.venue_location),
-            notes: escapeHtml(booking.notes || "No notes provided"),
-            adminNotes: escapeHtml(booking.admin_notes || "")
-          };
-          const card = document.createElement("article");
-          card.className = "booking-card";
-          card.dataset.id = booking.id;
-          card.innerHTML = `
-            <div class="booking-main">
-              <div class="status-row">
-                <span class="pill ${booking.status}">${normalizeStatus(booking.status)}</span>
-                <span class="pill ${booking.reservation_status}">${normalizeStatus(booking.reservation_status)}</span>
+              <!-- Only Facebook, Instagram, and TikTok -->
+              <div class="socials flex gap-3">
+                <a href="https://www.facebook.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@studio.photuna" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
               </div>
-              <h3>${safe.fullName}</h3>
-              <div class="meta-grid">
-                <div class="meta"><small>Package</small><strong>${safe.packageName}</strong></div>
-                <div class="meta"><small>Event</small><strong>${safe.eventType}</strong></div>
-                <div class="meta"><small>Date</small><strong>${formatDate(booking.event_date)}</strong></div>
-                <div class="meta"><small>Start time</small><strong>${safe.startTime}</strong></div>
-                <div class="meta"><small>Phone</small><strong>${safe.phone}</strong></div>
-                <div class="meta"><small>Email</small><strong>${safe.email}</strong></div>
-                <div class="meta"><small>Guests</small><strong>${safe.guests}</strong></div>
-                <div class="meta"><small>Base price</small><strong>${safe.packagePrice}</strong></div>
-                <div class="meta"><small>Extra hours</small><strong>${safe.extraHours} x ${safe.extraHourRate}</strong></div>
-                <div class="meta"><small>Extra total</small><strong>${safe.extraHoursTotal}</strong></div>
-                <div class="meta"><small>Estimated total</small><strong>${safe.estimatedTotal}</strong></div>
-                <div class="meta"><small>Created</small><strong>${formatDateTime(booking.created_at)}</strong></div>
-              </div>
-              <div class="meta"><small>Venue</small><strong>${safe.venue}</strong></div>
-              <div class="meta" style="margin-top: 10px"><small>Customer notes</small><strong>${safe.notes}</strong></div>
             </div>
-            <div class="booking-actions">
-              <label>
-                Booking status
-                <select class="status-select">
-                  <option value="pending">Pending</option>
-                  <option value="quoted">Quoted</option>
-                  <option value="approved">Approved</option>
-                  <option value="declined">Declined</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-              </label>
-              <label>
-                Reservation payment
-                <select class="payment-select">
-                  <option value="unpaid">Unpaid</option>
-                  <option value="partial_paid">50% paid</option>
-                  <option value="paid">Fully paid</option>
-                  <option value="refunded">Refunded</option>
-                </select>
-              </label>
-              <label>
-                Admin notes
-                <textarea class="notes-input" placeholder="Quotation, payment reference, internal notes">${safe.adminNotes}</textarea>
-              </label>
-              <div class="action-grid">
-                <button class="btn secondary save-booking" type="button">Save</button>
-                <button class="btn success approve-paid" type="button">Approve + 50%</button>
-                <button class="btn secondary mark-paid" type="button">Mark 50% Paid</button>
-                <button class="btn danger decline-booking" type="button">Decline</button>
-              </div>
-              <div class="message card-message"></div>
+            <div>
+              <h4 class="font-bold text-title text-xs uppercase tracking-wider mb-4">Company</h4>
+              <nav class="flex flex-col gap-2.5 text-sm">
+                <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-brand">Home</a>
+                <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-brand">Book an Event</a>
+                <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand">Features</a>
+                <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand">Pricing</a>
+              </nav>
             </div>
-          `;
-          card.querySelector(".status-select").value = booking.status;
-          card.querySelector(".payment-select").value = booking.reservation_status;
-          bookingList.appendChild(card);
-        });
-      }
-
-      async function loadBookings() {
-        if (!supabaseClient || !currentUser) return;
-        setMessage(adminMessage, "Loading bookings...");
-        const { data, error } = await supabaseClient
-          .from("event_bookings")
-          .select("*")
-          .order("created_at", { ascending: false });
-
-        if (error) {
-          setMessage(adminMessage, error.message || "Unable to load bookings.", true);
-          return;
-        }
-
-        bookings = data || [];
-        setMessage(adminMessage, bookings.length ? "Bookings loaded." : "No booking requests yet.");
-        renderBookings();
-      }
-
-      function renderReviewsAdmin() {
-        updateStats();
-        reviewList.innerHTML = "";
-        if (!reviews.length) {
-          reviewList.innerHTML = `
-            <div class="empty-state">
-              <h3>No reviews found</h3>
-              <p>Submitted reviews will appear here for moderation.</p>
+            <div>
+              <h4 class="font-bold text-title text-xs uppercase tracking-wider mb-4">Product</h4>
+              <nav class="flex flex-col gap-2.5 text-sm font-medium">
+                <a href="#" onclick="navigateTo('account'); return false;" class="hover:text-brand">My Account</a>
+                <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-brand">Download the App</a>
+                <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-brand">Help & Support</a>
+              </nav>
             </div>
-          `;
-          return;
-        }
-
-        reviews.forEach((review) => {
-          const safe = {
-            name: escapeHtml(review.name),
-            email: escapeHtml(review.email || "Not provided"),
-            text: escapeHtml(review.review_text),
-            eventType: escapeHtml(review.event_type || "Not provided"),
-            status: escapeHtml(review.status),
-            source: escapeHtml(review.source),
-            adminNotes: escapeHtml(review.admin_notes || "")
-          };
-          const card = document.createElement("article");
-          card.className = "booking-card review-admin-card";
-          card.dataset.id = review.id;
-          card.innerHTML = `
-            <div class="booking-main">
-              <div class="status-row">
-                <span class="pill ${review.status}">${safe.status}</span>
-                <span class="pill">${review.is_featured ? "featured" : "standard"}</span>
-              </div>
-              <h3>${safe.name}</h3>
-              <div class="meta-grid">
-                <div class="meta"><small>Rating</small><strong>${starString(review.rating)}</strong></div>
-                <div class="meta"><small>Event type</small><strong>${safe.eventType}</strong></div>
-                <div class="meta"><small>Email</small><strong>${safe.email}</strong></div>
-                <div class="meta"><small>Source</small><strong>${safe.source}</strong></div>
-                <div class="meta"><small>Submitted</small><strong>${formatDateTime(review.created_at)}</strong></div>
-                <div class="meta"><small>Approved</small><strong>${formatDateTime(review.approved_at)}</strong></div>
-              </div>
-              <div class="meta"><small>Review</small><strong>${safe.text}</strong></div>
+            <div>
+              <h4 class="font-bold text-title text-xs uppercase tracking-wider mb-4">Legal</h4>
+              <nav class="flex flex-col gap-2.5 text-sm">
+                <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand">Terms of Service</a>
+                <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand">Privacy Policy</a>
+                <a href="#" onclick="navigateTo('refund-policy'); return false;" class="hover:text-brand">Refund Policy</a>
+                <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="hover:text-brand">Cookie Policy</a>
+                <a href="#" onclick="navigateTo('data-processing'); return false;" class="hover:text-brand">Data Processing</a>
+              </nav>
             </div>
-            <div class="booking-actions">
-              <label>
-                Review status
-                <select class="review-status-select">
-                  <option value="pending">Pending</option>
-                  <option value="approved">Approved</option>
-                  <option value="hidden">Hidden</option>
-                  <option value="rejected">Rejected</option>
-                </select>
-              </label>
-              <label>
-                Display
-                <select class="review-featured-select">
-                  <option value="false">Standard</option>
-                  <option value="true">Featured</option>
-                </select>
-              </label>
-              <label>
-                Admin notes
-                <textarea class="review-notes-input">${safe.adminNotes}</textarea>
-              </label>
-              <div class="action-grid">
-                <button class="btn success approve-review" type="button">Approve</button>
-                <button class="btn secondary save-review" type="button">Save</button>
-                <button class="btn secondary hide-review" type="button">Hide</button>
-                <button class="btn danger reject-review" type="button">Reject</button>
-              </div>
-              <div class="message card-message"></div>
+          </div>
+        </div>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-8 text-xs text-muted font-bold tracking-tight">
+          <span>Copyright © 2026 Studio Photuna. All rights reserved.</span>
+          <div class="flex items-center gap-5">
+            <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand">Privacy Policy</a>
+            <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand">Terms of Service</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="deleteAccountModal" aria-hidden="true">
+      <div class="w-full max-w-md bg-white border border-line rounded-3xl p-8 shadow-luxe" role="dialog" aria-modal="true" aria-labelledby="deleteAccountTitle">
+        <div class="flex items-start justify-between border-b border-line pb-4 mb-4">
+          <div>
+            <h2 id="deleteAccountTitle" class="text-2xl font-black text-red-700">Delete your account?</h2>
+            <p class="text-xs text-muted mt-1">This is permanent. There is no recovery period.</p>
+          </div>
+          <button class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey" type="button" aria-label="Close" onclick="closeDeleteAccountModal()">&times;</button>
+        </div>
+        <p class="text-sm text-body mb-4">Type <strong class="text-red-700 font-mono">DELETE</strong> to confirm you understand your profile, subscription, galleries, and support tickets will be permanently removed.</p>
+        <input id="deleteAccountConfirmInput" type="text" placeholder="Type DELETE" autocomplete="off" class="w-full border border-line rounded-xl px-4 py-3 text-sm outline-none focus:border-red-500 mb-4" />
+        <button id="deleteAccountConfirmBtn" onclick="confirmDeleteAccount()" disabled class="btn-animation w-full bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors">
+          Permanently Delete My Account
+        </button>
+        <p class="text-center text-xs font-bold mt-3" id="deleteAccountMessage"></p>
+      </div>
+    </div>
+
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="authModal" aria-hidden="true">
+      <div class="auth-modal w-full max-w-md bg-white border border-line rounded-3xl p-8 shadow-luxe" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <div class="auth-head flex items-start justify-between border-b border-line pb-4 mb-4">
+          <div>
+            <h2 id="authTitle" class="text-2xl font-black text-title">Access Studio Photuna</h2>
+            <p class="text-xs text-muted mt-1">Login or create your free trial workspace.</p>
+          </div>
+          <button class="modal-close w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey" type="button" id="authClose" aria-label="Close" onclick="closeAuthModal()">&times;</button>
+        </div>
+        <div class="auth-tabs grid grid-cols-2 bg-grey p-1 rounded-full mb-6 border border-line">
+          <button class="auth-tab active py-2 rounded-full text-xs font-black" type="button" data-auth-tab="login" onclick="setAuthMode('login')">Login</button>
+          <button class="auth-tab py-2 rounded-full text-xs font-black text-muted" type="button" data-auth-tab="signup" onclick="setAuthMode('signup')">Sign up</button>
+        </div>
+        <form class="auth-form space-y-4" id="authForm">
+          <input id="authName" name="name" type="text" placeholder="Full name" autocomplete="name" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none hidden" />
+          <input id="authEmail" name="email" type="email" placeholder="Email address" autocomplete="email" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+          <input id="authPassword" name="password" type="password" placeholder="Password" autocomplete="current-password" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+          <label id="authConsent" class="hidden flex items-start gap-2 text-xs text-body cursor-pointer">
+            <input type="checkbox" id="consentCheck" class="mt-0.5 accent-[#0c66e4]" />
+            <span>I agree to the <a href="#" onclick="navigateTo('operator-agreement'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Terms of Service</a> and <a href="#" onclick="navigateTo('privacy-framework'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Privacy Policy</a>, including the processing of my personal data in accordance with the Data Privacy Act of 2012 (RA 10173).</span>
+          </label>
+          <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors shadow-sm" type="submit" id="authSubmit">Login</button>
+          <p class="auth-message text-center text-xs font-bold" id="authMessage"></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Manual GCash QR Payment Modal (bridge solution until PayMongo/Stripe go live) -->
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="gcashModal" aria-hidden="true">
+      <div class="w-full max-w-2xl bg-white border border-line rounded-3xl shadow-luxe overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="gcashTitle">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-8 py-5 border-b border-line">
+          <div>
+            <h2 id="gcashTitle" class="text-xl font-black text-title">Pay via GCash</h2>
+            <p class="text-xs text-muted mt-0.5">We'll verify and activate your plan manually — usually within a day.</p>
+          </div>
+          <button class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey text-lg" type="button" aria-label="Close" onclick="closeGcashModal()">&times;</button>
+        </div>
+
+        <!-- 2-column body -->
+        <div class="grid grid-cols-1 sm:grid-cols-2">
+          <!-- Left: QR + plan info -->
+          <div class="flex flex-col items-center justify-center gap-4 p-8 bg-grey border-r border-line">
+            <div class="rounded-2xl border border-line p-3 bg-white shadow-sm">
+              <img src="gcash-qr.png" alt="GCash QR" class="w-44 h-44 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f4f5f8/5f6678?text=gcash-qr.png'" />
             </div>
-          `;
-          card.querySelector(".review-status-select").value = review.status;
-          card.querySelector(".review-featured-select").value = String(Boolean(review.is_featured));
-          reviewList.appendChild(card);
-        });
-      }
 
-      async function loadReviewsAdmin() {
-        if (!supabaseClient || !currentUser) return;
-        setMessage(adminMessage, "Loading reviews...");
-        const { data, error } = await supabaseClient
-          .from("public_reviews")
-          .select("*")
-          .order("created_at", { ascending: false });
+            <div class="flex gap-2 bg-white p-1 rounded-full border border-line">
+              <button type="button" data-gcash-billing="monthly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('monthly')">Monthly</button>
+              <button type="button" data-gcash-billing="yearly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('yearly')">Yearly</button>
+            </div>
 
-        if (error) {
-          setMessage(adminMessage, error.message || "Unable to load reviews.", true);
-          return;
-        }
+            <div class="text-center space-y-1">
+              <p class="text-lg font-black text-title" id="gcashAmountDue">₱0.00</p>
+              <p class="text-[11px] text-muted leading-snug">Scan QR in GCash app, send the exact amount, then fill the form.</p>
+            </div>
+          </div>
 
-        reviews = data || [];
-        setMessage(adminMessage, reviews.length ? "Reviews loaded." : "No reviews submitted yet.");
-        renderReviewsAdmin();
-      }
+          <!-- Right: proof form -->
+          <form class="flex flex-col gap-4 p-8" id="gcashProofForm">
+            <p class="text-xs font-extrabold text-title uppercase tracking-wider">Payment Details</p>
+            <input id="gcashSenderName" type="text" placeholder="GCash account name" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+            <input id="gcashReferenceNumber" type="text" placeholder="Reference number (13 characters)" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required minlength="6" />
+            <div>
+              <label for="gcashScreenshot" class="block text-xs font-bold text-title mb-2">Receipt screenshot <span class="text-red-500">*</span></label>
+              <input id="gcashScreenshot" type="file" accept="image/png,image/jpeg,image/webp" class="w-full border border-line rounded-xl px-4 py-3 text-sm" required />
+            </div>
+            <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase shadow-sm" type="submit" id="gcashSubmitBtn">Submit Proof</button>
+            <p class="text-center text-xs font-bold" id="gcashMessage"></p>
+          </form>
+        </div>
+      </div>
+    </div>
 
-      function renderActiveAdminTab() {
-        const isReviews = activeAdminTab === "reviews";
-        adminPanelTitle.textContent = isReviews ? "Manage reviews" : "Manage bookings";
-        bookingList.classList.toggle("hidden", isReviews);
-        reviewList.classList.toggle("hidden", !isReviews);
-        document.querySelector(".filters").classList.toggle("hidden", isReviews);
-        adminTabButtons.forEach((button) => button.classList.toggle("active", button.dataset.adminTab === activeAdminTab));
-        updateStats();
-        if (isReviews) {
-          renderReviewsAdmin();
-        } else {
-          renderBookings();
-        }
-      }
+    <!-- Cookie Consent Banner -->
+    <div id="cookieConsentBanner" class="fixed bottom-0 left-0 right-0 z-40 hidden">
+      <div class="max-w-5xl mx-auto p-4">
+        <div class="bg-white border border-line rounded-2xl shadow-luxe p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div class="flex-1 text-sm text-body font-medium">
+            We use cookies to enhance your experience. By continuing to use our site, you consent to our use of cookies. Read our <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="text-purple font-bold hover:underline">Cookie Policy</a> for details.
+          </div>
+          <div class="flex items-center gap-3 shrink-0">
+            <button onclick="acceptAllCookies()" class="btn-animation bg-purple hover:bg-purple-dark text-white font-bold px-5 py-2.5 rounded-full text-xs uppercase tracking-wider">Accept All</button>
+            <button onclick="acceptEssentialCookies()" class="btn-animation border border-line hover:bg-grey text-title font-bold px-5 py-2.5 rounded-full text-xs uppercase tracking-wider">Essential Only</button>
+            <a href="#" onclick="navigateTo('cookie-policy'); hideCookieBanner(); return false;" class="text-xs text-purple font-bold hover:underline whitespace-nowrap">Cookie Settings</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      async function loadAdminSession() {
-        if (!supabaseClient) {
-          setMessage(loginMessage, "Supabase did not load. Refresh the page and try again.", true);
-          return;
-        }
+    <script src="app.js"></script>
 
-        const { data } = await withTimeout(supabaseClient.auth.getSession(), "Session check");
-        currentUser = data?.session?.user || null;
-        if (!currentUser) {
-          showLoggedOut();
-          return;
-        }
-
-        const { data: profile, error } = await withTimeout(
-          supabaseClient
-            .from("profiles")
-            .select("id,email,full_name,role")
-            .eq("id", currentUser.id)
-            .maybeSingle(),
-          "Admin profile check"
-        );
-
-        if (error || !isAdmin(profile)) {
-          await supabaseClient.auth.signOut();
-          showLoggedOut();
-          setMessage(loginMessage, "This account does not have bookings admin access.", true);
-          return;
-        }
-
-        currentProfile = profile;
-        showAdmin();
-        await loadBookings();
-        await loadReviewsAdmin();
-        renderActiveAdminTab();
-      }
-
-      async function updateBooking(id, patch, messageTarget) {
-        if (!supabaseClient || !currentUser) return;
-        setMessage(messageTarget, "Saving...");
-        const { error } = await supabaseClient
-          .from("event_bookings")
-          .update(patch)
-          .eq("id", id);
-
-        if (error) {
-          setMessage(messageTarget, error.message || "Update failed.", true);
-          return;
-        }
-
-        setMessage(messageTarget, "Saved.");
-        await loadBookings();
-      }
-
-      async function updateReview(id, patch, messageTarget) {
-        if (!supabaseClient || !currentUser) return;
-        setMessage(messageTarget, "Saving...");
-        const { error } = await supabaseClient
-          .from("public_reviews")
-          .update(patch)
-          .eq("id", id);
-
-        if (error) {
-          setMessage(messageTarget, error.message || "Review update failed.", true);
-          return;
-        }
-
-        setMessage(messageTarget, "Saved.");
-        await loadReviewsAdmin();
-      }
-
-      loginForm.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        if (!supabaseClient) {
-          setMessage(loginMessage, "Supabase did not load. Refresh the page and try again.", true);
-          return;
-        }
-
-        loginSubmit.disabled = true;
-        setMessage(loginMessage, "Signing in...");
-        const email = document.getElementById("loginEmail").value.trim();
-        const password = document.getElementById("loginPassword").value;
-        let error = null;
-        try {
-          ({ error } = await withTimeout(
-            supabaseClient.auth.signInWithPassword({ email, password }),
-            "Admin login"
-          ));
-        } catch (timeoutError) {
-          loginSubmit.disabled = false;
-          setMessage(loginMessage, timeoutError.message, true);
-          return;
-        }
-
-        if (error) {
-          loginSubmit.disabled = false;
-          setMessage(loginMessage, error.message || "Login failed.", true);
-          return;
-        }
-
-        setMessage(loginMessage, "");
-        await loadAdminSession();
-        loginSubmit.disabled = false;
-      });
-
-      logoutButton.addEventListener("click", async () => {
-        if (supabaseClient) await supabaseClient.auth.signOut();
-        showLoggedOut();
-      });
-
-      refreshBookings.addEventListener("click", () => {
-        if (activeAdminTab === "reviews") {
-          loadReviewsAdmin();
-        } else {
-          loadBookings();
-        }
-      });
-
-      adminTabButtons.forEach((button) => {
-        button.addEventListener("click", async () => {
-          activeAdminTab = button.dataset.adminTab;
-          if (activeAdminTab === "reviews" && !reviews.length) await loadReviewsAdmin();
-          renderActiveAdminTab();
-        });
-      });
-
-      filterButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          activeFilter = button.dataset.filter;
-          filterButtons.forEach((item) => item.classList.toggle("active", item === button));
-          renderBookings();
-        });
-      });
-
-      bookingList.addEventListener("click", async (event) => {
-        const button = event.target.closest("button");
-        if (!button) return;
-        const card = event.target.closest(".booking-card");
-        const id = card?.dataset.id;
-        if (!id) return;
-        const messageTarget = card.querySelector(".card-message");
-        const now = new Date().toISOString();
-
-        if (button.classList.contains("save-booking")) {
-          await updateBooking(id, {
-            status: fieldValue(card, ".status-select"),
-            reservation_status: fieldValue(card, ".payment-select"),
-            admin_notes: fieldValue(card, ".notes-input") || null
-          }, messageTarget);
-        }
-
-        if (button.classList.contains("approve-paid")) {
-          await updateBooking(id, {
-            status: "approved",
-            reservation_status: "partial_paid",
-            approved_at: now,
-            approved_by: currentUser.id,
-            reservation_paid_at: now,
-            admin_notes: fieldValue(card, ".notes-input") || null
-          }, messageTarget);
-        }
-
-        if (button.classList.contains("mark-paid")) {
-          await updateBooking(id, {
-            reservation_status: "partial_paid",
-            reservation_paid_at: now,
-            admin_notes: fieldValue(card, ".notes-input") || null
-          }, messageTarget);
-        }
-
-        if (button.classList.contains("decline-booking")) {
-          await updateBooking(id, {
-            status: "declined",
-            admin_notes: fieldValue(card, ".notes-input") || null
-          }, messageTarget);
-        }
-      });
-
-      reviewList.addEventListener("click", async (event) => {
-        const button = event.target.closest("button");
-        if (!button) return;
-        const card = event.target.closest(".booking-card");
-        const id = card?.dataset.id;
-        if (!id) return;
-        const messageTarget = card.querySelector(".card-message");
-        const now = new Date().toISOString();
-
-        if (button.classList.contains("save-review")) {
-          await updateReview(id, {
-            status: fieldValue(card, ".review-status-select"),
-            is_featured: fieldValue(card, ".review-featured-select") === "true",
-            admin_notes: fieldValue(card, ".review-notes-input") || null
-          }, messageTarget);
-        }
-
-        if (button.classList.contains("approve-review")) {
-          await updateReview(id, {
-            status: "approved",
-            is_featured: fieldValue(card, ".review-featured-select") === "true",
-            approved_at: now,
-            approved_by: currentUser.id,
-            admin_notes: fieldValue(card, ".review-notes-input") || null
-          }, messageTarget);
-        }
-
-        if (button.classList.contains("hide-review")) {
-          await updateReview(id, {
-            status: "hidden",
-            admin_notes: fieldValue(card, ".review-notes-input") || null
-          }, messageTarget);
-        }
-
-        if (button.classList.contains("reject-review")) {
-          await updateReview(id, {
-            status: "rejected",
-            admin_notes: fieldValue(card, ".review-notes-input") || null
-          }, messageTarget);
-        }
-      });
-
-      if (supabaseClient) {
-        supabaseClient.auth.onAuthStateChange(() => {
-          clearTimeout(authRefreshTimer);
-          authRefreshTimer = setTimeout(() => loadAdminSession(), 0);
-        });
-      }
-
-      loadAdminSession();
+    <!--Start of Tawk.to Live Chat Script-->
+    <!--
+      HOW TO SET UP:
+      1. Go to https://www.tawk.to and create a free account
+      2. Add your site (studiophotuna.com) as a new property
+      3. Copy your Property ID and Widget ID from:
+         Dashboard > Administration > Channels > Chat Widget
+      4. Replace YOUR_TAWK_PROPERTY_ID and YOUR_TAWK_WIDGET_ID below
+      5. Customize the widget color to match your brand (#6C47FF) in the Tawk.to dashboard
+    -->
+    <script type="text/javascript">
+      var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+      (function(){
+        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/YOUR_TAWK_PROPERTY_ID/YOUR_TAWK_WIDGET_ID';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1, s0);
+      })();
     </script>
+    <!--End of Tawk.to Live Chat Script-->
+
   </body>
 </html>

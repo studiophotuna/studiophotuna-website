@@ -1,0 +1,96 @@
+      <div class="px-6 py-12 max-w-7xl mx-auto space-y-8">
+        <div class="text-center space-y-3">
+          <h1 class="text-title font-black text-4xl sm:text-6xl">Help & Support Center</h1>
+          <p class="text-lg text-body max-w-2xl mx-auto">Get technical support for your photobooth operations, hardware configurations, and billing setups.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Categories Sidebar -->
+          <div class="space-y-6 lg:col-span-1">
+            <div class="bg-grey border border-line rounded-2xl p-6 space-y-4">
+              <h3 class="text-title font-bold text-lg">Support Channels</h3>
+              <p class="text-xs text-body leading-relaxed">Our support desk monitors requests 24/7. Auto-generated booking reminders and status notifications originate from:</p>
+              
+              <div class="space-y-3 pt-2">
+                <div class="flex items-center gap-3 p-3 bg-white border border-line rounded-xl">
+                  <div class="w-8 h-8 rounded-full bg-purple/10 flex items-center justify-center text-purple text-xs"><i class="fa-solid fa-headset"></i></div>
+                  <div class="text-xs">
+                    <span class="text-muted block uppercase font-bold text-[9px]">General Support</span>
+                    <a href="mailto:support@studiophotuna.com" class="text-title font-bold hover:text-purple">support@studiophotuna.com</a>
+                  </div>
+                </div>
+                <div class="flex items-center gap-3 p-3 bg-white border border-line rounded-xl">
+                  <div class="w-8 h-8 rounded-full bg-purple/10 flex items-center justify-center text-purple text-xs"><i class="fa-solid fa-bell"></i></div>
+                  <div class="text-xs">
+                    <span class="text-muted block uppercase font-bold text-[9px]">Auto-Replies</span>
+                    <a href="mailto:notification@studiophotuna.com" class="text-title font-bold hover:text-purple">notification@studiophotuna.com</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Troubleshooting Checklist -->
+            <div class="bg-white border border-line rounded-2xl p-6 space-y-4">
+              <h3 class="text-title font-bold text-base">Quick Self-Service</h3>
+              <ul class="space-y-3 text-xs text-body">
+                <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i> <span><strong>Camera not detected?</strong> Check if camera lens is switched to manual focus & USB mode set to PC Control.</span></li>
+                <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i> <span><strong>Printer margins offset?</strong> Navigate to physical output parameters page and click "Auto-Align Border".</span></li>
+                <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i> <span><strong>QR Link doesn't load?</strong> Check your on-booth Wi-Fi connectivity to route immediate cloud sync uploads.</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Contact / Ticket Form -->
+          <div class="bg-white border border-line rounded-3xl p-8 lg:col-span-2 shadow-sm space-y-6">
+            <div>
+              <h2 class="text-2xl font-black text-title">Create a Support Ticket</h2>
+              <p class="text-xs text-muted mt-1">Submit your system query details, and our tech team will resolve your concerns.</p>
+            </div>
+
+            <form class="space-y-4" id="supportTicketForm" onsubmit="handleSupportSubmit(event)">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="field space-y-2">
+                  <label class="font-extrabold text-title text-xs uppercase" for="supportName">Your Name</label>
+                  <input id="supportName" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+                </div>
+                <div class="field space-y-2">
+                  <label class="font-extrabold text-title text-xs uppercase" for="supportEmail">Your Email Address</label>
+                  <input id="supportEmail" type="email" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="field space-y-2">
+                  <label class="font-extrabold text-title text-xs uppercase" for="supportCategory">Inquiry Type</label>
+                  <select id="supportCategory" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required>
+                    <option value="hardware">Hardware Setup & Synchronization</option>
+                    <option value="licensing">Licensing & Payments</option>
+                    <option value="events">Event Booking Requests</option>
+                    <option value="other">General Technical Inquiries</option>
+                  </select>
+                </div>
+                <div class="field space-y-2">
+                  <label class="font-extrabold text-title text-xs uppercase" for="supportPriority">Priority Level</label>
+                  <select id="supportPriority" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required>
+                    <option value="normal">Normal Support Response</option>
+                    <option value="high">Urgent (Upcoming Live Event)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field space-y-2">
+                <label class="font-extrabold text-title text-xs uppercase" for="supportMessage">Describe your Technical Issue</label>
+                <textarea id="supportMessage" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none h-32 resize-none" placeholder="Provide as much details as possible, including camera model and operating systems..." required></textarea>
+              </div>
+
+              <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3.5 rounded-xl text-sm uppercase transition-colors shadow-sm" type="submit" id="supportSubmitBtn">
+                Submit Support Request
+              </button>
+
+              <div class="text-xs text-center text-muted font-medium pt-2">
+                An automatic notification thread from <span class="text-purple">notification@studiophotuna.com</span> will be dispatched to verify your request.
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>

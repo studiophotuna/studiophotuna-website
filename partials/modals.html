@@ -1,0 +1,107 @@
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="deleteAccountModal" aria-hidden="true">
+      <div class="w-full max-w-md bg-white border border-line rounded-3xl p-8 shadow-luxe" role="dialog" aria-modal="true" aria-labelledby="deleteAccountTitle">
+        <div class="flex items-start justify-between border-b border-line pb-4 mb-4">
+          <div>
+            <h2 id="deleteAccountTitle" class="text-2xl font-black text-red-700">Delete your account?</h2>
+            <p class="text-xs text-muted mt-1">This is permanent. There is no recovery period.</p>
+          </div>
+          <button class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey" type="button" aria-label="Close" onclick="closeDeleteAccountModal()">&times;</button>
+        </div>
+        <p class="text-sm text-body mb-4">Type <strong class="text-red-700 font-mono">DELETE</strong> to confirm you understand your profile, subscription, galleries, and support tickets will be permanently removed.</p>
+        <input id="deleteAccountConfirmInput" type="text" placeholder="Type DELETE" autocomplete="off" class="w-full border border-line rounded-xl px-4 py-3 text-sm outline-none focus:border-red-500 mb-4" />
+        <button id="deleteAccountConfirmBtn" onclick="confirmDeleteAccount()" disabled class="btn-animation w-full bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors">
+          Permanently Delete My Account
+        </button>
+        <p class="text-center text-xs font-bold mt-3" id="deleteAccountMessage"></p>
+      </div>
+    </div>
+
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="authModal" aria-hidden="true">
+      <div class="auth-modal w-full max-w-md bg-white border border-line rounded-3xl p-8 shadow-luxe" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <div class="auth-head flex items-start justify-between border-b border-line pb-4 mb-4">
+          <div>
+            <h2 id="authTitle" class="text-2xl font-black text-title">Access Studio Photuna</h2>
+            <p class="text-xs text-muted mt-1">Login or create your free trial workspace.</p>
+          </div>
+          <button class="modal-close w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey" type="button" id="authClose" aria-label="Close" onclick="closeAuthModal()">&times;</button>
+        </div>
+        <div class="auth-tabs grid grid-cols-2 bg-grey p-1 rounded-full mb-6 border border-line">
+          <button class="auth-tab active py-2 rounded-full text-xs font-black" type="button" data-auth-tab="login" onclick="setAuthMode('login')">Login</button>
+          <button class="auth-tab py-2 rounded-full text-xs font-black text-muted" type="button" data-auth-tab="signup" onclick="setAuthMode('signup')">Sign up</button>
+        </div>
+        <form class="auth-form space-y-4" id="authForm">
+          <input id="authName" name="name" type="text" placeholder="Full name" autocomplete="name" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none hidden" />
+          <input id="authEmail" name="email" type="email" placeholder="Email address" autocomplete="email" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+          <input id="authPassword" name="password" type="password" placeholder="Password" autocomplete="current-password" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+          <label id="authConsent" class="hidden flex items-start gap-2 text-xs text-body cursor-pointer">
+            <input type="checkbox" id="consentCheck" class="mt-0.5 accent-[#0c66e4]" />
+            <span>I agree to the <a href="#" onclick="navigateTo('operator-agreement'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Terms of Service</a> and <a href="#" onclick="navigateTo('privacy-framework'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Privacy Policy</a>, including the processing of my personal data in accordance with the Data Privacy Act of 2012 (RA 10173).</span>
+          </label>
+          <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors shadow-sm" type="submit" id="authSubmit">Login</button>
+          <p class="auth-message text-center text-xs font-bold" id="authMessage"></p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Manual GCash QR Payment Modal (bridge solution until PayMongo/Stripe go live) -->
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="gcashModal" aria-hidden="true">
+      <div class="w-full max-w-2xl bg-white border border-line rounded-3xl shadow-luxe overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="gcashTitle">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-8 py-5 border-b border-line">
+          <div>
+            <h2 id="gcashTitle" class="text-xl font-black text-title">Pay via GCash</h2>
+            <p class="text-xs text-muted mt-0.5">We'll verify and activate your plan manually — usually within a day.</p>
+          </div>
+          <button class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey text-lg" type="button" aria-label="Close" onclick="closeGcashModal()">&times;</button>
+        </div>
+
+        <!-- 2-column body -->
+        <div class="grid grid-cols-1 sm:grid-cols-2">
+          <!-- Left: QR + plan info -->
+          <div class="flex flex-col items-center justify-center gap-4 p-8 bg-grey border-r border-line">
+            <div class="rounded-2xl border border-line p-3 bg-white shadow-sm">
+              <img src="gcash-qr.png" alt="GCash QR" class="w-44 h-44 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f4f5f8/5f6678?text=gcash-qr.png'" />
+            </div>
+
+            <div class="flex gap-2 bg-white p-1 rounded-full border border-line">
+              <button type="button" data-gcash-billing="monthly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('monthly')">Monthly</button>
+              <button type="button" data-gcash-billing="yearly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('yearly')">Yearly</button>
+            </div>
+
+            <div class="text-center space-y-1">
+              <p class="text-lg font-black text-title" id="gcashAmountDue">₱0.00</p>
+              <p class="text-[11px] text-muted leading-snug">Scan QR in GCash app, send the exact amount, then fill the form.</p>
+            </div>
+          </div>
+
+          <!-- Right: proof form -->
+          <form class="flex flex-col gap-4 p-8" id="gcashProofForm">
+            <p class="text-xs font-extrabold text-title uppercase tracking-wider">Payment Details</p>
+            <input id="gcashSenderName" type="text" placeholder="GCash account name" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+            <input id="gcashReferenceNumber" type="text" placeholder="Reference number (13 characters)" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required minlength="6" />
+            <div>
+              <label for="gcashScreenshot" class="block text-xs font-bold text-title mb-2">Receipt screenshot <span class="text-red-500">*</span></label>
+              <input id="gcashScreenshot" type="file" accept="image/png,image/jpeg,image/webp" class="w-full border border-line rounded-xl px-4 py-3 text-sm" required />
+            </div>
+            <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase shadow-sm" type="submit" id="gcashSubmitBtn">Submit Proof</button>
+            <p class="text-center text-xs font-bold" id="gcashMessage"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookieConsentBanner" class="fixed bottom-0 left-0 right-0 z-40 hidden">
+      <div class="max-w-5xl mx-auto p-4">
+        <div class="bg-white border border-line rounded-2xl shadow-luxe p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div class="flex-1 text-sm text-body font-medium">
+            We use cookies to enhance your experience. By continuing to use our site, you consent to our use of cookies. Read our <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="text-purple font-bold hover:underline">Cookie Policy</a> for details.
+          </div>
+          <div class="flex items-center gap-3 shrink-0">
+            <button onclick="acceptAllCookies()" class="btn-animation bg-purple hover:bg-purple-dark text-white font-bold px-5 py-2.5 rounded-full text-xs uppercase tracking-wider">Accept All</button>
+            <button onclick="acceptEssentialCookies()" class="btn-animation border border-line hover:bg-grey text-title font-bold px-5 py-2.5 rounded-full text-xs uppercase tracking-wider">Essential Only</button>
+            <a href="#" onclick="navigateTo('cookie-policy'); hideCookieBanner(); return false;" class="text-xs text-purple font-bold hover:underline whitespace-nowrap">Cookie Settings</a>
+          </div>
+        </div>
+      </div>
+    </div>

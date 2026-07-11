@@ -1,5 +1,7 @@
 {
   "cleanUrls": true,
+  "buildCommand": "npm run build",
+  "outputDirectory": ".",
   "headers": [
     {
       "source": "/(.*)",
@@ -25,6 +27,6 @@
     }
   ],
   "rewrites": [
-    { "source": "/booknow", "destination": "/index.html" }
+    { "source": "/booknow", "destination": "/book-event.html" }
   ]
 }

@@ -1,15 +1,71 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Book Event | Studio Photuna</title>
+    <title>Book an Event | Studio Photuna</title>
+    <meta name="description" content="Book Studio Photuna for your event: review pricing, check real-time availability, and secure your event details in a simple 5-step wizard." />
     <link rel="icon" type="image/png" href="./favicon.png" />
     <link rel="apple-touch-icon" href="./favicon.png" />
+    
+    <!-- Tailwind CSS for fluid responsive grids and structures -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Font Awesome for sleek modern iconography -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+      tailwind.config = {
+        safelist: [
+          'bg-green-100','text-green-800','bg-green-600','hover:bg-green-700',
+          'bg-red-100','text-red-700','bg-red-500','hover:bg-red-600',
+          'bg-yellow-100','text-yellow-800',
+          'bg-purple','text-purple','bg-purple/10',
+          'opacity-60','pointer-events-none',
+          'bg-blue-500','hover:bg-blue-600'
+        ],
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+              title: '#111827',
+              body: '#5f6678',
+              muted: '#8b92a6',
+              grey: '#f4f5f8',
+              'grey-2': '#eef0f5',
+              line: '#dedfe6',
+              green: {
+                DEFAULT: '#22c55e',
+                50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80',
+                500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', 950: '#052e16',
+              },
+              purple: '#0c66e4',
+              'purple-dark': '#0a52b8',
+              brand: {
+                DEFAULT: '#0c66e4',
+                50: '#eaf2fe', 100: '#d3e4fd', 200: '#a8c9fb', 300: '#7aadf7', 400: '#3d89ef',
+                500: '#0c66e4', 600: '#0a52b8', 700: '#083e8c', 800: '#062b61', 900: '#041b3d', 950: '#020f22',
+              },
+              yellow: {
+                DEFAULT: '#f7d54a',
+                50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15',
+                500: '#eab308', 600: '#ca8a04', 700: '#a16207', 800: '#854d0e', 900: '#713f12', 950: '#422006',
+              },
+              white: '#ffffff',
+            },
+            boxShadow: {
+              'luxe': '0 30px 90px rgba(17, 24, 39, 0.12)',
+            }
+          }
+        }
+      }
+    </script>
+
     <style>
       :root {
         --title: #111827;
@@ -17,1468 +73,601 @@
         --muted: #8b92a6;
         --grey: #f4f5f8;
         --line: #dedfe6;
-        --purple: #6f4dff;
-        --purple-dark: #4b32c3;
-        --green: #12833d;
-        --red: #dc2626;
-        --yellow: #f7d54a;
+        --purple: #0c66e4;
+        --purple-dark: #0a52b8;
+        --brand: #0c66e4;
+        --brand-dark: #0a52b8;
         --white: #ffffff;
         --shadow: 0 30px 90px rgba(17, 24, 39, 0.12);
       }
 
-      * { box-sizing: border-box; }
-      html { scroll-behavior: smooth; }
-
-      body {
-        margin: 0;
-        color: var(--body);
-        background: var(--white);
-        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      /* Section H2 spec: 3.75rem / font-weight 600 at desktop, scaled down
+         responsively for smaller viewports. */
+      .h2-display {
+        font-weight: 600;
+        font-size: 1.875rem;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
       }
+      @media (min-width: 640px) { .h2-display { font-size: 2.25rem; } }
+      @media (min-width: 768px) { .h2-display { font-size: 3rem; } }
+      @media (min-width: 1024px) { .h2-display { font-size: 3.75rem; } }
 
-      a { color: inherit; text-decoration: none; }
-      button, input, select, textarea { font: inherit; }
-
-      .container {
-        width: min(1230px, calc(100% - 40px));
-        margin: 0 auto;
+      .btn-animation {
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
       }
-
-      .site-header {
-        position: sticky;
-        top: 0;
-        z-index: 50;
-        padding: 10px 0;
-        border-bottom: 1px solid rgba(222, 223, 230, 0.7);
-        background: rgba(255, 255, 255, 0.92);
-        backdrop-filter: blur(18px);
+      .btn-animation:hover {
+        transform: translateY(-2px);
       }
-
-      .header-row {
-        display: flex;
-        min-height: 64px;
-        align-items: center;
-        justify-content: space-between;
-        gap: 20px;
+      .btn-animation:active {
+        transform: translateY(0);
       }
-
-      .logo img {
-        display: block;
-        height: 44px;
-        width: auto;
-      }
-
-      .nav-links {
-        display: flex;
-        align-items: center;
-        gap: 28px;
-        color: var(--title);
-        font-size: 15px;
-        font-weight: 800;
-      }
-
-      .nav-links a:hover { color: var(--purple); }
-
-      .btn {
-        display: inline-flex;
-        min-height: 52px;
-        align-items: center;
-        justify-content: center;
-        border: 0;
-        border-radius: 999px;
-        background: var(--purple);
-        color: var(--white);
-        padding: 0 28px;
-        font-size: 15px;
-        font-weight: 900;
-        cursor: pointer;
-        transition: background 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
-      }
-
-      .btn:hover {
-        background: var(--purple-dark);
-        transform: translateY(-1px);
-      }
-
-      .btn:disabled {
-        opacity: 0.55;
-        cursor: not-allowed;
-        transform: none;
-      }
-
-      .btn.secondary {
-        border: 1px solid var(--line);
-        background: var(--white);
-        color: var(--title);
-      }
-
-      .hero {
-        position: relative;
-        overflow: clip;
-        padding: 78px 0 46px;
-        text-align: center;
-      }
-
-      .hero::before {
-        position: absolute;
-        left: -130px;
-        top: 60px;
-        width: 330px;
-        height: 250px;
-        border-radius: 60px;
-        background: radial-gradient(circle at 30% 30%, rgba(111, 77, 255, 0.18), transparent 48%), var(--grey);
-        content: "";
-        transform: rotate(-10deg);
-      }
-
-      .badge {
-        display: inline-flex;
-        width: fit-content;
-        border-radius: 999px;
-        background: #ece8ff;
-        color: var(--purple);
-        padding: 8px 12px;
-        font-size: 12px;
-        font-weight: 900;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      h1 {
-        position: relative;
-        z-index: 2;
-        max-width: 900px;
-        margin: 18px auto;
-        color: var(--title);
-        font-size: clamp(44px, 7vw, 86px);
-        line-height: 1.02;
-        letter-spacing: -0.065em;
-      }
-
-      .hero p {
-        position: relative;
-        z-index: 2;
-        max-width: 760px;
-        margin: 0 auto;
-        font-size: 18px;
-        line-height: 1.75;
-      }
-
-      .booking-shell {
-        position: relative;
-        overflow: hidden;
-        margin: 18px 0 88px;
-        border-radius: 34px;
-        background: var(--title);
-        color: var(--white);
-        padding: clamp(28px, 5vw, 58px);
-        box-shadow: var(--shadow);
-      }
-
-      .booking-shell::before,
-      .booking-shell::after {
-        position: absolute;
-        border-radius: 50%;
-        content: "";
-      }
-
-      .booking-shell::before {
-        inset: -28% auto auto -10%;
-        width: 480px;
-        height: 480px;
-        background: radial-gradient(circle, rgba(111, 77, 255, 0.38), transparent 62%);
-      }
-
-      .booking-shell::after {
-        right: -140px;
-        bottom: -180px;
-        width: 430px;
-        height: 430px;
-        background: radial-gradient(circle, rgba(247, 213, 74, 0.18), transparent 64%);
-      }
-
-      .booking-grid {
-        position: relative;
-        z-index: 2;
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 22px;
-        align-items: start;
-        max-width: 920px;
-        margin: 0 auto;
-      }
-
-      .booking-copy h2,
-      .booking-copy h3,
-      .booking-copy p,
-      .booking-copy li { color: var(--white); }
-
-      .booking-copy h2 {
-        margin: 18px 0;
-        font-size: clamp(38px, 5vw, 68px);
-        line-height: 1.02;
-        letter-spacing: -0.06em;
-      }
-
-      .booking-copy p {
-        max-width: 590px;
-        font-size: 18px;
-        line-height: 1.72;
-        opacity: 0.82;
-      }
-
-      .booking-highlights {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-        margin: 28px 0;
-      }
-
-      .booking-highlight,
-      .event-package {
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 18px;
-        background: rgba(255, 255, 255, 0.08);
-        padding: 16px;
-      }
-
-      .booking-highlight strong {
-        display: block;
-        color: var(--white);
-        font-size: 20px;
-        letter-spacing: -0.03em;
-      }
-
-      .booking-highlight span {
-        display: block;
-        margin-top: 4px;
-        color: rgba(255, 255, 255, 0.68);
-        font-size: 13px;
-        font-weight: 800;
-      }
-
-      .event-package-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 12px;
-      }
-
-      .event-package.featured {
-        border-color: rgba(247, 213, 74, 0.8);
-        background: rgba(247, 213, 74, 0.12);
-      }
-
-      .event-package h3 {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        margin: 0 0 10px;
-        font-size: 19px;
-      }
-
-      .event-package h3 span {
-        color: var(--yellow);
-        white-space: nowrap;
-      }
-
-      .event-package ul {
-        display: grid;
-        gap: 6px;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .event-package li {
-        color: rgba(255, 255, 255, 0.78);
-        font-size: 14px;
-      }
-
-      .event-package.is-disabled {
-        opacity: 0.62;
-      }
-
-      .flow-step {
-        display: none;
-        border: 1px solid var(--line);
-        border-radius: 22px;
-        background: var(--white);
-        padding: clamp(18px, 3vw, 24px);
-      }
-
-      .flow-step.active {
-        display: grid;
-        gap: 14px;
-      }
-
-      .flow-step h4 {
-        margin: 0 0 12px;
-        color: var(--title);
-        font-size: 18px;
-        letter-spacing: -0.03em;
-      }
-
-      .policy-grid,
-      .booking-faq-grid {
-        display: grid;
-        gap: 12px;
-      }
-
-      .policy-item,
-      .booking-faq-item,
-      .package-breakdown,
-      .quote-summary {
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        background: var(--grey);
-        padding: 14px;
-      }
-
-      .policy-item strong,
-      .booking-faq-item strong,
-      .quote-summary strong {
-        display: block;
-        color: var(--title);
-        font-size: 14px;
-      }
-
-      .policy-item span,
-      .booking-faq-item span {
-        display: block;
-        margin-top: 5px;
-        color: var(--body);
-        font-size: 13px;
-        line-height: 1.55;
-      }
-
-      .package-breakdown {
-        display: grid;
-        gap: 10px;
-      }
-
-      .package-breakdown h4,
-      .quote-summary h4 {
-        margin: 0;
-        color: var(--title);
-        font-size: 18px;
-      }
-
-      .package-breakdown p {
-        margin: 0;
-      }
-
-      .package-breakdown ul,
-      .quote-summary ul {
-        display: grid;
-        gap: 8px;
-        margin: 0;
-        padding: 0;
-        list-style: none;
-      }
-
-      .package-breakdown li,
-      .quote-summary li {
-        display: flex;
-        justify-content: space-between;
-        gap: 14px;
-        color: var(--body);
-        font-size: 13px;
-        line-height: 1.45;
-      }
-
-      .package-breakdown li::before,
-      .quote-summary li::before {
-        display: none;
-      }
-
-      .quote-summary {
-        display: none;
-        margin-top: 16px;
-        z-index: 5;
-        background: #111827;
-        color: var(--white);
-        box-shadow: 0 24px 70px rgba(17, 24, 39, 0.22);
-      }
-
-      .quote-summary.active {
-        display: grid;
-      }
-
-      .quote-summary h4,
-      .quote-summary strong,
-      .quote-summary li {
-        color: var(--white);
-      }
-
-      .quote-summary span {
-        color: rgba(255, 255, 255, 0.72);
-      }
-
-      .quote-total {
-        display: flex;
-        align-items: baseline;
-        justify-content: space-between;
-        gap: 12px;
-        border-top: 1px solid rgba(255, 255, 255, 0.16);
-        margin-top: 12px;
-        padding-top: 12px;
-      }
-
-      .quote-total strong {
-        font-size: 28px;
-        letter-spacing: -0.05em;
-      }
-
-      .booking-form-card {
-        display: grid;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 28px;
-        background: rgba(255, 255, 255, 0.96);
-        color: var(--body);
-        padding: clamp(22px, 3vw, 32px);
-        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.2);
-      }
-
-      .booking-form-card h3 {
-        margin: 0 0 8px;
-        color: var(--title);
-        font-size: 30px;
-        letter-spacing: -0.045em;
-      }
-
-      .booking-form-card p {
-        margin: 0;
-        line-height: 1.6;
-      }
-
-      .booking-intro {
-        margin-bottom: 18px;
-      }
-
-      .wizard-progress {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 8px;
-        margin: 0 0 18px;
-      }
-
-      .wizard-dot {
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
         height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f4f5f8;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #dedfe6;
         border-radius: 999px;
-        background: #e7e8ef;
       }
-
-      .wizard-dot.active {
-        background: var(--purple);
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #0c66e4;
       }
-
-      .availability-card {
-        margin: 0;
-        border: 1px solid var(--line);
-        border-radius: 22px;
-        background: var(--grey);
-        padding: 16px;
+      .reveal {
+        opacity: 0;
+        transform: translateY(26px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
       }
-
-      .availability-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin-bottom: 14px;
+      .reveal.in-view {
+        opacity: 1;
+        transform: translateY(0);
       }
-
-      .availability-head strong {
-        color: var(--title);
-        font-size: 16px;
+      /* Staggered fade-in for feature cards */
+      .feature-card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
       }
-
-      .calendar-controls {
-        display: inline-flex;
-        gap: 8px;
+      .feature-card.in-view {
+        opacity: 1;
+        transform: translateY(0);
       }
-
-      .calendar-controls button,
-      .calendar-day {
-        border: 1px solid var(--line);
-        background: var(--white);
-        color: var(--title);
-        cursor: pointer;
+      /* Smooth section separator gradient */
+      .section-glow {
+        position: relative;
       }
-
-      .calendar-controls button {
-        display: grid;
-        width: 34px;
-        height: 34px;
-        place-items: center;
-        border-radius: 50%;
+      .section-glow::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #0c66e4, transparent);
+        border-radius: 999px;
       }
-
-      .calendar-weekdays,
-      .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 6px;
+      /* Smooth hover lift for cards */
+      .hover-lift {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
       }
-
-      .calendar-weekdays {
-        margin-bottom: 8px;
-        color: var(--muted);
-        font-size: 11px;
-        font-weight: 900;
-        text-align: center;
-        text-transform: uppercase;
+      .hover-lift:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 60px rgba(17, 24, 39, 0.1);
       }
-
-      .calendar-day {
-        display: grid;
-        min-height: 42px;
-        place-items: center;
-        border-color: transparent;
-        border-radius: 12px;
-        font-size: 13px;
-        font-weight: 900;
+      /* Pulse glow for CTAs */
+      @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(111, 77, 255, 0.3); }
+        50% { box-shadow: 0 0 0 8px rgba(111, 77, 255, 0); }
       }
-
-      .calendar-day.empty {
-        background: transparent;
-        cursor: default;
+      .cta-glow {
+        animation: pulse-glow 3s ease-in-out infinite;
       }
-
-      .calendar-day.past {
-        color: var(--muted);
-        opacity: 0.42;
-        cursor: not-allowed;
+      /* Booth screen transitions */
+      .booth-screen {
+        transition: opacity 0.3s ease;
       }
-
-      .calendar-day.unavailable {
-        background: #fee2e2;
-        color: #991b1b;
-        cursor: not-allowed;
+      .booth-screen.active {
+        opacity: 1;
       }
-
-      .calendar-day.selected {
-        background: var(--purple);
-        color: var(--white);
-      }
-
-      .calendar-legend {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-top: 14px;
-        color: var(--body);
-        font-size: 12px;
-        font-weight: 800;
-      }
-
-      .calendar-legend span {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-      }
-
-      .calendar-legend i {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--white);
-      }
-
-      .calendar-legend .blocked i { background: #fca5a5; }
-
-      .calendar-status,
-      .booking-message {
-        margin-top: 12px;
-        color: var(--muted);
-        font-size: 12px;
-        font-weight: 800;
-      }
-
-      .booking-form {
-        display: grid;
-        gap: 0;
-      }
-
-      .form-row {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
-      }
-
-      .field {
-        display: grid;
-        gap: 7px;
-      }
-
-      .field label,
-      .terms-row {
-        color: var(--title);
-        font-size: 13px;
-        font-weight: 900;
-      }
-
-      .field input,
-      .field select,
-      .field textarea {
-        width: 100%;
-        border: 1px solid var(--line);
-        border-radius: 14px;
-        background: var(--white);
-        color: var(--title);
-        padding: 13px 14px;
-        outline: none;
-      }
-
-      .field input[readonly] {
-        background: #f7f7fb;
-        cursor: default;
-      }
-
-      .field textarea {
-        min-height: 104px;
-        resize: vertical;
-      }
-
-      .field input:focus,
-      .field select:focus,
-      .field textarea:focus {
-        border-color: var(--purple);
-        box-shadow: 0 0 0 4px rgba(111, 77, 255, 0.12);
-      }
-
-      .terms-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-        line-height: 1.5;
-      }
-
-      .terms-row input { margin-top: 3px; }
-
-      .booking-note {
-        border-radius: 16px;
-        background: var(--grey);
-        padding: 14px;
-        color: var(--body);
-        font-size: 13px;
-        line-height: 1.55;
-      }
-
-      .booking-form .btn { width: 100%; }
-
-      .wizard-actions {
-        display: grid;
-        grid-template-columns: 0.8fr 1.2fr;
-        gap: 10px;
-        margin-top: 18px;
-      }
-
-      .wizard-actions .btn {
-        width: 100%;
-      }
-
-      .wizard-actions .submit-booking {
-        display: none;
-        grid-column: 1 / -1;
-      }
-
-      .wizard-actions.final-step {
-        grid-template-columns: 1fr;
-      }
-
-      .wizard-actions.final-step .next-step {
-        display: none;
-      }
-
-      .wizard-actions.final-step .submit-booking {
-        display: inline-flex;
-      }
-
-      .booking-form-card > .flow-step.active,
-      .booking-form .flow-step.active {
-        margin-bottom: 18px;
-      }
-
-      .booking-message {
-        min-height: 20px;
-        text-align: center;
-      }
-
-      .booking-message:empty {
-        display: none;
-      }
-
-      .footer {
-        border-top: 1px solid var(--line);
-        padding: 30px 0;
-        text-align: center;
-      }
-
-      @media (max-width: 980px) {
-        .booking-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .nav-links {
-          display: none;
-        }
-      }
-
-      @media (max-width: 640px) {
-        .container {
-          width: min(100% - 28px, 1230px);
-        }
-
-        .booking-highlights,
-        .event-package-grid,
-        .form-row {
-          grid-template-columns: 1fr;
-        }
-
-        .event-package h3 {
-          display: grid;
-        }
+      .booth-screen.hidden {
+        opacity: 0;
       }
     </style>
+
   </head>
-  <body>
-    <header class="site-header">
-      <div class="container header-row">
-        <a class="logo" href="./#top" aria-label="Studio Photuna">
-          <img src="./logo-dark.png" alt="Studio Photuna" />
+  <body class="bg-white text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="book-event">
+
+    <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <header class="site-header fixed top-0 left-0 w-full z-40 bg-white/90 backdrop-blur-md border-b border-[#dedfe6]/70 transition-all duration-300">
+      <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+        <a class="logo flex items-center gap-3" href="#" onclick="navigateTo('home'); return false;" aria-label="Studio Photuna">
+          <img src="logo-dark.png" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
         </a>
-        <nav class="nav-links" aria-label="Primary navigation">
-          <a href="./#top">Home</a>
-          <a href="./#features">Features</a>
-          <a href="./#pricing">Pricing</a>
-          <a href="./download">Download</a>
-          <a href="./#faq">FAQ</a>
+        
+        <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
+          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-purple transition-colors">Home</a>
+          <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-purple transition-colors">Features</a>
+          <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-purple transition-colors">Pricing</a>
+          <a href="#" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-purple transition-colors">Download</a>
+          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-purple transition-colors">Support</a>
         </nav>
+
+        <div class="header-actions flex items-center gap-4">
+          <!-- User Dropdown (Signed In State) -->
+          <div class="relative hidden" id="userDropdown">
+            <button class="dropdown-trigger inline-flex min-height-[44px] items-center gap-2 border border-line rounded-full bg-grey hover:bg-grey-2 pl-1.5 pr-2 sm:pr-4 py-1.5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="dropdownButton" aria-haspopup="true" aria-expanded="false">
+              <span id="navAvatar" class="w-7 h-7 rounded-full bg-purple/10 border border-line flex items-center justify-center text-[10px] font-black text-purple overflow-hidden shrink-0" aria-hidden="true"></span>
+              <span class="sr-only sm:hidden">Account menu</span>
+              <span id="userPill" class="hidden sm:inline max-w-[120px] truncate">Account</span>
+              <i class="fa-solid fa-chevron-down text-xs text-muted"></i>
+            </button>
+            <div class="dropdown-menu absolute top-full right-0 mt-2 w-56 border border-line rounded-2xl bg-white p-2 shadow-luxe hidden flex-col gap-1 z-50" role="menu">
+              <a href="#" onclick="navigateTo('account'); closeDropdown(); return false;" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-circle-user text-purple"></i> View Account</a>
+              <a href="#" onclick="navigateTo('bookings-admin'); closeDropdown(); return false;" id="adminBookingsOpen" class="hidden flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-chart-line text-green"></i> Admin Bookings</a>
+              <div class="h-[1px] my-1 bg-line"></div>
+              <button type="button" id="logoutAction" class="w-full text-left flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition-colors"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
+          </div>
+
+          <!-- Auth Actions (Signed Out State) -->
+          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center border border-line rounded-full bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Login</button>
+          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-purple hover:bg-purple-dark text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex" href="/#pricing" onclick="goToSection('pricing'); return false;">Choose Plans</a>
+          <button class="hamburger md:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
+        </div>
       </div>
     </header>
 
-    <main>
-      <section class="hero">
-        <div class="container">
-          <span class="badge">Metro Manila Events</span>
-          <h1>Book Studio Photuna for your event</h1>
-          <p>Review the booking terms, choose an available date from the calendar, select your booth package, and send your details in one continuous flow.</p>
-        </div>
-      </section>
+    <div id="mobile-menu" class="hidden md:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
+      <a href="#" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
+      <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
+      <a href="#" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
+      <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help & Support</a>
+      <a href="#" data-nav="account" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
+    </div>
 
-      <section class="container">
-        <div class="booking-shell">
-          <div class="booking-grid">
-            <div class="booking-copy">
-              <span class="badge">Booking Flow</span>
-              <h2>Premium photobooth services for local events</h2>
-              <p>Studio Photuna currently serves Metro Manila events with a high-angle photobooth setup. Regular photobooth and phone booth services are part of the roadmap and will open for booking later.</p>
-              <div class="booking-highlights">
-                <div class="booking-highlight"><strong>3 hours</strong><span>Standard event coverage</span></div>
-                <div class="booking-highlight"><strong>50%</strong><span>Reservation fee to secure the date</span></div>
-                <div class="booking-highlight"><strong>Metro Manila</strong><span>Local service area for now</span></div>
-                <div class="booking-highlight"><strong>+3 hours max</strong><span>Optional extension limit</span></div>
-              </div>
-              <div class="event-package-grid" aria-label="Studio Photuna event packages">
-                <article class="event-package is-disabled">
-                  <h3>Bundle Package <span>Soon</span></h3>
-                  <ul>
-                    <li>Planned high-angle photobooth plus phone booth bundle</li>
-                    <li>Not available until Phone Booth opens for booking</li>
-                    <li>Future extra hour estimate: PHP 1,500/hour</li>
-                  </ul>
-                </article>
-                <article class="event-package featured">
-                  <h3>High Angle Photobooth <span>PHP 20,000</span></h3>
-                  <ul>
-                    <li>Current main Studio Photuna package</li>
-                    <li>3 hours with unlimited sessions during coverage</li>
-                    <li>Extra hour estimate: PHP 1,500/hour</li>
-                  </ul>
-                </article>
-                <article class="event-package is-disabled">
-                  <h3>Phone Booth <span>Soon</span></h3>
-                  <ul>
-                    <li>Planned video and audio guest message experience</li>
-                    <li>Not available for booking yet</li>
-                    <li>Future extra hour estimate: PHP 500/hour</li>
-                  </ul>
-                </article>
-                <article class="event-package is-disabled">
-                  <h3>Regular Photobooth <span>Soon</span></h3>
-                  <ul>
-                    <li>Planned for future Studio Photuna service expansion</li>
-                    <li>Not available for booking yet</li>
-                    <li>Ask us if you want to be notified when available</li>
-                  </ul>
-                </article>
+    <main class="min-h-screen pt-20">
+      <div class="px-6 py-12 max-w-7xl mx-auto">
+        <div class="space-y-8">
+          <div class="text-center space-y-3">
+            <h1 class="text-[#111827] font-black leading-tight text-4xl sm:text-6xl">Book Studio Photuna for your event</h1>
+            <p class="text-lg text-body max-w-2xl mx-auto">Complete our simplified booking wizard to review pricing, check real-time availability, and secure your event details.</p>
+          </div>
+
+          <!-- Two-column layout: Wizard (main) + Progress & Info (right sidebar) -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:items-start">
+
+            <!-- Main: Wizard Shell (spans 2 columns, visually first) -->
+            <div class="lg:col-span-2 lg:order-1">
+          <!-- Wizard Shell Container -->
+          <div class="bg-white border border-line rounded-3xl shadow-luxe overflow-hidden">
+            
+            <!-- Wizard Header Bar -->
+            <div class="bg-title p-6 space-y-3 relative overflow-hidden">
+              <div class="absolute inset-0 bg-gradient-to-br from-purple/20 via-transparent to-yellow/5 pointer-events-none"></div>
+              <div class="relative z-10 flex items-center justify-between gap-4">
+                <div>
+                  <h2 class="text-2xl font-extrabold text-white leading-tight">Request a booking quote</h2>
+                  <p class="text-xs text-white/60 mt-1">Read rules, select dates, and complete the configuration in one flow.</p>
+                </div>
+                <div class="hidden sm:grid grid-cols-2 gap-2 shrink-0">
+                  <div class="border border-white/10 bg-white/5 rounded-xl p-3 text-center">
+                    <strong class="text-base font-bold text-white block">3 hrs</strong>
+                    <span class="text-[10px] text-white/50">Standard</span>
+                  </div>
+                  <div class="border border-white/10 bg-white/5 rounded-xl p-3 text-center">
+                    <strong class="text-base font-bold text-white block">50%</strong>
+                    <span class="text-[10px] text-white/50">Deposit</span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="booking-form-card">
-              <h3>Request a booking quote</h3>
-              <p class="booking-intro">Please read the terms first, then complete the booking form. The date field is filled only by selecting an available date on the calendar.</p>
-              <div class="wizard-progress" id="bookingWizardProgress" aria-label="Booking progress"></div>
+            <!-- Form Body -->
+            <div class="p-6 sm:p-8 bg-white text-body">
+                <!-- Wizard Progress Dots -->
+                <div class="wizard-progress grid grid-cols-5 gap-2 mb-6" id="bookingWizardProgress" aria-label="Booking progress"></div>
 
-              <div class="flow-step active" data-step="0">
-                <h4>Before you book</h4>
-                <div class="policy-grid">
-                  <div class="policy-item"><strong>Service area</strong><span>Studio Photuna currently accepts Metro Manila bookings only.</span></div>
-                  <div class="policy-item"><strong>Reservation</strong><span>A 50% reservation fee is required before a date is blocked on the public calendar.</span></div>
-                  <div class="policy-item"><strong>Reservation fee policy</strong><span>The reservation fee is non-refundable, but may be transferred to another available date subject to coordination and availability.</span></div>
-                  <div class="policy-item"><strong>Setup time</strong><span>We typically arrive 1 to 2 hours before the event start time for setup, testing, and coordination with the venue.</span></div>
-                  <div class="policy-item"><strong>Extra hours</strong><span>Extra hours are optional and limited to a maximum of 3 hours per booking request.</span></div>
-                </div>
-              </div>
+                <form class="booking-form space-y-4" id="eventBookingForm">
 
-              <div class="flow-step" data-step="1">
-                <h4>Booking FAQ</h4>
-                <div class="booking-faq-grid">
-                  <div class="booking-faq-item"><strong>Does submitting this form reserve my date?</strong><span>No. Your date is reserved only after Studio Photuna confirms the booking and records the 50% reservation fee.</span></div>
-                  <div class="booking-faq-item"><strong>Can I request a date that is already unavailable?</strong><span>No. Dates marked unavailable already have an approved booking with reservation payment recorded.</span></div>
-                  <div class="booking-faq-item"><strong>How many guests should I enter?</strong><span>Use your realistic expected headcount. This form accepts 20 to 500 guests so we can plan the booth flow properly.</span></div>
-                  <div class="booking-faq-item"><strong>What if my venue is outside Metro Manila?</strong><span>Please contact Studio Photuna directly first. This booking page is currently configured for Metro Manila only.</span></div>
-                </div>
-              </div>
-
-              <div class="flow-step" data-step="2">
-                <h4>1. Choose an available date</h4>
-                <div class="availability-card" aria-label="Studio Photuna event availability calendar">
-                  <div class="availability-head">
-                    <strong id="bookingCalendarMonth">Availability</strong>
-                    <div class="calendar-controls">
-                      <button type="button" id="calendarPrev" aria-label="Previous month">&lt;</button>
-                      <button type="button" id="calendarNext" aria-label="Next month">&gt;</button>
+                  <!-- STEP 2: CHOOSE DATE -->
+                  <div class="flow-step active" data-step="0">
+                    <h4 class="font-extrabold text-title text-sm mb-2 uppercase tracking-wider">1. Choose an available date</h4>
+                    <div class="availability-card bg-grey p-4 border border-line rounded-xl space-y-3">
+                      <div class="availability-head flex items-center justify-between">
+                        <strong id="bookingCalendarMonth" class="text-title font-bold text-sm">Availability</strong>
+                        <div class="calendar-controls flex gap-1">
+                          <button type="button" id="calendarPrev" class="w-8 h-8 rounded-full border border-line bg-white text-title flex items-center justify-center font-bold hover:bg-grey">&lt;</button>
+                          <button type="button" id="calendarNext" class="w-8 h-8 rounded-full border border-line bg-white text-title flex items-center justify-center font-bold hover:bg-grey">&gt;</button>
+                        </div>
+                      </div>
+                      <div class="calendar-weekdays grid grid-cols-7 text-center text-[10px] text-muted font-bold uppercase tracking-wider">
+                        <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+                      </div>
+                      <div class="calendar-grid grid grid-cols-7 gap-1" id="bookingCalendar"></div>
+                      <div class="calendar-status text-xs text-muted font-bold pt-2 border-t border-line" id="availabilityStatus">Checking schedule availability...</div>
                     </div>
                   </div>
-                  <div class="calendar-weekdays" aria-hidden="true">
-                    <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
-                  </div>
-                  <div class="calendar-grid" id="bookingCalendar"></div>
-                  <div class="calendar-legend">
-                    <span><i></i> Available for inquiry</span>
-                    <span class="blocked"><i></i> Reserved after confirmation + 50% reservation fee</span>
-                  </div>
-                  <div class="calendar-status" id="availabilityStatus">Loading confirmed booking dates...</div>
-                </div>
-              </div>
 
-              <form class="booking-form" id="eventBookingForm">
-                <div class="flow-step" data-step="3">
-                  <h4>2. Select package and coverage</h4>
-                  <div class="form-row">
-                    <div class="field">
-                      <label for="bookingPackage">Preferred package</label>
-                      <select id="bookingPackage" name="package" required>
-                        <option value="">Select a package</option>
-                        <option value="bundle" disabled>Bundle Package - Coming soon</option>
-                        <option value="high-angle">High Angle Photobooth - PHP 20,000</option>
-                        <option value="phone-booth" disabled>Phone Booth - Coming soon</option>
-                        <option value="regular-soon" disabled>Regular Photobooth - Coming soon</option>
+                  <!-- STEP 3: PACKAGE & OVERTIME -->
+                  <div class="flow-step" data-step="1">
+                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">2. Select packages and coverage</h4>
+                    <div class="space-y-3 mb-4">
+                      <div class="flex items-center justify-between">
+                        <p class="text-xs font-bold text-body">Select one or more packages</p>
+                        <p class="text-[10px] font-bold text-purple">Combo discount: ₱2,500 off when 2+ selected</p>
+                      </div>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="wizardPkgGrid">
+                        <!-- Rendered by JS -->
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingExtraHours">Extra hours</label>
+                        <select id="bookingExtraHours" name="extraHours" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none">
+                          <option value="0">No extra hours</option>
+                          <option value="1">+1 hour</option>
+                          <option value="2">+2 hours</option>
+                          <option value="3">+3 hours</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="border border-line rounded-xl p-4 bg-grey space-y-1.5" id="packageBreakdown">
+                      <h4 class="font-bold text-title text-sm">Select packages to see inclusions</h4>
+                    </div>
+                  </div>
+
+                  <!-- STEP 4: EVENT SCHEDULE DETAILS -->
+                  <div class="flow-step" data-step="2">
+                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">3. Event schedule</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingDateDisplay">Date of event</label>
+                        <input id="bookingDateDisplay" type="text" placeholder="Select on calendar (Step 1)" class="w-full border border-line rounded-xl px-4 py-3 text-xs bg-grey" readonly required />
+                        <input id="bookingDate" name="date" type="hidden" required />
+                      </div>
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingTime">Start time</label>
+                        <input id="bookingTime" name="time" type="time" value="08:00" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                      </div>
+                    </div>
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingVenueCity">Metro Manila city</label>
+                      <select id="bookingVenueCity" name="venueCity" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required>
+                        <option value="">Select city</option>
+                        <option>Manila</option>
+                        <option>Makati</option>
+                        <option>Taguig</option>
+                        <option>Pasig</option>
+                        <option>Quezon City</option>
+                        <option>Mandaluyong</option>
+                        <option>San Juan</option>
+                        <option>Pasay</option>
+                        <option>Paranaque</option>
+                        <option>Muntinlupa</option>
+                        <option>Las Pinas</option>
+                        <option>Marikina</option>
+                        <option>Caloocan</option>
                       </select>
                     </div>
-                    <div class="field">
-                      <label for="bookingExtraHours">Extra hours</label>
-                      <select id="bookingExtraHours" name="extraHours">
-                        <option value="0">No extra hours</option>
-                        <option value="1">+1 hour</option>
-                        <option value="2">+2 hours</option>
-                        <option value="3">+3 hours</option>
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingVenueName">Venue name</label>
+                      <input id="bookingVenueName" name="venueName" placeholder="Example: The Blue Leaf Events Pavilion" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                    </div>
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingVenueAddress">Full venue address</label>
+                      <input id="bookingVenueAddress" name="venueAddress" placeholder="Street, barangay, or building" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                    </div>
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingMapsLink">Google Maps Link (Optional)</label>
+                      <input id="bookingMapsLink" name="mapsLink" type="url" placeholder="Optional pinned location url" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" />
+                    </div>
+                  </div>
+
+                  <!-- STEP 5: CONTACT & ESTIMATED HEADCOUNT -->
+                  <div class="flow-step" data-step="3">
+                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">4. Contact and event details</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingName">Full Name</label>
+                        <input id="bookingName" name="name" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                      </div>
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingPhone">Contact Number</label>
+                        <input id="bookingPhone" name="phone" placeholder="09XXXXXXXXX" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                      </div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingEmail">Email Address</label>
+                        <input id="bookingEmail" name="email" type="email" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" />
+                      </div>
+                      <div class="field space-y-2">
+                        <label class="font-extrabold text-title text-xs uppercase" for="bookingGuests">Estimated Guests</label>
+                        <input id="bookingGuests" name="guests" type="number" min="20" max="500" placeholder="120" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                      </div>
+                    </div>
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingType">Type of Event</label>
+                      <select id="bookingType" name="eventType" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required>
+                        <option value="">Select event type</option>
+                        <option>Wedding</option>
+                        <option>Birthday</option>
+                        <option>Corporate event</option>
+                        <option>Baptism</option>
+                        <option>Holiday party</option>
+                        <option>Other</option>
                       </select>
                     </div>
-                  </div>
-                  <div class="package-breakdown" id="packageBreakdown">
-                    <h4>Select a package to see what is included</h4>
-                    <p>Package inclusions and total estimate will appear here.</p>
-                  </div>
-                </div>
-
-                <div class="flow-step" data-step="4">
-                  <h4>3. Event schedule</h4>
-                  <div class="form-row">
-                    <div class="field">
-                      <label for="bookingDateDisplay">Date of event</label>
-                      <input id="bookingDateDisplay" type="text" placeholder="Select a date from the calendar above" readonly required />
-                      <input id="bookingDate" name="date" type="hidden" required />
+                    <div class="field space-y-2">
+                      <label class="font-extrabold text-title text-xs uppercase" for="bookingNotes">Event Theme / Notes</label>
+                      <textarea id="bookingNotes" name="notes" placeholder="Tell us about your event theme, background colors, and styling rules..." class="w-full border border-line rounded-xl px-4 py-3 text-xs h-20 resize-none focus:border-purple outline-none"></textarea>
                     </div>
-                    <div class="field"><label for="bookingTime">Start time</label><input id="bookingTime" name="time" type="time" value="08:00" required /></div>
                   </div>
-                  <div class="field">
-                    <label for="bookingVenueCity">Metro Manila city</label>
-                    <select id="bookingVenueCity" name="venueCity" required>
-                      <option value="">Select city</option>
-                      <option>Manila</option>
-                      <option>Makati</option>
-                      <option>Taguig</option>
-                      <option>Pasig</option>
-                      <option>Quezon City</option>
-                      <option>Mandaluyong</option>
-                      <option>San Juan</option>
-                      <option>Pasay</option>
-                      <option>Paranaque</option>
-                      <option>Muntinlupa</option>
-                      <option>Las Pinas</option>
-                      <option>Marikina</option>
-                      <option>Caloocan</option>
-                      <option>Malabon</option>
-                      <option>Navotas</option>
-                      <option>Valenzuela</option>
-                      <option>Pateros</option>
-                    </select>
-                  </div>
-                  <div class="field">
-                    <label for="bookingVenueName">Venue name</label>
-                    <input id="bookingVenueName" name="venueName" placeholder="Example: The Blue Leaf Events Pavilion" required />
-                  </div>
-                  <div class="field">
-                    <label for="bookingVenueAddress">Full venue address</label>
-                    <input id="bookingVenueAddress" name="venueAddress" placeholder="Street, barangay, building, or landmark" required />
-                  </div>
-                  <div class="field">
-                    <label for="bookingMapsLink">Google Maps link (optional)</label>
-                    <input id="bookingMapsLink" name="mapsLink" type="url" inputmode="url" placeholder="Optional pinned location link if available" />
-                  </div>
-                </div>
 
-                <div class="flow-step" data-step="5">
-                  <h4>4. Contact and event details</h4>
-                  <div class="form-row">
-                    <div class="field"><label for="bookingName">Full name</label><input id="bookingName" name="name" autocomplete="name" required /></div>
-                    <div class="field"><label for="bookingPhone">Contact number</label><input id="bookingPhone" name="phone" autocomplete="tel" inputmode="tel" placeholder="09XXXXXXXXX" pattern="^(\+639|09)\d{9}$" required /></div>
+                  <!-- STEP 6: TERMS & CONFIRMATION -->
+                  <div class="flow-step" data-step="4">
+                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">5. Confirm understanding</h4>
+                    <label class="terms-row flex items-start gap-2.5 font-bold text-title text-xs">
+                      <input id="bookingTerms" type="checkbox" class="mt-0.5" required />
+                      <span>I have read and understood the service area restrictions, cancellation rules, setup times, and overtime parameters.</span>
+                    </label>
+                    <div class="bg-grey border border-line p-3 rounded-xl text-xs text-body leading-relaxed mt-4 font-medium">
+                      Payments can be processed via GCash, bank transfer, or cash. Balance is payable on or before event day unless coordinated otherwise. Confirmation replies will arrive from <span class="text-purple">notification@studiophotuna.com</span>.
+                    </div>
                   </div>
-                  <div class="form-row">
-                    <div class="field"><label for="bookingEmail">Email address</label><input id="bookingEmail" name="email" type="email" autocomplete="email" /></div>
-                    <div class="field"><label for="bookingGuests">Estimated guests</label><input id="bookingGuests" name="guests" type="number" min="20" max="500" step="1" inputmode="numeric" placeholder="Example: 120" required /></div>
-                  </div>
-                  <div class="field">
-                    <label for="bookingType">Type of event</label>
-                    <select id="bookingType" name="eventType" required>
-                      <option value="">Select event type</option>
-                      <option>Wedding</option>
-                      <option>Birthday</option>
-                      <option>Corporate event</option>
-                      <option>Graduation</option>
-                      <option>Baptism</option>
-                      <option>Holiday party</option>
-                      <option>Awarding ceremony</option>
-                      <option>Product launch</option>
-                      <option>Anniversary</option>
-                      <option>Other</option>
-                    </select>
-                  </div>
-                  <div class="field"><label for="bookingNotes">Theme, layout, or event notes</label><textarea id="bookingNotes" name="notes" placeholder="Share your theme, color scheme, venue notes, ingress rules, or custom request."></textarea></div>
-                </div>
 
-                <div class="quote-summary" id="quoteSummary" aria-live="polite">
-                  <h4>Estimated total</h4>
-                  <ul id="quoteSummaryList">
-                    <li><span>Package</span><strong>Select a package</strong></li>
-                    <li><span>Standard coverage</span><strong>3 hours</strong></li>
-                    <li><span>Extra hours</span><strong>PHP 0</strong></li>
-                  </ul>
-                  <div class="quote-total"><span>Total estimate</span><strong id="quoteTotal">PHP 0</strong></div>
-                </div>
+                  <!-- LIVE QUOTE SUMMARY BLOCK -->
+                  <div class="quote-summary border border-line rounded-xl p-4 bg-title text-white space-y-3 mt-4 hidden" id="quoteSummary" aria-live="polite">
+                    <h4 class="font-bold text-sm border-b border-white/15 pb-2">Estimated Total</h4>
+                    <ul class="space-y-1 text-xs" id="quoteSummaryList">
+                      <!-- Populated via JS calculations -->
+                    </ul>
+                    <div class="quote-total flex justify-between items-baseline pt-2 border-t border-white/15 font-bold">
+                      <span class="text-xs">Estimated invoice</span>
+                      <strong class="text-2xl text-yellow" id="quoteTotal">PHP 0</strong>
+                    </div>
+                  </div>
 
-                <div class="flow-step" data-step="6">
-                  <h4>5. Confirm understanding</h4>
-                  <label class="terms-row">
-                    <input id="bookingTerms" type="checkbox" required />
-                    <span>I have read and understood the service area, reservation, cancellation, setup, and extra-hour policies above.</span>
-                  </label>
-                  <div class="booking-note">Payments may be made through GCash, bank transfer, or cash. Remaining balance is payable before or on event day unless otherwise agreed in writing.</div>
-                </div>
-                <div class="wizard-actions" id="bookingWizardActions">
-                  <button class="btn secondary prev-step" type="button" id="bookingPrevStep">Back</button>
-                  <button class="btn next-step" type="button" id="bookingNextStep">Next</button>
-                  <button class="btn submit-booking" type="submit" id="bookingSubmit">Send booking request</button>
-                </div>
-                <div class="booking-message" id="bookingMessage" aria-live="polite"></div>
-              </form>
+                  <!-- Wizard Actions -->
+                  <div class="wizard-actions flex gap-3 pt-4" id="bookingWizardActions">
+                    <button class="btn-animation w-1/3 border border-line hover:bg-grey py-3 rounded-full font-extrabold text-sm text-title" type="button" id="bookingPrevStep">Back</button>
+                    <button class="btn-animation w-2/3 bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm" type="button" id="bookingNextStep">Next</button>
+                    <button class="btn-animation w-2/3 bg-green hover:bg-green-600 text-white font-extrabold py-3 rounded-full text-sm hidden" type="submit" id="bookingSubmit">Send Booking Request</button>
+                  </div>
+
+                  <div class="booking-message text-center text-xs font-extrabold mt-3" id="bookingMessage"></div>
+
+                </form>
+            </div><!-- end form body -->
+          </div><!-- end wizard shell -->
+            </div><!-- end main wizard column -->
+
+            <!-- Right sidebar: Application progress + condensed info -->
+            <div class="space-y-6 lg:col-span-1 lg:order-2">
+              <!-- Application Progress -->
+              <div class="bg-white border border-line rounded-2xl p-6">
+                <h3 class="text-title font-bold text-sm uppercase tracking-wider mb-4">Application Progress</h3>
+                <div id="bookingProgressList"><!-- rendered by JS, see renderBookingProgress() --></div>
+              </div>
+
+              <!-- What to expect (condensed) -->
+              <div class="bg-grey border border-line rounded-2xl p-6 space-y-3">
+                <h3 class="text-title font-bold text-sm">What to expect</h3>
+                <ul class="space-y-2.5 text-xs">
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-location-dot text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body"><strong class="text-title">Metro Manila only</strong> — no bookings outside service area.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-clock text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body"><strong class="text-title">3 hrs standard</strong>, overtime available.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-peso-sign text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body"><strong class="text-title">50% deposit</strong> required, non-refundable.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-envelope text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body">Confirmations from <a href="mailto:notification@studiophotuna.com" class="text-title font-bold hover:text-purple">notification@studiophotuna.com</a></span></li>
+                </ul>
+              </div>
+
+              <!-- Quick FAQ -->
+              <div class="bg-white border border-line rounded-2xl p-6 space-y-3">
+                <h3 class="text-title font-bold text-sm">Quick FAQ</h3>
+                <ul class="space-y-2.5 text-xs text-body">
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i><span><strong>Does this confirm my slot?</strong> Only after your 50% deposit is verified.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i><span><strong>When do you arrive?</strong> 1–2 hours before your event start.</span></li>
+                </ul>
+                <p class="text-xs text-center pt-2 border-t border-line">Have a question? <a href="#" onclick="navigateTo('help-support'); return false;" class="text-purple font-bold hover:underline">Contact support</a></p>
+              </div>
+            </div>
+          </div><!-- end grid -->
+        </div>
+      </div>
+
+    </main>
+
+    <footer class="py-16 px-6 bg-white">
+      <div class="max-w-7xl mx-auto">
+        <div class="bg-grey rounded-3xl p-8 md:p-14">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+            <div class="space-y-4">
+              <img src="logo-dark.png" alt="Studio Photuna" class="h-10 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x40/111827/ffffff?text=Studio+Photuna'" />
+              <p class="text-sm text-body font-medium">Studio Photuna is photo booth business software that helps operators launch, run, and grow a Korean-style photobooth business — from event setup to guest delivery — on hardware they already own.</p>
+
+              <!-- Only Facebook, Instagram, and TikTok -->
+              <div class="socials flex gap-3">
+                <a href="https://www.facebook.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@studio.photuna" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+              </div>
+            </div>
+            <div>
+              <h4 class="font-bold text-title text-xs uppercase tracking-wider mb-4">Company</h4>
+              <nav class="flex flex-col gap-2.5 text-sm">
+                <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-brand">Home</a>
+                <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-brand">Book an Event</a>
+                <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand">Features</a>
+                <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand">Pricing</a>
+              </nav>
+            </div>
+            <div>
+              <h4 class="font-bold text-title text-xs uppercase tracking-wider mb-4">Product</h4>
+              <nav class="flex flex-col gap-2.5 text-sm font-medium">
+                <a href="#" onclick="navigateTo('account'); return false;" class="hover:text-brand">My Account</a>
+                <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-brand">Download the App</a>
+                <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-brand">Help & Support</a>
+              </nav>
+            </div>
+            <div>
+              <h4 class="font-bold text-title text-xs uppercase tracking-wider mb-4">Legal</h4>
+              <nav class="flex flex-col gap-2.5 text-sm">
+                <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand">Terms of Service</a>
+                <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand">Privacy Policy</a>
+                <a href="#" onclick="navigateTo('refund-policy'); return false;" class="hover:text-brand">Refund Policy</a>
+                <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="hover:text-brand">Cookie Policy</a>
+                <a href="#" onclick="navigateTo('data-processing'); return false;" class="hover:text-brand">Data Processing</a>
+              </nav>
             </div>
           </div>
         </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div class="container">Copyright Studio Photuna. All rights reserved.</div>
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-8 text-xs text-muted font-bold tracking-tight">
+          <span>Copyright © 2026 Studio Photuna. All rights reserved.</span>
+          <div class="flex items-center gap-5">
+            <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand">Privacy Policy</a>
+            <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand">Terms of Service</a>
+          </div>
+        </div>
+      </div>
     </footer>
 
-    <script>
-      const SUPABASE_URL = "https://elthktbvojsmvhtxxqnz.supabase.co";
-      const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVsdGhrdGJ2b2pzbXZodHh4cW56Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NzYzMjUsImV4cCI6MjA5MDI1MjMyNX0.5QrzeI0WKJclFLHEBgZH7WxsHPdKBJmdEtpqlyXg9PQ";
-      const supabaseClient = window.supabase?.createClient ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="deleteAccountModal" aria-hidden="true">
+      <div class="w-full max-w-md bg-white border border-line rounded-3xl p-8 shadow-luxe" role="dialog" aria-modal="true" aria-labelledby="deleteAccountTitle">
+        <div class="flex items-start justify-between border-b border-line pb-4 mb-4">
+          <div>
+            <h2 id="deleteAccountTitle" class="text-2xl font-black text-red-700">Delete your account?</h2>
+            <p class="text-xs text-muted mt-1">This is permanent. There is no recovery period.</p>
+          </div>
+          <button class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey" type="button" aria-label="Close" onclick="closeDeleteAccountModal()">&times;</button>
+        </div>
+        <p class="text-sm text-body mb-4">Type <strong class="text-red-700 font-mono">DELETE</strong> to confirm you understand your profile, subscription, galleries, and support tickets will be permanently removed.</p>
+        <input id="deleteAccountConfirmInput" type="text" placeholder="Type DELETE" autocomplete="off" class="w-full border border-line rounded-xl px-4 py-3 text-sm outline-none focus:border-red-500 mb-4" />
+        <button id="deleteAccountConfirmBtn" onclick="confirmDeleteAccount()" disabled class="btn-animation w-full bg-red-600 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors">
+          Permanently Delete My Account
+        </button>
+        <p class="text-center text-xs font-bold mt-3" id="deleteAccountMessage"></p>
+      </div>
+    </div>
 
-      const eventBookingForm = document.getElementById("eventBookingForm");
-      const bookingDate = document.getElementById("bookingDate");
-      const bookingDateDisplay = document.getElementById("bookingDateDisplay");
-      const bookingTime = document.getElementById("bookingTime");
-      const bookingPhone = document.getElementById("bookingPhone");
-      const bookingPackage = document.getElementById("bookingPackage");
-      const bookingExtraHours = document.getElementById("bookingExtraHours");
-      const bookingGuests = document.getElementById("bookingGuests");
-      const bookingVenueCity = document.getElementById("bookingVenueCity");
-      const bookingVenueName = document.getElementById("bookingVenueName");
-      const bookingVenueAddress = document.getElementById("bookingVenueAddress");
-      const bookingMapsLink = document.getElementById("bookingMapsLink");
-      const packageBreakdown = document.getElementById("packageBreakdown");
-      const quoteSummaryList = document.getElementById("quoteSummaryList");
-      const quoteTotal = document.getElementById("quoteTotal");
-      const bookingWizardProgress = document.getElementById("bookingWizardProgress");
-      const bookingWizardActions = document.getElementById("bookingWizardActions");
-      const bookingPrevStep = document.getElementById("bookingPrevStep");
-      const bookingNextStep = document.getElementById("bookingNextStep");
-      const bookingMessage = document.getElementById("bookingMessage");
-      const bookingCalendar = document.getElementById("bookingCalendar");
-      const bookingCalendarMonth = document.getElementById("bookingCalendarMonth");
-      const calendarPrev = document.getElementById("calendarPrev");
-      const calendarNext = document.getElementById("calendarNext");
-      const availabilityStatus = document.getElementById("availabilityStatus");
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="authModal" aria-hidden="true">
+      <div class="auth-modal w-full max-w-md bg-white border border-line rounded-3xl p-8 shadow-luxe" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <div class="auth-head flex items-start justify-between border-b border-line pb-4 mb-4">
+          <div>
+            <h2 id="authTitle" class="text-2xl font-black text-title">Access Studio Photuna</h2>
+            <p class="text-xs text-muted mt-1">Login or create your free trial workspace.</p>
+          </div>
+          <button class="modal-close w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey" type="button" id="authClose" aria-label="Close" onclick="closeAuthModal()">&times;</button>
+        </div>
+        <div class="auth-tabs grid grid-cols-2 bg-grey p-1 rounded-full mb-6 border border-line">
+          <button class="auth-tab active py-2 rounded-full text-xs font-black" type="button" data-auth-tab="login" onclick="setAuthMode('login')">Login</button>
+          <button class="auth-tab py-2 rounded-full text-xs font-black text-muted" type="button" data-auth-tab="signup" onclick="setAuthMode('signup')">Sign up</button>
+        </div>
+        <form class="auth-form space-y-4" id="authForm">
+          <input id="authName" name="name" type="text" placeholder="Full name" autocomplete="name" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none hidden" />
+          <input id="authEmail" name="email" type="email" placeholder="Email address" autocomplete="email" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+          <input id="authPassword" name="password" type="password" placeholder="Password" autocomplete="current-password" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+          <label id="authConsent" class="hidden flex items-start gap-2 text-xs text-body cursor-pointer">
+            <input type="checkbox" id="consentCheck" class="mt-0.5 accent-[#0c66e4]" />
+            <span>I agree to the <a href="#" onclick="navigateTo('operator-agreement'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Terms of Service</a> and <a href="#" onclick="navigateTo('privacy-framework'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Privacy Policy</a>, including the processing of my personal data in accordance with the Data Privacy Act of 2012 (RA 10173).</span>
+          </label>
+          <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors shadow-sm" type="submit" id="authSubmit">Login</button>
+          <p class="auth-message text-center text-xs font-bold" id="authMessage"></p>
+        </form>
+      </div>
+    </div>
 
-      const packageCatalog = {
-        "high-angle": {
-          name: "High Angle Photobooth",
-          price: 20000,
-          extraRate: 1500,
-          coverage: "3 hours",
-          included: [
-            "High-angle photobooth setup",
-            "Customized digital layout",
-            "Soft panel lighting",
-            "Digital copies",
-            "On-site attendant",
-            "Metro Manila transport coverage"
-          ]
-        },
-        "phone-booth": {
-          name: "Phone Booth",
-          price: 4500,
-          extraRate: 500,
-          coverage: "3 hours",
-          included: [
-            "Phone booth video and audio recording",
-            "Guest message experience",
-            "Basic design support",
-            "Props and guest book support",
-            "Metro Manila transport coverage"
-          ]
-        }
-      };
+    <!-- Manual GCash QR Payment Modal (bridge solution until PayMongo/Stripe go live) -->
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="gcashModal" aria-hidden="true">
+      <div class="w-full max-w-2xl bg-white border border-line rounded-3xl shadow-luxe overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="gcashTitle">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-8 py-5 border-b border-line">
+          <div>
+            <h2 id="gcashTitle" class="text-xl font-black text-title">Pay via GCash</h2>
+            <p class="text-xs text-muted mt-0.5">We'll verify and activate your plan manually — usually within a day.</p>
+          </div>
+          <button class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey text-lg" type="button" aria-label="Close" onclick="closeGcashModal()">&times;</button>
+        </div>
 
-      let visibleBookingMonth = new Date();
-      let unavailableBookingDates = new Set();
-      let selectedBookingDate = "";
-      let currentBookingStep = 0;
-      const totalBookingSteps = 7;
+        <!-- 2-column body -->
+        <div class="grid grid-cols-1 sm:grid-cols-2">
+          <!-- Left: QR + plan info -->
+          <div class="flex flex-col items-center justify-center gap-4 p-8 bg-grey border-r border-line">
+            <div class="rounded-2xl border border-line p-3 bg-white shadow-sm">
+              <img src="gcash-qr.png" alt="GCash QR" class="w-44 h-44 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f4f5f8/5f6678?text=gcash-qr.png'" />
+            </div>
 
-      function getFormValue(formData, key) {
-        return String(formData.get(key) || "").trim();
-      }
+            <div class="flex gap-2 bg-white p-1 rounded-full border border-line">
+              <button type="button" data-gcash-billing="monthly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('monthly')">Monthly</button>
+              <button type="button" data-gcash-billing="yearly" class="gcash-billing-toggle px-4 py-1.5 rounded-full text-xs font-black transition-colors" onclick="setGcashModalBilling('yearly')">Yearly</button>
+            </div>
 
-      function toDateKey(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, "0");
-        const day = String(date.getDate()).padStart(2, "0");
-        return `${year}-${month}-${day}`;
-      }
+            <div class="text-center space-y-1">
+              <p class="text-lg font-black text-title" id="gcashAmountDue">₱0.00</p>
+              <p class="text-[11px] text-muted leading-snug">Scan QR in GCash app, send the exact amount, then fill the form.</p>
+            </div>
+          </div>
 
-      function parseDateKey(dateKey) {
-        const [year, month, day] = dateKey.split("-").map(Number);
-        return new Date(year, month - 1, day);
-      }
+          <!-- Right: proof form -->
+          <form class="flex flex-col gap-4 p-8" id="gcashProofForm">
+            <p class="text-xs font-extrabold text-title uppercase tracking-wider">Payment Details</p>
+            <input id="gcashSenderName" type="text" placeholder="GCash account name" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+            <input id="gcashReferenceNumber" type="text" placeholder="Reference number (13 characters)" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required minlength="6" />
+            <div>
+              <label for="gcashScreenshot" class="block text-xs font-bold text-title mb-2">Receipt screenshot <span class="text-red-500">*</span></label>
+              <input id="gcashScreenshot" type="file" accept="image/png,image/jpeg,image/webp" class="w-full border border-line rounded-xl px-4 py-3 text-sm" required />
+            </div>
+            <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase shadow-sm" type="submit" id="gcashSubmitBtn">Submit Proof</button>
+            <p class="text-center text-xs font-bold" id="gcashMessage"></p>
+          </form>
+        </div>
+      </div>
+    </div>
 
-      function formatPeso(value) {
-        return `PHP ${Number(value || 0).toLocaleString("en-PH")}`;
-      }
+    <!-- Cookie Consent Banner -->
+    <div id="cookieConsentBanner" class="fixed bottom-0 left-0 right-0 z-40 hidden">
+      <div class="max-w-5xl mx-auto p-4">
+        <div class="bg-white border border-line rounded-2xl shadow-luxe p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div class="flex-1 text-sm text-body font-medium">
+            We use cookies to enhance your experience. By continuing to use our site, you consent to our use of cookies. Read our <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="text-purple font-bold hover:underline">Cookie Policy</a> for details.
+          </div>
+          <div class="flex items-center gap-3 shrink-0">
+            <button onclick="acceptAllCookies()" class="btn-animation bg-purple hover:bg-purple-dark text-white font-bold px-5 py-2.5 rounded-full text-xs uppercase tracking-wider">Accept All</button>
+            <button onclick="acceptEssentialCookies()" class="btn-animation border border-line hover:bg-grey text-title font-bold px-5 py-2.5 rounded-full text-xs uppercase tracking-wider">Essential Only</button>
+            <a href="#" onclick="navigateTo('cookie-policy'); hideCookieBanner(); return false;" class="text-xs text-purple font-bold hover:underline whitespace-nowrap">Cookie Settings</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      function formatDisplayDate(dateKey) {
-        if (!dateKey) return "";
-        return parseDateKey(dateKey).toLocaleDateString("en-PH", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-          weekday: "long"
-        });
-      }
+    <script src="app.js"></script>
 
-      function selectedPackage() {
-        return packageCatalog[bookingPackage?.value] || null;
-      }
-
-      function selectedExtraHours() {
-        return Math.min(3, Math.max(0, Number(bookingExtraHours?.value || 0)));
-      }
-
-      function calculateQuote() {
-        const pkg = selectedPackage();
-        const extraHours = selectedExtraHours();
-        const basePrice = pkg?.price || 0;
-        const extraTotal = pkg ? extraHours * pkg.extraRate : 0;
-        const total = basePrice + extraTotal;
-        return { pkg, extraHours, basePrice, extraTotal, total };
-      }
-
-      function renderQuote() {
-        const { pkg, extraHours, basePrice, extraTotal, total } = calculateQuote();
-        if (packageBreakdown) {
-          if (!pkg) {
-            packageBreakdown.innerHTML = `
-              <h4>Select a package to see what is included</h4>
-              <p>Package inclusions and total estimate will appear here.</p>
-            `;
-          } else {
-            packageBreakdown.innerHTML = `
-              <h4>${pkg.name}</h4>
-              <p>${pkg.coverage} standard coverage. Extra hours are optional and limited to 3 hours.</p>
-              <ul>
-                ${pkg.included.map((item) => `<li><span>${item}</span></li>`).join("")}
-              </ul>
-            `;
-          }
-        }
-        if (quoteSummaryList) {
-          quoteSummaryList.innerHTML = `
-            <li><span>Package</span><strong>${pkg ? `${pkg.name} - ${formatPeso(basePrice)}` : "Select a package"}</strong></li>
-            <li><span>Standard coverage</span><strong>3 hours</strong></li>
-            <li><span>Extra hours</span><strong>${extraHours} hour${extraHours === 1 ? "" : "s"} - ${formatPeso(extraTotal)}</strong></li>
-            <li><span>Reservation fee</span><strong>${pkg ? `${formatPeso(total / 2)} estimate` : "50% of total"}</strong></li>
-          `;
-        }
-        if (quoteTotal) quoteTotal.textContent = formatPeso(total);
-      }
-
-      function setSelectedDate(dateKey) {
-        selectedBookingDate = dateKey;
-        bookingDate.value = dateKey;
-        bookingDateDisplay.value = formatDisplayDate(dateKey);
-      }
-
-      function isValidPhilippinePhone(value) {
-        return /^(\+639|09)\d{9}$/.test(String(value || "").trim());
-      }
-
-      function setBookingMessage(message, isError = true) {
-        bookingMessage.textContent = message || "";
-        bookingMessage.style.color = isError ? "var(--red)" : "var(--body)";
-      }
-
-      function buildWizardProgress() {
-        if (!bookingWizardProgress) return;
-        bookingWizardProgress.innerHTML = "";
-        for (let index = 0; index < totalBookingSteps; index += 1) {
-          const dot = document.createElement("span");
-          dot.className = "wizard-dot";
-          dot.setAttribute("aria-hidden", "true");
-          bookingWizardProgress.appendChild(dot);
-        }
-      }
-
-      function showBookingStep(step) {
-        currentBookingStep = Math.min(totalBookingSteps - 1, Math.max(0, step));
-        document.querySelectorAll(".flow-step[data-step]").forEach((element) => {
-          element.classList.toggle("active", Number(element.dataset.step) === currentBookingStep);
-        });
-        document.querySelectorAll(".wizard-dot").forEach((dot, index) => {
-          dot.classList.toggle("active", index <= currentBookingStep);
-        });
-        if (bookingPrevStep) bookingPrevStep.disabled = currentBookingStep === 0;
-        if (bookingWizardActions) bookingWizardActions.classList.toggle("final-step", currentBookingStep === totalBookingSteps - 1);
-        const showQuote = currentBookingStep >= 3 && currentBookingStep <= totalBookingSteps - 1;
-        document.getElementById("quoteSummary")?.classList.toggle("active", showQuote);
-        setBookingMessage("");
-      }
-
-      function validateCurrentStep() {
-        if (currentBookingStep === 2 && !selectedBookingDate) {
-          setBookingMessage("Please choose your event date from the availability calendar.");
-          return false;
-        }
-        if (currentBookingStep === 3 && !selectedPackage()) {
-          setBookingMessage("Please select an available package.");
-          bookingPackage.focus();
-          return false;
-        }
-        if (currentBookingStep === 4) {
-          if (!bookingDate.value) {
-            setBookingMessage("Please choose your event date from the availability calendar.");
-            return false;
-          }
-          if (
-            !bookingTime.reportValidity()
-            || !bookingVenueCity.reportValidity()
-            || !bookingVenueName.reportValidity()
-            || !bookingVenueAddress.reportValidity()
-            || !bookingMapsLink.reportValidity()
-          ) return false;
-        }
-        if (currentBookingStep === 5) {
-          const fields = [
-            document.getElementById("bookingName"),
-            bookingPhone,
-            document.getElementById("bookingEmail"),
-            bookingGuests,
-            document.getElementById("bookingType")
-          ];
-          if (!fields.every((field) => field.reportValidity())) return false;
-          if (!isValidPhilippinePhone(bookingPhone.value)) {
-            setBookingMessage("Please enter a valid Philippine mobile number starting with 09 or +639.");
-            bookingPhone.focus();
-            return false;
-          }
-          const guestCount = Number(bookingGuests.value);
-          if (!Number.isFinite(guestCount) || guestCount < 20 || guestCount > 500) {
-            setBookingMessage("Please enter an estimated guest count between 20 and 500.");
-            bookingGuests.focus();
-            return false;
-          }
-        }
-        return true;
-      }
-
-      function isPastDate(dateKey) {
-        const today = parseDateKey(toDateKey(new Date()));
-        return parseDateKey(dateKey) < today;
-      }
-
-      function renderBookingCalendar() {
-        const monthStart = new Date(visibleBookingMonth.getFullYear(), visibleBookingMonth.getMonth(), 1);
-        const monthEnd = new Date(visibleBookingMonth.getFullYear(), visibleBookingMonth.getMonth() + 1, 0);
-        bookingCalendarMonth.textContent = new Intl.DateTimeFormat("en", { month: "long", year: "numeric" }).format(monthStart);
-        bookingCalendar.innerHTML = "";
-
-        for (let i = 0; i < monthStart.getDay(); i += 1) {
-          const empty = document.createElement("span");
-          empty.className = "calendar-day empty";
-          bookingCalendar.appendChild(empty);
-        }
-
-        for (let day = 1; day <= monthEnd.getDate(); day += 1) {
-          const date = new Date(monthStart.getFullYear(), monthStart.getMonth(), day);
-          const dateKey = toDateKey(date);
-          const blocked = unavailableBookingDates.has(dateKey);
-          const past = isPastDate(dateKey);
-          const button = document.createElement("button");
-          button.type = "button";
-          button.className = "calendar-day";
-          button.textContent = String(day);
-          if (blocked) {
-            button.classList.add("unavailable");
-            button.title = "Reserved after confirmation and 50% reservation payment";
-            button.disabled = true;
-          }
-          if (past) {
-            button.classList.add("past");
-            button.disabled = true;
-          }
-          if (dateKey === selectedBookingDate || dateKey === bookingDate.value) {
-            button.classList.add("selected");
-          }
-          button.addEventListener("click", () => {
-            setSelectedDate(dateKey);
-            renderBookingCalendar();
-          });
-          bookingCalendar.appendChild(button);
-        }
-      }
-
-      async function loadBookingAvailability() {
-        if (!supabaseClient) {
-          availabilityStatus.textContent = "Availability is loading. Please refresh if it does not appear.";
-          return;
-        }
-
-        const start = toDateKey(new Date());
-        const endDate = new Date();
-        endDate.setMonth(endDate.getMonth() + 12);
-        const end = toDateKey(endDate);
-
-        try {
-          const { data, error } = await supabaseClient
-            .from("booking_calendar_days")
-            .select("event_date,status")
-            .gte("event_date", start)
-            .lte("event_date", end);
-          if (error) throw error;
-          unavailableBookingDates = new Set((data || []).map((row) => row.event_date));
-          availabilityStatus.textContent = "Unavailable dates already have confirmed bookings with the 50% reservation fee recorded.";
-          renderBookingCalendar();
-        } catch (error) {
-          availabilityStatus.textContent = "Availability could not be loaded. Please refresh or contact Studio Photuna.";
-          console.warn("Booking availability unavailable", error);
-        }
-      }
-
-      async function submitBookingRequest(event) {
-        event.preventDefault();
-        const form = event.currentTarget;
-        if (!form.reportValidity()) return;
-        if (!supabaseClient) {
-          setBookingMessage("Booking requests are unavailable right now. Please refresh and try again.");
-          return;
-        }
-
-        const formData = new FormData(form);
-        const requestedDate = getFormValue(formData, "date");
-        if (!requestedDate || requestedDate !== selectedBookingDate) {
-          setBookingMessage("Please choose your event date from the availability calendar.");
-          bookingDateDisplay.focus();
-          return;
-        }
-        if (unavailableBookingDates.has(requestedDate)) {
-          setBookingMessage("That date is already reserved. Please choose another available date.");
-          return;
-        }
-
-        const phone = getFormValue(formData, "phone");
-        if (!isValidPhilippinePhone(phone)) {
-          setBookingMessage("Please enter a valid Philippine mobile number starting with 09 or +639.");
-          bookingPhone.focus();
-          return;
-        }
-
-        const guestCount = Number(getFormValue(formData, "guests"));
-        if (!Number.isFinite(guestCount) || guestCount < 20 || guestCount > 500) {
-          setBookingMessage("Please enter an estimated guest count between 20 and 500.");
-          bookingGuests.focus();
-          return;
-        }
-
-        const { pkg, extraHours, basePrice, extraTotal, total } = calculateQuote();
-        if (!pkg) {
-          setBookingMessage("Please select an available package.");
-          bookingPackage.focus();
-          return;
-        }
-
-        const venueCity = getFormValue(formData, "venueCity");
-        const venueName = getFormValue(formData, "venueName");
-        const venueAddress = getFormValue(formData, "venueAddress");
-        const mapsLink = getFormValue(formData, "mapsLink");
-        if (!venueCity) {
-          setBookingMessage("Please select the Metro Manila city for the event.");
-          bookingVenueCity.focus();
-          return;
-        }
-        if (!venueName) {
-          setBookingMessage("Please enter the venue name.");
-          bookingVenueName.focus();
-          return;
-        }
-        if (!venueAddress) {
-          setBookingMessage("Please enter the full venue address.");
-          bookingVenueAddress.focus();
-          return;
-        }
-
-        const submitButton = form.querySelector('button[type="submit"]');
-        submitButton.disabled = true;
-        setBookingMessage("Submitting your booking request...", false);
-
-        const rawNotes = getFormValue(formData, "notes");
-        const quoteNotes = [
-          rawNotes,
-          "",
-          "Quote estimate:",
-          `Package: ${pkg.name}`,
-          `Base price: ${formatPeso(basePrice)}`,
-          `Standard coverage: ${pkg.coverage}`,
-          `Extra hours: ${extraHours}`,
-          `Extra hour total: ${formatPeso(extraTotal)}`,
-          `Estimated total: ${formatPeso(total)}`,
-          `Estimated 50% reservation fee: ${formatPeso(total / 2)}`,
-          `Metro Manila city: ${venueCity}`,
-          `Venue: ${venueName}`,
-          `Address: ${venueAddress}`,
-          mapsLink ? `Google Maps link: ${mapsLink}` : ""
-        ].filter(Boolean).join("\n");
-
-        const payload = {
-          full_name: getFormValue(formData, "name"),
-          contact_number: phone,
-          email: getFormValue(formData, "email") || null,
-          package_name: pkg.name,
-          package_price: basePrice,
-          extra_hours: extraHours,
-          extra_hour_rate: pkg.extraRate,
-          extra_hours_total: extraTotal,
-          estimated_total: total,
-          event_date: requestedDate,
-          start_time: getFormValue(formData, "time"),
-          event_type: getFormValue(formData, "eventType"),
-          estimated_guests: guestCount,
-          venue_location: `${venueName}, ${venueAddress}, ${venueCity}, Metro Manila${mapsLink ? ` | Maps: ${mapsLink}` : ""}`,
-          notes: quoteNotes,
-          service_area: "Metro Manila",
-          status: "pending",
-          reservation_status: "unpaid"
-        };
-
-        try {
-          let { error } = await supabaseClient.from("event_bookings").insert(payload);
-          if (error && /package_price|extra_hours|extra_hour_rate|extra_hours_total|estimated_total/i.test(error.message || "")) {
-            const legacyPayload = { ...payload };
-            delete legacyPayload.package_price;
-            delete legacyPayload.extra_hours;
-            delete legacyPayload.extra_hour_rate;
-            delete legacyPayload.extra_hours_total;
-            delete legacyPayload.estimated_total;
-            ({ error } = await supabaseClient.from("event_bookings").insert(legacyPayload));
-          }
-          if (error) throw error;
-          form.reset();
-          selectedBookingDate = "";
-          bookingDate.value = "";
-          bookingDateDisplay.value = "";
-          bookingTime.value = "08:00";
-          renderQuote();
-          renderBookingCalendar();
-          showBookingStep(0);
-          bookingMessage.textContent = "Booking request received. Studio Photuna will contact you with availability, quotation, and reservation steps.";
-          bookingMessage.style.color = "var(--green)";
-        } catch (error) {
-          setBookingMessage(error.message || "Booking request could not be submitted. Please try again.");
-          console.warn("Booking request failed", error);
-        } finally {
-          submitButton.disabled = false;
-        }
-      }
-
-      bookingTime.value = bookingTime.value || "08:00";
-      buildWizardProgress();
-      showBookingStep(0);
-      renderQuote();
-      renderBookingCalendar();
-      loadBookingAvailability();
-
-      calendarPrev.addEventListener("click", () => {
-        visibleBookingMonth = new Date(visibleBookingMonth.getFullYear(), visibleBookingMonth.getMonth() - 1, 1);
-        renderBookingCalendar();
-      });
-
-      calendarNext.addEventListener("click", () => {
-        visibleBookingMonth = new Date(visibleBookingMonth.getFullYear(), visibleBookingMonth.getMonth() + 1, 1);
-        renderBookingCalendar();
-      });
-
-      bookingPackage.addEventListener("change", renderQuote);
-      bookingExtraHours.addEventListener("change", renderQuote);
-      bookingPrevStep.addEventListener("click", () => showBookingStep(currentBookingStep - 1));
-      bookingNextStep.addEventListener("click", () => {
-        if (!validateCurrentStep()) return;
-        showBookingStep(currentBookingStep + 1);
-      });
-      bookingPhone.addEventListener("input", () => {
-        bookingPhone.setCustomValidity(isValidPhilippinePhone(bookingPhone.value) || !bookingPhone.value ? "" : "Enter a valid Philippine mobile number starting with 09 or +639.");
-      });
-      eventBookingForm.addEventListener("submit", submitBookingRequest);
-
-      if (supabaseClient) {
-        supabaseClient
-          .channel("public-booking-calendar")
-          .on("postgres_changes", { event: "*", schema: "public", table: "booking_calendar_days" }, () => loadBookingAvailability())
-          .subscribe();
-      }
+    <!--Start of Tawk.to Live Chat Script-->
+    <!--
+      HOW TO SET UP:
+      1. Go to https://www.tawk.to and create a free account
+      2. Add your site (studiophotuna.com) as a new property
+      3. Copy your Property ID and Widget ID from:
+         Dashboard > Administration > Channels > Chat Widget
+      4. Replace YOUR_TAWK_PROPERTY_ID and YOUR_TAWK_WIDGET_ID below
+      5. Customize the widget color to match your brand (#6C47FF) in the Tawk.to dashboard
+    -->
+    <script type="text/javascript">
+      var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+      (function(){
+        var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = 'https://embed.tawk.to/YOUR_TAWK_PROPERTY_ID/YOUR_TAWK_WIDGET_ID';
+        s1.charset = 'UTF-8';
+        s1.setAttribute('crossorigin','*');
+        s0.parentNode.insertBefore(s1, s0);
+      })();
     </script>
+    <!--End of Tawk.to Live Chat Script-->
+
   </body>
 </html>

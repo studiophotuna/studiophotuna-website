@@ -1,0 +1,172 @@
+    <link rel="icon" type="image/png" href="./favicon.png" />
+    <link rel="apple-touch-icon" href="./favicon.png" />
+    
+    <!-- Tailwind CSS for fluid responsive grids and structures -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Font Awesome for sleek modern iconography -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+      tailwind.config = {
+        safelist: [
+          'bg-green-100','text-green-800','bg-green-600','hover:bg-green-700',
+          'bg-red-100','text-red-700','bg-red-500','hover:bg-red-600',
+          'bg-yellow-100','text-yellow-800',
+          'bg-purple','text-purple','bg-purple/10',
+          'opacity-60','pointer-events-none',
+          'bg-blue-500','hover:bg-blue-600'
+        ],
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+            },
+            colors: {
+              title: '#111827',
+              body: '#5f6678',
+              muted: '#8b92a6',
+              grey: '#f4f5f8',
+              'grey-2': '#eef0f5',
+              line: '#dedfe6',
+              green: {
+                DEFAULT: '#22c55e',
+                50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80',
+                500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d', 950: '#052e16',
+              },
+              purple: '#0c66e4',
+              'purple-dark': '#0a52b8',
+              brand: {
+                DEFAULT: '#0c66e4',
+                50: '#eaf2fe', 100: '#d3e4fd', 200: '#a8c9fb', 300: '#7aadf7', 400: '#3d89ef',
+                500: '#0c66e4', 600: '#0a52b8', 700: '#083e8c', 800: '#062b61', 900: '#041b3d', 950: '#020f22',
+              },
+              yellow: {
+                DEFAULT: '#f7d54a',
+                50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15',
+                500: '#eab308', 600: '#ca8a04', 700: '#a16207', 800: '#854d0e', 900: '#713f12', 950: '#422006',
+              },
+              white: '#ffffff',
+            },
+            boxShadow: {
+              'luxe': '0 30px 90px rgba(17, 24, 39, 0.12)',
+            }
+          }
+        }
+      }
+    </script>
+
+    <style>
+      :root {
+        --title: #111827;
+        --body: #5f6678;
+        --muted: #8b92a6;
+        --grey: #f4f5f8;
+        --line: #dedfe6;
+        --purple: #0c66e4;
+        --purple-dark: #0a52b8;
+        --brand: #0c66e4;
+        --brand-dark: #0a52b8;
+        --white: #ffffff;
+        --shadow: 0 30px 90px rgba(17, 24, 39, 0.12);
+      }
+
+      /* Section H2 spec: 3.75rem / font-weight 600 at desktop, scaled down
+         responsively for smaller viewports. */
+      .h2-display {
+        font-weight: 600;
+        font-size: 1.875rem;
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+      }
+      @media (min-width: 640px) { .h2-display { font-size: 2.25rem; } }
+      @media (min-width: 768px) { .h2-display { font-size: 3rem; } }
+      @media (min-width: 1024px) { .h2-display { font-size: 3.75rem; } }
+
+      .btn-animation {
+        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .btn-animation:hover {
+        transform: translateY(-2px);
+      }
+      .btn-animation:active {
+        transform: translateY(0);
+      }
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #f4f5f8;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #dedfe6;
+        border-radius: 999px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #0c66e4;
+      }
+      .reveal {
+        opacity: 0;
+        transform: translateY(26px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+      }
+      .reveal.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      /* Staggered fade-in for feature cards */
+      .feature-card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+      .feature-card.in-view {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      /* Smooth section separator gradient */
+      .section-glow {
+        position: relative;
+      }
+      .section-glow::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #0c66e4, transparent);
+        border-radius: 999px;
+      }
+      /* Smooth hover lift for cards */
+      .hover-lift {
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 60px rgba(17, 24, 39, 0.1);
+      }
+      /* Pulse glow for CTAs */
+      @keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(111, 77, 255, 0.3); }
+        50% { box-shadow: 0 0 0 8px rgba(111, 77, 255, 0); }
+      }
+      .cta-glow {
+        animation: pulse-glow 3s ease-in-out infinite;
+      }
+      /* Booth screen transitions */
+      .booth-screen {
+        transition: opacity 0.3s ease;
+      }
+      .booth-screen.active {
+        opacity: 1;
+      }
+      .booth-screen.hidden {
+        opacity: 0;
+      }
+    </style>
