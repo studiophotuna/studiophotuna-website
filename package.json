@@ -1,0 +1,9 @@
+{
+  "name": "studiophotuna-website",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Studio Photuna marketing + app pages, built from shared partials into plain static HTML.",
+  "scripts": {
+    "build": "node scripts/build-pages.js"
+  }
+}

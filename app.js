@@ -73,7 +73,9 @@ const adminTabButtons = document.querySelectorAll("[data-admin-tab]");
 const googleReviewsList = document.getElementById("googleReviewsList");
 
 // Application State Variables
-let currentView = 'home';
+// Set by each page's <body data-view="..."> so shared app.js knows which
+// page it's running on -- every page ships this same script.
+const CURRENT_VIEW = document.body.dataset.view || 'home';
 let authMode = "login";
 let currentProfile = null;
 let currentLicense = null;
@@ -141,18 +143,40 @@ const ACTIVE_PAYMENT_MODE = "manual_gcash";
 // Navigation, Auth UI, Billing, Account
 // ===================================================================
 
+// Each viewId now lives on its own physical page. ROUTE_MAP is the single
+// source of truth for viewId -> URL; navigateTo() keeps its original name
+// and signature so the ~20+ existing onclick="navigateTo('x')" call sites
+// in the shared header/footer/modal partials don't need to change.
+const ROUTE_MAP = {
+  'home': '/',
+  'book-event': '/book-event',
+  'bookings-admin': '/bookings-admin',
+  'account': '/account',
+  'download': '/download',
+  'help-support': '/help-support',
+  'operator-agreement': '/operator-agreement',
+  'privacy-framework': '/privacy-framework',
+  'refund-policy': '/refund-policy',
+  'cookie-policy': '/cookie-policy',
+  'data-processing': '/data-processing'
+};
+
 function navigateTo(viewId) {
-  currentView = viewId;
-  document.querySelectorAll('main > section.view-container').forEach(el => el.classList.add('hidden'));
-  const activeView = document.getElementById(`view-${viewId}`);
-  if (activeView) activeView.classList.remove('hidden');
-  closeDropdown();
-  document.getElementById("mobile-menu").classList.add("hidden");
+  if (viewId === CURRENT_VIEW) { closeDropdown(); document.getElementById("mobile-menu")?.classList.add("hidden"); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+  const target = ROUTE_MAP[viewId];
+  if (target) window.location.href = target;
+}
+
+function setActiveNav(viewId) {
   document.querySelectorAll('nav a[data-nav], #mobile-menu a[data-nav]').forEach(a => { a.classList.toggle('text-purple', a.dataset.nav === viewId); });
-  if (viewId === 'book-event') { showBookingStep(0); renderBookingCalendar(); loadBookingAvailability(); }
-  else if (viewId === 'bookings-admin') { if (adminMessage) setMessage(adminMessage, "Loading bookings..."); loadBookings(); loadReviewsAdmin(); }
-  else if (viewId === 'account') { loadAccountState(window.currentSupabaseUser); }
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Same-page anchor scroll if we're already on the home page (where
+// #features/#pricing/#faq live); otherwise a real navigation to home
+// with the section as a hash, picked up by the hash-check in window.onload.
+function goToSection(elementId) {
+  if (CURRENT_VIEW === 'home') { scrollAndHighlight(elementId); }
+  else { window.location.href = '/#' + elementId; }
 }
 
 function scrollAndHighlight(elementId) {
@@ -215,34 +239,49 @@ function renderAvatar(container, avatarUrl, name, email) {
   }
 }
 
+// The profile/license fetch feeds the header (avatar, admin badge) on
+// EVERY page, so it always runs here. Writing the fetched data into
+// #view-account's own fields is split out into populateAccountPage,
+// which self-guards since that DOM only exists on account.html.
 async function loadAccountState(user) {
-  if (!user) { document.getElementById('signedOutPanel').classList.remove('hidden'); document.getElementById('accountPanel').classList.add('hidden'); updateAuthUi(null); return; }
-  document.getElementById('signedOutPanel').classList.add('hidden'); document.getElementById('accountPanel').classList.remove('hidden');
-  if (!supabaseClient) return;
-  try {
-    const [{ data: profile }, { data: license }] = await Promise.all([
-      supabaseClient.from("profiles").select("*").eq("id", user.id).maybeSingle(),
-      supabaseClient.from("licenses").select("*").eq("user_id", user.id).maybeSingle()
-    ]);
-    currentProfile = profile; currentLicense = license;
-    document.getElementById("profileName").textContent = profile?.full_name || user.email;
-    document.getElementById("profileMeta").textContent = user.email;
-    renderAvatar(document.getElementById("avatarPreview"), profile?.avatar_url, profile?.full_name, user.email);
-    document.getElementById("accountCompany").textContent = profile?.company || "-";
-    document.getElementById("accountPhone").textContent = profile?.phone || "-";
-    document.getElementById("accountPlan").textContent = formatStatus(license?.plan || profile?.subscription_plan || "free");
-    document.getElementById("accountStatus").textContent = formatStatus(license?.state || "unsubscribed");
-    document.getElementById("accountTrial").textContent = license?.trial_redeemed ? "Yes" : "No";
-    document.getElementById("accountGallery").textContent = (() => {
-      // Show the gallery tier (Free / Plus / Business); fall back to the legacy boolean.
-      const tier = license?.gallery_tier || (license?.gallery_addon ? "plus" : "free");
-      return tier.charAt(0).toUpperCase() + tier.slice(1);
-    })();
-    document.getElementById("profileFullName").value = profile?.full_name || "";
-    document.getElementById("profileCompany").value = profile?.company || "";
-    document.getElementById("profilePhone").value = profile?.phone || "";
-    renderRenewalBanner(license); setBillingPlan(selectedBilling); updateAuthUi(user);
-  } catch (err) { console.warn("Unable to map account details", err); }
+  if (!user) { currentProfile = null; currentLicense = null; updateAuthUi(null); populateAccountPage(user); return; }
+  if (supabaseClient) {
+    try {
+      const [{ data: profile }, { data: license }] = await Promise.all([
+        supabaseClient.from("profiles").select("*").eq("id", user.id).maybeSingle(),
+        supabaseClient.from("licenses").select("*").eq("user_id", user.id).maybeSingle()
+      ]);
+      currentProfile = profile; currentLicense = license;
+    } catch (err) { console.warn("Unable to fetch account/profile data", err); }
+  }
+  updateAuthUi(user);
+  populateAccountPage(user);
+}
+
+function populateAccountPage(user) {
+  const signedOutPanel = document.getElementById('signedOutPanel');
+  const accountPanel = document.getElementById('accountPanel');
+  if (!signedOutPanel || !accountPanel) return;
+  if (!user) { signedOutPanel.classList.remove('hidden'); accountPanel.classList.add('hidden'); return; }
+  signedOutPanel.classList.add('hidden'); accountPanel.classList.remove('hidden');
+  const profile = currentProfile, license = currentLicense;
+  document.getElementById("profileName").textContent = profile?.full_name || user.email;
+  document.getElementById("profileMeta").textContent = user.email;
+  renderAvatar(document.getElementById("avatarPreview"), profile?.avatar_url, profile?.full_name, user.email);
+  document.getElementById("accountCompany").textContent = profile?.company || "-";
+  document.getElementById("accountPhone").textContent = profile?.phone || "-";
+  document.getElementById("accountPlan").textContent = formatStatus(license?.plan || profile?.subscription_plan || "free");
+  document.getElementById("accountStatus").textContent = formatStatus(license?.state || "unsubscribed");
+  document.getElementById("accountTrial").textContent = license?.trial_redeemed ? "Yes" : "No";
+  document.getElementById("accountGallery").textContent = (() => {
+    // Show the gallery tier (Free / Plus / Business); fall back to the legacy boolean.
+    const tier = license?.gallery_tier || (license?.gallery_addon ? "plus" : "free");
+    return tier.charAt(0).toUpperCase() + tier.slice(1);
+  })();
+  document.getElementById("profileFullName").value = profile?.full_name || "";
+  document.getElementById("profileCompany").value = profile?.company || "";
+  document.getElementById("profilePhone").value = profile?.phone || "";
+  renderRenewalBanner(license); setBillingPlan(selectedBilling);
 }
 
 function renderRenewalBanner(license) {
@@ -1287,6 +1326,7 @@ async function updateReviewStatus(id, status) {
 }
 
 function renderReviews(payload) {
+  if (!googleReviewsList) return; // only exists on the home page
   const list = Array.isArray(payload.reviews) ? payload.reviews.filter(r => r.review_text).slice(0, 3) : [];
   googleReviewsList.innerHTML = "";
   if (!list.length) {
@@ -1689,11 +1729,19 @@ window.onload = async function () {
   await loadPackagesFromSupabase();
   adminPackages = Object.entries(packageCatalog).map(([key, p]) => ({ key, ...p }));
 
-  navigateTo('home');
-  buildWizardProgress();
-  buildWizardPkgGrid();
-  setBillingPlan(selectedBilling);
-  loadReviews();
+  setActiveNav(CURRENT_VIEW);
+  setBillingPlan(selectedBilling); // guarded internally; Pro plan card can appear on more than one page
+
+  if (CURRENT_VIEW === 'book-event') {
+    buildWizardProgress(); buildWizardPkgGrid();
+    showBookingStep(0); renderBookingCalendar(); loadBookingAvailability();
+  } else if (CURRENT_VIEW === 'bookings-admin') {
+    if (adminMessage) setMessage(adminMessage, "Loading bookings...");
+    loadBookings(); loadReviewsAdmin();
+  } else if (CURRENT_VIEW === 'home') {
+    loadReviews();
+    if (window.location.hash) scrollAndHighlight(window.location.hash.slice(1));
+  }
 
   if (supabaseClient) {
     supabaseClient.auth.getSession().then(({ data }) => {
@@ -1722,10 +1770,17 @@ window.addEventListener("scroll", () => { const header = document.querySelector(
 function toggleMobileMenu() { const menu = document.getElementById("mobile-menu"); menu.classList.toggle("hidden"); }
 if (hamburger) hamburger.onclick = toggleMobileMenu;
 
-bookingPrevStep.onclick = () => showBookingStep(currentBookingStep - 1);
-bookingNextStep.onclick = () => { if (!validateCurrentStep()) return; showBookingStep(currentBookingStep + 1); };
-bookingExtraHours.onchange = () => { renderQuote(); };
-eventBookingForm.onsubmit = handleBookingSubmit;
+// Guarded as a single block since all 4 elements only exist on the
+// book-event page -- on any other page these are null, and an unguarded
+// dereference here would throw synchronously and abort every subsequent
+// top-level statement in this file (header wiring, admin tabs, auth
+// modal, etc.), not just booking-wizard code.
+if (eventBookingForm) {
+  bookingPrevStep.onclick = () => showBookingStep(currentBookingStep - 1);
+  bookingNextStep.onclick = () => { if (!validateCurrentStep()) return; showBookingStep(currentBookingStep + 1); };
+  bookingExtraHours.onchange = () => { renderQuote(); };
+  eventBookingForm.onsubmit = handleBookingSubmit;
+}
 
 if (dropdownButton) {
   dropdownButton.onclick = (e) => {
