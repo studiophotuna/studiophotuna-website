@@ -82,7 +82,8 @@ let visibleBookingMonth = new Date();
 let unavailableBookingDates = new Set();
 let selectedBookingDate = "";
 let currentBookingStep = 0;
-const totalBookingSteps = 7;
+const totalBookingSteps = 5;
+const BOOKING_STEP_LABELS = ["Choose a date", "Packages & coverage", "Event schedule", "Contact & guest details", "Confirm & submit"];
 let bookings = [];
 let reviews = [];
 let activeFilter = "all";
@@ -456,19 +457,47 @@ function showBookingStep(step) {
   const isLast = currentBookingStep === totalBookingSteps - 1;
   bookingNextStep.classList.toggle("hidden", isLast);
   bookingSubmit.classList.toggle("hidden", !isLast);
-  const showQuote = currentBookingStep >= 3;
+  const showQuote = currentBookingStep >= 1;
   document.getElementById("quoteSummary")?.classList.toggle("hidden", !showQuote);
   setBookingMessage("");
+  renderBookingProgress();
+}
+
+function renderBookingProgress() {
+  const list = document.getElementById("bookingProgressList");
+  if (!list) return;
+  list.innerHTML = BOOKING_STEP_LABELS.map((label, idx) => {
+    const isDone = idx < currentBookingStep;
+    const isCurrent = idx === currentBookingStep;
+    const dotClass = isDone
+      ? "bg-purple text-white border-purple"
+      : isCurrent
+      ? "bg-white text-purple border-purple ring-4 ring-purple/15"
+      : "bg-white text-muted border-line";
+    const labelClass = isCurrent ? "text-title font-black" : isDone ? "text-title font-bold" : "text-muted font-bold";
+    const connector = idx < BOOKING_STEP_LABELS.length - 1
+      ? `<div class="w-0.5 flex-1 min-h-[14px] ${isDone ? "bg-purple" : "bg-line"}"></div>`
+      : "";
+    return `<div class="flex gap-3">
+      <div class="flex flex-col items-center">
+        <div class="w-7 h-7 rounded-full border-2 flex items-center justify-center text-[11px] font-bold shrink-0 transition-colors ${dotClass}">${isDone ? '<i class="fa-solid fa-check text-[10px]"></i>' : idx + 1}</div>
+        ${connector}
+      </div>
+      <div class="${idx < BOOKING_STEP_LABELS.length - 1 ? "pb-4" : ""}">
+        <p class="text-xs ${labelClass}">${label}</p>
+      </div>
+    </div>`;
+  }).join("");
 }
 
 function validateCurrentStep() {
-  if (currentBookingStep === 2 && !selectedBookingDate) { setBookingMessage("Please choose your event date from the availability calendar."); return false; }
-  if (currentBookingStep === 3 && !selectedPackages().length) { setBookingMessage("Please select at least one package before proceeding."); return false; }
-  if (currentBookingStep === 4) {
+  if (currentBookingStep === 0 && !selectedBookingDate) { setBookingMessage("Please choose your event date from the availability calendar."); return false; }
+  if (currentBookingStep === 1 && !selectedPackages().length) { setBookingMessage("Please select at least one package before proceeding."); return false; }
+  if (currentBookingStep === 2) {
     if (!bookingDate.value) { setBookingMessage("Choose your event date from the calendar step."); return false; }
     if (!bookingVenueCity.value || !bookingVenueName.value || !bookingVenueAddress.value) { setBookingMessage("Complete all schedule and city fields before proceeding."); return false; }
   }
-  if (currentBookingStep === 5) {
+  if (currentBookingStep === 3) {
     if (!document.getElementById("bookingName").value || !bookingPhone.value || !bookingGuests.value) { setBookingMessage("Complete your contact names and expected guest metrics."); return false; }
     const guests = Number(bookingGuests.value);
     if (guests < 1) { setBookingMessage("Please enter a valid expected guest count."); return false; }

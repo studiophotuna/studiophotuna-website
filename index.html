@@ -1013,69 +1013,11 @@
             <p class="text-lg text-body max-w-2xl mx-auto">Complete our simplified booking wizard to review pricing, check real-time availability, and secure your event details.</p>
           </div>
 
-          <!-- Two-column layout: Sidebar + Wizard -->
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Two-column layout: Wizard (main) + Progress & Info (right sidebar) -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:items-start">
 
-            <!-- Left Sidebar -->
-            <div class="space-y-6 lg:col-span-1">
-              <!-- Booking Highlights -->
-              <div class="bg-grey border border-line rounded-2xl p-6 space-y-4">
-                <h3 class="text-title font-bold text-lg">What to expect</h3>
-                <p class="text-xs text-body leading-relaxed">Studio Photuna brings a professional high-angle photobooth setup directly to your Metro Manila venue.</p>
-                <div class="space-y-3 pt-2">
-                  <div class="flex items-center gap-3 p-3 bg-white border border-line rounded-xl">
-                    <div class="w-8 h-8 rounded-full bg-purple/10 flex items-center justify-center text-purple text-xs"><i class="fa-solid fa-location-dot"></i></div>
-                    <div class="text-xs">
-                      <span class="text-muted block uppercase font-bold text-[9px]">Service Area</span>
-                      <span class="text-title font-bold">Metro Manila only</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-3 p-3 bg-white border border-line rounded-xl">
-                    <div class="w-8 h-8 rounded-full bg-purple/10 flex items-center justify-center text-purple text-xs"><i class="fa-solid fa-clock"></i></div>
-                    <div class="text-xs">
-                      <span class="text-muted block uppercase font-bold text-[9px]">Standard Coverage</span>
-                      <span class="text-title font-bold">3 hours + overtime options</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-3 p-3 bg-white border border-line rounded-xl">
-                    <div class="w-8 h-8 rounded-full bg-purple/10 flex items-center justify-center text-purple text-xs"><i class="fa-solid fa-peso-sign"></i></div>
-                    <div class="text-xs">
-                      <span class="text-muted block uppercase font-bold text-[9px]">Deposit Required</span>
-                      <span class="text-title font-bold">50% non-refundable downpayment</span>
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-3 p-3 bg-white border border-line rounded-xl">
-                    <div class="w-8 h-8 rounded-full bg-purple/10 flex items-center justify-center text-purple text-xs"><i class="fa-solid fa-envelope"></i></div>
-                    <div class="text-xs">
-                      <span class="text-muted block uppercase font-bold text-[9px]">Confirmation via</span>
-                      <a href="mailto:notification@studiophotuna.com" class="text-title font-bold hover:text-purple">notification@studiophotuna.com</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Quick FAQ -->
-              <div class="bg-white border border-line rounded-2xl p-6 space-y-4">
-                <h3 class="text-title font-bold text-base">Quick FAQ</h3>
-                <ul class="space-y-3 text-xs text-body">
-                  <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i><span><strong>Does this form confirm my slot?</strong> No — a slot is only locked after your 50% deposit is verified.</span></li>
-                  <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i><span><strong>When do you arrive?</strong> Typically 1–2 hours before your event start for setup and testing.</span></li>
-                  <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i><span><strong>How are payments made?</strong> GCash, bank transfer, or cash on coordination.</span></li>
-                </ul>
-              </div>
-
-              <!-- Support link -->
-              <div class="bg-purple/5 border border-purple/20 rounded-2xl p-5 space-y-3">
-                <div class="flex items-center gap-2 text-purple font-bold text-sm"><i class="fa-solid fa-headset"></i> Have a question?</div>
-                <p class="text-xs text-body">Reach our team before submitting if you have special venue or equipment requirements.</p>
-                <button onclick="navigateTo('help-support')" class="btn-animation w-full border border-purple/30 hover:bg-purple/10 text-purple font-extrabold py-2.5 rounded-xl text-xs uppercase transition-colors">
-                  Open Support Center
-                </button>
-              </div>
-            </div>
-
-            <!-- Right: Wizard Shell (spans 2 columns) -->
-            <div class="lg:col-span-2">
+            <!-- Main: Wizard Shell (spans 2 columns, visually first) -->
+            <div class="lg:col-span-2 lg:order-1">
           <!-- Wizard Shell Container -->
           <div class="bg-white border border-line rounded-3xl shadow-luxe overflow-hidden">
             
@@ -1103,46 +1045,12 @@
             <!-- Form Body -->
             <div class="p-6 sm:p-8 bg-white text-body">
                 <!-- Wizard Progress Dots -->
-                <div class="wizard-progress grid grid-cols-7 gap-2 mb-6" id="bookingWizardProgress" aria-label="Booking progress"></div>
+                <div class="wizard-progress grid grid-cols-5 gap-2 mb-6" id="bookingWizardProgress" aria-label="Booking progress"></div>
 
                 <form class="booking-form space-y-4" id="eventBookingForm">
-                  
-                  <!-- STEP 0: POLICIES -->
-                  <div class="flow-step active" data-step="0">
-                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">Before you book</h4>
-                    <div class="space-y-3 text-xs text-body">
-                      <div class="border border-line rounded-xl p-3 bg-grey">
-                        <strong class="text-title block">Metro Manila Area</strong>
-                        <span>Studio Photuna currently services Metro Manila bookings exclusively.</span>
-                      </div>
-                      <div class="border border-line rounded-xl p-3 bg-grey">
-                        <strong class="text-title block">50% Block Deposit</strong>
-                        <span>A 50% reservation fee is required before a date is blocked on the public calendar.</span>
-                      </div>
-                      <div class="border border-line rounded-xl p-3 bg-grey">
-                        <strong class="text-title block">Setup Time</strong>
-                        <span>We typically arrive 1 to 2 hours before the event start time for assembly and testing.</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- STEP 1: FAQS -->
-                  <div class="flow-step" data-step="1">
-                    <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">Booking FAQ</h4>
-                    <div class="space-y-3 text-xs text-body">
-                      <div class="border border-line rounded-xl p-3 bg-grey">
-                        <strong class="text-title block">Does this form confirm my reservation?</strong>
-                        <span>No. Reservation is secured only after downs are paid and verified.</span>
-                      </div>
-                      <div class="border border-line rounded-xl p-3 bg-grey">
-                        <strong class="text-title block">How many guests can I input?</strong>
-                        <span>Expected headcount from 20 to 500 can be validated for smooth booth operations.</span>
-                      </div>
-                    </div>
-                  </div>
 
                   <!-- STEP 2: CHOOSE DATE -->
-                  <div class="flow-step" data-step="2">
+                  <div class="flow-step active" data-step="0">
                     <h4 class="font-extrabold text-title text-sm mb-2 uppercase tracking-wider">1. Choose an available date</h4>
                     <div class="availability-card bg-grey p-4 border border-line rounded-xl space-y-3">
                       <div class="availability-head flex items-center justify-between">
@@ -1161,7 +1069,7 @@
                   </div>
 
                   <!-- STEP 3: PACKAGE & OVERTIME -->
-                  <div class="flow-step" data-step="3">
+                  <div class="flow-step" data-step="1">
                     <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">2. Select packages and coverage</h4>
                     <div class="space-y-3 mb-4">
                       <div class="flex items-center justify-between">
@@ -1189,7 +1097,7 @@
                   </div>
 
                   <!-- STEP 4: EVENT SCHEDULE DETAILS -->
-                  <div class="flow-step" data-step="4">
+                  <div class="flow-step" data-step="2">
                     <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">3. Event schedule</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div class="field space-y-2">
@@ -1236,7 +1144,7 @@
                   </div>
 
                   <!-- STEP 5: CONTACT & ESTIMATED HEADCOUNT -->
-                  <div class="flow-step" data-step="5">
+                  <div class="flow-step" data-step="3">
                     <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">4. Contact and event details</h4>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div class="field space-y-2">
@@ -1277,7 +1185,7 @@
                   </div>
 
                   <!-- STEP 6: TERMS & CONFIRMATION -->
-                  <div class="flow-step" data-step="6">
+                  <div class="flow-step" data-step="4">
                     <h4 class="font-extrabold text-title text-sm mb-3 uppercase tracking-wider">5. Confirm understanding</h4>
                     <label class="terms-row flex items-start gap-2.5 font-bold text-title text-xs">
                       <input id="bookingTerms" type="checkbox" class="mt-0.5" required />
@@ -1312,7 +1220,37 @@
                 </form>
             </div><!-- end form body -->
           </div><!-- end wizard shell -->
-            </div><!-- end right column -->
+            </div><!-- end main wizard column -->
+
+            <!-- Right sidebar: Application progress + condensed info -->
+            <div class="space-y-6 lg:col-span-1 lg:order-2">
+              <!-- Application Progress -->
+              <div class="bg-white border border-line rounded-2xl p-6">
+                <h3 class="text-title font-bold text-sm uppercase tracking-wider mb-4">Application Progress</h3>
+                <div id="bookingProgressList"><!-- rendered by JS, see renderBookingProgress() --></div>
+              </div>
+
+              <!-- What to expect (condensed) -->
+              <div class="bg-grey border border-line rounded-2xl p-6 space-y-3">
+                <h3 class="text-title font-bold text-sm">What to expect</h3>
+                <ul class="space-y-2.5 text-xs">
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-location-dot text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body"><strong class="text-title">Metro Manila only</strong> — no bookings outside service area.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-clock text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body"><strong class="text-title">3 hrs standard</strong>, overtime available.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-peso-sign text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body"><strong class="text-title">50% deposit</strong> required, non-refundable.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-envelope text-purple mt-0.5 w-3.5 shrink-0"></i><span class="text-body">Confirmations from <a href="mailto:notification@studiophotuna.com" class="text-title font-bold hover:text-purple">notification@studiophotuna.com</a></span></li>
+                </ul>
+              </div>
+
+              <!-- Quick FAQ -->
+              <div class="bg-white border border-line rounded-2xl p-6 space-y-3">
+                <h3 class="text-title font-bold text-sm">Quick FAQ</h3>
+                <ul class="space-y-2.5 text-xs text-body">
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i><span><strong>Does this confirm my slot?</strong> Only after your 50% deposit is verified.</span></li>
+                  <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i><span><strong>When do you arrive?</strong> 1–2 hours before your event start.</span></li>
+                </ul>
+                <p class="text-xs text-center pt-2 border-t border-line">Have a question? <a href="#" onclick="navigateTo('help-support'); return false;" class="text-purple font-bold hover:underline">Contact support</a></p>
+              </div>
+            </div>
           </div><!-- end grid -->
         </div>
       </section>
