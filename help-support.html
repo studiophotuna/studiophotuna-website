@@ -39,6 +39,7 @@
               grey: '#f4f5f8',
               'grey-2': '#eef0f5',
               line: '#dedfe6',
+              warm: '#f9f7f3',
               green: {
                 DEFAULT: '#22c55e',
                 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80',
@@ -73,6 +74,7 @@
         --muted: #8b92a6;
         --grey: #f4f5f8;
         --line: #dedfe6;
+        --warm: #f9f7f3;
         --purple: #0c66e4;
         --purple-dark: #0a52b8;
         --brand: #0c66e4;
@@ -81,13 +83,24 @@
         --shadow: 0 30px 90px rgba(17, 24, 39, 0.12);
       }
 
-      /* Section H2 spec: 3.75rem / font-weight 600 at desktop, scaled down
+      /* Editorial serif headings -- Playfair Display carries the "premium"
+         read on every page, paired with Plus Jakarta Sans for everything
+         else. .h1-display is for each page's one big hero headline;
+         .h2-display is for section headings. Both share the same face so
+         the pairing reads as one deliberate system, not a one-off accent. */
+      .h1-display, .h2-display {
+        font-family: 'Playfair Display', serif;
+        letter-spacing: -0.01em;
+      }
+      .h1-display { font-weight: 800; line-height: 1.05; }
+      .h1-display em, .h2-display em { font-style: italic; color: var(--brand); }
+
+      /* Section H2 spec: 3.75rem / font-weight 700 at desktop, scaled down
          responsively for smaller viewports. */
       .h2-display {
-        font-weight: 600;
+        font-weight: 700;
         font-size: 1.875rem;
-        line-height: 1.15;
-        letter-spacing: -0.02em;
+        line-height: 1.2;
       }
       @media (min-width: 640px) { .h2-display { font-size: 2.25rem; } }
       @media (min-width: 768px) { .h2-display { font-size: 3rem; } }
@@ -179,11 +192,11 @@
     </style>
 
   </head>
-  <body class="bg-white text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="help-support">
+  <body class="bg-warm text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="help-support">
 
     <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
-    <header class="site-header fixed top-0 left-0 w-full z-40 bg-white/90 backdrop-blur-md border-b border-[#dedfe6]/70 transition-all duration-300">
+    <header class="site-header fixed top-0 left-0 w-full z-40 bg-warm/90 backdrop-blur-md border-b border-[#dedfe6]/70 transition-all duration-300">
       <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
         <a class="logo flex items-center gap-3" href="#" onclick="navigateTo('home'); return false;" aria-label="Studio Photuna">
           <img src="logo-dark.png" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
@@ -233,7 +246,7 @@
     <main class="min-h-screen pt-20">
       <div class="px-6 py-12 max-w-7xl mx-auto space-y-8">
         <div class="text-center space-y-3">
-          <h1 class="text-title font-black text-4xl sm:text-6xl">Help & Support Center</h1>
+          <h1 class="h1-display text-title text-4xl sm:text-6xl">Help & Support Center</h1>
           <p class="text-lg text-body max-w-2xl mx-auto">Get technical support for your photobooth operations, hardware configurations, and billing setups.</p>
         </div>
 

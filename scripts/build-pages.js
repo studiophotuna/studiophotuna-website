@@ -130,7 +130,7 @@ function buildPage(page) {
     <meta name="description" content="${escapeHtml(page.description)}" />
 ${head}
   </head>
-  <body class="bg-white text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="${page.viewId}">
+  <body class="bg-warm text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="${page.viewId}">
 
     <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
 

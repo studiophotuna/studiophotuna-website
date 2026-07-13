@@ -32,6 +32,7 @@
               grey: '#f4f5f8',
               'grey-2': '#eef0f5',
               line: '#dedfe6',
+              warm: '#f9f7f3',
               green: {
                 DEFAULT: '#22c55e',
                 50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80',
@@ -66,6 +67,7 @@
         --muted: #8b92a6;
         --grey: #f4f5f8;
         --line: #dedfe6;
+        --warm: #f9f7f3;
         --purple: #0c66e4;
         --purple-dark: #0a52b8;
         --brand: #0c66e4;
@@ -74,13 +76,24 @@
         --shadow: 0 30px 90px rgba(17, 24, 39, 0.12);
       }
 
-      /* Section H2 spec: 3.75rem / font-weight 600 at desktop, scaled down
+      /* Editorial serif headings -- Playfair Display carries the "premium"
+         read on every page, paired with Plus Jakarta Sans for everything
+         else. .h1-display is for each page's one big hero headline;
+         .h2-display is for section headings. Both share the same face so
+         the pairing reads as one deliberate system, not a one-off accent. */
+      .h1-display, .h2-display {
+        font-family: 'Playfair Display', serif;
+        letter-spacing: -0.01em;
+      }
+      .h1-display { font-weight: 800; line-height: 1.05; }
+      .h1-display em, .h2-display em { font-style: italic; color: var(--brand); }
+
+      /* Section H2 spec: 3.75rem / font-weight 700 at desktop, scaled down
          responsively for smaller viewports. */
       .h2-display {
-        font-weight: 600;
+        font-weight: 700;
         font-size: 1.875rem;
-        line-height: 1.15;
-        letter-spacing: -0.02em;
+        line-height: 1.2;
       }
       @media (min-width: 640px) { .h2-display { font-size: 2.25rem; } }
       @media (min-width: 768px) { .h2-display { font-size: 3rem; } }
