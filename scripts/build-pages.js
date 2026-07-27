@@ -66,6 +66,14 @@ const PAGES = [
     mainClass: "min-h-screen pt-20",
   },
   {
+    outputFile: "changelog.html",
+    viewId: "changelog",
+    contentFile: "content/changelog.html",
+    title: "Changelog | Studio Photuna",
+    description: "Every release of the Studio Photuna Booth App, newest first.",
+    mainClass: "min-h-screen pt-20",
+  },
+  {
     outputFile: "help-support.html",
     viewId: "help-support",
     contentFile: "content/help-support.html",

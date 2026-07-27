@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Dashboard | Studio Photuna</title>
-    <meta name="description" content="Studio Photuna operator dashboard: manage bookings, payment proofs, support tickets, and reviews." />
+    <title>Changelog | Studio Photuna</title>
+    <meta name="description" content="Every release of the Studio Photuna Booth App, newest first." />
     <link rel="icon" type="image/png" href="./favicon.png" />
     <link rel="apple-touch-icon" href="./favicon.png" />
     
@@ -192,7 +192,7 @@
     </style>
 
   </head>
-  <body class="bg-warm text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="bookings-admin">
+  <body class="bg-warm text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="changelog">
 
     <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
@@ -244,122 +244,216 @@
     </div>
 
     <main class="min-h-screen pt-20">
-      <div class="px-6 py-12 max-w-7xl mx-auto space-y-8">
-        <div class="border-b border-line pb-4 flex flex-col md:flex-row items-start md:items-end justify-between gap-4">
-          <div>
-            <h1 class="h1-display text-[#111827] text-4xl sm:text-5xl mt-2">Admin Dashboard</h1>
-            <p class="text-sm text-body" id="adminMeta">Logged in as admin...</p>
-          </div>
-          <div class="flex gap-2">
-            <button class="btn-animation border border-line bg-white hover:bg-grey px-4 py-2.5 rounded-full text-xs font-extrabold text-title flex items-center gap-1" type="button" id="refreshBookings">
-              <i class="fa-solid fa-arrows-rotate text-purple"></i> Refresh
-            </button>
-          </div>
+      <div class="px-6 py-12 max-w-4xl mx-auto space-y-10">
+        <div class="text-center space-y-3">
+          <h1 class="h1-display text-title text-4xl sm:text-6xl">Changelog</h1>
+          <p class="text-lg text-body max-w-2xl mx-auto">Every release of the Studio Photuna Booth App, newest first.</p>
         </div>
 
-        <!-- Metrics Cards Grid -->
-        <div class="stats grid grid-cols-2 md:grid-cols-6 gap-4">
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-yellow-100 text-yellow-800 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-hourglass-half"></i></div>
-            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Pending</small><strong class="text-2xl font-black text-title" id="statPending">0</strong></div>
-          </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-green-100 text-green-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-circle-check"></i></div>
-            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Approved</small><strong class="text-2xl font-black text-title" id="statApproved">0</strong></div>
-          </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-money-bill-wave"></i></div>
-            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">50% Paid</small><strong class="text-2xl font-black text-title" id="statPaid">0</strong></div>
-          </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-purple/10 text-purple flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-calendar-check"></i></div>
-            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Total Bookings</small><strong class="text-2xl font-black text-title" id="statTotal">0</strong></div>
-          </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-receipt"></i></div>
-            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Pending Proofs</small><strong class="text-2xl font-black text-orange-500" id="statProofsPending">0</strong></div>
-          </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-purple/10 text-purple flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-envelope"></i></div>
-            <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Custom Quotes</small><strong class="text-2xl font-black text-purple" id="statCustomQuotes">0</strong></div>
-          </div>
-        </div>
+        <div class="space-y-8">
 
-        <!-- Toolbar -->
-        <div class="bg-white border border-line rounded-3xl p-6 shadow-sm space-y-5">
-          <div class="flex flex-col gap-4 border-b border-line pb-4">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-              <h2 class="text-xl font-extrabold text-title" id="adminPanelTitle">Bookings</h2>
-              <!-- Section groups -->
-              <div class="admin-group-tabs inline-flex flex-wrap gap-1.5 bg-grey p-1.5 rounded-2xl border border-line">
-                <button type="button" class="active bg-white px-4 py-2 rounded-full text-xs font-black text-purple shadow-sm" data-admin-group="bookings"><i class="fa-solid fa-calendar-check mr-1.5"></i>Bookings</button>
-                <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="support">
-                  <i class="fa-solid fa-headset mr-1.5"></i>Support <span id="supportGroupBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
-                </button>
-                <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="reviews"><i class="fa-solid fa-star mr-1.5"></i>Reviews</button>
-                <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="analytics"><i class="fa-solid fa-chart-line mr-1.5"></i>Analytics</button>
+          <!-- v0.2.4 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-2-4">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-brand/10 text-brand font-mono font-bold text-xs px-3 py-1 rounded-full">v0.2.4</span>
+                <h2 class="text-2xl font-black text-title">Payment Providers, Trial Onboarding &amp; Template Overhaul</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">July 28, 2026</span>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-green-700"><i class="fa-solid fa-sparkles"></i> New</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Free trial onboarding modal</strong> — Logged-in users who haven't yet activated their free trial see a one-time pop-up explaining what the 7-day trial includes. Skipped for users with an active subscription, a redeemed trial, or an expired trial.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Multi-payment provider support</strong> — Operators can now configure one of four payment providers in Business settings: PayMongo (Philippines), Stripe (global), Xendit (Indonesia &amp; Philippines), or PayPal (200+ countries). Only one provider can be active at a time — switching is instant.</span></li>
+                <li class="flex items-start gap-2 pl-5"><span class="text-green-600 font-bold mt-0.5">–</span> <span><strong class="text-title">Stripe</strong> — Accepts card, Apple Pay, Google Pay, Link, SEPA Direct Debit, and iDEAL.</span></li>
+                <li class="flex items-start gap-2 pl-5"><span class="text-green-600 font-bold mt-0.5">–</span> <span><strong class="text-title">Xendit</strong> — Accepts card, OVO, DANA, GoPay, LinkAja, ShopeePay, QRIS, and five virtual account banks (BCA, BNI, BRI, Mandiri) plus Alfamart and Indomaret convenience stores.</span></li>
+                <li class="flex items-start gap-2 pl-5"><span class="text-green-600 font-bold mt-0.5">–</span> <span><strong class="text-title">PayPal</strong> — Accepts PayPal wallet, Pay Later (BNPL), Venmo, and card.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Dual-strip print mode</strong> — Templates now carry a Print Mode field: Single (one print per sheet) or 2-Strip (two strips side-by-side on one sheet, cut down the middle). Selectable from the template editor for 4×6 and 6×4 layouts, with a badge on each template card.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">6×2 and 6×4 landscape layouts</strong> — Full support for landscape orientations: 6×2 landscape strip and 6×4 landscape print, alongside the existing 2×6 portrait strip and 4×6 portrait print.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Refreshed default template library</strong> — 18 curated templates across six formats (2×6, 6×2, 4×6, 6×4, 4×6 Dual Strip, 6×4 Dual Strip), three per format.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Redesigned default frames</strong> — Six production-ready overlays pre-rendered at all four layout sizes: Studio White, Noir &amp; Gold, Rose Gold, Floral Corner, Film Classic, and Confetti.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Automatic update announcements</strong> — Photuna checks for updates on launch and every four hours. A dismissible banner with a direct "Update now" link appears when a new version is available.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Sample Layouts gallery</strong> — Browse all built-in templates and frames from a new Samples tab before committing to them for an event.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">DNP &amp; HiTi auto-cut detection</strong> — Settings → Printing scans the Windows print queue for connected DNP/HiTi printers and reports whether 2×6 strip cut is configured, with brand-specific setup instructions.</span></li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-brand"><i class="fa-solid fa-arrow-up-right-dots"></i> Improved</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Tap to Start button sizing</strong> — Fixed a rendering bug where the button appeared far smaller than intended on kiosk displays; now uses viewport-relative <code class="text-xs bg-grey px-1 rounded">clamp()</code> sizing.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Start Button editor</strong> — Label, font, background colour, hover colour, and text colour are now grouped in a single "Start Button" card inside Branding settings.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Template card badges</strong> — Every card now shows Single, 2-Strip, or Strip so operators can identify print mode at a glance.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Frame previews for all layouts</strong> — Overlays render correctly at all four layout sizes regardless of which layout is active.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Print mode selector in template editor</strong> — Switching a 4×6 or 6×4 template to 2-Strip shows a contextual note describing the cut-line and slot requirements.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Blue colour theme</strong> — The admin dashboard and auth screens now use a clean blue accent palette throughout, replacing the previous teal theme.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Default badges</strong> — Template and frame cards show a "Default" badge for built-in items.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Responsive photobooth screens</strong> — All kiosk-facing screens scale correctly across a wider range of display sizes using fluid <code class="text-xs bg-grey px-1 rounded">clamp()</code> values.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Cleaner print preview</strong> — Removed the redundant "Your photo is ready!" label so the layout no longer crowds the progress animation.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">4×6 and 2×6 focus</strong> — Removed the 4×4 square layout; Photuna now focuses on the two formats real dye-sublimation printers support.</span></li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-red-600"><i class="fa-solid fa-bug"></i> Fixed</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span><strong class="text-title">Trial modal false positives</strong> — The onboarding prompt was incorrectly appearing for accounts with active subscriptions, redeemed trials, and trial-unavailable status. Root cause was a race condition where the license object was evaluated before it had fully loaded; all edge cases are now correctly gated.</span></li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- v0.2.3 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-2-3">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-grey text-title font-mono font-bold text-xs px-3 py-1 rounded-full">v0.2.3</span>
+                <h2 class="text-2xl font-black text-title">Auth Redesign</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">May 17, 2026</span>
+            </div>
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-brand"><i class="fa-solid fa-arrow-up-right-dots"></i> Improved</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Redesigned login and registration screen</strong> — Cleaner layout with better visual hierarchy, improved form spacing, and a more polished first-impression experience for new operators.</span></li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- v0.2.2 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-2-2">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-grey text-title font-mono font-bold text-xs px-3 py-1 rounded-full">v0.2.2</span>
+                <h2 class="text-2xl font-black text-title">Bug Fixes</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">May 17, 2026</span>
+            </div>
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-red-600"><i class="fa-solid fa-bug"></i> Fixed</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> Gallery add-on configuration was not being read correctly in certain event setups, causing the QR code to fail to generate even when the add-on was active.</li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> Template limit enforcement was allowing more templates than the active plan permits in edge cases involving rapid saves.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- v0.2.1 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-2-1">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-grey text-title font-mono font-bold text-xs px-3 py-1 rounded-full">v0.2.1</span>
+                <h2 class="text-2xl font-black text-title">Gallery Add-on &amp; Entitlement Enforcement</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">May 17, 2026</span>
+            </div>
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-green-700"><i class="fa-solid fa-sparkles"></i> New</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Gallery add-on gating</strong> — The online gallery (QR code download link) is now a separate purchasable add-on, independent of the base plan. The print preview screen only generates a QR code when the add-on is active.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Hard entitlement limits</strong> — Template count, event count, and gallery access are enforced per plan at the application level. Exceeding your plan limits shows a clear in-app prompt rather than failing silently.</span></li>
+              </ul>
+            </div>
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-brand"><i class="fa-solid fa-arrow-up-right-dots"></i> Improved</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> Subscription summary screen now reflects gallery add-on status alongside the base plan.</li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> Photobooth flow skips gallery upload entirely when the add-on is inactive, eliminating unnecessary network calls during sessions.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- v0.2.0 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-2-0">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-grey text-title font-mono font-bold text-xs px-3 py-1 rounded-full">v0.2.0</span>
+                <h2 class="text-2xl font-black text-title">Licensing &amp; Subscription System</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">May 17, 2026</span>
+            </div>
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-green-700"><i class="fa-solid fa-sparkles"></i> New</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Plan-based licensing</strong> — Photuna now supports Free, Trial, Pro, and Business subscription tiers. Each plan controls which features are accessible inside the app.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Trial watermark</strong> — Sessions running on a trial license display a small watermark in the printed output, reminding operators to upgrade for clean prints.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">License context</strong> — The app reads and caches the active license on startup so plan-gated features respond instantly without extra network round-trips.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Licensing API</strong> — Internal licensing server for validating keys, upgrading accounts, and applying admin plan changes.</span></li>
+              </ul>
+            </div>
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-brand"><i class="fa-solid fa-arrow-up-right-dots"></i> Improved</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> Entitlement constants aligned across the Electron main process, the React renderer, and the licensing API to prevent plan-check inconsistencies at runtime.</li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- v0.1.0 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-1-0">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-grey text-title font-mono font-bold text-xs px-3 py-1 rounded-full">v0.1.0</span>
+                <h2 class="text-2xl font-black text-title">Initial Release</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">May 2026</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <h3 class="text-xs font-black uppercase tracking-wider text-title">Kiosk Flow</h3>
+                <ul class="space-y-1.5 text-sm text-body">
+                  <li>• Welcome screen — custom BG video, image, or live camera</li>
+                  <li>• Timed photo capture with countdown ring &amp; flash</li>
+                  <li>• Select/Retake — review and flag shots for retake</li>
+                  <li>• Template selection — tap-to-assign with auto-fill timer</li>
+                  <li>• Frame &amp; filter screen — overlays + tone filters</li>
+                  <li>• Print preview with gallery QR code &amp; auto-advance</li>
+                  <li>• Thank You screen with configurable countdown</li>
+                </ul>
+              </div>
+              <div class="space-y-2">
+                <h3 class="text-xs font-black uppercase tracking-wider text-title">Admin Dashboard</h3>
+                <ul class="space-y-1.5 text-sm text-body">
+                  <li>• Multi-event management</li>
+                  <li>• Per-event branding — name, logo, background, palette</li>
+                  <li>• Template library with visual drag-resize editor</li>
+                  <li>• Frame library with overlay upload</li>
+                  <li>• Tone presets and background palettes</li>
+                  <li>• Controls — mode, retakes, timers, watermark</li>
+                  <li>• Session analytics per event</li>
+                </ul>
+              </div>
+              <div class="space-y-2">
+                <h3 class="text-xs font-black uppercase tracking-wider text-title">Settings</h3>
+                <ul class="space-y-1.5 text-sm text-body">
+                  <li>• Camera — device, resolution, mirror mode</li>
+                  <li>• Printing — printer, paper size, quality, copies</li>
+                  <li>• Storage — capture path, auto-cleanup</li>
+                  <li>• System — version, updates, log export</li>
+                </ul>
+              </div>
+              <div class="space-y-2">
+                <h3 class="text-xs font-black uppercase tracking-wider text-title">Infrastructure</h3>
+                <ul class="space-y-1.5 text-sm text-body">
+                  <li>• Electron desktop app, full offline capability</li>
+                  <li>• Supabase backend — accounts, sync, gallery</li>
+                  <li>• IPC bridge — camera, print, storage, licensing</li>
+                  <li>• Google Font loader for per-event typography</li>
+                  <li>• Portrait &amp; landscape layout detection</li>
+                </ul>
               </div>
             </div>
-            <!-- Topic sub-tabs (only shown for groups with more than one topic) -->
-            <div id="adminSubtabsRow" class="flex flex-wrap gap-1.5">
-              <button type="button" class="admin-tab active border border-purple/40 bg-purple/5 text-purple px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="bookings" data-admin-group="bookings">Bookings</button>
-              <button type="button" class="admin-tab border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="packages" data-admin-group="bookings">
-                Packages <span id="customQuoteTabBadge" class="hidden ml-1 bg-purple text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
-              </button>
-              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="proofs" data-admin-group="support">
-                Payment Proofs <span id="proofsTabBadge" class="hidden ml-1 bg-orange-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
-              </button>
-              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="tickets" data-admin-group="support">
-                Support Tickets <span id="ticketsTabBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
-              </button>
-              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="inbox" data-admin-group="support">
-                Inbox <span id="inboxTabBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
-              </button>
-              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="reviews" data-admin-group="reviews">Reviews</button>
-              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="analytics" data-admin-group="analytics">Analytics</button>
-            </div>
-          </div>
+          </article>
 
-          <!-- Booking sub-toolbar: search + filters (hidden on other tabs) -->
-          <div id="bookingSubToolbar" class="flex flex-col sm:flex-row gap-3">
-            <input id="bookingSearch" type="text" placeholder="Search by name, email, event type…" class="flex-1 border border-line rounded-xl px-4 py-2.5 text-xs focus:border-purple outline-none" oninput="renderBookings()" />
-            <div class="filters flex flex-wrap gap-1.5">
-              <button type="button" class="active border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="all">All</button>
-              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="pending">Pending</button>
-              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="approved">Approved</button>
-              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="declined">Declined</button>
-              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="cancelled">Cancelled</button>
-              <button type="button" class="border border-purple/40 rounded-full bg-purple/5 text-purple px-4 py-2 text-xs font-bold" data-filter="custom_quote">Custom Quotes</button>
-            </div>
-          </div>
-
-          <!-- Proofs sub-toolbar -->
-          <div id="proofsSubToolbar" class="hidden flex-wrap gap-1.5">
-            <button type="button" class="active border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="all">All</button>
-            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="pending">Pending</button>
-            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="approved">Approved</button>
-            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="rejected">Rejected</button>
-          </div>
-
-          <!-- Inbox sub-toolbar: filter by which mailbox received it -->
-          <div id="inboxSubToolbar" class="hidden flex-wrap gap-1.5">
-            <button type="button" class="active ring-2 ring-offset-1 ring-purple border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-inbox-filter="all">All</button>
-            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-inbox-filter="support@studiophotuna.com">Support</button>
-            <button type="button" class="border border-red-200 rounded-full bg-red-50 text-red-700 px-4 py-2 text-xs font-bold" data-inbox-filter="dpo@studiophotuna.com">DPO Requests</button>
-            <button type="button" class="border border-purple/40 rounded-full bg-purple/5 text-purple px-4 py-2 text-xs font-bold" data-inbox-filter="notification@studiophotuna.com">Notification</button>
-          </div>
-
-          <div class="message text-center text-xs font-bold" id="adminMessage"></div>
         </div>
 
-        <!-- Content lists -->
-        <div class="booking-list grid grid-cols-1 gap-5" id="bookingList"></div>
-        <div class="grid grid-cols-1 gap-5 hidden" id="proofList"></div>
-        <div class="grid grid-cols-1 gap-5 hidden" id="ticketList"></div>
-        <div class="grid grid-cols-1 gap-5 hidden" id="packagesList"></div>
-        <div class="booking-list grid grid-cols-1 gap-5 hidden" id="reviewList"></div>
-        <div class="grid grid-cols-1 gap-5 hidden" id="inboxList"></div>
-        <div class="hidden" id="analyticsPanel"></div>
+        <div class="text-center pt-4">
+          <a href="#" onclick="navigateTo('download'); return false;" class="btn-animation inline-flex items-center gap-2 bg-brand hover:bg-brand-600 text-white px-8 py-3.5 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors">
+            <i class="fa-solid fa-download"></i> Download the latest version
+          </a>
+        </div>
       </div>
 
     </main>
