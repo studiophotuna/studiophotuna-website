@@ -209,20 +209,6 @@ function openAuthModal(mode = "login") {
 }
 function closeAuthModal() { authModal.classList.add("hidden"); authModal.classList.remove("grid"); authModal.setAttribute("aria-hidden", "true"); }
 
-// Works for both first-time and returning users -- Supabase creates the
-// auth.users row (and, via the on_auth_user_created DB trigger, the
-// matching profiles row) automatically on first Google sign-in, so no
-// separate signup path is needed here like the email/password flow has.
-async function signInWithGoogle() {
-  if (!supabaseClient) { spawnToast("Unavailable", "Supabase client not loaded.", "fa-solid fa-triangle-exclamation", "warning"); return; }
-  setAuthMessage("Redirecting to Google...");
-  const { error } = await supabaseClient.auth.signInWithOAuth({
-    provider: "google",
-    options: { redirectTo: `${window.location.origin}/account` }
-  });
-  if (error) setAuthMessage(error.message || "Could not start Google sign-in.", true);
-}
-
 function setAuthMode(mode) {
   authMode = mode;
   document.querySelectorAll(".auth-tab").forEach((tab) => {
@@ -266,14 +252,6 @@ async function loadAccountState(user) {
         supabaseClient.from("licenses").select("*").eq("user_id", user.id).maybeSingle()
       ]);
       currentProfile = profile; currentLicense = license;
-      // First sign-in via Google: backfill the profile photo from their
-      // Google account once, without overwriting a custom-uploaded avatar.
-      const googleAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture;
-      if (profile && !profile.avatar_url && googleAvatar) {
-        supabaseClient.from("profiles").upsert({ id: user.id, avatar_url: googleAvatar }).then(({ error }) => {
-          if (!error) { currentProfile.avatar_url = googleAvatar; renderAvatar(document.getElementById("navAvatar"), googleAvatar, profile.full_name, user.email); }
-        });
-      }
     } catch (err) { console.warn("Unable to fetch account/profile data", err); }
   }
   updateAuthUi(user);
