@@ -153,6 +153,7 @@ const ROUTE_MAP = {
   'bookings-admin': '/bookings-admin',
   'account': '/account',
   'download': '/download',
+  'changelog': '/changelog',
   'help-support': '/help-support',
   'operator-agreement': '/operator-agreement',
   'privacy-framework': '/privacy-framework',
