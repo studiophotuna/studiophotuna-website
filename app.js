@@ -212,11 +212,27 @@ function closeAuthModal() { authModal.classList.add("hidden"); authModal.classLi
 
 // Shared handler for every "Start Free Trial" / "Sign Up Free" CTA (hero,
 // pricing trial card, demo feedback prompt). A signed-in visitor should
-// never see the login/signup modal again -- send them to their account
-// instead of asking them to sign up a second time.
+// never see the login/signup modal again -- the trial itself is redeemed
+// inside the desktop app, not on the website, so point them there instead.
 function startFreeTrial() {
-  if (window.currentSupabaseUser) { navigateTo("account"); return; }
+  if (window.currentSupabaseUser) { openStartTrialModal(); return; }
   openAuthModal("signup");
+}
+
+function openStartTrialModal() {
+  const message = document.getElementById("startTrialMessage");
+  if (message) {
+    message.textContent = currentLicense?.trial_redeemed
+      ? "Your account has already redeemed its one-time free trial. Download the app to sign in and pick up where you left off, or check your plan from your account page."
+      : "Download the Studio Photuna Booth App and activate your 7-day free trial right from inside the app — no credit card required.";
+  }
+  const modal = document.getElementById("startTrialModal");
+  modal.classList.remove("hidden"); modal.classList.add("grid"); modal.setAttribute("aria-hidden", "false");
+}
+
+function closeStartTrialModal() {
+  const modal = document.getElementById("startTrialModal");
+  modal.classList.add("hidden"); modal.classList.remove("grid"); modal.setAttribute("aria-hidden", "true");
 }
 
 // Works for both first-time and returning users -- Supabase creates the
