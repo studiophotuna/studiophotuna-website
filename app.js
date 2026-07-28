@@ -224,7 +224,7 @@ function openStartTrialModal() {
   if (message) {
     message.textContent = currentLicense?.trial_redeemed
       ? "Your account has already redeemed its one-time free trial. Download the app to sign in and pick up where you left off, or check your plan from your account page."
-      : "Download the Studio Photuna Booth App and activate your 7-day free trial right from inside the app — no credit card required.";
+      : "Download the Studio Photuna Booth App and activate your 14-day free trial right from inside the app — no credit card required.";
   }
   const modal = document.getElementById("startTrialModal");
   modal.classList.remove("hidden"); modal.classList.add("grid"); modal.setAttribute("aria-hidden", "false");
