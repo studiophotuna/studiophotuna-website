@@ -210,6 +210,15 @@ function openAuthModal(mode = "login") {
 }
 function closeAuthModal() { authModal.classList.add("hidden"); authModal.classList.remove("grid"); authModal.setAttribute("aria-hidden", "true"); }
 
+// Shared handler for every "Start Free Trial" / "Sign Up Free" CTA (hero,
+// pricing trial card, demo feedback prompt). A signed-in visitor should
+// never see the login/signup modal again -- send them to their account
+// instead of asking them to sign up a second time.
+function startFreeTrial() {
+  if (window.currentSupabaseUser) { navigateTo("account"); return; }
+  openAuthModal("signup");
+}
+
 // Works for both first-time and returning users -- Supabase creates the
 // auth.users row (and, via the on_auth_user_created DB trigger, the
 // matching profiles row) automatically on first Google sign-in, so no
