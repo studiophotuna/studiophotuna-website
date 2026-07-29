@@ -89,10 +89,8 @@ serve(async (req) => {
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
       allow_promotion_codes: true,
-      // account and pricing are now separate pages from home -- send the
-      // return trip straight to account.html, and to home's #pricing anchor.
-      success_url: `${siteUrl}/account?checkout=success`,
-      cancel_url: `${siteUrl}/?checkout=cancelled#pricing`,
+      success_url: `${siteUrl}/payment/success`,
+      cancel_url: `${siteUrl}/payment/cancel`,
       subscription_data: {
         metadata: { supabase_user_id: user.id },
       },

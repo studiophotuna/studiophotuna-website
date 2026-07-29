@@ -159,7 +159,9 @@ const ROUTE_MAP = {
   'privacy-framework': '/privacy-framework',
   'refund-policy': '/refund-policy',
   'cookie-policy': '/cookie-policy',
-  'data-processing': '/data-processing'
+  'data-processing': '/data-processing',
+  'payment-success': '/payment/success',
+  'payment-cancel': '/payment/cancel'
 };
 
 function navigateTo(viewId) {
@@ -1814,13 +1816,34 @@ window.onload = async function () {
     supabaseClient.auth.getSession().then(({ data }) => {
       const user = data?.session?.user || null;
       window.currentSupabaseUser = user;
-      loadAccountState(user).then(() => handleCheckoutRedirectResult());
+      loadAccountState(user).then(() => { handleCheckoutRedirectResult(); if (CURRENT_VIEW === 'payment-success') initPaymentSuccessPage(); });
     });
     supabaseClient.auth.onAuthStateChange((_evt, session) => {
       const user = session?.user || null; window.currentSupabaseUser = user; loadAccountState(user);
     });
-  } else { handleCheckoutRedirectResult(); }
+  } else { handleCheckoutRedirectResult(); if (CURRENT_VIEW === 'payment-success') initPaymentSuccessPage(); }
 };
+
+async function initPaymentSuccessPage() {
+  const statusMsg = document.getElementById("paymentStatusMessage");
+  if (!statusMsg) return;
+  if (!window.currentSupabaseUser || !supabaseClient) {
+    statusMsg.textContent = "Sign in to your account to see your updated plan.";
+    return;
+  }
+  try {
+    const { data, error } = await supabaseClient.functions.invoke("verify-checkout-session", { body: {} });
+    if (error) throw error;
+    statusMsg.textContent = data?.verified
+      ? "Your Pro plan is now active. Welcome aboard!"
+      : "We're still confirming your payment. Check your account page in a moment, or contact support if this persists.";
+  } catch (err) {
+    console.error("Payment verification error:", err);
+    statusMsg.textContent = "We couldn't confirm your payment automatically. Please check your account page, or contact support if you were charged.";
+  } finally {
+    await loadAccountState(window.currentSupabaseUser);
+  }
+}
 
 function handleCheckoutRedirectResult() {
   const params = new URLSearchParams(window.location.search);

@@ -121,6 +121,22 @@ const PAGES = [
     description: "Studio Photuna Data Processing Disclosure.",
     mainClass: "min-h-screen pt-20",
   },
+  {
+    outputFile: "payment/success.html",
+    viewId: "payment-success",
+    contentFile: "content/payment-success.html",
+    title: "Payment Successful | Studio Photuna",
+    description: "Your Studio Photuna subscription payment was successful.",
+    mainClass: "min-h-screen pt-20 flex items-center",
+  },
+  {
+    outputFile: "payment/cancel.html",
+    viewId: "payment-cancel",
+    contentFile: "content/payment-cancel.html",
+    title: "Checkout Cancelled | Studio Photuna",
+    description: "Your Studio Photuna checkout was cancelled. No charge was made.",
+    mainClass: "min-h-screen pt-20 flex items-center",
+  },
 ];
 
 function escapeHtml(str) {
@@ -154,7 +170,9 @@ ${scriptsFooter}
   </body>
 </html>
 `;
-  fs.writeFileSync(path.join(ROOT, page.outputFile), html);
+  const outputPath = path.join(ROOT, page.outputFile);
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, html);
   console.log("built", page.outputFile);
 }
 
