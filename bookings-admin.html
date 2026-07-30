@@ -393,14 +393,14 @@
                 <p class="text-[11px] text-muted">Used for the 50% deposit collected after a guest submits the Book an Event wizard.</p>
                 <select id="gatewayBookSelect" class="w-full border border-line rounded-xl px-3 py-2.5 text-xs focus:border-purple outline-none">
                   <option value="stripe">Stripe</option>
-                  <option value="paymongo">PayMongo (Coming Soon)</option>
-                  <option value="xendit">Xendit (Coming Soon)</option>
-                  <option value="paypal">PayPal (Coming Soon)</option>
+                  <option value="paymongo">PayMongo</option>
+                  <option value="xendit">Xendit</option>
+                  <option value="paypal">PayPal</option>
                   <option value="manual_gcash">Manual GCash</option>
                 </select>
               </div>
             </div>
-            <p class="text-[11px] text-muted">PayMongo, Xendit, and PayPal aren't wired up on the website yet (they're only live in the desktop app's Business settings). Selecting one here will fall back to manual payment instructions until that integration is built.</p>
+            <p class="text-[11px] text-muted">PayMongo, Xendit, and PayPal are wired up for Event Booking Deposits only. They still need their API credentials set as Supabase secrets to actually process a payment -- selecting one before that will fall back to manual payment instructions. Plan Subscriptions currently only support Stripe.</p>
             <div class="flex items-center justify-between pt-2 border-t border-line">
               <p class="text-[11px] text-muted" id="gatewaySettingsMeta">&nbsp;</p>
               <button type="button" id="saveGatewaySettings" class="btn-animation bg-purple hover:bg-purple-dark text-white font-extrabold px-6 py-2.5 rounded-full text-xs uppercase">Save Changes</button>
