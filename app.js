@@ -681,13 +681,36 @@ async function loadBookingAvailability() {
 
 function setBookingMessage(message, isError = true) { if (!bookingMessage) return; bookingMessage.textContent = message || ""; bookingMessage.style.color = isError ? "#dc2626" : "#22c55e"; }
 
+// Admin-configurable via the Bookings Admin > Settings tab. Falls back to
+// manual_gcash (today's default) on any error so a settings-fetch hiccup
+// never blocks a booking submission.
+async function getActiveBookingGateway() {
+  if (!supabaseClient) return "manual_gcash";
+  try {
+    const { data, error } = await supabaseClient.from("payment_gateway_settings").select("provider").eq("context", "book").maybeSingle();
+    if (error || !data) return "manual_gcash";
+    return data.provider;
+  } catch { return "manual_gcash"; }
+}
+
+async function applyBookingPaymentModeNote() {
+  const el = document.getElementById("bookingPaymentModeNote");
+  if (!el) return;
+  const gateway = await getActiveBookingGateway();
+  if (gateway === "stripe") {
+    el.innerHTML = 'A 50% deposit is collected securely online by card right after you submit this request. The remaining balance is payable on or before event day unless coordinated otherwise. Confirmation replies will arrive from <span class="text-purple">notification@studiophotuna.com</span>.';
+  }
+}
+
 async function handleBookingSubmit(event) {
   event.preventDefault();
   if (!supabaseClient) { setBookingMessage("Database gateway offline. Try again shortly."); return; }
   const submitBtn = document.getElementById("bookingSubmit"); submitBtn.disabled = true; setBookingMessage("Submitting your request details...", false);
   const { pkgs, extraHours, subtotal, extraCost, discount, total } = calculateQuote();
   const guests = Number(bookingGuests.value); const isCustom = guests > 300;
+  const bookingId = crypto.randomUUID();
   const payload = {
+    id: bookingId,
     full_name: document.getElementById("bookingName").value, contact_number: bookingPhone.value,
     email: document.getElementById("bookingEmail").value || null, package_name: pkgs.map(p => p.name).join(", ") || null,
     event_date: selectedBookingDate, start_time: bookingTime.value, event_type: document.getElementById("bookingType").value,
@@ -700,6 +723,17 @@ async function handleBookingSubmit(event) {
     if (error) throw error;
     eventBookingForm.reset(); selectedBookingDate = ""; bookingDate.value = ""; bookingDateDisplay.value = "";
     renderQuote(); showBookingStep(0);
+
+    if (!isCustom && total > 0) {
+      const gateway = await getActiveBookingGateway();
+      if (gateway === "stripe") {
+        setBookingMessage("Redirecting you to secure payment for your deposit...", false);
+        const { data: sessionData, error: fnError } = await supabaseClient.functions.invoke("create-booking-checkout-session", { body: { booking_id: bookingId } });
+        if (!fnError && sessionData?.url) { window.location.href = sessionData.url; return; }
+        console.warn("Booking checkout session error, falling back to manual payment instructions:", fnError || sessionData?.error);
+      }
+    }
+
     const msg = isCustom ? "Booking request sent! Your guest count (>300) requires a custom quote — we'll email you with pricing." : "Booking request completed! Updates will arrive from notification@studiophotuna.com.";
     spawnToast("Request Sent", "Booking request received. Check email for confirmation.", "fa-solid fa-circle-check", "success");
     setBookingMessage(msg, false);
@@ -1806,6 +1840,7 @@ window.onload = async function () {
   if (CURRENT_VIEW === 'book-event') {
     buildWizardProgress(); buildWizardPkgGrid();
     showBookingStep(0); renderBookingCalendar(); loadBookingAvailability();
+    applyBookingPaymentModeNote();
   } else if (CURRENT_VIEW === 'bookings-admin') {
     if (adminMessage) setMessage(adminMessage, "Loading bookings...");
     loadBookings(); loadReviewsAdmin();
@@ -1824,6 +1859,8 @@ window.onload = async function () {
       const user = session?.user || null; window.currentSupabaseUser = user; loadAccountState(user);
     });
   } else { handleCheckoutRedirectResult(); if (CURRENT_VIEW === 'payment-app-success') initPaymentSuccessPage(); }
+
+  if (CURRENT_VIEW === 'payment-book-success') initBookingSuccessPage();
 };
 
 async function initPaymentSuccessPage() {
@@ -1844,6 +1881,27 @@ async function initPaymentSuccessPage() {
     statusMsg.textContent = "We couldn't confirm your payment automatically. Please check your account page, or contact support if you were charged.";
   } finally {
     await loadAccountState(window.currentSupabaseUser);
+  }
+}
+
+// Runs regardless of login state -- booking guests aren't signed into a
+// Studio Photuna account, so this reads a narrow public-safe status via a
+// SECURITY DEFINER RPC rather than the (auth-gated) event_bookings table.
+async function initBookingSuccessPage() {
+  const statusMsg = document.getElementById("bookingPaymentStatusMessage");
+  if (!statusMsg || !supabaseClient) return;
+  const bookingId = new URLSearchParams(window.location.search).get("booking_id");
+  if (!bookingId) { statusMsg.textContent = ""; return; }
+  try {
+    const { data, error } = await supabaseClient.rpc("get_public_booking_payment_status", { p_booking_id: bookingId });
+    if (error) throw error;
+    const row = Array.isArray(data) ? data[0] : data;
+    statusMsg.textContent = (row?.reservation_status === "partial_paid" || row?.reservation_status === "paid")
+      ? "Your deposit payment is confirmed."
+      : "We're still confirming your payment. This can take a moment -- refresh this page shortly, or contact support if it persists.";
+  } catch (err) {
+    console.error("Booking payment verification error:", err);
+    statusMsg.textContent = "";
   }
 }
 
@@ -1887,8 +1945,8 @@ document.onclick = () => { closeDropdown(); document.querySelector(".dropdown-me
 const proofList = document.getElementById("proofList");
 const proofFilterButtons = document.querySelectorAll("[data-proof-filter]");
 
-const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics" };
-const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], reviews: ["reviews"], analytics: ["analytics"] };
+const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics", settings: "Settings" };
+const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], reviews: ["reviews"], analytics: ["analytics"], settings: ["settings"] };
 let activeAdminGroup = "bookings";
 const adminGroupButtons = document.querySelectorAll(".admin-group-tabs [data-admin-group]");
 const adminSubtabsRow = document.getElementById("adminSubtabsRow");
@@ -1900,6 +1958,7 @@ function loadActiveAdminTab() {
   else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
   else if (activeAdminTab === "inbox") loadInboxEmails();
   else if (activeAdminTab === "analytics") loadAnalytics();
+  else if (activeAdminTab === "settings") loadPaymentGatewaySettings();
   else loadReviewsAdmin();
 }
 
@@ -1918,6 +1977,7 @@ function activateAdminTab(tab) {
   reviewList.classList.toggle("hidden", activeAdminTab !== "reviews");
   const inboxList = document.getElementById("inboxList"); if (inboxList) inboxList.classList.toggle("hidden", activeAdminTab !== "inbox");
   const analyticsPanel = document.getElementById("analyticsPanel"); if (analyticsPanel) analyticsPanel.classList.toggle("hidden", activeAdminTab !== "analytics");
+  const settingsPanel = document.getElementById("settingsPanel"); if (settingsPanel) settingsPanel.classList.toggle("hidden", activeAdminTab !== "settings");
   const bookingSubToolbar = document.getElementById("bookingSubToolbar");
   const proofsSubToolbar = document.getElementById("proofsSubToolbar");
   const inboxSubToolbar = document.getElementById("inboxSubToolbar");
@@ -1943,6 +2003,46 @@ function activateAdminGroup(group, preferredTab) {
 
 adminGroupButtons.forEach(btn => { btn.onclick = () => activateAdminGroup(btn.dataset.adminGroup); });
 adminTabButtons.forEach(btn => { btn.onclick = () => activateAdminTab(btn.dataset.adminTab); });
+
+async function loadPaymentGatewaySettings() {
+  if (!supabaseClient) return;
+  try {
+    const { data, error } = await supabaseClient.from("payment_gateway_settings").select("context, provider, updated_at");
+    if (error) throw error;
+    const appRow = (data || []).find(r => r.context === "app");
+    const bookRow = (data || []).find(r => r.context === "book");
+    const appSelect = document.getElementById("gatewayAppSelect");
+    const bookSelect = document.getElementById("gatewayBookSelect");
+    if (appSelect && appRow) appSelect.value = appRow.provider;
+    if (bookSelect && bookRow) bookSelect.value = bookRow.provider;
+    const meta = document.getElementById("gatewaySettingsMeta");
+    const latest = (data || []).map(r => r.updated_at).filter(Boolean).sort().slice(-1)[0];
+    if (meta) meta.textContent = latest ? `Last updated ${new Date(latest).toLocaleString()}` : "";
+  } catch (err) { console.warn("Unable to load payment gateway settings", err); }
+}
+
+async function savePaymentGatewaySettings() {
+  if (!supabaseClient) return;
+  const btn = document.getElementById("saveGatewaySettings");
+  const appSelect = document.getElementById("gatewayAppSelect");
+  const bookSelect = document.getElementById("gatewayBookSelect");
+  if (!btn || !appSelect || !bookSelect) return;
+  btn.disabled = true; btn.textContent = "Saving...";
+  try {
+    const updates = [
+      { context: "app", provider: appSelect.value, updated_at: new Date().toISOString(), updated_by: window.currentSupabaseUser?.id || null },
+      { context: "book", provider: bookSelect.value, updated_at: new Date().toISOString(), updated_by: window.currentSupabaseUser?.id || null },
+    ];
+    const { error } = await supabaseClient.from("payment_gateway_settings").upsert(updates, { onConflict: "context" });
+    if (error) throw error;
+    spawnToast("Saved", "Payment gateway settings updated.", "fa-solid fa-circle-check", "success");
+    loadPaymentGatewaySettings();
+  } catch (err) { spawnToast("Save Failed", err.message || "Could not save settings.", "fa-solid fa-circle-exclamation", "warning"); }
+  finally { btn.disabled = false; btn.textContent = "Save Changes"; }
+}
+
+const saveGatewaySettingsBtn = document.getElementById("saveGatewaySettings");
+if (saveGatewaySettingsBtn) saveGatewaySettingsBtn.onclick = savePaymentGatewaySettings;
 
 filterButtons.forEach(btn => {
   btn.onclick = () => {
