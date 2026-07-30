@@ -60,9 +60,15 @@ serve(async (req) => {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
         const userId = session.metadata?.supabase_user_id;
+        const bookingId = session.metadata?.booking_id;
         if (userId && session.subscription) {
           const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
           await upsertLicenseFromSubscription(userId, subscription);
+        } else if (bookingId) {
+          await supabaseAdmin
+            .from("event_bookings")
+            .update({ reservation_status: "partial_paid", reservation_paid_at: new Date().toISOString() })
+            .eq("id", bookingId);
         }
         break;
       }
