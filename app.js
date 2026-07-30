@@ -693,12 +693,14 @@ async function getActiveBookingGateway() {
   } catch { return "manual_gcash"; }
 }
 
+const ONLINE_BOOKING_GATEWAYS = ["stripe", "paymongo", "xendit", "paypal"];
+
 async function applyBookingPaymentModeNote() {
   const el = document.getElementById("bookingPaymentModeNote");
   if (!el) return;
   const gateway = await getActiveBookingGateway();
-  if (gateway === "stripe") {
-    el.innerHTML = 'A 50% deposit is collected securely online by card right after you submit this request. The remaining balance is payable on or before event day unless coordinated otherwise. Confirmation replies will arrive from <span class="text-purple">notification@studiophotuna.com</span>.';
+  if (ONLINE_BOOKING_GATEWAYS.includes(gateway)) {
+    el.innerHTML = 'A 50% deposit is collected securely online right after you submit this request. The remaining balance is payable on or before event day unless coordinated otherwise. Confirmation replies will arrive from <span class="text-purple">notification@studiophotuna.com</span>.';
   }
 }
 
@@ -726,7 +728,7 @@ async function handleBookingSubmit(event) {
 
     if (!isCustom && total > 0) {
       const gateway = await getActiveBookingGateway();
-      if (gateway === "stripe") {
+      if (ONLINE_BOOKING_GATEWAYS.includes(gateway)) {
         setBookingMessage("Redirecting you to secure payment for your deposit...", false);
         const { data: sessionData, error: fnError } = await supabaseClient.functions.invoke("create-booking-checkout-session", { body: { booking_id: bookingId } });
         if (!fnError && sessionData?.url) { window.location.href = sessionData.url; return; }
@@ -1890,8 +1892,30 @@ async function initPaymentSuccessPage() {
 async function initBookingSuccessPage() {
   const statusMsg = document.getElementById("bookingPaymentStatusMessage");
   if (!statusMsg || !supabaseClient) return;
-  const bookingId = new URLSearchParams(window.location.search).get("booking_id");
+  const params = new URLSearchParams(window.location.search);
+  const bookingId = params.get("booking_id");
   if (!bookingId) { statusMsg.textContent = ""; return; }
+
+  // PayPal doesn't confirm payment via webhook in this flow -- after the
+  // guest approves on paypal.com it redirects back here with `token` (the
+  // order id), and the charge only actually happens once we call the
+  // capture endpoint server-side.
+  const paypalOrderId = params.get("token");
+  if (paypalOrderId) {
+    statusMsg.textContent = "Finalizing your PayPal payment...";
+    try {
+      const { data, error } = await supabaseClient.functions.invoke("capture-booking-payment", { body: { booking_id: bookingId, order_id: paypalOrderId } });
+      if (error || !data?.captured) {
+        statusMsg.textContent = "We couldn't finalize your PayPal payment automatically. Please contact support.";
+        return;
+      }
+    } catch (err) {
+      console.error("PayPal capture error:", err);
+      statusMsg.textContent = "We couldn't finalize your PayPal payment automatically. Please contact support.";
+      return;
+    }
+  }
+
   try {
     const { data, error } = await supabaseClient.rpc("get_public_booking_payment_status", { p_booking_id: bookingId });
     if (error) throw error;

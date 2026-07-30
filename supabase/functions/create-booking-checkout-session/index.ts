@@ -1,27 +1,30 @@
 // supabase/functions/create-booking-checkout-session/index.ts
 //
-// Creates a one-time Stripe Checkout session for an event booking's 50%
-// deposit. Called anonymously (no Supabase auth) by the public Book an
-// Event wizard right after a booking request is inserted.
+// Creates a checkout/payment session for an event booking's 50% deposit,
+// using whichever payment gateway the admin has configured for the "book"
+// context (Bookings Admin > Settings). Called anonymously (no Supabase
+// auth) by the public Book an Event wizard right after a booking request
+// is inserted.
 //
 // Deploy with:
 //   supabase functions deploy create-booking-checkout-session --no-verify-jwt
 // (--no-verify-jwt is required: guests booking an event aren't signed in.)
 //
-// Required secrets (set with `supabase secrets set KEY=value`):
-//   STRIPE_SECRET_KEY       sk_live_... / sk_test_...
+// Required secrets (set with `supabase secrets set KEY=value`) -- only the
+// ones for the currently-active provider need to be set:
+//   STRIPE_SECRET_KEY
+//   PAYMONGO_SECRET_KEY
+//   XENDIT_SECRET_KEY
+//   PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_ENV ("live" or "sandbox"; defaults to live)
 //   SITE_URL                e.g. https://studiophotuna.com
-//   SUPABASE_URL            (auto-injected by Supabase)
-//   SUPABASE_SERVICE_ROLE_KEY (auto-injected by Supabase)
+//   SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY (auto-injected by Supabase)
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@16.2.0?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
-
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-  apiVersion: "2024-06-20",
-  httpClient: Stripe.createFetchHttpClient(),
-});
+import { createStripeSession } from "./providers/stripe.ts";
+import { createPaymongoSession } from "./providers/paymongo.ts";
+import { createXenditInvoice } from "./providers/xendit.ts";
+import { createPaypalOrder } from "./providers/paypal.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -40,15 +43,16 @@ serve(async (req) => {
     const { booking_id } = await req.json();
     if (!booking_id) return json({ error: "Missing booking_id." }, 400);
 
-    // The admin can switch this off (or to a provider we don't support yet)
-    // at any time, so re-check server-side rather than trusting the client.
+    // The admin can switch this at any time, so re-check server-side
+    // rather than trusting the client.
     const { data: settings } = await supabaseAdmin
       .from("payment_gateway_settings")
       .select("provider")
       .eq("context", "book")
       .maybeSingle();
 
-    if (settings?.provider !== "stripe") {
+    const provider = settings?.provider;
+    if (!provider || provider === "manual_gcash") {
       return json({ error: "Online payment isn't available for bookings right now. Please use the manual payment method." }, 400);
     }
 
@@ -64,29 +68,34 @@ serve(async (req) => {
 
     const depositAmount = Math.round(booking.estimated_total / 2);
     const siteUrl = Deno.env.get("SITE_URL") ?? "https://studiophotuna.com";
+    const successUrl = `${siteUrl}/payment/book_success?booking_id=${booking.id}`;
+    const cancelUrl = `${siteUrl}/payment/book_cancel?booking_id=${booking.id}`;
+    const description = `Event Booking Deposit — ${booking.package_name || "Studio Photuna"}`;
 
-    const session = await stripe.checkout.sessions.create({
-      mode: "payment",
-      customer_email: booking.email ?? undefined,
-      line_items: [{
-        price_data: {
-          currency: "php",
-          product_data: { name: `Event Booking Deposit — ${booking.package_name || "Studio Photuna"}` },
-          unit_amount: depositAmount * 100,
-        },
-        quantity: 1,
-      }],
-      success_url: `${siteUrl}/payment/book_success?booking_id=${booking.id}`,
-      cancel_url: `${siteUrl}/payment/book_cancel?booking_id=${booking.id}`,
-      metadata: { booking_id: booking.id },
-    });
+    let result: { url: string; sessionId: string };
+    switch (provider) {
+      case "stripe":
+        result = await createStripeSession({ depositAmount, description, email: booking.email, successUrl, cancelUrl, bookingId: booking.id });
+        break;
+      case "paymongo":
+        result = await createPaymongoSession({ depositAmount, description, successUrl, cancelUrl, bookingId: booking.id });
+        break;
+      case "xendit":
+        result = await createXenditInvoice({ depositAmount, description, email: booking.email, successUrl, cancelUrl, bookingId: booking.id });
+        break;
+      case "paypal":
+        result = await createPaypalOrder({ depositAmount, description, successUrl, cancelUrl, bookingId: booking.id });
+        break;
+      default:
+        return json({ error: "The selected payment gateway isn't supported yet." }, 400);
+    }
 
     await supabaseAdmin
       .from("event_bookings")
-      .update({ deposit_amount: depositAmount, payment_provider: "stripe", stripe_checkout_session_id: session.id })
+      .update({ deposit_amount: depositAmount, payment_provider: provider, payment_session_id: result.sessionId })
       .eq("id", booking.id);
 
-    return json({ url: session.url });
+    return json({ url: result.url });
   } catch (err) {
     console.error(err);
     return json({ error: err.message ?? "Unexpected error creating booking checkout session." }, 500);
