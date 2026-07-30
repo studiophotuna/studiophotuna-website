@@ -160,8 +160,10 @@ const ROUTE_MAP = {
   'refund-policy': '/refund-policy',
   'cookie-policy': '/cookie-policy',
   'data-processing': '/data-processing',
-  'payment-success': '/payment/success',
-  'payment-cancel': '/payment/cancel'
+  'payment-app-success': '/payment/app_success',
+  'payment-app-cancel': '/payment/app_cancel',
+  'payment-book-success': '/payment/book_success',
+  'payment-book-cancel': '/payment/book_cancel'
 };
 
 function navigateTo(viewId) {
@@ -1816,12 +1818,12 @@ window.onload = async function () {
     supabaseClient.auth.getSession().then(({ data }) => {
       const user = data?.session?.user || null;
       window.currentSupabaseUser = user;
-      loadAccountState(user).then(() => { handleCheckoutRedirectResult(); if (CURRENT_VIEW === 'payment-success') initPaymentSuccessPage(); });
+      loadAccountState(user).then(() => { handleCheckoutRedirectResult(); if (CURRENT_VIEW === 'payment-app-success') initPaymentSuccessPage(); });
     });
     supabaseClient.auth.onAuthStateChange((_evt, session) => {
       const user = session?.user || null; window.currentSupabaseUser = user; loadAccountState(user);
     });
-  } else { handleCheckoutRedirectResult(); if (CURRENT_VIEW === 'payment-success') initPaymentSuccessPage(); }
+  } else { handleCheckoutRedirectResult(); if (CURRENT_VIEW === 'payment-app-success') initPaymentSuccessPage(); }
 };
 
 async function initPaymentSuccessPage() {
