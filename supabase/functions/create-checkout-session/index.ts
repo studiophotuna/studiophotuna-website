@@ -89,8 +89,8 @@ serve(async (req) => {
       customer: customerId,
       line_items: [{ price: priceId, quantity: 1 }],
       allow_promotion_codes: true,
-      success_url: `${siteUrl}/payment/success`,
-      cancel_url: `${siteUrl}/payment/cancel`,
+      success_url: `${siteUrl}/payment/app_success`,
+      cancel_url: `${siteUrl}/payment/app_cancel`,
       subscription_data: {
         metadata: { supabase_user_id: user.id },
       },

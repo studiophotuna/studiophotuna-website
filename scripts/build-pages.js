@@ -121,20 +121,59 @@ const PAGES = [
     description: "Studio Photuna Data Processing Disclosure.",
     mainClass: "min-h-screen pt-20",
   },
+  // Photo booth (guest) payments: bare pages with no header/footer/nav --
+  // these are opened by the desktop app's own payment provider flow
+  // (PayMongo/Stripe/Xendit/PayPal at the booth), not a normal site visit.
   {
     outputFile: "payment/success.html",
-    viewId: "payment-success",
-    contentFile: "content/payment-success.html",
+    viewId: "payment-guest-success",
+    contentFile: "content/payment-guest-success.html",
+    title: "Payment Successful | Studio Photuna",
+    description: "Your photo booth payment was successful.",
+    mainClass: "min-h-screen flex items-center justify-center px-6",
+    bare: true,
+  },
+  {
+    outputFile: "payment/cancel.html",
+    viewId: "payment-guest-cancel",
+    contentFile: "content/payment-guest-cancel.html",
+    title: "Payment Cancelled | Studio Photuna",
+    description: "Your photo booth payment was cancelled. No charge was made.",
+    mainClass: "min-h-screen flex items-center justify-center px-6",
+    bare: true,
+  },
+  // Studio Photuna plan subscriptions (Stripe checkout via account/pricing).
+  {
+    outputFile: "payment/app_success.html",
+    viewId: "payment-app-success",
+    contentFile: "content/payment-app-success.html",
     title: "Payment Successful | Studio Photuna",
     description: "Your Studio Photuna subscription payment was successful.",
     mainClass: "min-h-screen pt-20 flex items-center",
   },
   {
-    outputFile: "payment/cancel.html",
-    viewId: "payment-cancel",
-    contentFile: "content/payment-cancel.html",
+    outputFile: "payment/app_cancel.html",
+    viewId: "payment-app-cancel",
+    contentFile: "content/payment-app-cancel.html",
     title: "Checkout Cancelled | Studio Photuna",
     description: "Your Studio Photuna checkout was cancelled. No charge was made.",
+    mainClass: "min-h-screen pt-20 flex items-center",
+  },
+  // Photo booth event booking deposits (Book an Event wizard).
+  {
+    outputFile: "payment/book_success.html",
+    viewId: "payment-book-success",
+    contentFile: "content/payment-book-success.html",
+    title: "Deposit Received | Studio Photuna",
+    description: "Your Studio Photuna event booking deposit was received.",
+    mainClass: "min-h-screen pt-20 flex items-center",
+  },
+  {
+    outputFile: "payment/book_cancel.html",
+    viewId: "payment-book-cancel",
+    contentFile: "content/payment-book-cancel.html",
+    title: "Payment Cancelled | Studio Photuna",
+    description: "Your Studio Photuna event booking deposit payment was cancelled.",
     mainClass: "min-h-screen pt-20 flex items-center",
   },
 ];
@@ -145,6 +184,27 @@ function escapeHtml(str) {
 
 function buildPage(page) {
   const content = read(page.contentFile);
+
+  // "bare" pages skip header/nav/footer/modals/app.js entirely -- used for
+  // payment-provider redirect targets opened outside a normal site visit
+  // (e.g. the desktop app's own checkout webview), where only the
+  // confirmation message itself should show.
+  const body = page.bare
+    ? `    <main class="${page.mainClass}">
+${content}
+    </main>`
+    : `    <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+${header}
+${mobileMenu}
+    <main class="${page.mainClass}">
+${content}
+    </main>
+
+${footer}
+${modals}
+${scriptsFooter}`;
+
   const html = `<!doctype html>
 <html lang="en" class="scroll-smooth">
   <head>
@@ -156,17 +216,7 @@ ${head}
   </head>
   <body class="bg-warm text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="${page.viewId}">
 
-    <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
-
-${header}
-${mobileMenu}
-    <main class="${page.mainClass}">
-${content}
-    </main>
-
-${footer}
-${modals}
-${scriptsFooter}
+${body}
   </body>
 </html>
 `;
