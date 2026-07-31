@@ -440,19 +440,30 @@ async function handleSubscribePlan(triggerId) {
   const blocker = getSubscriptionBlocker(currentLicense, requestedBilling);
   if (blocker) { if (blocker.type === "confirm") { if (!window.confirm(blocker.message)) return; } else { spawnToast(blocker.title, blocker.message, "fa-solid fa-circle-info", "warning"); return; } }
   const gateway = await getActiveAppGateway();
-  if (gateway !== "stripe") { openGcashModal(requestedBilling); return; }
+  if (gateway === "manual_gcash") { openGcashModal(requestedBilling); return; }
   const ctas = [document.getElementById("proPlanCta"), document.getElementById("renewalBannerBtn")].filter(Boolean);
   const originalLabels = ctas.map((el) => el.textContent);
   ctas.forEach((el) => { el.disabled = true; el.textContent = "Redirecting to checkout..."; });
   spawnToast("Processing", "Connecting to checkout...", "fa-solid fa-arrows-spin", "info");
   try {
-    const { data, error } = await supabaseClient.functions.invoke("create-checkout-session", { body: { billing: requestedBilling } });
+    // Stripe keeps its own true recurring subscription; PayMongo/Xendit/
+    // PayPal charge once for the selected billing period (no
+    // auto-renewal yet) via a separate function.
+    const functionName = gateway === "stripe" ? "create-checkout-session" : "create-subscription-checkout-session";
+    const { data, error } = await supabaseClient.functions.invoke(functionName, { body: { billing: requestedBilling } });
     if (error) throw error; if (!data?.url) throw new Error(data?.error || "No checkout URL returned.");
     window.location.href = data.url;
   } catch (err) {
     console.error("Checkout session error:", err);
-    spawnToast("Checkout Failed", err.message || "Could not start checkout. Please try again.", "fa-solid fa-circle-exclamation", "warning");
     ctas.forEach((el, i) => { el.disabled = false; el.textContent = originalLabels[i]; });
+    if (gateway !== "stripe") {
+      // Non-Stripe online checkout failed (e.g. missing provider
+      // credentials) -- fall back to the always-working Manual GCash
+      // flow instead of leaving the customer with no way to pay.
+      openGcashModal(requestedBilling);
+      return;
+    }
+    spawnToast("Checkout Failed", err.message || "Could not start checkout. Please try again.", "fa-solid fa-circle-exclamation", "warning");
   }
 }
 
@@ -1892,6 +1903,39 @@ async function initPaymentSuccessPage() {
     statusMsg.textContent = "Sign in to your account to see your updated plan.";
     return;
   }
+
+  // PayPal doesn't confirm payment via webhook in this flow -- after the
+  // customer approves on paypal.com it redirects back here with `token`
+  // (the order id), and the charge only actually happens once we call the
+  // capture endpoint server-side.
+  const paypalOrderId = new URLSearchParams(window.location.search).get("token");
+  if (paypalOrderId) {
+    statusMsg.textContent = "Finalizing your PayPal payment...";
+    try {
+      const { data, error } = await supabaseClient.functions.invoke("capture-subscription-payment", { body: { order_id: paypalOrderId } });
+      statusMsg.textContent = (!error && data?.captured)
+        ? "Your Pro plan is now active. Welcome aboard!"
+        : "We couldn't finalize your PayPal payment automatically. Please contact support.";
+    } catch (err) {
+      console.error("PayPal subscription capture error:", err);
+      statusMsg.textContent = "We couldn't finalize your PayPal payment automatically. Please contact support.";
+    } finally {
+      await loadAccountState(window.currentSupabaseUser);
+    }
+    return;
+  }
+
+  // PayMongo/Xendit are confirmed via webhook, not a client-side
+  // verification call -- loadAccountState() already ran before this and
+  // populated currentLicense, so just reflect what it currently shows.
+  const provider = currentLicense?.payment_provider;
+  if (provider === "paymongo" || provider === "xendit") {
+    statusMsg.textContent = currentLicense?.state === "active"
+      ? "Your Pro plan is now active. Welcome aboard!"
+      : "We're still confirming your payment. This can take a moment -- refresh this page shortly, or contact support if it persists.";
+    return;
+  }
+
   try {
     const { data, error } = await supabaseClient.functions.invoke("verify-checkout-session", { body: {} });
     if (error) throw error;
