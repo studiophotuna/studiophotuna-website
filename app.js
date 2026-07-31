@@ -137,7 +137,6 @@ const billingPlans = {
 };
 
 const PHP_AMOUNTS = { monthly: 1800, yearly: 11400 };
-const ACTIVE_PAYMENT_MODE = "manual_gcash";
 
 // ===================================================================
 // Navigation, Auth UI, Billing, Account
@@ -417,6 +416,21 @@ billingToggleButtons.forEach((button) => {
 // Subscription, GCash payment, checkout
 // ===================================================================
 
+// Admin-configurable via the Bookings Admin > Settings tab. Falls back to
+// manual_gcash (the safe, always-working default) on any error so a
+// settings-fetch hiccup never blocks a subscription attempt. Only Stripe
+// has real recurring billing wired up right now -- PayMongo/Xendit/PayPal
+// fall back to the Manual GCash flow the same way, until each gets its own
+// recurring-billing integration.
+async function getActiveAppGateway() {
+  if (!supabaseClient) return "manual_gcash";
+  try {
+    const { data, error } = await supabaseClient.from("payment_gateway_settings").select("provider").eq("context", "app").maybeSingle();
+    if (error || !data) return "manual_gcash";
+    return data.provider;
+  } catch { return "manual_gcash"; }
+}
+
 async function handleSubscribePlan(triggerId) {
   if (!window.currentSupabaseUser) { spawnToast("Authentication Needed", "Please log in before choosing a license plan.", "fa-solid fa-user-lock", "warning"); openAuthModal("signup"); return; }
   if (!supabaseClient) { spawnToast("Unavailable", "Supabase client not loaded.", "fa-solid fa-triangle-exclamation", "warning"); return; }
@@ -425,7 +439,8 @@ async function handleSubscribePlan(triggerId) {
     : selectedBilling;
   const blocker = getSubscriptionBlocker(currentLicense, requestedBilling);
   if (blocker) { if (blocker.type === "confirm") { if (!window.confirm(blocker.message)) return; } else { spawnToast(blocker.title, blocker.message, "fa-solid fa-circle-info", "warning"); return; } }
-  if (ACTIVE_PAYMENT_MODE === "manual_gcash") { openGcashModal(requestedBilling); return; }
+  const gateway = await getActiveAppGateway();
+  if (gateway !== "stripe") { openGcashModal(requestedBilling); return; }
   const ctas = [document.getElementById("proPlanCta"), document.getElementById("renewalBannerBtn")].filter(Boolean);
   const originalLabels = ctas.map((el) => el.textContent);
   ctas.forEach((el) => { el.disabled = true; el.textContent = "Redirecting to checkout..."; });
