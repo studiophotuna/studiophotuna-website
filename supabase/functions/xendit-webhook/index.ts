@@ -1,7 +1,8 @@
 // supabase/functions/xendit-webhook/index.ts
 //
-// Receives Xendit invoice callback events for event booking deposits.
-// Deploy with:
+// Receives Xendit invoice callback events for both event booking deposits
+// and Pro plan subscription payments (one-time per billing period, no
+// auto-renewal). Deploy with:
 //   supabase functions deploy xendit-webhook --no-verify-jwt
 // (--no-verify-jwt is required: Xendit calls this endpoint directly, it
 // doesn't have a Supabase user session/JWT.)
@@ -24,6 +25,13 @@ const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 );
 
+function periodEndFor(billing: string): string {
+  const end = new Date();
+  if (billing === "yearly") end.setFullYear(end.getFullYear() + 1);
+  else end.setMonth(end.getMonth() + 1);
+  return end.toISOString();
+}
+
 serve(async (req) => {
   const token = req.headers.get("x-callback-token");
   const expected = Deno.env.get("XENDIT_WEBHOOK_TOKEN");
@@ -36,16 +44,40 @@ serve(async (req) => {
   try {
     const event = await req.json();
     // Invoice callbacks: status is "PAID" (or "SETTLED") once paid.
-    // external_id was set to `booking-<booking_id>` at invoice creation.
     if (event?.status === "PAID" || event?.status === "SETTLED") {
+      const metadata = event?.metadata || {};
+      // Fallback for invoices created before metadata was added:
+      // external_id was `booking-<booking_id>`.
       const externalId = event?.external_id as string | undefined;
-      const bookingId = externalId?.startsWith("booking-") ? externalId.slice("booking-".length) : null;
+      const bookingId = metadata.booking_id
+        || (externalId?.startsWith("booking-") ? externalId.slice("booking-".length) : null);
+      const userId = metadata.supabase_user_id;
+
       if (bookingId) {
         await supabaseAdmin
           .from("event_bookings")
           .update({ reservation_status: "partial_paid", reservation_paid_at: new Date().toISOString() })
           .eq("id", bookingId)
           .eq("payment_session_id", event.id);
+      } else if (userId) {
+        const { data: license } = await supabaseAdmin
+          .from("licenses")
+          .select("pending_billing")
+          .eq("user_id", userId)
+          .eq("payment_session_id", event.id)
+          .maybeSingle();
+        if (license) {
+          const billing = license.pending_billing === "yearly" ? "yearly" : "monthly";
+          await supabaseAdmin
+            .from("licenses")
+            .update({
+              state: "active",
+              plan: billing === "yearly" ? "pro_yearly" : "pro_monthly",
+              current_period_end: periodEndFor(billing),
+              cancel_at_period_end: true,
+            })
+            .eq("user_id", userId);
+        }
       }
     }
 

@@ -1,6 +1,8 @@
 // supabase/functions/paymongo-webhook/index.ts
 //
-// Receives PayMongo webhook events for event booking deposits. Deploy with:
+// Receives PayMongo webhook events for both event booking deposits and
+// Pro plan subscription payments (one-time per billing period, no
+// auto-renewal). Deploy with:
 //   supabase functions deploy paymongo-webhook --no-verify-jwt
 // (--no-verify-jwt is required: PayMongo calls this endpoint directly, it
 // doesn't have a Supabase user session/JWT.)
@@ -25,6 +27,13 @@ const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
 );
+
+function periodEndFor(billing: string): string {
+  const end = new Date();
+  if (billing === "yearly") end.setFullYear(end.getFullYear() + 1);
+  else end.setMonth(end.getMonth() + 1);
+  return end.toISOString();
+}
 
 async function verifySignature(rawBody: string, header: string | null): Promise<boolean> {
   if (!header) return false;
@@ -62,13 +71,35 @@ serve(async (req) => {
 
     if (eventType === "checkout_session.payment.paid") {
       const checkoutSession = event.data.attributes.data;
-      const bookingId = checkoutSession?.attributes?.metadata?.booking_id;
+      const metadata = checkoutSession?.attributes?.metadata || {};
+      const bookingId = metadata.booking_id;
+      const userId = metadata.supabase_user_id;
+
       if (bookingId) {
         await supabaseAdmin
           .from("event_bookings")
           .update({ reservation_status: "partial_paid", reservation_paid_at: new Date().toISOString() })
           .eq("id", bookingId)
           .eq("payment_session_id", checkoutSession.id);
+      } else if (userId) {
+        const { data: license } = await supabaseAdmin
+          .from("licenses")
+          .select("pending_billing")
+          .eq("user_id", userId)
+          .eq("payment_session_id", checkoutSession.id)
+          .maybeSingle();
+        if (license) {
+          const billing = license.pending_billing === "yearly" ? "yearly" : "monthly";
+          await supabaseAdmin
+            .from("licenses")
+            .update({
+              state: "active",
+              plan: billing === "yearly" ? "pro_yearly" : "pro_monthly",
+              current_period_end: periodEndFor(billing),
+              cancel_at_period_end: true,
+            })
+            .eq("user_id", userId);
+        }
       }
     }
 

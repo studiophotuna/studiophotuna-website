@@ -133,9 +133,9 @@
                 <p class="text-[11px] text-muted">Used when a customer subscribes to a Studio Photuna Pro plan from the Account or Pricing page.</p>
                 <select id="gatewayAppSelect" class="w-full border border-line rounded-xl px-3 py-2.5 text-xs focus:border-purple outline-none">
                   <option value="stripe">Stripe</option>
-                  <option value="paymongo">PayMongo (Coming Soon)</option>
-                  <option value="xendit">Xendit (Coming Soon)</option>
-                  <option value="paypal">PayPal (Coming Soon)</option>
+                  <option value="paymongo">PayMongo</option>
+                  <option value="xendit">Xendit</option>
+                  <option value="paypal">PayPal</option>
                   <option value="manual_gcash">Manual GCash</option>
                 </select>
               </div>
@@ -154,7 +154,7 @@
                 </select>
               </div>
             </div>
-            <p class="text-[11px] text-muted">PayMongo, Xendit, and PayPal are wired up for Event Booking Deposits (still need their API credentials set as Supabase secrets to actually process a payment -- selecting one before that falls back to manual payment instructions). For Plan Subscriptions, only Stripe and Manual GCash are live right now -- the other three fall back to the Manual GCash flow, since recurring billing needs its own integration per provider.</p>
+            <p class="text-[11px] text-muted">PayMongo, Xendit, and PayPal are wired up for both Event Booking Deposits and Plan Subscriptions -- they still need their API credentials set as Supabase secrets to actually process a payment (selecting one before that falls back to manual payment instructions). For Plan Subscriptions specifically, only Stripe auto-renews; the other three (including Manual GCash) charge once per billing period and the customer resubscribes manually next time.</p>
             <div class="flex items-center justify-between pt-2 border-t border-line">
               <p class="text-[11px] text-muted" id="gatewaySettingsMeta">&nbsp;</p>
               <button type="button" id="saveGatewaySettings" class="btn-animation bg-purple hover:bg-purple-dark text-white font-extrabold px-6 py-2.5 rounded-full text-xs uppercase">Save Changes</button>
