@@ -723,9 +723,11 @@ async function handleBookingSubmit(event) {
   try {
     const { error } = await supabaseClient.from("event_bookings").insert(payload);
     if (error) throw error;
-    eventBookingForm.reset(); selectedBookingDate = ""; bookingDate.value = ""; bookingDateDisplay.value = "";
-    renderQuote(); showBookingStep(0);
 
+    // Check the payment gateway (and attempt the redirect) BEFORE resetting
+    // the wizard back to step 0 -- otherwise the guest briefly sees the form
+    // jump back to the date picker right before being sent to checkout,
+    // which reads as "did my booking just get wiped?" for a moment.
     if (!isCustom && total > 0) {
       const gateway = await getActiveBookingGateway();
       if (ONLINE_BOOKING_GATEWAYS.includes(gateway)) {
@@ -735,6 +737,9 @@ async function handleBookingSubmit(event) {
         console.warn("Booking checkout session error, falling back to manual payment instructions:", fnError || sessionData?.error);
       }
     }
+
+    eventBookingForm.reset(); selectedBookingDate = ""; bookingDate.value = ""; bookingDateDisplay.value = "";
+    renderQuote(); showBookingStep(0);
 
     const msg = isCustom ? "Booking request sent! Your guest count (>300) requires a custom quote — we'll email you with pricing." : "Booking request completed! Updates will arrive from notification@studiophotuna.com.";
     spawnToast("Request Sent", "Booking request received. Check email for confirmation.", "fa-solid fa-circle-check", "success");
