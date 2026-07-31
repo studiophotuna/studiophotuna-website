@@ -6,6 +6,54 @@
 
         <div class="space-y-8">
 
+          <!-- v0.2.5 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-2-5">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-brand/10 text-brand font-mono font-bold text-xs px-3 py-1 rounded-full">v0.2.5</span>
+                <h2 class="text-2xl font-black text-title">Gallery QR Workflows, Sample Filters &amp; Reliability Overhaul</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">August 1, 2026</span>
+            </div>
+            <p class="text-sm text-body -mt-2">Gallery QR workflows, template library improvements, profile management fixes, and a significant reliability overhaul for post-login data loading.</p>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-green-700"><i class="fa-solid fa-sparkles"></i> New</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Pre-session Event Gallery QR</strong> — Admins can generate an Event Gallery QR code for any event before a single photo is taken. Open the Gallery QR modal and click Generate QR — the link is created instantly, persisted for 90 days, and can be shared with clients right away so they're ready to scan the moment the booth starts shooting.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Gallery QR button per event in Events Library</strong> — Every event card now has a QR Gallery action button, active only when the account has an active Gallery add-on. It opens a modal showing both the pre-session event QR and all individual session QR codes, with copy-link and Download QR options.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Download QR as PNG</strong> — Both event-level and session-level QR codes can now be downloaded as a high-resolution 512×512 PNG directly from the Gallery QR modal — no screenshotting required.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Format filter chips in Samples — Templates</strong> — The Samples panel now has filter chips (All · 4×6 · 2×6 · 6×4 · 6×2) so operators can quickly find templates matching their current paper format without scrolling through unrelated layouts.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Format filter chips in Samples — Frames</strong> — The same filter chips are available for frames in the Samples panel. Each card's preview image automatically switches to the selected format's variant, so you always see an accurate representation of the frame before applying it.</span></li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-brand"><i class="fa-solid fa-arrow-up-right-dots"></i> Improved</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Events load instantly after login — no Ctrl+R required</strong> — The events list now reads from the local store immediately, before the Supabase sync network call. Previously the app waited for the full cloud round-trip before showing any data, so a slow or unsettled auth token caused an empty events list until you manually refreshed. Events now appear as soon as the screen loads.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Auto-refresh on window focus and periodic license sync</strong> — The app now silently refreshes your license status when the window regains focus (throttled to once every 30 seconds) and on a 5-minute interval while running. Events are also re-read on focus so multi-device or web-app changes appear without restarting.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Template limit enforced in Samples section</strong> — Applying or adding a sample template now respects your account's template limit, with a toast notification when the limit is reached — matching the behavior already in place for the main templates library.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Profile photo picker reliability</strong> — The "Update photo" button in Account → Profile is more reliable and now shows a loading state on the button while the upload is in progress.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Manual reload button for Events Library</strong> — A refresh icon in the Events Library header lets you manually re-read events from the local store without a full page reload — useful when events were created from another device and the focus-based sync hasn't fired yet.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">Faster settings sync on first login</strong> — Eliminated a redundant network round-trip when reading your settings, and removed a race condition where data could fail to load silently on first login.</span></li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> <span><strong class="text-title">More reliable avatar uploads</strong> — Profile photo uploads are now packaged in a way that's fully compatible with the desktop app's upload pipeline, fixing a rare "no image data received" error some operators saw.</span></li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-red-600"><i class="fa-solid fa-bug"></i> Fixed</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span><strong class="text-title">Template limit not enforced when limit was zero</strong> — A logic bug meant an entitlement of exactly 0 templates was treated as unlimited instead of blocked. Template limits are now enforced correctly at every tier.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span><strong class="text-title">Free plan users limited to 1 template instead of 3</strong> — Free-tier accounts were capped at 1 template due to a hardcoded default; corrected to the intended 3-template free plan limit.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span><strong class="text-title">Saving profile wiped existing avatar URL</strong> — Saving your profile while the photo field was empty (e.g. after a slow page load) could accidentally erase your previously uploaded avatar. Your avatar is now preserved unless you actually upload a new one.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span><strong class="text-title">Uploaded avatar not refreshing in browser due to caching</strong> — After uploading a new photo, the old one sometimes kept showing because the browser served a cached copy. New uploads now always display immediately.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span><strong class="text-title">Cloud sync could clobber local data with empty values</strong> — A merge-strategy bug meant syncing with the cloud could occasionally overwrite locally-saved settings, appearance, and template data with blank values. Local data now always takes priority for anything not already present in the cloud.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span><strong class="text-title">Events, templates, frames, and palettes occasionally failing to load</strong> — A storage bug could cause these lists to come back in the wrong data shape when empty, silently breaking the app's ability to merge and display them. Fixed so empty lists always load correctly.</span></li>
+              </ul>
+            </div>
+          </article>
+
           <!-- v0.2.4 -->
           <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-2-4">
             <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
