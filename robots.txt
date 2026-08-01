@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /account
+Disallow: /bookings-admin
+Disallow: /payment/
+
+Sitemap: https://studiophotuna.com/sitemap.xml

@@ -15,6 +15,9 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
 
+const SITE_URL = "https://studiophotuna.com";
+const SOCIAL_IMAGE = `${SITE_URL}/logo-dark.png`;
+
 const head = read("partials/head.html");
 const header = read("partials/header.html");
 const mobileMenu = read("partials/mobile-menu.html");
@@ -32,6 +35,27 @@ const PAGES = [
     title: "Studio Photuna | Korean-Style Photobooth Business Software",
     description: "Studio Photuna is photo booth business software for Korean-style photobooth operators: event setup, template design, guest booth flow, printing, QR sharing, and a photo booth booking & management app in one Pro subscription.",
     mainClass: "min-h-screen pt-20",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      name: "Studio Photuna",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Windows 10 / 11",
+      description: "Photo booth business software for Korean-style photobooth operators: event setup, template design, guest booth flow, printing, and QR guest gallery sharing.",
+      url: SITE_URL,
+      offers: {
+        "@type": "AggregateOffer",
+        priceCurrency: "PHP",
+        lowPrice: "1800",
+        highPrice: "11400",
+        offerCount: "2",
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "Studio Photuna",
+        url: SITE_URL,
+      },
+    },
   },
   {
     outputFile: "book-event.html",
@@ -48,6 +72,7 @@ const PAGES = [
     title: "My Account | Studio Photuna",
     description: "Manage your Studio Photuna account, subscription plan, and profile settings.",
     mainClass: "min-h-screen pt-20",
+    noindex: true,
   },
   {
     outputFile: "bookings-admin.html",
@@ -56,6 +81,7 @@ const PAGES = [
     title: "Admin Dashboard | Studio Photuna",
     description: "Studio Photuna operator dashboard: manage bookings, payment proofs, support tickets, and reviews.",
     mainClass: "min-h-screen pt-20",
+    noindex: true,
   },
   {
     outputFile: "download.html",
@@ -132,6 +158,7 @@ const PAGES = [
     description: "Your photo booth payment was successful.",
     mainClass: "min-h-screen flex items-center justify-center px-6",
     bare: true,
+    noindex: true,
   },
   {
     outputFile: "payment/cancel.html",
@@ -141,6 +168,7 @@ const PAGES = [
     description: "Your photo booth payment was cancelled. No charge was made.",
     mainClass: "min-h-screen flex items-center justify-center px-6",
     bare: true,
+    noindex: true,
   },
   // Studio Photuna plan subscriptions (Stripe checkout via account/pricing).
   {
@@ -150,6 +178,7 @@ const PAGES = [
     title: "Payment Successful | Studio Photuna",
     description: "Your Studio Photuna subscription payment was successful.",
     mainClass: "min-h-screen pt-20 flex items-center",
+    noindex: true,
   },
   {
     outputFile: "payment/app_cancel.html",
@@ -158,6 +187,7 @@ const PAGES = [
     title: "Checkout Cancelled | Studio Photuna",
     description: "Your Studio Photuna checkout was cancelled. No charge was made.",
     mainClass: "min-h-screen pt-20 flex items-center",
+    noindex: true,
   },
   // Photo booth event booking deposits (Book an Event wizard).
   {
@@ -167,6 +197,7 @@ const PAGES = [
     title: "Deposit Received | Studio Photuna",
     description: "Your Studio Photuna event booking deposit was received.",
     mainClass: "min-h-screen pt-20 flex items-center",
+    noindex: true,
   },
   {
     outputFile: "payment/book_cancel.html",
@@ -175,6 +206,7 @@ const PAGES = [
     title: "Payment Cancelled | Studio Photuna",
     description: "Your Studio Photuna event booking deposit payment was cancelled.",
     mainClass: "min-h-screen pt-20 flex items-center",
+    noindex: true,
   },
 ];
 
@@ -182,8 +214,19 @@ function escapeHtml(str) {
   return str.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
+// Vercel's cleanUrls strips ".html" from any path depth, so this matches
+// what actually resolves in production -- "index.html" -> "/",
+// "book-event.html" -> "/book-event", "payment/app_success.html" ->
+// "/payment/app_success".
+function routePathFor(outputFile) {
+  if (outputFile === "index.html") return "/";
+  return "/" + outputFile.replace(/\.html$/, "");
+}
+
 function buildPage(page) {
   const content = read(page.contentFile);
+  const routePath = routePathFor(page.outputFile);
+  const canonicalUrl = `${SITE_URL}${routePath}`;
 
   // "bare" pages skip header/nav/footer/modals/app.js entirely -- used for
   // payment-provider redirect targets opened outside a normal site visit
@@ -205,6 +248,10 @@ ${footer}
 ${modals}
 ${scriptsFooter}`;
 
+  const structuredDataTag = page.structuredData
+    ? `\n    <script type="application/ld+json">${JSON.stringify(page.structuredData)}</script>`
+    : "";
+
   const html = `<!doctype html>
 <html lang="en" class="scroll-smooth">
   <head>
@@ -212,6 +259,18 @@ ${scriptsFooter}`;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(page.title)}</title>
     <meta name="description" content="${escapeHtml(page.description)}" />
+    <link rel="canonical" href="${canonicalUrl}" />
+    <meta name="robots" content="${page.noindex ? "noindex, nofollow" : "index, follow"}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Studio Photuna" />
+    <meta property="og:title" content="${escapeHtml(page.title)}" />
+    <meta property="og:description" content="${escapeHtml(page.description)}" />
+    <meta property="og:url" content="${canonicalUrl}" />
+    <meta property="og:image" content="${SOCIAL_IMAGE}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(page.title)}" />
+    <meta name="twitter:description" content="${escapeHtml(page.description)}" />
+    <meta name="twitter:image" content="${SOCIAL_IMAGE}" />${structuredDataTag}
 ${head}
   </head>
   <body class="bg-warm text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="${page.viewId}">
@@ -226,5 +285,16 @@ ${body}
   console.log("built", page.outputFile);
 }
 
+function buildSitemap() {
+  const today = new Date().toISOString().slice(0, 10);
+  const urls = PAGES.filter((page) => !page.noindex)
+    .map((page) => `  <url>\n    <loc>${SITE_URL}${routePathFor(page.outputFile)}</loc>\n    <lastmod>${today}</lastmod>\n  </url>`)
+    .join("\n");
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  fs.writeFileSync(path.join(ROOT, "sitemap.xml"), xml);
+  console.log("built sitemap.xml");
+}
+
 for (const page of PAGES) buildPage(page);
+buildSitemap();
 console.log(`\nBuilt ${PAGES.length} pages.`);

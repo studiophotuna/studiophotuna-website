@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Changelog | Studio Photuna</title>
     <meta name="description" content="Every release of the Studio Photuna Booth App, newest first." />
+    <link rel="canonical" href="https://studiophotuna.com/changelog" />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Studio Photuna" />
+    <meta property="og:title" content="Changelog | Studio Photuna" />
+    <meta property="og:description" content="Every release of the Studio Photuna Booth App, newest first." />
+    <meta property="og:url" content="https://studiophotuna.com/changelog" />
+    <meta property="og:image" content="https://studiophotuna.com/logo-dark.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Changelog | Studio Photuna" />
+    <meta name="twitter:description" content="Every release of the Studio Photuna Booth App, newest first." />
+    <meta name="twitter:image" content="https://studiophotuna.com/logo-dark.png" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/favicon.png" />
     
@@ -695,6 +707,34 @@
     </div>
 
     <script src="/app.js"></script>
+
+    <!--Start of Google Analytics 4 (gtag.js)-->
+    <!--
+      HOW TO SET UP:
+      1. Go to https://analytics.google.com and create (or open) a GA4
+         property for studiophotuna.com
+      2. Admin > Data Streams > your web stream > copy the Measurement ID
+         (looks like G-XXXXXXXXXX)
+      3. Replace GA_MEASUREMENT_ID below with that ID
+      The guard below keeps this fully inert (no script load, no network
+      requests) until a real ID is filled in, so it's safe to ship now.
+    -->
+    <script>
+      (function () {
+        var GA_MEASUREMENT_ID = "GA_MEASUREMENT_ID";
+        if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID === "GA_MEASUREMENT_ID") return;
+        var s = document.createElement("script");
+        s.async = true;
+        s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_MEASUREMENT_ID;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        window.gtag = gtag;
+        gtag("js", new Date());
+        gtag("config", GA_MEASUREMENT_ID);
+      })();
+    </script>
+    <!--End of Google Analytics 4-->
 
     <!--Start of Tawk.to Live Chat Script-->
     <!--
