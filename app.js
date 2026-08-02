@@ -138,6 +138,50 @@ const billingPlans = {
 
 const PHP_AMOUNTS = { monthly: 1800, yearly: 11400 };
 
+const PAYMENT_METHOD_LABELS = {
+  stripe: "Card (Stripe)",
+  paymongo: "PayMongo",
+  xendit: "Xendit",
+  paypal: "PayPal",
+  manual_gcash: "GCash",
+};
+
+function formatPhp(amount) {
+  return "₱" + Number(amount).toLocaleString("en-PH", { minimumFractionDigits: 2 });
+}
+
+function formatPaymentDate(value) {
+  if (!value) return "—";
+  return new Date(value).toLocaleString("en-PH", { dateStyle: "medium", timeStyle: "short" });
+}
+
+// Fills in a payment-receipt detail block (Transaction ID / Date & Time /
+// Payment Method) shared by the app-subscription and booking-deposit
+// success pages. Leaves the block hidden when there's no real data yet
+// (e.g. payment still confirming) rather than showing empty placeholders.
+function renderPaymentReceipt(prefix, { amount, txnId, date, provider }) {
+  const detailsEl = document.getElementById(prefix + "ReceiptDetails");
+  if (!detailsEl) return;
+  const amountEl = document.getElementById(prefix + "Amount");
+  if (amountEl && amount != null) amountEl.textContent = formatPhp(amount);
+  if (!txnId && !date && !provider) return;
+  document.getElementById(prefix + "TxnId").textContent = txnId || "—";
+  document.getElementById(prefix + "Date").textContent = formatPaymentDate(date);
+  document.getElementById(prefix + "Method").textContent = PAYMENT_METHOD_LABELS[provider] || provider || "—";
+  detailsEl.classList.remove("hidden");
+}
+
+function copyPaymentField(elementId, btn) {
+  const text = document.getElementById(elementId)?.textContent?.trim();
+  if (!text || text === "—" || !navigator.clipboard) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const icon = btn.querySelector("i");
+    if (!icon) return;
+    icon.className = "fa-solid fa-check";
+    setTimeout(() => { icon.className = "fa-regular fa-copy"; }, 1500);
+  });
+}
+
 // ===================================================================
 // Navigation, Auth UI, Billing, Account
 // ===================================================================
@@ -1921,6 +1965,7 @@ async function initPaymentSuccessPage() {
       statusMsg.textContent = "We couldn't finalize your PayPal payment automatically. Please contact support.";
     } finally {
       await loadAccountState(window.currentSupabaseUser);
+      renderPaymentReceiptFromLicense();
     }
     return;
   }
@@ -1933,6 +1978,7 @@ async function initPaymentSuccessPage() {
     statusMsg.textContent = currentLicense?.state === "active"
       ? "Your Pro plan is now active. Welcome aboard!"
       : "We're still confirming your payment. This can take a moment -- refresh this page shortly, or contact support if it persists.";
+    renderPaymentReceiptFromLicense();
     return;
   }
 
@@ -1947,7 +1993,19 @@ async function initPaymentSuccessPage() {
     statusMsg.textContent = "We couldn't confirm your payment automatically. Please check your account page, or contact support if you were charged.";
   } finally {
     await loadAccountState(window.currentSupabaseUser);
+    renderPaymentReceiptFromLicense();
   }
+}
+
+function renderPaymentReceiptFromLicense() {
+  if (!currentLicense) return;
+  const billing = currentLicense.plan === "pro_yearly" ? "yearly" : currentLicense.plan === "pro_monthly" ? "monthly" : null;
+  renderPaymentReceipt("payment", {
+    amount: billing ? PHP_AMOUNTS[billing] : null,
+    txnId: currentLicense.payment_session_id || currentLicense.stripe_subscription_id || currentLicense.paymongo_checkout_session_id,
+    date: currentLicense.last_payment_verified_at || currentLicense.updated_at,
+    provider: currentLicense.payment_provider,
+  });
 }
 
 // Runs regardless of login state -- booking guests aren't signed into a
@@ -1987,6 +2045,12 @@ async function initBookingSuccessPage() {
     statusMsg.textContent = (row?.reservation_status === "partial_paid" || row?.reservation_status === "paid")
       ? "Your deposit payment is confirmed."
       : "We're still confirming your payment. This can take a moment -- refresh this page shortly, or contact support if it persists.";
+    renderPaymentReceipt("bookingPayment", {
+      amount: row?.deposit_amount,
+      txnId: row?.payment_session_id,
+      date: row?.reservation_paid_at,
+      provider: row?.payment_provider,
+    });
   } catch (err) {
     console.error("Booking payment verification error:", err);
     statusMsg.textContent = "";
