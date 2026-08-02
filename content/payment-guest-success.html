@@ -1,8 +1,42 @@
       <div class="max-w-md w-full mx-auto text-center space-y-5">
-        <div class="w-20 h-20 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-3xl mx-auto">
-          <i class="fa-solid fa-circle-check"></i>
+        <div class="relative w-20 h-20 mx-auto">
+          <span class="absolute -top-1 left-2 w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+          <span class="absolute top-3 -right-2 w-1.5 h-3 rounded-full bg-brand rotate-12"></span>
+          <span class="absolute -bottom-1 right-3 w-1.5 h-1.5 rounded-full bg-green-400"></span>
+          <div class="relative z-10 w-20 h-20 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-3xl">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
         </div>
-        <h1 class="h1-display text-title text-3xl sm:text-4xl">Payment Successful</h1>
-        <p class="text-body text-base">Your payment has been received. Thank you!</p>
+        <h1 class="h1-display text-title text-3xl sm:text-4xl">Payment Successful!</h1>
+        <p class="text-body text-base">Your payment <span id="guestPaymentAmount"></span>has been received. Thank you!</p>
+
+        <div id="guestPaymentReceiptDetails" class="hidden text-left divide-y divide-line border-t border-b border-line">
+          <div class="flex items-center gap-3 py-3">
+            <span class="w-9 h-9 rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-file-invoice"></i></span>
+            <div class="text-left min-w-0">
+              <p class="text-[11px] uppercase font-bold text-muted tracking-wide">Transaction ID</p>
+              <p class="text-sm font-bold text-title font-mono truncate" id="guestPaymentTxnId">—</p>
+            </div>
+          </div>
+        </div>
+
         <p class="text-xs text-muted">You may now close this window.</p>
       </div>
+      <script>
+        // This is a bare page with no app.js/Supabase wiring by design (it's
+        // opened directly by the desktop app's own checkout webview, not a
+        // normal site visit) -- so any receipt details come only from
+        // whatever the redirect URL itself includes, nothing is fabricated.
+        (function () {
+          var params = new URLSearchParams(window.location.search);
+          var amount = params.get("amount");
+          var txnId = params.get("session_id") || params.get("transaction_id") || params.get("ref");
+          if (amount) {
+            document.getElementById("guestPaymentAmount").textContent = "of " + amount + " ";
+          }
+          if (txnId) {
+            document.getElementById("guestPaymentTxnId").textContent = txnId;
+            document.getElementById("guestPaymentReceiptDetails").classList.remove("hidden");
+          }
+        })();
+      </script>

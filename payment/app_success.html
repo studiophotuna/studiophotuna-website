@@ -256,16 +256,52 @@
     </div>
 
     <main class="min-h-screen pt-20 flex items-center">
-      <div class="px-6 py-16 sm:py-24 max-w-2xl mx-auto">
-        <div class="bg-white border border-line rounded-3xl shadow-luxe p-8 sm:p-12 text-center space-y-6">
-          <div class="w-20 h-20 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-3xl mx-auto">
-            <i class="fa-solid fa-circle-check"></i>
+      <div class="px-6 py-16 sm:py-24 max-w-lg mx-auto">
+        <div class="bg-white border border-line rounded-3xl shadow-luxe p-8 sm:p-10 text-center space-y-6">
+          <div class="relative w-24 h-24 mx-auto">
+            <span class="absolute -top-1 left-3 w-2 h-2 rounded-full bg-yellow-400"></span>
+            <span class="absolute top-4 -right-2 w-1.5 h-3.5 rounded-full bg-brand rotate-12"></span>
+            <span class="absolute -bottom-1 right-5 w-2 h-2 rounded-full bg-green-400"></span>
+            <span class="absolute bottom-3 -left-2 w-1.5 h-1.5 rounded-full bg-purple"></span>
+            <div class="relative z-10 w-24 h-24 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-4xl">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
           </div>
-          <div class="space-y-3">
-            <h1 class="h1-display text-title text-3xl sm:text-5xl">Payment Successful</h1>
-            <p class="text-lg text-body max-w-lg mx-auto">Thanks for subscribing to Studio Photuna. Your plan upgrade is being applied to your account now.</p>
+          <div class="space-y-2">
+            <h1 class="h1-display text-title text-3xl sm:text-4xl">Payment Successful!</h1>
+            <p class="text-base text-body max-w-sm mx-auto">Your payment of <strong id="paymentAmount" class="text-green-700">—</strong> has been completed successfully.</p>
           </div>
           <p class="text-sm text-muted" id="paymentStatusMessage">Confirming your payment...</p>
+
+          <div id="paymentReceiptDetails" class="hidden text-left divide-y divide-line border-t border-b border-line">
+            <div class="flex items-center justify-between gap-3 py-3">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="w-9 h-9 rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-file-invoice"></i></span>
+                <div class="text-left min-w-0">
+                  <p class="text-[11px] uppercase font-bold text-muted tracking-wide">Transaction ID</p>
+                  <p class="text-sm font-bold text-title font-mono truncate" id="paymentTxnId">—</p>
+                </div>
+              </div>
+              <button type="button" onclick="copyPaymentField('paymentTxnId', this)" class="w-8 h-8 rounded-lg border border-line text-muted hover:text-title hover:bg-grey flex items-center justify-center shrink-0" aria-label="Copy transaction ID">
+                <i class="fa-regular fa-copy"></i>
+              </button>
+            </div>
+            <div class="flex items-center gap-3 py-3">
+              <span class="w-9 h-9 rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-calendar-day"></i></span>
+              <div class="text-left">
+                <p class="text-[11px] uppercase font-bold text-muted tracking-wide">Date &amp; Time</p>
+                <p class="text-sm font-bold text-title" id="paymentDate">—</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3 py-3">
+              <span class="w-9 h-9 rounded-lg bg-green-100 text-green-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-credit-card"></i></span>
+              <div class="text-left">
+                <p class="text-[11px] uppercase font-bold text-muted tracking-wide">Payment Method</p>
+                <p class="text-sm font-bold text-title" id="paymentMethod">—</p>
+              </div>
+            </div>
+          </div>
+
           <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button onclick="navigateTo('account')" class="btn-animation bg-brand hover:bg-brand-600 text-white font-extrabold px-8 py-3.5 rounded-full text-sm uppercase shadow-sm">
               Go to My Account
