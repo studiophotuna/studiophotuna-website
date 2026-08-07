@@ -203,6 +203,7 @@ const ROUTE_MAP = {
   'refund-policy': '/refund-policy',
   'cookie-policy': '/cookie-policy',
   'data-processing': '/data-processing',
+  'privacy-request': '/privacy-request',
   'payment-app-success': '/payment/app_success',
   'payment-app-cancel': '/payment/app_cancel',
   'payment-book-success': '/payment/book_success',
@@ -981,6 +982,76 @@ async function replyToTicket(ticketId, btn) {
     else { spawnToast("Reply Sent", "The reply has been saved and emailed to the submitter.", "fa-solid fa-circle-check", "success"); }
     loadTickets();
   } catch (err) { spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send Reply`; }
+}
+
+// ===================================================================
+// Admin: Privacy Requests (submitted via /privacy-request -- guests and
+// operators exercising GDPR/UK GDPR/RA 10173 rights). RLS grants
+// authenticated admins SELECT/UPDATE via is_admin(); everyone else only
+// has INSERT, so non-admins loading this tab just see an empty list.
+// ===================================================================
+let privacyRequestsAdmin = [];
+let activePrivacyFilter = "all";
+
+const PRIVACY_REQUEST_TYPE_LABELS = { access: "Access", erasure: "Erasure", correction: "Correction", portability: "Portability", objection: "Objection" };
+const PRIVACY_STATUS_COLORS = { pending: "bg-yellow-100 text-yellow-800", in_progress: "bg-blue-100 text-blue-700", completed: "bg-green-100 text-green-800", rejected: "bg-gray-200 text-gray-600" };
+
+async function loadPrivacyRequestsAdmin() {
+  if (!supabaseClient || !window.currentSupabaseUser) return;
+  setMessage(adminMessage, "Loading privacy requests...");
+  try {
+    const { data, error } = await supabaseClient.from("privacy_requests").select("*").order("deadline_at", { ascending: true });
+    if (error) throw error;
+    privacyRequestsAdmin = data || [];
+    const openCount = privacyRequestsAdmin.filter(r => r.status === "pending" || r.status === "in_progress").length;
+    const badge = document.getElementById("privacyGroupBadge"); if (badge) { badge.textContent = openCount; badge.classList.toggle("hidden", !openCount); }
+    const msg = privacyRequestsAdmin.length
+      ? `${privacyRequestsAdmin.length} privacy request(s) loaded.`
+      : "No privacy requests found. If you expect records here, make sure your profile has role = 'admin'.";
+    setMessage(adminMessage, msg, !privacyRequestsAdmin.length);
+    renderPrivacyRequestsAdmin();
+  } catch (err) { setMessage(adminMessage, `Load error: ${err.message}`, true); }
+}
+
+function formatPrivacyDeadline(deadlineAt, status) {
+  if (status === "completed" || status === "rejected") return { text: "Closed", cls: "bg-gray-200 text-gray-600" };
+  const daysLeft = Math.ceil((new Date(deadlineAt) - Date.now()) / 86400000);
+  if (daysLeft < 0) return { text: `Overdue by ${Math.abs(daysLeft)}d`, cls: "bg-red-100 text-red-700" };
+  if (daysLeft <= 7) return { text: `${daysLeft}d left`, cls: "bg-yellow-100 text-yellow-800" };
+  return { text: `${daysLeft}d left`, cls: "bg-green-100 text-green-800" };
+}
+
+function renderPrivacyRequestsAdmin() {
+  const list = document.getElementById("privacyRequestList"); if (!list) return; list.innerHTML = "";
+  const filtered = activePrivacyFilter === "all" ? privacyRequestsAdmin : privacyRequestsAdmin.filter(r => r.status === activePrivacyFilter);
+  if (!filtered.length) { list.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-10 text-center text-muted space-y-2"><i class="fa-solid fa-user-shield text-4xl text-line"></i><p class="font-bold text-sm">No privacy requests match this filter.</p></div>`; return; }
+  filtered.forEach(r => {
+    const submittedAt = new Date(r.created_at).toLocaleDateString("en-PH", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+    const statusCls = PRIVACY_STATUS_COLORS[r.status] || PRIVACY_STATUS_COLORS.pending;
+    const deadline = formatPrivacyDeadline(r.deadline_at, r.status);
+    const card = document.createElement("div"); card.className = "border border-line rounded-2xl bg-white shadow-sm overflow-hidden";
+    card.innerHTML = `<div class="flex flex-wrap items-center justify-between gap-3 px-6 py-4 border-b border-line bg-grey/40"><div class="flex items-center gap-3"><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${statusCls}">${r.status.replace("_", " ")}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple">${PRIVACY_REQUEST_TYPE_LABELS[r.request_type] || r.request_type}</span><span class="px-3 py-1 rounded-full text-[10px] font-black uppercase ${deadline.cls}">${deadline.text}</span>${r.identity_verified ? `<span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-purple/10 text-purple"><i class="fa-solid fa-shield-check"></i> Verified</span>` : ""}</div><span class="text-[10px] text-muted font-bold">${submittedAt}</span></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-6 p-6"><div class="lg:col-span-7 space-y-3"><div><p class="font-black text-title">${r.requester_name}</p><p class="text-xs text-muted">${r.requester_email}</p></div>${(r.event_venue || r.event_date) ? `<p class="text-xs text-body"><i class="fa-solid fa-location-dot text-muted mr-1"></i>${[r.event_venue, r.event_date].filter(Boolean).join(" · ")}</p>` : ""}${r.session_description ? `<div class="bg-grey rounded-xl p-4 text-xs text-body">${r.session_description}</div>` : ""}${r.notes ? `<div class="border-t border-line pt-3"><p class="text-[10px] uppercase font-black text-muted mb-1">Internal Notes</p><p class="text-xs text-body">${r.notes}</p></div>` : ""}</div><div class="lg:col-span-5 space-y-3 bg-grey border border-line rounded-2xl p-5"><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Status</label><select id="privacy-status-${r.id}" class="w-full border border-line rounded-lg px-3 py-2 text-xs bg-white"><option value="pending" ${r.status === "pending" ? "selected" : ""}>Pending</option><option value="in_progress" ${r.status === "in_progress" ? "selected" : ""}>In Progress</option><option value="completed" ${r.status === "completed" ? "selected" : ""}>Completed</option><option value="rejected" ${r.status === "rejected" ? "selected" : ""}>Rejected</option></select></div><label class="flex items-center gap-2 text-xs font-bold text-title"><input type="checkbox" id="privacy-verified-${r.id}" ${r.identity_verified ? "checked" : ""} class="rounded border-line" /> Identity verified</label><div class="space-y-1"><label class="text-[10px] font-extrabold uppercase text-title">Internal notes</label><textarea id="privacy-notes-${r.id}" rows="3" class="w-full border border-line rounded-xl px-3 py-2 text-xs bg-white resize-none" placeholder="Notes for other admins (not sent to the requester)...">${r.notes || ""}</textarea></div><button onclick="updatePrivacyRequestAdmin('${r.id}', this)" class="btn-animation w-full bg-purple text-white text-xs font-black py-2.5 rounded-xl flex items-center justify-center gap-2"><i class="fa-solid fa-floppy-disk"></i> Save</button></div></div>`;
+    list.appendChild(card);
+  });
+}
+
+async function updatePrivacyRequestAdmin(requestId, btn) {
+  const status = document.getElementById(`privacy-status-${requestId}`)?.value;
+  const identityVerified = document.getElementById(`privacy-verified-${requestId}`)?.checked || false;
+  const notes = document.getElementById(`privacy-notes-${requestId}`)?.value?.trim() || null;
+  const existing = privacyRequestsAdmin.find(r => r.id === requestId);
+  btn.disabled = true; btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> Saving…`;
+  try {
+    const updates = { status, identity_verified: identityVerified, notes };
+    // First status change away from "pending" counts as our initial response;
+    // moving into a closed state (completed/rejected) logs when it was resolved.
+    if (existing && existing.status === "pending" && status !== "pending" && !existing.responded_at) updates.responded_at = new Date().toISOString();
+    if ((status === "completed" || status === "rejected") && !existing?.resolved_at) updates.resolved_at = new Date().toISOString();
+    const { error } = await supabaseClient.from("privacy_requests").update(updates).eq("id", requestId);
+    if (error) throw error;
+    spawnToast("Saved", "Privacy request updated.", "fa-solid fa-circle-check", "success");
+    loadPrivacyRequestsAdmin();
+  } catch (err) { spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save`; }
 }
 
 // ===================================================================
@@ -1924,6 +1995,8 @@ window.onload = async function () {
   } else if (CURRENT_VIEW === 'home') {
     loadReviews();
     if (window.location.hash) scrollAndHighlight(window.location.hash.slice(1));
+  } else if (CURRENT_VIEW === 'privacy-request') {
+    initPrivacyRequestPage();
   }
 
   if (supabaseClient) {
@@ -2057,6 +2130,68 @@ async function initBookingSuccessPage() {
   }
 }
 
+// Runs regardless of login state -- this form is for anyone (booth guests
+// without an account included) to submit a GDPR/UK GDPR/RA 10173 data
+// request. The privacy_requests RLS policy only grants anon/authenticated
+// INSERT (no SELECT), by design -- a public SELECT policy would let anyone
+// holding the public anon key dump every submitted name/email/event detail.
+// That means .insert().select() can't read the row back (Postgres RLS
+// requires a SELECT policy to return anything from INSERT ... RETURNING),
+// so the reference id is generated client-side and sent as part of the
+// insert instead.
+function initPrivacyRequestPage() {
+  const form = document.getElementById("privacyRequestForm");
+  if (!form) return;
+  const errorBanner = document.getElementById("privacyRequestError");
+  const formCard = document.getElementById("privacyRequestFormCard");
+  const successCard = document.getElementById("privacyRequestSuccessCard");
+  const submitBtn = document.getElementById("privacyRequestSubmitBtn");
+
+  form.onsubmit = async (event) => {
+    event.preventDefault();
+    errorBanner.classList.add("hidden"); errorBanner.textContent = "";
+
+    const requestType = document.getElementById("privacyRequestType").value;
+    const requesterName = document.getElementById("privacyRequesterName").value.trim();
+    const requesterEmail = document.getElementById("privacyRequesterEmail").value.trim();
+    const eventDate = document.getElementById("privacyEventDate").value || null;
+    const eventVenue = document.getElementById("privacyEventVenue").value.trim() || null;
+    const sessionDescription = document.getElementById("privacySessionDescription").value.trim() || null;
+
+    const showError = (msg) => { errorBanner.textContent = msg; errorBanner.classList.remove("hidden"); errorBanner.scrollIntoView({ behavior: "smooth", block: "nearest" }); };
+    if (!requestType) { showError("Please select a request type."); return; }
+    if (!requesterName) { showError("Please enter your full name."); return; }
+    if (!requesterEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(requesterEmail)) { showError("Please enter a valid email address."); return; }
+
+    submitBtn.disabled = true; submitBtn.textContent = "Submitting…";
+    try {
+      if (!supabaseClient) throw new Error("Service unavailable. Please email dpo@studiophotuna.com directly.");
+      const requestId = crypto.randomUUID();
+      const { error } = await supabaseClient.from("privacy_requests").insert({
+        id: requestId,
+        request_type: requestType,
+        requester_name: requesterName,
+        requester_email: requesterEmail,
+        event_date: eventDate,
+        event_venue: eventVenue,
+        session_description: sessionDescription,
+      });
+      if (error) throw error;
+
+      const shortRef = "PR-" + requestId.slice(0, 8).toUpperCase();
+      document.getElementById("privacyRequestConfirmEmail").textContent = requesterEmail;
+      document.getElementById("privacyRequestRefBadge").textContent = shortRef;
+      formCard.classList.add("hidden");
+      successCard.classList.remove("hidden");
+      successCard.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (err) {
+      console.error("Privacy request submission error:", err);
+      showError(err.message || "Something went wrong. Please try again or email dpo@studiophotuna.com directly.");
+      submitBtn.disabled = false; submitBtn.textContent = "Submit Request";
+    }
+  };
+}
+
 function handleCheckoutRedirectResult() {
   const params = new URLSearchParams(window.location.search);
   const result = params.get("checkout"); if (!result) return;
@@ -2097,8 +2232,8 @@ document.onclick = () => { closeDropdown(); document.querySelector(".dropdown-me
 const proofList = document.getElementById("proofList");
 const proofFilterButtons = document.querySelectorAll("[data-proof-filter]");
 
-const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics", settings: "Settings" };
-const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], reviews: ["reviews"], analytics: ["analytics"], settings: ["settings"] };
+const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", privacy: "Privacy Requests", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics", settings: "Settings" };
+const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], privacy: ["privacy"], reviews: ["reviews"], analytics: ["analytics"], settings: ["settings"] };
 let activeAdminGroup = "bookings";
 const adminGroupButtons = document.querySelectorAll(".admin-group-tabs [data-admin-group]");
 const adminSubtabsRow = document.getElementById("adminSubtabsRow");
@@ -2109,6 +2244,7 @@ function loadActiveAdminTab() {
   else if (activeAdminTab === "tickets") loadTickets();
   else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
   else if (activeAdminTab === "inbox") loadInboxEmails();
+  else if (activeAdminTab === "privacy") loadPrivacyRequestsAdmin();
   else if (activeAdminTab === "analytics") loadAnalytics();
   else if (activeAdminTab === "settings") loadPaymentGatewaySettings();
   else loadReviewsAdmin();
@@ -2128,14 +2264,17 @@ function activateAdminTab(tab) {
   const packagesList = document.getElementById("packagesList"); if (packagesList) packagesList.classList.toggle("hidden", activeAdminTab !== "packages");
   reviewList.classList.toggle("hidden", activeAdminTab !== "reviews");
   const inboxList = document.getElementById("inboxList"); if (inboxList) inboxList.classList.toggle("hidden", activeAdminTab !== "inbox");
+  const privacyRequestList = document.getElementById("privacyRequestList"); if (privacyRequestList) privacyRequestList.classList.toggle("hidden", activeAdminTab !== "privacy");
   const analyticsPanel = document.getElementById("analyticsPanel"); if (analyticsPanel) analyticsPanel.classList.toggle("hidden", activeAdminTab !== "analytics");
   const settingsPanel = document.getElementById("settingsPanel"); if (settingsPanel) settingsPanel.classList.toggle("hidden", activeAdminTab !== "settings");
   const bookingSubToolbar = document.getElementById("bookingSubToolbar");
   const proofsSubToolbar = document.getElementById("proofsSubToolbar");
   const inboxSubToolbar = document.getElementById("inboxSubToolbar");
+  const privacySubToolbar = document.getElementById("privacySubToolbar");
   if (bookingSubToolbar) bookingSubToolbar.classList.toggle("hidden", activeAdminTab !== "bookings");
   if (proofsSubToolbar) { proofsSubToolbar.classList.toggle("hidden", activeAdminTab !== "proofs"); proofsSubToolbar.classList.toggle("flex", activeAdminTab === "proofs"); }
   if (inboxSubToolbar) { inboxSubToolbar.classList.toggle("hidden", activeAdminTab !== "inbox"); inboxSubToolbar.classList.toggle("flex", activeAdminTab === "inbox"); }
+  if (privacySubToolbar) { privacySubToolbar.classList.toggle("hidden", activeAdminTab !== "privacy"); privacySubToolbar.classList.toggle("flex", activeAdminTab === "privacy"); }
   loadActiveAdminTab();
 }
 
@@ -2222,6 +2361,15 @@ inboxFilterButtons.forEach(btn => {
     inboxFilterButtons.forEach(b => b.classList.remove("active", "ring-2", "ring-offset-1", "ring-purple"));
     btn.classList.add("active", "ring-2", "ring-offset-1", "ring-purple");
     renderInboxEmails();
+  };
+});
+
+const privacyFilterButtons = document.querySelectorAll("[data-privacy-filter]");
+privacyFilterButtons.forEach(btn => {
+  btn.onclick = () => {
+    activePrivacyFilter = btn.dataset.privacyFilter;
+    privacyFilterButtons.forEach(b => { b.classList.remove("active", "bg-purple", "text-white"); b.classList.add("bg-white", "text-title"); });
+    btn.classList.add("active", "bg-purple", "text-white"); btn.classList.remove("bg-white", "text-title"); renderPrivacyRequestsAdmin();
   };
 });
 
