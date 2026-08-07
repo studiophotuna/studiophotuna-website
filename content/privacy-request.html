@@ -1,0 +1,117 @@
+      <div class="px-6 py-12 max-w-6xl mx-auto space-y-8">
+        <div class="text-center space-y-3 max-w-2xl mx-auto">
+          <span class="inline-block text-xs font-black uppercase tracking-widest text-purple">Your Rights</span>
+          <h1 class="h1-display text-[#111827] text-4xl sm:text-5xl">Data &amp; Privacy Request</h1>
+          <p class="text-base text-body">Under the General Data Protection Regulation (GDPR), UK GDPR, and the Philippines Data Privacy Act (RA 10173), you have the right to access, correct, or request deletion of your personal data. Use this form to submit a request and we will respond within <strong class="text-title">30 calendar days</strong>.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:items-start">
+
+          <!-- Main: Form -->
+          <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white border border-line rounded-3xl shadow-luxe p-8" id="privacyRequestFormCard">
+              <h2 class="text-lg font-extrabold text-title mb-6">Submit a Request</h2>
+
+              <div class="hidden bg-red-50 border border-red-200 text-red-700 rounded-xl p-3 text-xs font-bold mb-5" id="privacyRequestError"></div>
+
+              <form id="privacyRequestForm" class="space-y-5" novalidate>
+
+                <div class="space-y-1.5">
+                  <label class="font-extrabold text-title text-xs uppercase" for="privacyRequestType">Request type <span class="text-red-500">*</span></label>
+                  <select id="privacyRequestType" name="requestType" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required>
+                    <option value="" disabled selected>Select a request type…</option>
+                    <option value="erasure">Delete my data (Right to Erasure — Art. 17)</option>
+                    <option value="access">Access my data (Right of Access — Art. 15)</option>
+                    <option value="correction">Correct my data (Right to Rectification — Art. 16)</option>
+                    <option value="portability">Export my data (Right to Portability — Art. 20)</option>
+                    <option value="objection">Object to processing (Right to Object — Art. 21)</option>
+                  </select>
+                </div>
+
+                <hr class="border-line" />
+                <p class="text-[11px] font-black uppercase tracking-widest text-muted">Your contact details</p>
+
+                <div class="space-y-1.5">
+                  <label class="font-extrabold text-title text-xs uppercase" for="privacyRequesterName">Full name <span class="text-red-500">*</span></label>
+                  <input type="text" id="privacyRequesterName" name="requesterName" autocomplete="name" placeholder="e.g. Maria Santos" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                </div>
+
+                <div class="space-y-1.5">
+                  <label class="font-extrabold text-title text-xs uppercase" for="privacyRequesterEmail">Email address <span class="text-red-500">*</span></label>
+                  <input type="email" id="privacyRequesterEmail" name="requesterEmail" autocomplete="email" placeholder="you@example.com" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" required />
+                  <p class="text-[11px] text-muted">We will send our response to this address. Use the same email you used at the event if possible.</p>
+                </div>
+
+                <hr class="border-line" />
+                <p class="text-[11px] font-black uppercase tracking-widest text-muted">Help us locate your data <span class="normal-case font-normal">(for booth guests)</span></p>
+
+                <div class="space-y-1.5">
+                  <label class="font-extrabold text-title text-xs uppercase" for="privacyEventDate">Approximate event date <span class="normal-case font-normal text-muted">(optional)</span></label>
+                  <input type="date" id="privacyEventDate" name="eventDate" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" />
+                </div>
+
+                <div class="space-y-1.5">
+                  <label class="font-extrabold text-title text-xs uppercase" for="privacyEventVenue">Event venue or operator name <span class="normal-case font-normal text-muted">(optional)</span></label>
+                  <input type="text" id="privacyEventVenue" name="eventVenue" placeholder="e.g. Grand Ballroom, Manila / Bloom Events" class="w-full border border-line rounded-xl px-4 py-3 text-xs focus:border-purple outline-none" />
+                </div>
+
+                <div class="space-y-1.5">
+                  <label class="font-extrabold text-title text-xs uppercase" for="privacySessionDescription">Session description <span class="normal-case font-normal text-muted">(optional)</span></label>
+                  <textarea id="privacySessionDescription" name="sessionDescription" placeholder="Describe what you were wearing, what time you visited the booth, the template style, or any other detail that helps us identify your session." class="w-full border border-line rounded-xl px-4 py-3 text-xs h-24 resize-none focus:border-purple outline-none"></textarea>
+                  <p class="text-[11px] text-muted">The more detail you provide, the faster we can locate your session.</p>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-4 pt-2">
+                  <p class="text-[11px] text-muted flex-1 min-w-[180px]">Your request details are stored securely and used only to process your request. See our <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="text-purple font-bold hover:underline">Privacy Policy</a> for full details.</p>
+                  <button type="submit" class="btn-animation bg-purple hover:bg-purple-dark text-white font-extrabold px-8 py-3.5 rounded-full text-sm uppercase shadow-sm shrink-0" id="privacyRequestSubmitBtn">Submit Request</button>
+                </div>
+
+              </form>
+            </div>
+
+            <!-- Success state -->
+            <div class="hidden bg-white border border-line rounded-3xl shadow-luxe p-8 sm:p-10 text-center space-y-5" id="privacyRequestSuccessCard">
+              <div class="relative w-20 h-20 mx-auto">
+                <span class="absolute -top-1 left-2 w-1.5 h-1.5 rounded-full bg-yellow-400"></span>
+                <span class="absolute top-3 -right-2 w-1.5 h-3 rounded-full bg-purple rotate-12"></span>
+                <span class="absolute -bottom-1 right-3 w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                <div class="relative z-10 w-20 h-20 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-3xl">
+                  <i class="fa-solid fa-circle-check"></i>
+                </div>
+              </div>
+              <h2 class="text-xl font-extrabold text-title">Request received</h2>
+              <p class="text-sm text-body max-w-sm mx-auto">Thank you. We have recorded your request and will respond to <strong id="privacyRequestConfirmEmail" class="text-title"></strong> within 30 calendar days.</p>
+              <div class="inline-block bg-grey border border-line rounded-lg px-4 py-2 text-xs font-black text-title tracking-wider" style="font-family: ui-monospace, 'SF Mono', Consolas, monospace;" id="privacyRequestRefBadge"></div>
+              <p class="text-xs text-muted">Please save this reference number. If you do not receive a response within 30 days, contact us at <a href="mailto:dpo@studiophotuna.com" class="text-purple font-bold hover:underline">dpo@studiophotuna.com</a> quoting this reference.</p>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="space-y-4">
+            <div class="bg-white border border-line rounded-2xl p-6">
+              <h3 class="text-sm font-extrabold text-title mb-3">Your rights at a glance</h3>
+              <ul class="space-y-2.5">
+                <li class="flex items-start gap-2.5 text-xs text-body"><span class="w-5 h-5 rounded-md bg-purple/10 text-purple flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-eye text-[10px]"></i></span><span><strong class="text-title">Access</strong> — receive a copy of your personal data we hold</span></li>
+                <li class="flex items-start gap-2.5 text-xs text-body"><span class="w-5 h-5 rounded-md bg-purple/10 text-purple flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-trash text-[10px]"></i></span><span><strong class="text-title">Erasure</strong> — request deletion of your photos and session data</span></li>
+                <li class="flex items-start gap-2.5 text-xs text-body"><span class="w-5 h-5 rounded-md bg-purple/10 text-purple flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-pen text-[10px]"></i></span><span><strong class="text-title">Correction</strong> — fix inaccurate data we hold about you</span></li>
+                <li class="flex items-start gap-2.5 text-xs text-body"><span class="w-5 h-5 rounded-md bg-purple/10 text-purple flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-box-archive text-[10px]"></i></span><span><strong class="text-title">Portability</strong> — receive your data in a machine-readable format</span></li>
+                <li class="flex items-start gap-2.5 text-xs text-body"><span class="w-5 h-5 rounded-md bg-purple/10 text-purple flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-ban text-[10px]"></i></span><span><strong class="text-title">Objection</strong> — object to certain types of processing</span></li>
+              </ul>
+              <div class="flex items-center gap-2.5 bg-purple/5 rounded-xl px-4 py-3 text-xs font-bold text-purple mt-4">
+                <i class="fa-regular fa-clock"></i>
+                <span>We respond within <strong>30 days</strong></span>
+              </div>
+            </div>
+
+            <div class="bg-white border border-line rounded-2xl p-6">
+              <h3 class="text-sm font-extrabold text-title mb-2">Are you a booth guest?</h3>
+              <p class="text-xs text-body leading-relaxed">If you used a Studio Photuna-powered photo booth at an event, we can locate your session using the event date, venue, and a description of your visit. Your photos are stored for the period shown at the booth (typically 7–365 days depending on the operator's plan).</p>
+            </div>
+
+            <div class="bg-white border border-line rounded-2xl p-6">
+              <h3 class="text-sm font-extrabold text-title mb-2">Contact the DPO directly</h3>
+              <p class="text-xs text-body leading-relaxed">For urgent requests or to verify our identity, email our Data Protection Officer at <a href="mailto:dpo@studiophotuna.com" class="text-purple font-bold hover:underline">dpo@studiophotuna.com</a>. You can also lodge a complaint with the <a href="https://www.privacy.gov.ph" target="_blank" rel="noopener noreferrer" class="text-purple font-bold hover:underline">National Privacy Commission</a> (Philippines) or your local EU/UK supervisory authority.</p>
+            </div>
+          </aside>
+        </div>
+      </div>

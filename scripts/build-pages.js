@@ -147,6 +147,14 @@ const PAGES = [
     description: "Studio Photuna Data Processing Disclosure.",
     mainClass: "min-h-screen pt-20",
   },
+  {
+    outputFile: "privacy-request.html",
+    viewId: "privacy-request",
+    contentFile: "content/privacy-request.html",
+    title: "Privacy & Data Request | Studio Photuna",
+    description: "Submit a data access, correction, deletion, portability, or objection request under GDPR, UK GDPR, or the Philippines Data Privacy Act (RA 10173).",
+    mainClass: "min-h-screen pt-20",
+  },
   // Photo booth (guest) payments: bare pages with no header/footer/nav --
   // these are opened by the desktop app's own payment provider flow
   // (PayMongo/Stripe/Xendit/PayPal at the booth), not a normal site visit.

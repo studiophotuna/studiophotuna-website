@@ -50,6 +50,9 @@
                 <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="support">
                   <i class="fa-solid fa-headset mr-1.5"></i>Support <span id="supportGroupBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
                 </button>
+                <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="privacy">
+                  <i class="fa-solid fa-user-shield mr-1.5"></i>Privacy <span id="privacyGroupBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
+                </button>
                 <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="reviews"><i class="fa-solid fa-star mr-1.5"></i>Reviews</button>
                 <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="analytics"><i class="fa-solid fa-chart-line mr-1.5"></i>Analytics</button>
                 <button type="button" class="px-4 py-2 rounded-full text-xs font-black text-body" data-admin-group="settings"><i class="fa-solid fa-gear mr-1.5"></i>Settings</button>
@@ -70,6 +73,7 @@
               <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="inbox" data-admin-group="support">
                 Inbox <span id="inboxTabBadge" class="hidden ml-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">0</span>
               </button>
+              <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="privacy" data-admin-group="privacy">Privacy Requests</button>
               <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="reviews" data-admin-group="reviews">Reviews</button>
               <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="analytics" data-admin-group="analytics">Analytics</button>
               <button type="button" class="admin-tab hidden border border-line bg-white text-body px-3.5 py-1.5 rounded-full text-[11px] font-bold" data-admin-tab="settings" data-admin-group="settings">Settings</button>
@@ -105,6 +109,15 @@
             <button type="button" class="border border-purple/40 rounded-full bg-purple/5 text-purple px-4 py-2 text-xs font-bold" data-inbox-filter="notification@studiophotuna.com">Notification</button>
           </div>
 
+          <!-- Privacy requests sub-toolbar: filter by status -->
+          <div id="privacySubToolbar" class="hidden flex-wrap gap-1.5">
+            <button type="button" class="active border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-privacy-filter="all">All</button>
+            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-privacy-filter="pending">Pending</button>
+            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-privacy-filter="in_progress">In Progress</button>
+            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-privacy-filter="completed">Completed</button>
+            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-privacy-filter="rejected">Rejected</button>
+          </div>
+
           <div class="message text-center text-xs font-bold" id="adminMessage"></div>
         </div>
 
@@ -115,6 +128,7 @@
         <div class="grid grid-cols-1 gap-5 hidden" id="packagesList"></div>
         <div class="booking-list grid grid-cols-1 gap-5 hidden" id="reviewList"></div>
         <div class="grid grid-cols-1 gap-5 hidden" id="inboxList"></div>
+        <div class="grid grid-cols-1 gap-5 hidden" id="privacyRequestList"></div>
         <div class="hidden" id="analyticsPanel"></div>
 
         <!-- Settings panel -->
