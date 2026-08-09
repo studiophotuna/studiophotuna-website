@@ -6,6 +6,26 @@
 
         <div class="space-y-8">
 
+          <!-- v0.2.7 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-2-7">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-brand/10 text-brand font-mono font-bold text-xs px-3 py-1 rounded-full">v0.2.7</span>
+                <h2 class="text-2xl font-black text-title">Operator Release</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">August 9, 2026</span>
+            </div>
+            <p class="text-sm text-body -mt-2">This release focuses on printer reliability, payment flexibility, and 24/7 operator stability. DNP printers now configure themselves, Stripe joins the payment gateway lineup, and a new System Health dashboard gives operators real-time confidence about disk, memory, and session counts. Available on Windows and iPad.</p>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-green-700"><i class="fa-solid fa-sparkles"></i> New</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Stripe Payment Gateway</strong> — Accept cards, Apple Pay, Google Pay, and Link via Stripe Checkout. Configure keys in Account Center → Business → Payment Gateway. Supports Philippine peso, USD, and all Stripe-enabled currencies. Works alongside existing PayMongo, Xendit, and PayPal gateways.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">System Health Monitor</strong> — New System Health tab in Account Center shows real-time memory usage, free disk space, session folder count, and app uptime — everything needed to run booths 24/7 with confidence. Health checks run every 5 minutes in the background and log to <code class="text-xs bg-grey px-1 rounded">userData/logs/health.log</code>.</span></li>
+              </ul>
+            </div>
+          </article>
+
           <!-- v0.2.6 -->
           <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-2-6">
             <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
