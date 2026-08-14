@@ -1559,6 +1559,11 @@ async function updateReviewStatus(id, status) {
   try { const { error } = await supabaseClient.from("public_reviews").update({ status }).eq("id", id); if (error) throw error; spawnToast("Review moderated", `Status marked as: ${status}`, "fa-solid fa-check", "success"); loadReviewsAdmin(); loadReviews(); } catch (err) { console.warn(err); }
 }
 
+function starIcons(rating) {
+  const filled = Math.max(0, Math.min(5, Math.round(rating || 5)));
+  return Array.from({ length: 5 }, (_, i) => `<i class="fa-solid fa-star${i < filled ? "" : " text-line"}"></i>`).join("");
+}
+
 function renderReviews(payload) {
   if (!googleReviewsList) return; // only exists on the home page
   const list = Array.isArray(payload.reviews) ? payload.reviews.filter(r => r.review_text).slice(0, 3) : [];
@@ -1570,14 +1575,14 @@ function renderReviews(payload) {
       { rating: 5, name: "Sloane Perez", review_text: "Our guests loved the retro filters and quick QR-scans on their phone. Exceptional technical support during our corporate anniversary event setup!", event_type: "Corporate Event Operator" }
     ];
     defaults.forEach(r => {
-      const card = document.createElement("article"); card.className = "review-card bg-white border border-line rounded-2xl p-6 space-y-3 shadow-sm";
-      card.innerHTML = `<div class="stars text-yellow-500 text-sm font-bold">${'★'.repeat(r.rating)}</div><h3 class="font-bold text-title text-base">${r.name}</h3><p class="text-sm text-body leading-relaxed font-medium">"${r.review_text}"</p><span class="block text-xs text-muted font-bold">${r.event_type}</span>`;
+      const card = document.createElement("article"); card.className = "review-card card-testimonial hover-lift";
+      card.innerHTML = `<div class="stars text-yellow-400 text-sm">${starIcons(r.rating)}</div><h3 class="font-bold text-title text-base mt-2">${r.name}</h3><p class="text-sm text-body leading-relaxed font-medium mt-1">"${r.review_text}"</p><span class="block text-xs text-muted font-bold mt-3">${r.event_type}</span>`;
       googleReviewsList.appendChild(card);
     }); return;
   }
   list.forEach(r => {
-    const card = document.createElement("article"); card.className = "review-card bg-white border border-line rounded-2xl p-6 space-y-3 shadow-sm";
-    card.innerHTML = `<div class="stars text-yellow-500 text-sm font-bold">${'★'.repeat(r.rating)}</div><h3 class="font-bold text-title text-base">${r.name}</h3><p class="text-sm text-body leading-relaxed font-medium">"${r.review_text}"</p><span class="block text-xs text-muted font-bold">${r.event_type || "Client"}</span>`;
+    const card = document.createElement("article"); card.className = "review-card card-testimonial hover-lift";
+    card.innerHTML = `<div class="stars text-yellow-400 text-sm">${starIcons(r.rating)}</div><h3 class="font-bold text-title text-base mt-2">${r.name}</h3><p class="text-sm text-body leading-relaxed font-medium mt-1">"${r.review_text}"</p><span class="block text-xs text-muted font-bold mt-3">${r.event_type || "Client"}</span>`;
     googleReviewsList.appendChild(card);
   });
   // Once a real approved review exists, the hero proof card upgrades from a
@@ -1586,7 +1591,7 @@ function renderReviews(payload) {
   const heroProofIcon = document.getElementById("heroProofIcon");
   if (heroProofText && list[0]) {
     heroProofText.textContent = `"${list[0].review_text}" — ${list[0].name}`;
-    if (heroProofIcon) heroProofIcon.innerHTML = '<span class="text-yellow-300">' + '★'.repeat(list[0].rating || 5) + '</span>';
+    if (heroProofIcon) heroProofIcon.innerHTML = '<span class="text-yellow-300 text-xs">' + starIcons(list[0].rating || 5) + '</span>';
   }
 }
 
@@ -2202,7 +2207,7 @@ function handleCheckoutRedirectResult() {
   window.history.replaceState({}, document.title, cleanUrl);
 }
 
-window.addEventListener("scroll", () => { const header = document.querySelector(".site-header"); if (header) header.classList.toggle("shadow-md", window.scrollY > 10); });
+window.addEventListener("scroll", () => { const header = document.querySelector(".site-header"); if (header) { const scrolled = window.scrollY > 10; header.classList.toggle("shadow-md", scrolled); header.classList.toggle("scrolled", scrolled); } });
 
 function toggleMobileMenu() { const menu = document.getElementById("mobile-menu"); menu.classList.toggle("hidden"); }
 if (hamburger) hamburger.onclick = toggleMobileMenu;

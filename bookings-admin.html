@@ -64,6 +64,11 @@
                 50: '#eaf2fe', 100: '#d3e4fd', 200: '#a8c9fb', 300: '#7aadf7', 400: '#3d89ef',
                 500: '#0c66e4', 600: '#0a52b8', 700: '#083e8c', 800: '#062b61', 900: '#041b3d', 950: '#020f22',
               },
+              navy: {
+                DEFAULT: '#0b1220',
+                50: '#eef1f6', 100: '#dce2ec', 200: '#b3c0d4', 300: '#8a9dbb', 400: '#4f6288',
+                500: '#28395c', 600: '#1c2843', 700: '#141d31', 800: '#101725', 900: '#0b1220', 950: '#070c15',
+              },
               yellow: {
                 DEFAULT: '#f7d54a',
                 50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15',
@@ -201,6 +206,106 @@
       .booth-screen.hidden {
         opacity: 0;
       }
+
+      /* Radius convention (codifying existing usage, not a new rule):
+         rounded-full = pills/buttons/avatars, rounded-3xl = primary cards,
+         rounded-2xl = media frames/secondary cards, rounded-xl = form
+         inputs/small chips. */
+
+      /* Sparing violet-gradient accent. Reserved for: the pricing "Best
+         Value" badge, one hero highlight, small decorative blobs. Never
+         apply to large surfaces -- the site stays white/navy/electric-blue,
+         this is emphasis only. */
+      .gradient-accent-text {
+        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .gradient-accent-bg {
+        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+      }
+      .gradient-accent-ring {
+        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+        padding: 1.5px;
+        border-radius: inherit;
+      }
+
+      /* Button system */
+      .btn-primary {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: #0c66e4; color: #fff;
+        padding: 1rem 2rem; border-radius: 999px;
+        font-weight: 800; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;
+        box-shadow: 0 10px 30px rgba(12, 102, 228, 0.2);
+        transition: background-color 0.2s ease;
+      }
+      .btn-primary:hover { background: #0a52b8; }
+      .btn-secondary {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: #fff; color: #111827; border: 1px solid #dedfe6;
+        padding: 1rem 2rem; border-radius: 999px;
+        font-weight: 800; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;
+        transition: background-color 0.2s ease;
+      }
+      .btn-secondary:hover { background: #f4f5f8; }
+      .btn-ghost {
+        display: inline-flex; align-items: center; gap: 0.375rem;
+        color: #0c66e4; font-weight: 700; font-size: 0.875rem;
+        transition: gap 0.2s ease;
+      }
+      .btn-ghost:hover { gap: 0.625rem; }
+
+      /* Badge / pill label */
+      .badge {
+        display: inline-block;
+        font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+        padding: 0.375rem 0.875rem; border-radius: 999px;
+      }
+
+      /* Card system -- shared base, color/surface set per usage */
+      .card-feature, .card-product, .card-pricing, .card-testimonial, .card-faq {
+        border-radius: 1.5rem;
+        border: 1px solid #dedfe6;
+      }
+      .card-feature { padding: 2rem; }
+      .card-feature.card-dark {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+      .card-product {
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(17, 24, 39, 0.08);
+      }
+      .card-pricing { padding: 2rem; }
+      .card-testimonial { padding: 1.5rem; background: #fff; }
+      .card-faq {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        overflow: hidden;
+      }
+
+      /* Header blur/shadow intensifies past the scroll threshold set in
+         app.js (~10px), rather than introducing blur that wasn't there --
+         the header is always translucent+blurred; this just strengthens it. */
+      .site-header.scrolled {
+        background-color: rgba(249, 247, 243, 0.97);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal, .feature-card, .hover-lift, .btn-animation, .booth-screen,
+        .cta-glow, .btn-ghost {
+          transition: none !important;
+          animation: none !important;
+        }
+        .reveal, .feature-card {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      }
     </style>
 
   </head>
@@ -215,24 +320,25 @@
         </a>
         
         <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-purple transition-colors">Home</a>
-          <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-purple transition-colors">Features</a>
-          <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-purple transition-colors">Pricing</a>
-          <a href="#" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-purple transition-colors">Download</a>
-          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-purple transition-colors">Support</a>
+          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Home</a>
+          <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand transition-colors">Features</a>
+          <a href="/#how-it-works" onclick="goToSection('how-it-works'); return false;" class="hover:text-brand transition-colors">How It Works</a>
+          <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
+          <a href="#" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-brand transition-colors">Download</a>
+          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Support</a>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
           <!-- User Dropdown (Signed In State) -->
           <div class="relative hidden" id="userDropdown">
             <button class="dropdown-trigger inline-flex min-height-[44px] items-center gap-2 border border-line rounded-full bg-grey hover:bg-grey-2 pl-1.5 pr-2 sm:pr-4 py-1.5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="dropdownButton" aria-haspopup="true" aria-expanded="false">
-              <span id="navAvatar" class="w-7 h-7 rounded-full bg-purple/10 border border-line flex items-center justify-center text-[10px] font-black text-purple overflow-hidden shrink-0" aria-hidden="true"></span>
+              <span id="navAvatar" class="w-7 h-7 rounded-full bg-brand/10 border border-line flex items-center justify-center text-[10px] font-black text-brand overflow-hidden shrink-0" aria-hidden="true"></span>
               <span class="sr-only sm:hidden">Account menu</span>
               <span id="userPill" class="hidden sm:inline max-w-[120px] truncate">Account</span>
               <i class="fa-solid fa-chevron-down text-xs text-muted"></i>
             </button>
             <div class="dropdown-menu absolute top-full right-0 mt-2 w-56 border border-line rounded-2xl bg-white p-2 shadow-luxe hidden flex-col gap-1 z-50" role="menu">
-              <a href="#" onclick="navigateTo('account'); closeDropdown(); return false;" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-circle-user text-purple"></i> View Account</a>
+              <a href="#" onclick="navigateTo('account'); closeDropdown(); return false;" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-circle-user text-brand"></i> View Account</a>
               <a href="#" onclick="navigateTo('bookings-admin'); closeDropdown(); return false;" id="adminBookingsOpen" class="hidden flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-chart-line text-green"></i> Admin Bookings</a>
               <div class="h-[1px] my-1 bg-line"></div>
               <button type="button" id="logoutAction" class="w-full text-left flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition-colors"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
@@ -240,8 +346,8 @@
           </div>
 
           <!-- Auth Actions (Signed Out State) -->
-          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center border border-line rounded-full bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Login</button>
-          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-purple hover:bg-purple-dark text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex" href="/#pricing" onclick="goToSection('pricing'); return false;">Choose Plans</a>
+          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center border border-line rounded-full bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Sign In</button>
+          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-brand hover:bg-brand-600 text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex shadow-lg shadow-brand/20" href="/#pricing" onclick="goToSection('pricing'); return false;">Start Free Trial</a>
           <button class="hamburger md:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
       </div>
@@ -249,6 +355,8 @@
 
     <div id="mobile-menu" class="hidden md:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
       <a href="#" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
+      <a href="/#features" onclick="goToSection('features'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Features</a>
+      <a href="/#how-it-works" onclick="goToSection('how-it-works'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">How It Works</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
       <a href="#" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
       <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help & Support</a>
@@ -439,11 +547,11 @@
 
     <footer class="py-16 px-6 bg-white">
       <div class="max-w-7xl mx-auto">
-        <div class="bg-grey rounded-3xl p-8 md:p-14">
+        <div class="bg-navy-950 rounded-3xl p-8 md:p-14">
           <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div class="space-y-4">
-              <img src="/logo-dark.png" alt="Studio Photuna" class="h-10 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x40/111827/ffffff?text=Studio+Photuna'" />
-              <p class="text-sm text-body font-medium">Studio Photuna is photo booth business software that helps operators launch, run, and grow a Korean-style photobooth business — from event setup to guest delivery — on hardware they already own.</p>
+              <img src="/logo-light.png" alt="Studio Photuna" class="h-10 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x40/ffffff/111827?text=Studio+Photuna'" />
+              <p class="text-sm text-white/60 font-medium">Studio Photuna is photo booth business software that helps operators launch, run, and grow a Korean-style photobooth business — from event setup to guest delivery — on hardware they already own.</p>
 
               <!-- Only Facebook, Instagram, and TikTok -->
               <div class="socials flex gap-3">
@@ -453,32 +561,32 @@
               </div>
             </div>
             <div>
-              <p class="font-bold text-title text-xs uppercase tracking-wider mb-4">Company</p>
-              <nav class="flex flex-col gap-2.5 text-sm">
-                <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-brand">Home</a>
-                <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-brand">Book an Event</a>
-                <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand">Features</a>
-                <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand">Pricing</a>
+              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Company</p>
+              <nav class="flex flex-col gap-2.5 text-sm text-white/70">
+                <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Home</a>
+                <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-brand transition-colors">Book an Event</a>
+                <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand transition-colors">Features</a>
+                <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
               </nav>
             </div>
             <div>
-              <p class="font-bold text-title text-xs uppercase tracking-wider mb-4">Product</p>
-              <nav class="flex flex-col gap-2.5 text-sm font-medium">
-                <a href="#" onclick="navigateTo('account'); return false;" class="hover:text-brand">My Account</a>
-                <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-brand">Download the App</a>
-                <a href="#" onclick="navigateTo('changelog'); return false;" class="hover:text-brand">Changelog</a>
-                <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-brand">Help & Support</a>
+              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Product</p>
+              <nav class="flex flex-col gap-2.5 text-sm font-medium text-white/70">
+                <a href="#" onclick="navigateTo('account'); return false;" class="hover:text-brand transition-colors">My Account</a>
+                <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-brand transition-colors">Download the App</a>
+                <a href="#" onclick="navigateTo('changelog'); return false;" class="hover:text-brand transition-colors">Changelog</a>
+                <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Help & Support</a>
               </nav>
             </div>
             <div>
-              <p class="font-bold text-title text-xs uppercase tracking-wider mb-4">Legal</p>
-              <nav class="flex flex-col gap-2.5 text-sm">
-                <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand">Terms of Service</a>
-                <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand">Privacy Policy</a>
-                <a href="#" onclick="navigateTo('refund-policy'); return false;" class="hover:text-brand">Refund Policy</a>
-                <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="hover:text-brand">Cookie Policy</a>
-                <a href="#" onclick="navigateTo('data-processing'); return false;" class="hover:text-brand">Data Processing</a>
-                <a href="#" onclick="navigateTo('privacy-request'); return false;" class="hover:text-brand">Privacy Request</a>
+              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Legal</p>
+              <nav class="flex flex-col gap-2.5 text-sm text-white/70">
+                <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand transition-colors">Terms of Service</a>
+                <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand transition-colors">Privacy Policy</a>
+                <a href="#" onclick="navigateTo('refund-policy'); return false;" class="hover:text-brand transition-colors">Refund Policy</a>
+                <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="hover:text-brand transition-colors">Cookie Policy</a>
+                <a href="#" onclick="navigateTo('data-processing'); return false;" class="hover:text-brand transition-colors">Data Processing</a>
+                <a href="#" onclick="navigateTo('privacy-request'); return false;" class="hover:text-brand transition-colors">Privacy Request</a>
               </nav>
             </div>
           </div>
