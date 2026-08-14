@@ -1014,74 +1014,60 @@
 
           <!-- Hardware flow diagram -->
           <div class="mt-16 pt-12 border-t border-line">
-            <p class="text-center text-xs uppercase tracking-widest font-extrabold text-muted mb-8">How the pieces connect</p>
-            <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-              <div class="feature-card flex flex-col items-center gap-2 w-24" style="transition-delay: 0ms;">
-                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-camera"></i></div>
-                <p class="text-xs font-bold text-title text-center">Camera</p>
+            <p class="text-center text-xs uppercase tracking-widest font-extrabold text-muted mb-2">How the pieces connect</p>
+            <p class="text-center text-xs text-muted mb-8">Hover or tap each step for how it works.</p>
+            <div class="flex flex-wrap items-start justify-center gap-3 sm:gap-4">
+              <div class="group relative flex flex-col items-center gap-2 w-24 cursor-help feature-card" style="transition-delay: 0ms;" tabindex="0">
+                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors group-hover:bg-brand group-hover:text-white group-focus:bg-brand group-focus:text-white"><i class="fa-solid fa-camera"></i></div>
+                <p class="text-xs font-bold text-title text-center border-b border-dashed border-line">Camera</p>
+                <div class="pointer-events-none absolute top-full mt-3 left-1/2 -translate-x-1/2 w-60 max-w-[80vw] bg-white border border-line rounded-xl shadow-luxe p-4 text-left opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-focus:opacity-100 group-focus:scale-100 group-focus-within:opacity-100 group-focus-within:scale-100 transition-all duration-200 z-20">
+                  <p class="text-xs font-bold text-title mb-1">1. Camera</p>
+                  <p class="text-xs text-body leading-relaxed">Connect a DSLR or mirrorless camera over USB tethering or PC Control mode. Studio Photuna scans your ports and auto-detects supported cameras — no manual driver setup.</p>
+                </div>
               </div>
-              <i class="fa-solid fa-chevron-right text-line hidden sm:block" aria-hidden="true"></i>
-              <div class="feature-card flex flex-col items-center gap-2 w-24" style="transition-delay: 100ms;">
-                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-desktop"></i></div>
-                <p class="text-xs font-bold text-title text-center">Studio Photuna</p>
+              <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-6" aria-hidden="true"></i>
+              <div class="group relative flex flex-col items-center gap-2 w-24 cursor-help feature-card" style="transition-delay: 100ms;" tabindex="0">
+                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors group-hover:bg-brand group-hover:text-white group-focus:bg-brand group-focus:text-white"><i class="fa-solid fa-desktop"></i></div>
+                <p class="text-xs font-bold text-title text-center border-b border-dashed border-line">Studio Photuna</p>
+                <div class="pointer-events-none absolute top-full mt-3 left-1/2 -translate-x-1/2 w-60 max-w-[80vw] bg-white border border-line rounded-xl shadow-luxe p-4 text-left opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-focus:opacity-100 group-focus:scale-100 group-focus-within:opacity-100 group-focus-within:scale-100 transition-all duration-200 z-20">
+                  <p class="text-xs font-bold text-title mb-1">2. Studio Photuna</p>
+                  <p class="text-xs text-body leading-relaxed">The app runs the entire guest session locally on your Windows PC — template selection, live capture, retakes, and tone & frame styling — without needing an internet connection.</p>
+                </div>
               </div>
-              <i class="fa-solid fa-chevron-right text-line hidden sm:block" aria-hidden="true"></i>
-              <div class="feature-card flex flex-col items-center gap-2 w-24" style="transition-delay: 200ms;">
-                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-print"></i></div>
-                <p class="text-xs font-bold text-title text-center">Printer</p>
+              <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-6" aria-hidden="true"></i>
+              <div class="group relative flex flex-col items-center gap-2 w-24 cursor-help feature-card" style="transition-delay: 200ms;" tabindex="0">
+                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors group-hover:bg-brand group-hover:text-white group-focus:bg-brand group-focus:text-white"><i class="fa-solid fa-print"></i></div>
+                <p class="text-xs font-bold text-title text-center border-b border-dashed border-line">Printer</p>
+                <div class="pointer-events-none absolute top-full mt-3 left-1/2 -translate-x-1/2 w-60 max-w-[80vw] bg-white border border-line rounded-xl shadow-luxe p-4 text-left opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-focus:opacity-100 group-focus:scale-100 group-focus-within:opacity-100 group-focus-within:scale-100 transition-all duration-200 z-20">
+                  <p class="text-xs font-bold text-title mb-1">3. Printer</p>
+                  <p class="text-xs text-body leading-relaxed">Once a guest approves their strip, the app sends it straight to your connected dye-sub printer with your configured margins, orientation, and copy count.</p>
+                </div>
               </div>
-              <i class="fa-solid fa-chevron-right text-line hidden sm:block" aria-hidden="true"></i>
-              <div class="feature-card flex flex-col items-center gap-2 w-24" style="transition-delay: 300ms;">
-                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-qrcode"></i></div>
-                <p class="text-xs font-bold text-title text-center">Print + QR</p>
+              <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-6" aria-hidden="true"></i>
+              <div class="group relative flex flex-col items-center gap-2 w-24 cursor-help feature-card" style="transition-delay: 300ms;" tabindex="0">
+                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors group-hover:bg-brand group-hover:text-white group-focus:bg-brand group-focus:text-white"><i class="fa-solid fa-qrcode"></i></div>
+                <p class="text-xs font-bold text-title text-center border-b border-dashed border-line">Print + QR</p>
+                <div class="pointer-events-none absolute top-full mt-3 left-1/2 -translate-x-1/2 w-60 max-w-[80vw] bg-white border border-line rounded-xl shadow-luxe p-4 text-left opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-focus:opacity-100 group-focus:scale-100 group-focus-within:opacity-100 group-focus-within:scale-100 transition-all duration-200 z-20">
+                  <p class="text-xs font-bold text-title mb-1">4. Print + QR</p>
+                  <p class="text-xs text-body leading-relaxed">While the strip prints, Studio Photuna quietly generates a QR code and online gallery in the background, so guests never wait extra for their digital copies.</p>
+                </div>
               </div>
-              <i class="fa-solid fa-chevron-right text-line hidden sm:block" aria-hidden="true"></i>
-              <div class="feature-card flex flex-col items-center gap-2 w-24" style="transition-delay: 400ms;">
-                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-mobile-screen-button"></i></div>
-                <p class="text-xs font-bold text-title text-center">Guest Phone</p>
+              <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-6" aria-hidden="true"></i>
+              <div class="group relative flex flex-col items-center gap-2 w-24 cursor-help feature-card" style="transition-delay: 400ms;" tabindex="0">
+                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors group-hover:bg-brand group-hover:text-white group-focus:bg-brand group-focus:text-white"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                <p class="text-xs font-bold text-title text-center border-b border-dashed border-line">Guest Phone</p>
+                <div class="pointer-events-none absolute top-full mt-3 right-0 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 w-60 max-w-[80vw] bg-white border border-line rounded-xl shadow-luxe p-4 text-left opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-focus:opacity-100 group-focus:scale-100 group-focus-within:opacity-100 group-focus-within:scale-100 transition-all duration-200 z-20">
+                  <p class="text-xs font-bold text-title mb-1">5. Guest Phone</p>
+                  <p class="text-xs text-body leading-relaxed">Guests scan the on-screen QR code with their phone camera to instantly download full-resolution photos and GIFs — no app install required on their end.</p>
+                </div>
               </div>
             </div>
           </div>
-          </div>
-        </section>
-
-        <!-- Who It's For -->
-        <section class="py-16 px-6 bg-warm">
-          <div class="max-w-5xl mx-auto text-center space-y-4">
-            <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Built For</span>
-            <h2 class="h2-display text-title">Every event where a photo booth belongs</h2>
-            <p class="text-base text-body max-w-2xl mx-auto">Whatever you're shooting, Studio Photuna runs the same reliable guest-to-print workflow.</p>
-          </div>
-          <div class="max-w-4xl mx-auto grid grid-cols-2 sm:grid-cols-3 gap-4 mt-10">
-            <div class="feature-card card-feature bg-white text-center space-y-2 hover-lift" style="transition-delay: 0ms;">
-              <div class="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-brand text-base mx-auto"><i class="fa-solid fa-heart"></i></div>
-              <p class="text-sm font-bold text-title">Weddings</p>
-            </div>
-            <div class="feature-card card-feature bg-white text-center space-y-2 hover-lift" style="transition-delay: 60ms;">
-              <div class="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-brand text-base mx-auto"><i class="fa-solid fa-briefcase"></i></div>
-              <p class="text-sm font-bold text-title">Corporate Events</p>
-            </div>
-            <div class="feature-card card-feature bg-white text-center space-y-2 hover-lift" style="transition-delay: 120ms;">
-              <div class="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-brand text-base mx-auto"><i class="fa-solid fa-cake-candles"></i></div>
-              <p class="text-sm font-bold text-title">Birthday Parties</p>
-            </div>
-            <div class="feature-card card-feature bg-white text-center space-y-2 hover-lift" style="transition-delay: 180ms;">
-              <div class="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-brand text-base mx-auto"><i class="fa-solid fa-crown"></i></div>
-              <p class="text-sm font-bold text-title">Debuts</p>
-            </div>
-            <div class="feature-card card-feature bg-white text-center space-y-2 hover-lift" style="transition-delay: 240ms;">
-              <div class="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-brand text-base mx-auto"><i class="fa-solid fa-graduation-cap"></i></div>
-              <p class="text-sm font-bold text-title">School Events</p>
-            </div>
-            <div class="feature-card card-feature bg-white text-center space-y-2 hover-lift" style="transition-delay: 300ms;">
-              <div class="w-10 h-10 rounded-full bg-brand/10 flex items-center justify-center text-brand text-base mx-auto"><i class="fa-solid fa-shop"></i></div>
-              <p class="text-sm font-bold text-title">Photobooth Businesses</p>
-            </div>
           </div>
         </section>
 
         <!-- Fixed Interactive Pro Plan pricing -->
-        <section id="pricing" class="py-24 px-6 bg-white border-t border-line">
+        <section id="pricing" class="py-24 px-6 bg-warm border-t border-line">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Pricing</span>
@@ -1101,6 +1087,7 @@
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand"></i> Custom template mapping</li>
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand"></i> Local printer integration</li>
                     <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand"></i> Event dashboard configuration</li>
+                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-info text-muted"></i> Photo exports are watermarked during trial</li>
                   </ul>
                 </div>
                 <button onclick="startFreeTrial()" class="btn-animation mt-8 w-full border border-line hover:bg-grey py-3.5 rounded-full font-extrabold text-sm text-title transition-colors">
@@ -1138,9 +1125,9 @@
             </div>
 
             <!-- How the trial works -->
-            <div class="max-w-3xl mx-auto space-y-6 pt-4">
+            <div class="max-w-4xl mx-auto space-y-6 pt-4">
               <p class="text-center text-xs uppercase tracking-widest font-extrabold text-brand">How the free trial works</p>
-              <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
                 <div class="text-center space-y-2">
                   <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm mx-auto">1</div>
                   <p class="text-sm font-bold text-title">Create your account</p>
@@ -1148,13 +1135,28 @@
                 </div>
                 <div class="text-center space-y-2">
                   <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm mx-auto">2</div>
-                  <p class="text-sm font-bold text-title">Download & connect hardware</p>
-                  <p class="text-xs text-body">Install on Windows, then plug in your DSLR and printer.</p>
+                  <p class="text-sm font-bold text-title">Download the app</p>
+                  <p class="text-xs text-body">Install the Studio Photuna Booth App on Windows.</p>
                 </div>
                 <div class="text-center space-y-2">
                   <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm mx-auto">3</div>
-                  <p class="text-sm font-bold text-title">Run your first event</p>
-                  <p class="text-xs text-body">Map a template and start capturing — you're live in minutes.</p>
+                  <p class="text-sm font-bold text-title">Log in</p>
+                  <p class="text-xs text-body">Sign in with your account inside the app.</p>
+                </div>
+                <div class="text-center space-y-2">
+                  <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm mx-auto">4</div>
+                  <p class="text-sm font-bold text-title">Open Account (Billing & Gallery)</p>
+                  <p class="text-xs text-body">Find the trial activation option in your in-app account panel.</p>
+                </div>
+                <div class="text-center space-y-2">
+                  <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm mx-auto">5</div>
+                  <p class="text-sm font-bold text-title">Click Start Trial</p>
+                  <p class="text-xs text-body">Activate your 14-day trial right from inside the app.</p>
+                </div>
+                <div class="text-center space-y-2">
+                  <div class="w-8 h-8 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm mx-auto">6</div>
+                  <p class="text-sm font-bold text-title">Run real events</p>
+                  <p class="text-xs text-body">Full features unlocked for 14 days; photo exports carry a watermark until you upgrade.</p>
                 </div>
               </div>
               <p class="text-center text-xs text-muted font-medium">Questions about billing? See our <a href="/refund-policy" onclick="navigateTo('refund-policy'); return false;" class="text-brand font-bold hover:underline">Refund &amp; Cancellation Policy</a>.</p>
@@ -1163,7 +1165,7 @@
         </section>
 
         <!-- Static reviews placeholder -->
-        <section class="py-24 px-6 bg-warm border-t border-line">
+        <section class="py-24 px-6 bg-white border-t border-line">
           <div class="max-w-7xl mx-auto space-y-16">
             <div class="reveal text-center max-w-2xl mx-auto space-y-4">
               <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Customer Proof</span>
@@ -1231,7 +1233,7 @@
         </section>
 
         <!-- Dedicated Download Section -->
-        <section id="download" class="py-24 px-6 bg-white border-t border-line">
+        <section id="download" class="py-24 px-6 bg-warm border-t border-line">
           <div class="max-w-5xl mx-auto">
             <div class="reveal bg-white border border-line rounded-3xl p-8 sm:p-12 shadow-luxe">
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -1272,7 +1274,7 @@
           </div>
         </section>
 
-        <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Studio Photuna?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna is a Windows application for photo booth operators. It runs your camera, printer, templates, guest sessions, and QR photo delivery from one workspace — so you can operate a professional photobooth without proprietary kiosk hardware."}},{"@type":"Question","name":"Do I need a physical kiosk enclosure to run the app?","acceptedAnswer":{"@type":"Answer","text":"No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation."}},{"@type":"Question","name":"What cameras are compatible with the software?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices."}},{"@type":"Question","name":"Does the app support physical printing?","acceptedAnswer":{"@type":"Answer","text":"Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings."}},{"@type":"Question","name":"Can guests retake their photos during a session?","acceptedAnswer":{"@type":"Answer","text":"Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed."}},{"@type":"Question","name":"What photo strip layouts are available?","acceptedAnswer":{"@type":"Answer","text":"The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor."}},{"@type":"Question","name":"How does QR cloud sharing work?","acceptedAnswer":{"@type":"Answer","text":"After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end."}},{"@type":"Question","name":"Is there a free trial available?","acceptedAnswer":{"@type":"Answer","text":"Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start."}},{"@type":"Question","name":"Can I use the app offline during events?","acceptedAnswer":{"@type":"Answer","text":"The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue."}},{"@type":"Question","name":"How do software updates work?","acceptedAnswer":{"@type":"Answer","text":"Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience."}},{"@type":"Question","name":"What happens to guest photos after the event?","acceptedAnswer":{"@type":"Answer","text":"Photos captured locally stay on your PC indefinitely. Cloud-uploaded photos (via QR sharing) are retained for 30 days after the event, then permanently deleted from our servers to protect guest privacy."}},{"@type":"Question","name":"Can I cancel my subscription?","acceptedAnswer":{"@type":"Answer","text":"Yes, anytime. Free trials carry no charges and can be cancelled with no financial obligation. Monthly plans can be cancelled to prevent the next billing cycle, and annual plans cancelled within 30 days receive a pro-rata refund for unused months — see our full Refund & Cancellation Policy for details."}},{"@type":"Question","name":"How do I download the app?","acceptedAnswer":{"@type":"Answer","text":"Head to the download page or use the download button on this page to get the Windows installer, then sign in with your account to start your 14-day free trial from inside the app."}}]}</script>
+        <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Studio Photuna?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna is a Windows application for photo booth operators. It runs your camera, printer, templates, guest sessions, and QR photo delivery from one workspace — so you can operate a professional photobooth without proprietary kiosk hardware."}},{"@type":"Question","name":"Do I need a physical kiosk enclosure to run the app?","acceptedAnswer":{"@type":"Answer","text":"No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation."}},{"@type":"Question","name":"What cameras are compatible with the software?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices."}},{"@type":"Question","name":"Does the app support physical printing?","acceptedAnswer":{"@type":"Answer","text":"Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings."}},{"@type":"Question","name":"Can guests retake their photos during a session?","acceptedAnswer":{"@type":"Answer","text":"Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed."}},{"@type":"Question","name":"What photo strip layouts are available?","acceptedAnswer":{"@type":"Answer","text":"The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor."}},{"@type":"Question","name":"How does QR cloud sharing work?","acceptedAnswer":{"@type":"Answer","text":"After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end."}},{"@type":"Question","name":"Is there a free trial available?","acceptedAnswer":{"@type":"Answer","text":"Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start. Photo exports are watermarked during the trial and become watermark-free once you upgrade."}},{"@type":"Question","name":"Can I use the app offline during events?","acceptedAnswer":{"@type":"Answer","text":"The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue."}},{"@type":"Question","name":"How do software updates work?","acceptedAnswer":{"@type":"Answer","text":"Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience."}},{"@type":"Question","name":"What happens to guest photos after the event?","acceptedAnswer":{"@type":"Answer","text":"Photos captured locally stay on your PC indefinitely. Cloud-uploaded photos (via QR sharing) are retained for 30 days after the event, then permanently deleted from our servers to protect guest privacy."}},{"@type":"Question","name":"Can I cancel my subscription?","acceptedAnswer":{"@type":"Answer","text":"Yes, anytime. Free trials carry no charges and can be cancelled with no financial obligation. Monthly plans can be cancelled to prevent the next billing cycle, and annual plans cancelled within 30 days receive a pro-rata refund for unused months — see our full Refund & Cancellation Policy for details."}},{"@type":"Question","name":"How do I download the app?","acceptedAnswer":{"@type":"Answer","text":"Head to the download page or use the download button on this page to get the Windows installer, then sign in with your account to start your 14-day free trial from inside the app."}}]}</script>
         <section id="faq" class="py-24 px-6 bg-navy-950">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
@@ -1351,7 +1353,7 @@
                   <i class="fa-solid fa-chevron-down text-white/50 text-xs transition-transform duration-300 shrink-0"></i>
                 </button>
                 <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-white/70">Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start.</p>
+                  <p class="text-sm text-white/70">Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start. Photo exports are watermarked during the trial and become watermark-free once you upgrade.</p>
                 </div>
               </div>
               <div class="faq-item card-faq">
@@ -1408,7 +1410,7 @@
           <div class="reveal max-w-5xl mx-auto rounded-3xl gradient-accent-bg px-8 py-16 sm:py-20 text-center space-y-6 relative overflow-hidden">
             <div class="absolute -top-24 -right-24 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
             <span class="inline-flex items-center gap-2 bg-white/15 border border-white/30 text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full">14 Days Free</span>
-            <h2 class="h2-display text-white" style="font-weight: 800;">Ready to run your booth on Studio Photuna?</h2>
+            <h2 class="h2-display text-white" style="font-weight: 800;">Turn your next event into a premium photo experience.</h2>
             <p class="text-base text-white/85 max-w-xl mx-auto">Start your 14-day free trial today — no credit card required, cancel anytime.</p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 bg-white hover:bg-grey text-title px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors shadow-lg">
