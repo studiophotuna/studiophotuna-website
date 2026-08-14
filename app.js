@@ -2531,6 +2531,98 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver.observe(el));
 
 // ===================================================================
+// Booth Flow Scroll-Driven Horizontal Carousel (desktop + motion-ok only;
+// falls back to the rail's native horizontal swipe/scroll everywhere else)
+// ===================================================================
+(function initBoothFlowScrollHijack() {
+  const track = document.getElementById("boothFlowTrack");
+  const sticky = document.getElementById("boothFlowSticky");
+  const rail = document.getElementById("boothFlowRail");
+  const progressWrap = document.getElementById("boothFlowProgressWrap");
+  const progressBar = document.getElementById("boothFlowProgressBar");
+  if (!track || !sticky || !rail) return;
+
+  const desktopQuery = window.matchMedia("(min-width: 1024px)");
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const STICKY_TOP = 96; // px -- matches the `top-24` class on #boothFlowSticky
+  let active = false;
+  let maxTranslate = 0;
+  let ticking = false;
+
+  function measure() {
+    maxTranslate = Math.max(0, rail.scrollWidth - sticky.clientWidth);
+    // Track height = the sticky element's own height/offset plus exactly the
+    // pixel distance the rail needs to travel, so the "stuck" scroll window
+    // maps 1:1 to the horizontal translation.
+    track.style.height = (sticky.offsetHeight + STICKY_TOP + maxTranslate) + "px";
+  }
+
+  function updatePosition() {
+    ticking = false;
+    if (!active) return;
+    const rawScrolled = -track.getBoundingClientRect().top - STICKY_TOP;
+    const progress = maxTranslate > 0 ? Math.min(1, Math.max(0, rawScrolled / maxTranslate)) : 0;
+    rail.style.transform = "translateX(" + (-progress * maxTranslate) + "px)";
+    if (progressBar) progressBar.style.width = (progress * 100) + "%";
+  }
+
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(updatePosition); }
+  }
+
+  function activate() {
+    if (active) return;
+    active = true;
+    rail.style.overflow = "hidden";
+    rail.classList.remove("snap-x", "snap-mandatory");
+    if (progressWrap) progressWrap.classList.remove("hidden");
+    measure();
+    updatePosition();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  function deactivate() {
+    if (!active) return;
+    active = false;
+    track.style.height = "";
+    rail.style.overflow = "";
+    rail.style.transform = "";
+    rail.classList.add("snap-x", "snap-mandatory");
+    if (progressWrap) progressWrap.classList.add("hidden");
+    if (progressBar) progressBar.style.width = "0%";
+    window.removeEventListener("scroll", onScroll);
+  }
+
+  function evaluate() {
+    if (desktopQuery.matches && !motionQuery.matches) activate();
+    else deactivate();
+  }
+
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => { evaluate(); if (active) updatePosition(); }, 150);
+  });
+  desktopQuery.addEventListener("change", evaluate);
+  motionQuery.addEventListener("change", evaluate);
+  window.addEventListener("load", () => { if (active) { measure(); updatePosition(); } });
+
+  // Tailwind's CDN JIT injects its generated stylesheet a tick after this
+  // script runs, so `rail` can briefly still be laid out as block (not
+  // flex) if we measure immediately -- wait until the flex layout is
+  // actually in effect before trusting any measurement.
+  let waitFrames = 0;
+  (function waitForLayout() {
+    if (getComputedStyle(rail).display === "flex" || waitFrames > 60) {
+      evaluate();
+    } else {
+      waitFrames++;
+      requestAnimationFrame(waitForLayout);
+    }
+  })();
+})();
+
+// ===================================================================
 // Invoice Generation (on payment proof approval)
 // ===================================================================
 async function generateInvoice(proofId) {
