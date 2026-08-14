@@ -207,6 +207,74 @@
         opacity: 0;
       }
 
+      /* Animated flow connector -- traveling pulse between hardware-flow steps */
+      .flow-connector {
+        position: relative;
+        width: 2rem;
+        height: 2px;
+        background: #dedfe6;
+        border-radius: 999px;
+        overflow: visible;
+      }
+      .flow-dot {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 8px;
+        height: 8px;
+        margin-top: -4px;
+        border-radius: 999px;
+        background: #0c66e4;
+        box-shadow: 0 0 8px rgba(12, 102, 228, 0.7);
+        animation: flow-travel 3.2s ease-in-out infinite;
+      }
+      @keyframes flow-travel {
+        0% { left: 0; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { left: calc(100% - 8px); opacity: 0; }
+      }
+
+      /* Numbered step navigator for the scroll-driven How It Works flow */
+      .flow-step-dot {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        border: 1px solid #dedfe6;
+        background: #fff;
+        color: #5f6678;
+        font-size: 0.75rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      .flow-step-dot:hover {
+        border-color: #0c66e4;
+        color: #0c66e4;
+      }
+      .flow-step-dot.active {
+        background: #0c66e4;
+        color: #fff;
+        border-color: #0c66e4;
+        transform: scale(1.15);
+      }
+
+      /* Hardware flow icon row -- highlights whichever step's full detail
+         panel is currently shown below it */
+      .flow-icon .w-14 {
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .flow-icon.is-active .w-14 {
+        background: #0c66e4;
+        color: #fff;
+      }
+      .flow-icon p {
+        border-bottom: 1px dashed #dedfe6;
+      }
+
       /* Radius convention (codifying existing usage, not a new rule):
          rounded-full = pills/buttons/avatars, rounded-3xl = primary cards,
          rounded-2xl = media frames/secondary cards, rounded-xl = form
@@ -277,6 +345,12 @@
         overflow: hidden;
         box-shadow: 0 20px 60px rgba(17, 24, 39, 0.08);
       }
+      .card-product img {
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .card-product:hover img {
+        transform: scale(1.04);
+      }
       .card-pricing { padding: 2rem; }
       .card-testimonial { padding: 1.5rem; background: #fff; }
       .card-faq {
@@ -297,12 +371,18 @@
 
       @media (prefers-reduced-motion: reduce) {
         .reveal, .feature-card, .hover-lift, .btn-animation, .booth-screen,
-        .cta-glow, .btn-ghost {
+        .cta-glow, .btn-ghost, .card-product img, .flow-dot {
           transition: none !important;
           animation: none !important;
         }
+        .flow-dot {
+          display: none !important;
+        }
         .reveal, .feature-card {
           opacity: 1 !important;
+          transform: none !important;
+        }
+        .card-product:hover img {
           transform: none !important;
         }
       }
@@ -320,10 +400,11 @@
         </a>
         
         <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="/" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Solutions</a>
+          <a href="/" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Product</a>
           <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand transition-colors">Features</a>
+          <a href="/#how-it-works" onclick="goToSection('how-it-works'); return false;" class="hover:text-brand transition-colors">Booth Flow</a>
           <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
-          <a href="/help-support" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Resources</a>
+          <a href="/#faq" onclick="goToSection('faq'); return false;" class="hover:text-brand transition-colors">FAQ</a>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
@@ -344,18 +425,19 @@
           </div>
 
           <!-- Auth Actions (Signed Out State) -->
-          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand cursor-pointer transition-colors" type="button" id="loginOpen">Sign In</button>
-          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-title hover:bg-navy-950 text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex shadow-lg shadow-title/20" href="/#pricing" onclick="goToSection('pricing'); return false;">Get Started</a>
+          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
+          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-title hover:bg-navy-950 text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex shadow-lg shadow-title/20" type="button" onclick="startFreeTrial()">Start Free Trial</button>
           <button class="hamburger md:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
       </div>
     </header>
 
     <div id="mobile-menu" class="hidden md:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
-      <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Solutions</a>
+      <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Product</a>
       <a href="/#features" onclick="goToSection('features'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Features</a>
-      <a href="/#how-it-works" onclick="goToSection('how-it-works'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">How It Works</a>
+      <a href="/#how-it-works" onclick="goToSection('how-it-works'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Booth Flow</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
+      <a href="/#faq" onclick="goToSection('faq'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">FAQ</a>
       <a href="/download" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
       <a href="/help-support" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Resources</a>
       <a href="/account" data-nav="account" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
@@ -366,7 +448,7 @@
         <div class="space-y-8">
           <div class="text-center space-y-3">
             <h1 class="h1-display text-[#111827] text-4xl sm:text-6xl">Book Studio Photuna for your event</h1>
-            <p class="text-lg text-body max-w-2xl mx-auto">Complete our simplified booking wizard to review pricing, check real-time availability, and secure your event details.</p>
+            <p class="text-lg text-body max-w-2xl mx-auto">Check pricing and live availability, then reserve your date in a few steps.</p>
           </div>
 
           <!-- Two-column layout: Wizard (main) + Progress & Info (right sidebar) -->
@@ -383,7 +465,7 @@
               <div class="relative z-10 flex items-center justify-between gap-4">
                 <div>
                   <h2 class="text-2xl font-extrabold text-white leading-tight">Request a booking quote</h2>
-                  <p class="text-xs text-white/60 mt-1">Read rules, select dates, and complete the configuration in one flow.</p>
+                  <p class="text-xs text-white/60 mt-1">Review the booking terms, pick your date, and fill in your event details.</p>
                 </div>
                 <div class="hidden sm:grid grid-cols-2 gap-2 shrink-0">
                   <div class="border border-white/10 bg-white/5 rounded-xl p-3 text-center">

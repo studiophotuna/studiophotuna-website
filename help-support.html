@@ -207,6 +207,74 @@
         opacity: 0;
       }
 
+      /* Animated flow connector -- traveling pulse between hardware-flow steps */
+      .flow-connector {
+        position: relative;
+        width: 2rem;
+        height: 2px;
+        background: #dedfe6;
+        border-radius: 999px;
+        overflow: visible;
+      }
+      .flow-dot {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 8px;
+        height: 8px;
+        margin-top: -4px;
+        border-radius: 999px;
+        background: #0c66e4;
+        box-shadow: 0 0 8px rgba(12, 102, 228, 0.7);
+        animation: flow-travel 3.2s ease-in-out infinite;
+      }
+      @keyframes flow-travel {
+        0% { left: 0; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { left: calc(100% - 8px); opacity: 0; }
+      }
+
+      /* Numbered step navigator for the scroll-driven How It Works flow */
+      .flow-step-dot {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        border: 1px solid #dedfe6;
+        background: #fff;
+        color: #5f6678;
+        font-size: 0.75rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      .flow-step-dot:hover {
+        border-color: #0c66e4;
+        color: #0c66e4;
+      }
+      .flow-step-dot.active {
+        background: #0c66e4;
+        color: #fff;
+        border-color: #0c66e4;
+        transform: scale(1.15);
+      }
+
+      /* Hardware flow icon row -- highlights whichever step's full detail
+         panel is currently shown below it */
+      .flow-icon .w-14 {
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .flow-icon.is-active .w-14 {
+        background: #0c66e4;
+        color: #fff;
+      }
+      .flow-icon p {
+        border-bottom: 1px dashed #dedfe6;
+      }
+
       /* Radius convention (codifying existing usage, not a new rule):
          rounded-full = pills/buttons/avatars, rounded-3xl = primary cards,
          rounded-2xl = media frames/secondary cards, rounded-xl = form
@@ -277,6 +345,12 @@
         overflow: hidden;
         box-shadow: 0 20px 60px rgba(17, 24, 39, 0.08);
       }
+      .card-product img {
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .card-product:hover img {
+        transform: scale(1.04);
+      }
       .card-pricing { padding: 2rem; }
       .card-testimonial { padding: 1.5rem; background: #fff; }
       .card-faq {
@@ -297,12 +371,18 @@
 
       @media (prefers-reduced-motion: reduce) {
         .reveal, .feature-card, .hover-lift, .btn-animation, .booth-screen,
-        .cta-glow, .btn-ghost {
+        .cta-glow, .btn-ghost, .card-product img, .flow-dot {
           transition: none !important;
           animation: none !important;
         }
+        .flow-dot {
+          display: none !important;
+        }
         .reveal, .feature-card {
           opacity: 1 !important;
+          transform: none !important;
+        }
+        .card-product:hover img {
           transform: none !important;
         }
       }
@@ -320,10 +400,11 @@
         </a>
         
         <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="/" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Solutions</a>
+          <a href="/" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Product</a>
           <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand transition-colors">Features</a>
+          <a href="/#how-it-works" onclick="goToSection('how-it-works'); return false;" class="hover:text-brand transition-colors">Booth Flow</a>
           <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
-          <a href="/help-support" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Resources</a>
+          <a href="/#faq" onclick="goToSection('faq'); return false;" class="hover:text-brand transition-colors">FAQ</a>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
@@ -344,18 +425,19 @@
           </div>
 
           <!-- Auth Actions (Signed Out State) -->
-          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand cursor-pointer transition-colors" type="button" id="loginOpen">Sign In</button>
-          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-title hover:bg-navy-950 text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex shadow-lg shadow-title/20" href="/#pricing" onclick="goToSection('pricing'); return false;">Get Started</a>
+          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
+          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-title hover:bg-navy-950 text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex shadow-lg shadow-title/20" type="button" onclick="startFreeTrial()">Start Free Trial</button>
           <button class="hamburger md:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
       </div>
     </header>
 
     <div id="mobile-menu" class="hidden md:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
-      <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Solutions</a>
+      <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Product</a>
       <a href="/#features" onclick="goToSection('features'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Features</a>
-      <a href="/#how-it-works" onclick="goToSection('how-it-works'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">How It Works</a>
+      <a href="/#how-it-works" onclick="goToSection('how-it-works'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Booth Flow</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
+      <a href="/#faq" onclick="goToSection('faq'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">FAQ</a>
       <a href="/download" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
       <a href="/help-support" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Resources</a>
       <a href="/account" data-nav="account" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
@@ -373,21 +455,21 @@
           <div class="space-y-6 lg:col-span-1">
             <div class="bg-grey border border-line rounded-2xl p-6 space-y-4">
               <h2 class="text-title font-bold text-lg">Support Channels</h2>
-              <p class="text-xs text-body leading-relaxed">Our support desk monitors requests 24/7. Auto-generated booking reminders and status notifications originate from:</p>
-              
+              <p class="text-xs text-body leading-relaxed">Reach us directly, or expect an automated reply from our notification address after you book or submit a ticket.</p>
+
               <div class="space-y-3 pt-2">
                 <div class="flex items-center gap-3 p-3 bg-white border border-line rounded-xl">
-                  <div class="w-8 h-8 rounded-full bg-purple/10 flex items-center justify-center text-purple text-xs"><i class="fa-solid fa-headset"></i></div>
+                  <div class="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand text-xs"><i class="fa-solid fa-headset"></i></div>
                   <div class="text-xs">
                     <span class="text-muted block uppercase font-bold text-[9px]">General Support</span>
-                    <a href="mailto:support@studiophotuna.com" class="text-title font-bold hover:text-purple">support@studiophotuna.com</a>
+                    <a href="mailto:support@studiophotuna.com" class="text-title font-bold hover:text-brand">support@studiophotuna.com</a>
                   </div>
                 </div>
                 <div class="flex items-center gap-3 p-3 bg-white border border-line rounded-xl">
-                  <div class="w-8 h-8 rounded-full bg-purple/10 flex items-center justify-center text-purple text-xs"><i class="fa-solid fa-bell"></i></div>
+                  <div class="w-8 h-8 rounded-full bg-brand/10 flex items-center justify-center text-brand text-xs"><i class="fa-solid fa-bell"></i></div>
                   <div class="text-xs">
                     <span class="text-muted block uppercase font-bold text-[9px]">Auto-Replies</span>
-                    <a href="mailto:notification@studiophotuna.com" class="text-title font-bold hover:text-purple">notification@studiophotuna.com</a>
+                    <a href="mailto:notification@studiophotuna.com" class="text-title font-bold hover:text-brand">notification@studiophotuna.com</a>
                   </div>
                 </div>
               </div>
@@ -397,9 +479,9 @@
             <div class="bg-white border border-line rounded-2xl p-6 space-y-4">
               <h2 class="text-title font-bold text-base">Quick Self-Service</h2>
               <ul class="space-y-3 text-xs text-body">
-                <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i> <span><strong>Camera not detected?</strong> Check if camera lens is switched to manual focus & USB mode set to PC Control.</span></li>
-                <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i> <span><strong>Printer margins offset?</strong> Navigate to physical output parameters page and click "Auto-Align Border".</span></li>
-                <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-purple mt-0.5"></i> <span><strong>QR Link doesn't load?</strong> Check your on-booth Wi-Fi connectivity to route immediate cloud sync uploads.</span></li>
+                <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-brand mt-0.5"></i> <span><strong>Camera not detected?</strong> Check that your camera is switched to manual focus and its USB mode is set to PC Control.</span></li>
+                <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-brand mt-0.5"></i> <span><strong>Printer margins offset?</strong> Open Settings → Printing and click "Auto-Align Border".</span></li>
+                <li class="flex items-start gap-2"><i class="fa-solid fa-circle-question text-brand mt-0.5"></i> <span><strong>QR link not loading for guests?</strong> Check the booth's Wi-Fi connection — QR delivery needs an active internet connection to upload.</span></li>
               </ul>
             </div>
           </div>
@@ -408,25 +490,25 @@
           <div class="bg-white border border-line rounded-3xl p-8 lg:col-span-2 shadow-sm space-y-6">
             <div>
               <h2 class="text-2xl font-black text-title">Create a Support Ticket</h2>
-              <p class="text-xs text-muted mt-1">Submit your system query details, and our tech team will resolve your concerns.</p>
+              <p class="text-xs text-muted mt-1">Tell us what's happening and we'll follow up by email.</p>
             </div>
 
             <form class="space-y-4" id="supportTicketForm" onsubmit="handleSupportSubmit(event)">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="field space-y-2">
                   <label class="font-extrabold text-title text-xs uppercase" for="supportName">Your Name</label>
-                  <input id="supportName" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+                  <input id="supportName" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none" required />
                 </div>
                 <div class="field space-y-2">
                   <label class="font-extrabold text-title text-xs uppercase" for="supportEmail">Your Email Address</label>
-                  <input id="supportEmail" type="email" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
+                  <input id="supportEmail" type="email" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none" required />
                 </div>
               </div>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="field space-y-2">
                   <label class="font-extrabold text-title text-xs uppercase" for="supportCategory">Inquiry Type</label>
-                  <select id="supportCategory" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required>
+                  <select id="supportCategory" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none" required>
                     <option value="hardware">Hardware Setup & Synchronization</option>
                     <option value="licensing">Licensing & Payments</option>
                     <option value="events">Event Booking Requests</option>
@@ -435,7 +517,7 @@
                 </div>
                 <div class="field space-y-2">
                   <label class="font-extrabold text-title text-xs uppercase" for="supportPriority">Priority Level</label>
-                  <select id="supportPriority" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required>
+                  <select id="supportPriority" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none" required>
                     <option value="normal">Normal Support Response</option>
                     <option value="high">Urgent (Upcoming Live Event)</option>
                   </select>
@@ -444,15 +526,15 @@
 
               <div class="field space-y-2">
                 <label class="font-extrabold text-title text-xs uppercase" for="supportMessage">Describe your Technical Issue</label>
-                <textarea id="supportMessage" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none h-32 resize-none" placeholder="Provide as much details as possible, including camera model and operating systems..." required></textarea>
+                <textarea id="supportMessage" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none h-32 resize-none" placeholder="Include as much detail as you can, such as your camera model and Windows version..." required></textarea>
               </div>
 
-              <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3.5 rounded-xl text-sm uppercase transition-colors shadow-sm" type="submit" id="supportSubmitBtn">
+              <button class="btn-animation w-full bg-brand hover:bg-brand-600 text-white font-extrabold py-3.5 rounded-xl text-sm uppercase transition-colors shadow-sm" type="submit" id="supportSubmitBtn">
                 Submit Support Request
               </button>
 
               <div class="text-xs text-center text-muted font-medium pt-2">
-                An automatic notification thread from <span class="text-purple">notification@studiophotuna.com</span> will be dispatched to verify your request.
+                You'll get an automatic confirmation from <span class="text-brand">notification@studiophotuna.com</span> once your ticket is submitted.
               </div>
             </form>
           </div>

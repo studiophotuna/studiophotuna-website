@@ -840,7 +840,7 @@ async function handleSupportSubmit(event) {
       if (error) throw error;
     }
     const form = document.getElementById("supportTicketForm");
-    form.innerHTML = `<div class="text-center py-10 space-y-4"><div class="w-16 h-16 rounded-full bg-green/10 flex items-center justify-center mx-auto text-3xl text-green"><i class="fa-solid fa-envelope-circle-check"></i></div><h3 class="text-xl font-black text-title">Ticket Submitted!</h3><p class="text-sm text-body max-w-sm mx-auto">Your support request has been received. A confirmation will be sent to <strong>${ticketPayload.email}</strong> from <span class="text-purple">notification@studiophotuna.com</span>.</p><button type="button" onclick="resetSupportForm()" class="btn-animation mt-4 border border-line hover:bg-grey px-6 py-2.5 rounded-full font-extrabold text-sm text-title transition-colors">Submit Another Ticket</button></div>`;
+    form.innerHTML = `<div class="text-center py-10 space-y-4"><div class="w-16 h-16 rounded-full bg-green/10 flex items-center justify-center mx-auto text-3xl text-green"><i class="fa-solid fa-envelope-circle-check"></i></div><h3 class="text-xl font-black text-title">Ticket Submitted!</h3><p class="text-sm text-body max-w-sm mx-auto">Your support request has been received. A confirmation will be sent to <strong>${ticketPayload.email}</strong> from <span class="text-brand">notification@studiophotuna.com</span>.</p><button type="button" onclick="resetSupportForm()" class="btn-animation mt-4 border border-line hover:bg-grey px-6 py-2.5 rounded-full font-extrabold text-sm text-title transition-colors">Submit Another Ticket</button></div>`;
     spawnToast("Ticket Created", "Sending your confirmation email…", "fa-solid fa-envelope-circle-check", "success");
     const { error: emailErr } = await supabaseClient.functions.invoke("send-ticket-email", { body: { type: "confirmation", ticket_id: ticketId } });
     if (emailErr) { console.warn("Ticket confirmation email failed (non-fatal):", emailErr); spawnToast("Ticket Saved", "Your ticket was received, but the confirmation email couldn't be sent. Our team can still see it.", "fa-solid fa-triangle-exclamation", "warning"); }
@@ -1892,6 +1892,16 @@ function toggleFaq(btn) {
   if (chevron) chevron.style.transform = answer.classList.contains("hidden") ? "" : "rotate(180deg)";
 }
 
+// Hardware flow diagram: swap the shared detail panel's content based on
+// which step icon is hovered/focused, instead of a small per-icon popup.
+function showFlowStep(el, index, group) {
+  const scope = group || "hardware";
+  document.querySelectorAll('.flow-icon[data-flow-group="' + scope + '"]').forEach(icon => icon.classList.toggle("is-active", icon === el));
+  document.querySelectorAll('.flow-detail-step[data-flow-group="' + scope + '"]').forEach(step => {
+    step.classList.toggle("hidden", Number(step.dataset.flowDetail) !== index);
+  });
+}
+
 // ===================================================================
 // Interactive Booth Console Preview
 // ===================================================================
@@ -2529,6 +2539,117 @@ const revealObserver = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
 document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver.observe(el));
+
+// ===================================================================
+// Booth Flow: full-page numbered steps, scroll-driven crossfade (desktop +
+// motion-ok only). Falls back to the panels' natural stacked document flow
+// everywhere else -- no JS required for that state, it's the default markup.
+// ===================================================================
+(function initBoothFlowScrollHijack() {
+  const track = document.getElementById("boothFlowTrack");
+  const sticky = document.getElementById("boothFlowSticky");
+  const panelsWrap = document.getElementById("boothFlowPanels");
+  const navWrap = document.getElementById("boothFlowNavWrap");
+  const panels = panelsWrap ? Array.from(panelsWrap.querySelectorAll(".flow-step-panel")) : [];
+  const dots = Array.from(document.querySelectorAll(".flow-step-dot"));
+  if (!track || !sticky || !panelsWrap || panels.length === 0) return;
+
+  const desktopQuery = window.matchMedia("(min-width: 1024px)");
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const STICKY_TOP = 96; // px -- matches the `top-24` class on #boothFlowSticky
+  const numSteps = panels.length;
+  let active = false;
+  let perStepDistance = 0;
+  let maxScroll = 0;
+  let ticking = false;
+
+  function setActiveIndex(index) {
+    panels.forEach((p, i) => {
+      p.style.opacity = i === index ? "1" : "0";
+      p.style.pointerEvents = i === index ? "auto" : "none";
+    });
+    dots.forEach((d, i) => d.classList.toggle("active", i === index));
+  }
+
+  function updatePosition() {
+    ticking = false;
+    if (!active) return;
+    const rawScrolled = -track.getBoundingClientRect().top - STICKY_TOP;
+    const progress = maxScroll > 0 ? Math.min(1, Math.max(0, rawScrolled / maxScroll)) : 0;
+    setActiveIndex(Math.round(progress * (numSteps - 1)));
+  }
+
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(updatePosition); }
+  }
+
+  function activate() {
+    // Always start measuring from a clean, normal-flow state so resizes
+    // re-measure real content height instead of an already-stretched box.
+    panelsWrap.style.height = "";
+    panels.forEach(p => { p.style.position = ""; p.style.inset = ""; p.style.transition = ""; p.style.opacity = ""; p.style.pointerEvents = ""; });
+
+    const panelHeight = Math.max.apply(null, panels.map(p => p.getBoundingClientRect().height));
+    panelsWrap.style.height = panelHeight + "px";
+    panels.forEach(p => { p.style.position = "absolute"; p.style.inset = "0"; p.style.transition = "opacity 0.35s ease"; });
+
+    perStepDistance = Math.max(320, Math.round(window.innerHeight * 0.55));
+    maxScroll = perStepDistance * (numSteps - 1);
+    if (navWrap) navWrap.classList.remove("hidden");
+    track.style.height = (sticky.offsetHeight + STICKY_TOP + maxScroll) + "px";
+
+    active = true;
+    updatePosition();
+    window.addEventListener("scroll", onScroll, { passive: true });
+  }
+
+  function deactivate() {
+    if (!active) return;
+    active = false;
+    track.style.height = "";
+    panelsWrap.style.height = "";
+    panels.forEach(p => { p.style.position = ""; p.style.inset = ""; p.style.opacity = ""; p.style.pointerEvents = ""; p.style.transition = ""; });
+    dots.forEach(d => d.classList.remove("active"));
+    if (navWrap) navWrap.classList.add("hidden");
+    window.removeEventListener("scroll", onScroll);
+  }
+
+  function evaluate() {
+    if (desktopQuery.matches && !motionQuery.matches) activate();
+    else deactivate();
+  }
+
+  dots.forEach((dot, i) => {
+    dot.addEventListener("click", () => {
+      if (!active) return;
+      const trackTop = track.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: trackTop + STICKY_TOP + (i * perStepDistance) + 1, behavior: "smooth" });
+    });
+  });
+
+  let resizeTimer;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(evaluate, 150);
+  });
+  desktopQuery.addEventListener("change", evaluate);
+  motionQuery.addEventListener("change", evaluate);
+  window.addEventListener("load", () => { if (active) activate(); });
+
+  // Tailwind's CDN JIT injects its generated stylesheet a tick after this
+  // script runs, so panels can briefly still be unstyled if we measure
+  // immediately -- wait until they have real layout height before trusting
+  // any measurement.
+  let waitFrames = 0;
+  (function waitForLayout() {
+    if (panels[0].getBoundingClientRect().height > 0 || waitFrames > 60) {
+      evaluate();
+    } else {
+      waitFrames++;
+      requestAnimationFrame(waitForLayout);
+    }
+  })();
+})();
 
 // ===================================================================
 // Invoice Generation (on payment proof approval)

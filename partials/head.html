@@ -188,6 +188,74 @@
         opacity: 0;
       }
 
+      /* Animated flow connector -- traveling pulse between hardware-flow steps */
+      .flow-connector {
+        position: relative;
+        width: 2rem;
+        height: 2px;
+        background: #dedfe6;
+        border-radius: 999px;
+        overflow: visible;
+      }
+      .flow-dot {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 8px;
+        height: 8px;
+        margin-top: -4px;
+        border-radius: 999px;
+        background: #0c66e4;
+        box-shadow: 0 0 8px rgba(12, 102, 228, 0.7);
+        animation: flow-travel 3.2s ease-in-out infinite;
+      }
+      @keyframes flow-travel {
+        0% { left: 0; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { left: calc(100% - 8px); opacity: 0; }
+      }
+
+      /* Numbered step navigator for the scroll-driven How It Works flow */
+      .flow-step-dot {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        border: 1px solid #dedfe6;
+        background: #fff;
+        color: #5f6678;
+        font-size: 0.75rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      .flow-step-dot:hover {
+        border-color: #0c66e4;
+        color: #0c66e4;
+      }
+      .flow-step-dot.active {
+        background: #0c66e4;
+        color: #fff;
+        border-color: #0c66e4;
+        transform: scale(1.15);
+      }
+
+      /* Hardware flow icon row -- highlights whichever step's full detail
+         panel is currently shown below it */
+      .flow-icon .w-14 {
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .flow-icon.is-active .w-14 {
+        background: #0c66e4;
+        color: #fff;
+      }
+      .flow-icon p {
+        border-bottom: 1px dashed #dedfe6;
+      }
+
       /* Radius convention (codifying existing usage, not a new rule):
          rounded-full = pills/buttons/avatars, rounded-3xl = primary cards,
          rounded-2xl = media frames/secondary cards, rounded-xl = form
@@ -258,6 +326,12 @@
         overflow: hidden;
         box-shadow: 0 20px 60px rgba(17, 24, 39, 0.08);
       }
+      .card-product img {
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .card-product:hover img {
+        transform: scale(1.04);
+      }
       .card-pricing { padding: 2rem; }
       .card-testimonial { padding: 1.5rem; background: #fff; }
       .card-faq {
@@ -278,12 +352,18 @@
 
       @media (prefers-reduced-motion: reduce) {
         .reveal, .feature-card, .hover-lift, .btn-animation, .booth-screen,
-        .cta-glow, .btn-ghost {
+        .cta-glow, .btn-ghost, .card-product img, .flow-dot {
           transition: none !important;
           animation: none !important;
         }
+        .flow-dot {
+          display: none !important;
+        }
         .reveal, .feature-card {
           opacity: 1 !important;
+          transform: none !important;
+        }
+        .card-product:hover img {
           transform: none !important;
         }
       }
