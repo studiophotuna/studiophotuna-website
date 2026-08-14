@@ -216,6 +216,46 @@
         100% { left: calc(100% - 8px); opacity: 0; }
       }
 
+      /* Numbered step navigator for the scroll-driven How It Works flow */
+      .flow-step-dot {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        border: 1px solid #dedfe6;
+        background: #fff;
+        color: #5f6678;
+        font-size: 0.75rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      .flow-step-dot:hover {
+        border-color: #0c66e4;
+        color: #0c66e4;
+      }
+      .flow-step-dot.active {
+        background: #0c66e4;
+        color: #fff;
+        border-color: #0c66e4;
+        transform: scale(1.15);
+      }
+
+      /* Hardware flow icon row -- highlights whichever step's full detail
+         panel is currently shown below it */
+      .flow-icon .w-14 {
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .flow-icon.is-active .w-14 {
+        background: #0c66e4;
+        color: #fff;
+      }
+      .flow-icon p {
+        border-bottom: 1px dashed #dedfe6;
+      }
+
       /* Radius convention (codifying existing usage, not a new rule):
          rounded-full = pills/buttons/avatars, rounded-3xl = primary cards,
          rounded-2xl = media frames/secondary cards, rounded-xl = form

@@ -1892,6 +1892,15 @@ function toggleFaq(btn) {
   if (chevron) chevron.style.transform = answer.classList.contains("hidden") ? "" : "rotate(180deg)";
 }
 
+// Hardware flow diagram: swap the shared detail panel's content based on
+// which step icon is hovered/focused, instead of a small per-icon popup.
+function showFlowStep(el, index) {
+  document.querySelectorAll(".flow-icon").forEach(icon => icon.classList.toggle("is-active", icon === el));
+  document.querySelectorAll(".flow-detail-step").forEach(step => {
+    step.classList.toggle("hidden", Number(step.dataset.flowDetail) !== index);
+  });
+}
+
 // ===================================================================
 // Interactive Booth Console Preview
 // ===================================================================
@@ -2531,39 +2540,42 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver.observe(el));
 
 // ===================================================================
-// Booth Flow Scroll-Driven Horizontal Carousel (desktop + motion-ok only;
-// falls back to the rail's native horizontal swipe/scroll everywhere else)
+// Booth Flow: full-page numbered steps, scroll-driven crossfade (desktop +
+// motion-ok only). Falls back to the panels' natural stacked document flow
+// everywhere else -- no JS required for that state, it's the default markup.
 // ===================================================================
 (function initBoothFlowScrollHijack() {
   const track = document.getElementById("boothFlowTrack");
   const sticky = document.getElementById("boothFlowSticky");
-  const rail = document.getElementById("boothFlowRail");
-  const progressWrap = document.getElementById("boothFlowProgressWrap");
-  const progressBar = document.getElementById("boothFlowProgressBar");
-  if (!track || !sticky || !rail) return;
+  const panelsWrap = document.getElementById("boothFlowPanels");
+  const navWrap = document.getElementById("boothFlowNavWrap");
+  const panels = panelsWrap ? Array.from(panelsWrap.querySelectorAll(".flow-step-panel")) : [];
+  const dots = Array.from(document.querySelectorAll(".flow-step-dot"));
+  if (!track || !sticky || !panelsWrap || panels.length === 0) return;
 
   const desktopQuery = window.matchMedia("(min-width: 1024px)");
   const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   const STICKY_TOP = 96; // px -- matches the `top-24` class on #boothFlowSticky
+  const numSteps = panels.length;
   let active = false;
-  let maxTranslate = 0;
+  let perStepDistance = 0;
+  let maxScroll = 0;
   let ticking = false;
 
-  function measure() {
-    maxTranslate = Math.max(0, rail.scrollWidth - sticky.clientWidth);
-    // Track height = the sticky element's own height/offset plus exactly the
-    // pixel distance the rail needs to travel, so the "stuck" scroll window
-    // maps 1:1 to the horizontal translation.
-    track.style.height = (sticky.offsetHeight + STICKY_TOP + maxTranslate) + "px";
+  function setActiveIndex(index) {
+    panels.forEach((p, i) => {
+      p.style.opacity = i === index ? "1" : "0";
+      p.style.pointerEvents = i === index ? "auto" : "none";
+    });
+    dots.forEach((d, i) => d.classList.toggle("active", i === index));
   }
 
   function updatePosition() {
     ticking = false;
     if (!active) return;
     const rawScrolled = -track.getBoundingClientRect().top - STICKY_TOP;
-    const progress = maxTranslate > 0 ? Math.min(1, Math.max(0, rawScrolled / maxTranslate)) : 0;
-    rail.style.transform = "translateX(" + (-progress * maxTranslate) + "px)";
-    if (progressBar) progressBar.style.width = (progress * 100) + "%";
+    const progress = maxScroll > 0 ? Math.min(1, Math.max(0, rawScrolled / maxScroll)) : 0;
+    setActiveIndex(Math.round(progress * (numSteps - 1)));
   }
 
   function onScroll() {
@@ -2571,12 +2583,21 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
   }
 
   function activate() {
-    if (active) return;
+    // Always start measuring from a clean, normal-flow state so resizes
+    // re-measure real content height instead of an already-stretched box.
+    panelsWrap.style.height = "";
+    panels.forEach(p => { p.style.position = ""; p.style.inset = ""; p.style.transition = ""; p.style.opacity = ""; p.style.pointerEvents = ""; });
+
+    const panelHeight = Math.max.apply(null, panels.map(p => p.getBoundingClientRect().height));
+    panelsWrap.style.height = panelHeight + "px";
+    panels.forEach(p => { p.style.position = "absolute"; p.style.inset = "0"; p.style.transition = "opacity 0.35s ease"; });
+
+    perStepDistance = Math.max(320, Math.round(window.innerHeight * 0.55));
+    maxScroll = perStepDistance * (numSteps - 1);
+    if (navWrap) navWrap.classList.remove("hidden");
+    track.style.height = (sticky.offsetHeight + STICKY_TOP + maxScroll) + "px";
+
     active = true;
-    rail.style.overflow = "hidden";
-    rail.classList.remove("snap-x", "snap-mandatory");
-    if (progressWrap) progressWrap.classList.remove("hidden");
-    measure();
     updatePosition();
     window.addEventListener("scroll", onScroll, { passive: true });
   }
@@ -2585,11 +2606,10 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     if (!active) return;
     active = false;
     track.style.height = "";
-    rail.style.overflow = "";
-    rail.style.transform = "";
-    rail.classList.add("snap-x", "snap-mandatory");
-    if (progressWrap) progressWrap.classList.add("hidden");
-    if (progressBar) progressBar.style.width = "0%";
+    panelsWrap.style.height = "";
+    panels.forEach(p => { p.style.position = ""; p.style.inset = ""; p.style.opacity = ""; p.style.pointerEvents = ""; p.style.transition = ""; });
+    dots.forEach(d => d.classList.remove("active"));
+    if (navWrap) navWrap.classList.add("hidden");
     window.removeEventListener("scroll", onScroll);
   }
 
@@ -2598,22 +2618,30 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     else deactivate();
   }
 
+  dots.forEach((dot, i) => {
+    dot.addEventListener("click", () => {
+      if (!active) return;
+      const trackTop = track.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: trackTop + STICKY_TOP + (i * perStepDistance) + 1, behavior: "smooth" });
+    });
+  });
+
   let resizeTimer;
   window.addEventListener("resize", () => {
     clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(() => { evaluate(); if (active) updatePosition(); }, 150);
+    resizeTimer = setTimeout(evaluate, 150);
   });
   desktopQuery.addEventListener("change", evaluate);
   motionQuery.addEventListener("change", evaluate);
-  window.addEventListener("load", () => { if (active) { measure(); updatePosition(); } });
+  window.addEventListener("load", () => { if (active) activate(); });
 
   // Tailwind's CDN JIT injects its generated stylesheet a tick after this
-  // script runs, so `rail` can briefly still be laid out as block (not
-  // flex) if we measure immediately -- wait until the flex layout is
-  // actually in effect before trusting any measurement.
+  // script runs, so panels can briefly still be unstyled if we measure
+  // immediately -- wait until they have real layout height before trusting
+  // any measurement.
   let waitFrames = 0;
   (function waitForLayout() {
-    if (getComputedStyle(rail).display === "flex" || waitFrames > 60) {
+    if (panels[0].getBoundingClientRect().height > 0 || waitFrames > 60) {
       evaluate();
     } else {
       waitFrames++;

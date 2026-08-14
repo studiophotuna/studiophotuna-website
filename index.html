@@ -236,6 +236,46 @@
         100% { left: calc(100% - 8px); opacity: 0; }
       }
 
+      /* Numbered step navigator for the scroll-driven How It Works flow */
+      .flow-step-dot {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 999px;
+        border: 1px solid #dedfe6;
+        background: #fff;
+        color: #5f6678;
+        font-size: 0.75rem;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+      .flow-step-dot:hover {
+        border-color: #0c66e4;
+        color: #0c66e4;
+      }
+      .flow-step-dot.active {
+        background: #0c66e4;
+        color: #fff;
+        border-color: #0c66e4;
+        transform: scale(1.15);
+      }
+
+      /* Hardware flow icon row -- highlights whichever step's full detail
+         panel is currently shown below it */
+      .flow-icon .w-14 {
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .flow-icon.is-active .w-14 {
+        background: #0c66e4;
+        color: #fff;
+      }
+      .flow-icon p {
+        border-bottom: 1px dashed #dedfe6;
+      }
+
       /* Radius convention (codifying existing usage, not a new rule):
          rounded-full = pills/buttons/avatars, rounded-3xl = primary cards,
          rounded-2xl = media frames/secondary cards, rounded-xl = form
@@ -517,114 +557,154 @@
               <p class="text-base text-body">From a branded "Tap to Start" trigger to a printed strip and QR gallery hand-off — every guest screen is timed, on-brand, and built to reset itself for the next walk-up.</p>
             </div>
 
-            <!-- Step Carousel: full guest journey (scroll-driven horizontal flow on desktop, native swipe on mobile) -->
+            <!-- Step Flow: full-page numbered steps (scroll-driven, one step at a time, on desktop; stacked list on mobile/no-JS) -->
             <div id="boothFlowTrack" class="relative">
               <div id="boothFlowSticky" class="sticky top-24">
-              <div id="boothFlowRail" class="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory custom-scrollbar -mx-6 px-6 lg:mx-0 lg:px-0">
+                <div id="boothFlowPanels" class="relative">
 
-                <!-- Step 1 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_1.webp" width="3200" height="2000" loading="lazy" alt="Branded Tap to Start welcome screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Welcome+Screen'" />
+                  <!-- Step 1 -->
+                  <div class="flow-step-panel py-10" data-step-index="0">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full">
+                      <div class="order-2 lg:order-1 space-y-3">
+                        <span class="block text-6xl sm:text-7xl font-black text-brand/15 leading-none">01</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-title">Branded Welcome Trigger</h3>
+                        <p class="text-base text-body max-w-md">A full-bleed, on-brand "Tap to Start" lobby screen invites guests to launch a session with zero staff intervention.</p>
+                      </div>
+                      <div class="order-1 lg:order-2">
+                        <div class="rounded-2xl overflow-hidden border border-line shadow-luxe bg-grey">
+                          <img src="interact_image_1.webp" width="3200" height="2000" loading="lazy" alt="Branded Tap to Start welcome screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Welcome+Screen'" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">1</span>
-                    Branded Welcome Trigger
-                  </h3>
-                  <p class="text-sm text-body">A full-bleed, on-brand "Tap to Start" lobby screen invites guests to launch a session with zero staff intervention.</p>
-                </div>
 
-                <!-- Step 2 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_2.webp" width="3200" height="2000" loading="lazy" alt="Choose your template screen with countdown" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Choose+Template'" />
+                  <!-- Step 2 -->
+                  <div class="flow-step-panel py-10" data-step-index="1">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full">
+                      <div class="order-2 lg:order-1 space-y-3">
+                        <span class="block text-6xl sm:text-7xl font-black text-brand/15 leading-none">02</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-title">Template Selection</h3>
+                        <p class="text-base text-body max-w-md">Guests pick a Sample, Classic, or 6×2 layout under a live countdown so the queue keeps moving.</p>
+                      </div>
+                      <div class="order-1 lg:order-2">
+                        <div class="rounded-2xl overflow-hidden border border-line shadow-luxe bg-grey">
+                          <img src="interact_image_2.webp" width="3200" height="2000" loading="lazy" alt="Choose your template screen with countdown" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Choose+Template'" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">2</span>
-                    Template Selection
-                  </h3>
-                  <p class="text-sm text-body">Guests pick a Sample, Classic, or 6×2 layout under a live countdown so the queue keeps moving.</p>
-                </div>
 
-                <!-- Step 3 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="Interact_image_3.webp" width="3200" height="2000" loading="lazy" alt="Select photos to retake review screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Retake+Review'" />
+                  <!-- Step 3 -->
+                  <div class="flow-step-panel py-10" data-step-index="2">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full">
+                      <div class="order-2 lg:order-1 space-y-3">
+                        <span class="block text-6xl sm:text-7xl font-black text-brand/15 leading-none">03</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-title">Retake Review</h3>
+                        <p class="text-base text-body max-w-md">Captured shots load instantly with a configurable retake allowance, so guests only redo the frames they want.</p>
+                      </div>
+                      <div class="order-1 lg:order-2">
+                        <div class="rounded-2xl overflow-hidden border border-line shadow-luxe bg-grey">
+                          <img src="Interact_image_3.webp" width="3200" height="2000" loading="lazy" alt="Select photos to retake review screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Retake+Review'" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">3</span>
-                    Retake Review
-                  </h3>
-                  <p class="text-sm text-body">Captured shots load instantly with a configurable retake allowance, so guests only redo the frames they want.</p>
-                </div>
 
-                <!-- Step 4 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_4.webp" width="3200" height="2000" loading="lazy" alt="Strip assembly preview screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Strip+Preview'" />
+                  <!-- Step 4 -->
+                  <div class="flow-step-panel py-10" data-step-index="3">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full">
+                      <div class="order-2 lg:order-1 space-y-3">
+                        <span class="block text-6xl sm:text-7xl font-black text-brand/15 leading-none">04</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-title">Strip Assembly Preview</h3>
+                        <p class="text-base text-body max-w-md">Approved photos are arranged live into the final strip layout side-by-side, exactly as it will print.</p>
+                      </div>
+                      <div class="order-1 lg:order-2">
+                        <div class="rounded-2xl overflow-hidden border border-line shadow-luxe bg-grey">
+                          <img src="interact_image_4.webp" width="3200" height="2000" loading="lazy" alt="Strip assembly preview screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Strip+Preview'" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">4</span>
-                    Strip Assembly Preview
-                  </h3>
-                  <p class="text-sm text-body">Approved photos are arranged live into the final strip layout side-by-side, exactly as it will print.</p>
-                </div>
 
-                <!-- Step 5 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_5.webp" width="3200" height="2000" loading="lazy" alt="Tone and frame customization screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Tone+%26+Frame'" />
+                  <!-- Step 5 -->
+                  <div class="flow-step-panel py-10" data-step-index="4">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full">
+                      <div class="order-2 lg:order-1 space-y-3">
+                        <span class="block text-6xl sm:text-7xl font-black text-brand/15 leading-none">05</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-title">Tone & Frame Studio</h3>
+                        <p class="text-base text-body max-w-md">One-tap tone presets — Normal, B&W, Sepia, Vintage, Warm, Cool — plus frame styles update the live strip preview.</p>
+                      </div>
+                      <div class="order-1 lg:order-2">
+                        <div class="rounded-2xl overflow-hidden border border-line shadow-luxe bg-grey">
+                          <img src="interact_image_5.webp" width="3200" height="2000" loading="lazy" alt="Tone and frame customization screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Tone+%26+Frame'" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">5</span>
-                    Tone & Frame Studio
-                  </h3>
-                  <p class="text-sm text-body">One-tap tone presets — Normal, B&W, Sepia, Vintage, Warm, Cool — plus frame styles update the live strip preview.</p>
-                </div>
 
-                <!-- Step 6 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_6.webp" width="3200" height="2000" loading="lazy" alt="Preparing your gallery loading screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Preparing+Gallery'" />
+                  <!-- Step 6 -->
+                  <div class="flow-step-panel py-10" data-step-index="5">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full">
+                      <div class="order-2 lg:order-1 space-y-3">
+                        <span class="block text-6xl sm:text-7xl font-black text-brand/15 leading-none">06</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-title">Gallery Generation</h3>
+                        <p class="text-base text-body max-w-md">While the strip prints, the system quietly generates the QR code and online gallery in the background.</p>
+                      </div>
+                      <div class="order-1 lg:order-2">
+                        <div class="rounded-2xl overflow-hidden border border-line shadow-luxe bg-grey">
+                          <img src="interact_image_6.webp" width="3200" height="2000" loading="lazy" alt="Preparing your gallery loading screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Preparing+Gallery'" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">6</span>
-                    Gallery Generation
-                  </h3>
-                  <p class="text-sm text-body">While the strip prints, the system quietly generates the QR code and online gallery in the background.</p>
-                </div>
 
-                <!-- Step 7 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_7.webp" width="3200" height="2000" loading="lazy" alt="Now printing screen with QR code" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Printing+%2B+QR'" />
+                  <!-- Step 7 -->
+                  <div class="flow-step-panel py-10" data-step-index="6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full">
+                      <div class="order-2 lg:order-1 space-y-3">
+                        <span class="block text-6xl sm:text-7xl font-black text-brand/15 leading-none">07</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-title">Live Print + QR Hand-off</h3>
+                        <p class="text-base text-body max-w-md">A scannable QR code appears immediately so guests can download photos and GIFs while the print finishes.</p>
+                      </div>
+                      <div class="order-1 lg:order-2">
+                        <div class="rounded-2xl overflow-hidden border border-line shadow-luxe bg-grey">
+                          <img src="interact_image_7.webp" width="3200" height="2000" loading="lazy" alt="Now printing screen with QR code" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Printing+%2B+QR'" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">7</span>
-                    Live Print + QR Hand-off
-                  </h3>
-                  <p class="text-sm text-body">A scannable QR code appears immediately so guests can download photos and GIFs while the print finishes.</p>
-                </div>
 
-                <!-- Step 8 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_8.webp" width="3200" height="2000" loading="lazy" alt="Print ready thank you screen with auto reset" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Print+Ready'" />
+                  <!-- Step 8 -->
+                  <div class="flow-step-panel py-10" data-step-index="7">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center h-full">
+                      <div class="order-2 lg:order-1 space-y-3">
+                        <span class="block text-6xl sm:text-7xl font-black text-brand/15 leading-none">08</span>
+                        <h3 class="text-2xl sm:text-3xl font-bold text-title">Auto-Reset for Next Guest</h3>
+                        <p class="text-base text-body max-w-md">A thank-you screen confirms the print is ready, then the kiosk resets itself for the next walk-up — no admin needed.</p>
+                      </div>
+                      <div class="order-1 lg:order-2">
+                        <div class="rounded-2xl overflow-hidden border border-line shadow-luxe bg-grey">
+                          <img src="interact_image_8.webp" width="3200" height="2000" loading="lazy" alt="Print ready thank you screen with auto reset" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Print+Ready'" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">8</span>
-                    Auto-Reset for Next Guest
-                  </h3>
-                  <p class="text-sm text-body">A thank-you screen confirms the print is ready, then the kiosk resets itself for the next walk-up — no admin needed.</p>
+
                 </div>
 
-              </div>
-              <div id="boothFlowProgressWrap" class="hidden max-w-md mx-auto mt-6" aria-hidden="true">
-                <div class="h-1 bg-line rounded-full overflow-hidden">
-                  <div id="boothFlowProgressBar" class="h-full bg-brand rounded-full" style="width: 0%;"></div>
+                <div id="boothFlowNavWrap" class="hidden mt-6" aria-hidden="true">
+                  <div class="flex items-center justify-center gap-2 flex-wrap">
+                    <button type="button" class="flow-step-dot" data-goto-step="0">1</button>
+                    <button type="button" class="flow-step-dot" data-goto-step="1">2</button>
+                    <button type="button" class="flow-step-dot" data-goto-step="2">3</button>
+                    <button type="button" class="flow-step-dot" data-goto-step="3">4</button>
+                    <button type="button" class="flow-step-dot" data-goto-step="4">5</button>
+                    <button type="button" class="flow-step-dot" data-goto-step="5">6</button>
+                    <button type="button" class="flow-step-dot" data-goto-step="6">7</button>
+                    <button type="button" class="flow-step-dot" data-goto-step="7">8</button>
+                  </div>
+                  <p class="text-center text-[11px] text-muted font-bold mt-3">Keep scrolling to see the full guest journey</p>
                 </div>
-                <p class="text-center text-[11px] text-muted font-bold mt-2">Keep scrolling to see the full guest journey</p>
-              </div>
               </div>
             </div>
 
@@ -1056,49 +1136,58 @@
             <p class="text-center text-xs uppercase tracking-widest font-extrabold text-muted mb-2">How the pieces connect</p>
             <p class="text-center text-xs text-muted mb-8">Hover or tap each step for how it works.</p>
             <div class="flex flex-wrap items-start justify-center gap-3 sm:gap-4">
-              <div class="group relative flex flex-col items-center gap-2 w-24 cursor-help feature-card" style="transition-delay: 0ms;" tabindex="0">
-                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors group-hover:bg-brand group-hover:text-white group-focus:bg-brand group-focus:text-white"><i class="fa-solid fa-camera"></i></div>
-                <p class="text-xs font-bold text-title text-center border-b border-dashed border-line">Camera</p>
-                <div class="pointer-events-none absolute top-full mt-3 left-1/2 -translate-x-1/2 w-60 max-w-[80vw] bg-white border border-line rounded-xl shadow-luxe p-4 text-left opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-focus:opacity-100 group-focus:scale-100 group-focus-within:opacity-100 group-focus-within:scale-100 transition-all duration-200 z-20">
-                  <p class="text-xs font-bold text-title mb-1">1. Camera</p>
-                  <p class="text-xs text-body leading-relaxed">Connect a DSLR or mirrorless camera over USB tethering or PC Control mode. Studio Photuna scans your ports and auto-detects supported cameras — no manual driver setup.</p>
-                </div>
+              <div class="flow-icon is-active feature-card flex flex-col items-center gap-2 w-24 cursor-pointer" style="transition-delay: 0ms;" tabindex="0" data-flow-step="1" onmouseenter="showFlowStep(this, 1)" onfocus="showFlowStep(this, 1)">
+                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors"><i class="fa-solid fa-camera"></i></div>
+                <p class="text-xs font-bold text-title text-center">Camera</p>
               </div>
               <div class="hidden sm:flex flow-connector mt-6" aria-hidden="true"><div class="flow-dot" style="animation-delay: 0s;"></div></div>
-              <div class="group relative flex flex-col items-center gap-2 w-24 cursor-help feature-card" style="transition-delay: 100ms;" tabindex="0">
-                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors group-hover:bg-brand group-hover:text-white group-focus:bg-brand group-focus:text-white"><i class="fa-solid fa-desktop"></i></div>
-                <p class="text-xs font-bold text-title text-center border-b border-dashed border-line">Studio Photuna</p>
-                <div class="pointer-events-none absolute top-full mt-3 left-1/2 -translate-x-1/2 w-60 max-w-[80vw] bg-white border border-line rounded-xl shadow-luxe p-4 text-left opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-focus:opacity-100 group-focus:scale-100 group-focus-within:opacity-100 group-focus-within:scale-100 transition-all duration-200 z-20">
-                  <p class="text-xs font-bold text-title mb-1">2. Studio Photuna</p>
-                  <p class="text-xs text-body leading-relaxed">The app runs the entire guest session locally on your Windows PC — template selection, live capture, retakes, and tone & frame styling — without needing an internet connection.</p>
-                </div>
+              <div class="flow-icon feature-card flex flex-col items-center gap-2 w-24 cursor-pointer" style="transition-delay: 100ms;" tabindex="0" data-flow-step="2" onmouseenter="showFlowStep(this, 2)" onfocus="showFlowStep(this, 2)">
+                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors"><i class="fa-solid fa-desktop"></i></div>
+                <p class="text-xs font-bold text-title text-center">Studio Photuna</p>
               </div>
               <div class="hidden sm:flex flow-connector mt-6" aria-hidden="true"><div class="flow-dot" style="animation-delay: 0.8s;"></div></div>
-              <div class="group relative flex flex-col items-center gap-2 w-24 cursor-help feature-card" style="transition-delay: 200ms;" tabindex="0">
-                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors group-hover:bg-brand group-hover:text-white group-focus:bg-brand group-focus:text-white"><i class="fa-solid fa-print"></i></div>
-                <p class="text-xs font-bold text-title text-center border-b border-dashed border-line">Printer</p>
-                <div class="pointer-events-none absolute top-full mt-3 left-1/2 -translate-x-1/2 w-60 max-w-[80vw] bg-white border border-line rounded-xl shadow-luxe p-4 text-left opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-focus:opacity-100 group-focus:scale-100 group-focus-within:opacity-100 group-focus-within:scale-100 transition-all duration-200 z-20">
-                  <p class="text-xs font-bold text-title mb-1">3. Printer</p>
-                  <p class="text-xs text-body leading-relaxed">Once a guest approves their strip, the app sends it straight to your connected dye-sub printer with your configured margins, orientation, and copy count.</p>
-                </div>
+              <div class="flow-icon feature-card flex flex-col items-center gap-2 w-24 cursor-pointer" style="transition-delay: 200ms;" tabindex="0" data-flow-step="3" onmouseenter="showFlowStep(this, 3)" onfocus="showFlowStep(this, 3)">
+                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors"><i class="fa-solid fa-print"></i></div>
+                <p class="text-xs font-bold text-title text-center">Printer</p>
               </div>
               <div class="hidden sm:flex flow-connector mt-6" aria-hidden="true"><div class="flow-dot" style="animation-delay: 1.6s;"></div></div>
-              <div class="group relative flex flex-col items-center gap-2 w-24 cursor-help feature-card" style="transition-delay: 300ms;" tabindex="0">
-                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors group-hover:bg-brand group-hover:text-white group-focus:bg-brand group-focus:text-white"><i class="fa-solid fa-qrcode"></i></div>
-                <p class="text-xs font-bold text-title text-center border-b border-dashed border-line">Print + QR</p>
-                <div class="pointer-events-none absolute top-full mt-3 left-1/2 -translate-x-1/2 w-60 max-w-[80vw] bg-white border border-line rounded-xl shadow-luxe p-4 text-left opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-focus:opacity-100 group-focus:scale-100 group-focus-within:opacity-100 group-focus-within:scale-100 transition-all duration-200 z-20">
-                  <p class="text-xs font-bold text-title mb-1">4. Print + QR</p>
-                  <p class="text-xs text-body leading-relaxed">While the strip prints, Studio Photuna quietly generates a QR code and online gallery in the background, so guests never wait extra for their digital copies.</p>
-                </div>
+              <div class="flow-icon feature-card flex flex-col items-center gap-2 w-24 cursor-pointer" style="transition-delay: 300ms;" tabindex="0" data-flow-step="4" onmouseenter="showFlowStep(this, 4)" onfocus="showFlowStep(this, 4)">
+                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors"><i class="fa-solid fa-qrcode"></i></div>
+                <p class="text-xs font-bold text-title text-center">Print + QR</p>
               </div>
               <div class="hidden sm:flex flow-connector mt-6" aria-hidden="true"><div class="flow-dot" style="animation-delay: 2.4s;"></div></div>
-              <div class="group relative flex flex-col items-center gap-2 w-24 cursor-help feature-card" style="transition-delay: 400ms;" tabindex="0">
-                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors group-hover:bg-brand group-hover:text-white group-focus:bg-brand group-focus:text-white"><i class="fa-solid fa-mobile-screen-button"></i></div>
-                <p class="text-xs font-bold text-title text-center border-b border-dashed border-line">Guest Phone</p>
-                <div class="pointer-events-none absolute top-full mt-3 right-0 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 w-60 max-w-[80vw] bg-white border border-line rounded-xl shadow-luxe p-4 text-left opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 group-focus:opacity-100 group-focus:scale-100 group-focus-within:opacity-100 group-focus-within:scale-100 transition-all duration-200 z-20">
-                  <p class="text-xs font-bold text-title mb-1">5. Guest Phone</p>
-                  <p class="text-xs text-body leading-relaxed">Guests scan the on-screen QR code with their phone camera to instantly download full-resolution photos and GIFs — no app install required on their end.</p>
-                </div>
+              <div class="flow-icon feature-card flex flex-col items-center gap-2 w-24 cursor-pointer" style="transition-delay: 400ms;" tabindex="0" data-flow-step="5" onmouseenter="showFlowStep(this, 5)" onfocus="showFlowStep(this, 5)">
+                <div class="w-14 h-14 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg transition-colors"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                <p class="text-xs font-bold text-title text-center">Guest Phone</p>
+              </div>
+            </div>
+
+            <!-- Shared full-size detail panel -- swaps content per hovered/focused step above -->
+            <div class="reveal max-w-3xl mx-auto mt-8 bg-white border border-line rounded-3xl shadow-luxe p-8 sm:p-10">
+              <div class="flow-detail-step" data-flow-detail="1">
+                <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-4"><i class="fa-solid fa-camera text-[10px]"></i> Step 1 of 5</span>
+                <h3 class="text-2xl font-bold text-title mb-3">Camera</h3>
+                <p class="text-base text-body leading-relaxed">Connect a DSLR or mirrorless camera over USB tethering or PC Control mode. Studio Photuna scans your ports and auto-detects supported cameras — no manual driver setup.</p>
+              </div>
+              <div class="flow-detail-step hidden" data-flow-detail="2">
+                <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-4"><i class="fa-solid fa-desktop text-[10px]"></i> Step 2 of 5</span>
+                <h3 class="text-2xl font-bold text-title mb-3">Studio Photuna</h3>
+                <p class="text-base text-body leading-relaxed">The app runs the entire guest session locally on your Windows PC — template selection, live capture, retakes, and tone & frame styling — without needing an internet connection.</p>
+              </div>
+              <div class="flow-detail-step hidden" data-flow-detail="3">
+                <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-4"><i class="fa-solid fa-print text-[10px]"></i> Step 3 of 5</span>
+                <h3 class="text-2xl font-bold text-title mb-3">Printer</h3>
+                <p class="text-base text-body leading-relaxed">Once a guest approves their strip, the app sends it straight to your connected dye-sub printer with your configured margins, orientation, and copy count.</p>
+              </div>
+              <div class="flow-detail-step hidden" data-flow-detail="4">
+                <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-4"><i class="fa-solid fa-qrcode text-[10px]"></i> Step 4 of 5</span>
+                <h3 class="text-2xl font-bold text-title mb-3">Print + QR</h3>
+                <p class="text-base text-body leading-relaxed">While the strip prints, Studio Photuna quietly generates a QR code and online gallery in the background, so guests never wait extra for their digital copies.</p>
+              </div>
+              <div class="flow-detail-step hidden" data-flow-detail="5">
+                <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-4"><i class="fa-solid fa-mobile-screen-button text-[10px]"></i> Step 5 of 5</span>
+                <h3 class="text-2xl font-bold text-title mb-3">Guest Phone</h3>
+                <p class="text-base text-body leading-relaxed">Guests scan the on-screen QR code with their phone camera to instantly download full-resolution photos and GIFs — no app install required on their end.</p>
               </div>
             </div>
           </div>
