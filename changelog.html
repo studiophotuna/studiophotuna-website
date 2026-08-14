@@ -207,6 +207,34 @@
         opacity: 0;
       }
 
+      /* Animated flow connector -- traveling pulse between hardware-flow steps */
+      .flow-connector {
+        position: relative;
+        width: 2rem;
+        height: 2px;
+        background: #dedfe6;
+        border-radius: 999px;
+        overflow: visible;
+      }
+      .flow-dot {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 8px;
+        height: 8px;
+        margin-top: -4px;
+        border-radius: 999px;
+        background: #0c66e4;
+        box-shadow: 0 0 8px rgba(12, 102, 228, 0.7);
+        animation: flow-travel 3.2s ease-in-out infinite;
+      }
+      @keyframes flow-travel {
+        0% { left: 0; opacity: 0; }
+        10% { opacity: 1; }
+        90% { opacity: 1; }
+        100% { left: calc(100% - 8px); opacity: 0; }
+      }
+
       /* Radius convention (codifying existing usage, not a new rule):
          rounded-full = pills/buttons/avatars, rounded-3xl = primary cards,
          rounded-2xl = media frames/secondary cards, rounded-xl = form
@@ -303,9 +331,12 @@
 
       @media (prefers-reduced-motion: reduce) {
         .reveal, .feature-card, .hover-lift, .btn-animation, .booth-screen,
-        .cta-glow, .btn-ghost, .card-product img {
+        .cta-glow, .btn-ghost, .card-product img, .flow-dot {
           transition: none !important;
           animation: none !important;
+        }
+        .flow-dot {
+          display: none !important;
         }
         .reveal, .feature-card {
           opacity: 1 !important;
