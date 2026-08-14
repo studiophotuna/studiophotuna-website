@@ -1894,9 +1894,10 @@ function toggleFaq(btn) {
 
 // Hardware flow diagram: swap the shared detail panel's content based on
 // which step icon is hovered/focused, instead of a small per-icon popup.
-function showFlowStep(el, index) {
-  document.querySelectorAll(".flow-icon").forEach(icon => icon.classList.toggle("is-active", icon === el));
-  document.querySelectorAll(".flow-detail-step").forEach(step => {
+function showFlowStep(el, index, group) {
+  const scope = group || "hardware";
+  document.querySelectorAll('.flow-icon[data-flow-group="' + scope + '"]').forEach(icon => icon.classList.toggle("is-active", icon === el));
+  document.querySelectorAll('.flow-detail-step[data-flow-group="' + scope + '"]').forEach(step => {
     step.classList.toggle("hidden", Number(step.dataset.flowDetail) !== index);
   });
 }
