@@ -78,6 +78,7 @@
         <!-- Value Proposition -->
         <section class="py-20 px-6 bg-warm">
           <div class="max-w-5xl mx-auto text-center space-y-4">
+            <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Why Studio Photuna</span>
             <h2 class="h2-display text-title">Why photo booth operators choose Studio Photuna</h2>
             <p class="text-base text-body max-w-3xl mx-auto">Running a Korean-style photobooth business usually means stitching together a booking spreadsheet, a separate template design tool, and a clunky kiosk build. Studio Photuna replaces all of it with one photo booth business software you install on a Windows PC — so you spend less time managing tools and more time booked on events.</p>
           </div>
@@ -101,10 +102,10 @@
         </section>
 
         <!-- Live Photobooth Interface Showcase Gallery -->
-        <section id="how-it-works" class="py-16 px-6 bg-warm">
+        <section id="how-it-works" class="py-16 px-6 bg-white border-t border-line">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
-              <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Interactive Client Screens</span>
+              <span class="text-xs uppercase tracking-widest font-extrabold text-brand">How It Works</span>
               <h2 class="h2-display text-title">Frictionless workflow for guests & admins</h2>
               <p class="text-base text-body">From a branded "Tap to Start" trigger to a printed strip and QR gallery hand-off — every guest screen is timed, on-brand, and built to reset itself for the next walk-up.</p>
             </div>
@@ -537,15 +538,15 @@
         </section>
 
         <!-- QR + Digital Delivery Experience -->
-        <section id="qr-delivery" class="py-24 px-6 max-w-7xl mx-auto">
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <section id="qr-delivery" class="py-24 px-6 bg-warm border-t border-line">
+          <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="card-product relative order-2 lg:order-1">
               <img class="w-full h-auto object-cover" src="interact_image_7.webp" width="3200" height="2000" loading="lazy" alt="Now printing screen with scannable QR code for guest photo delivery" onerror="this.onerror=null; this.src='https://placehold.co/800x600/f4f5f8/5f6678?text=QR+Delivery+Preview'" />
             </div>
             <div class="space-y-6 order-1 lg:order-2">
-              <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2"><i class="fa-solid fa-qrcode text-[10px]"></i> Guest Delivery</span>
+              <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2"><i class="fa-solid fa-qrcode text-[10px]"></i> What Your Guest Walks Away With</span>
               <h2 class="h2-display text-title">Physical memories. Digital delivery.</h2>
-              <p class="text-lg text-body">Every guest walks away with a printed strip in hand — and a QR code that sends the same photos and GIFs straight to their phone before the print even finishes.</p>
+              <p class="text-lg text-body">A printed strip in hand, and the same photos and GIFs on their phone before they've even left the booth. No app to install, no waiting for an email.</p>
               <div class="grid grid-cols-3 gap-4 pt-2">
                 <div class="text-center space-y-2">
                   <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto"><i class="fa-solid fa-qrcode"></i></div>
@@ -571,6 +572,7 @@
         <section id="features" class="py-24 px-6 bg-navy-950">
           <div class="max-w-7xl mx-auto space-y-16">
             <div class="text-center max-w-2xl mx-auto space-y-4">
+              <span class="text-xs uppercase tracking-widest font-extrabold text-brand-300">Operator Workspace</span>
               <h2 class="h2-display text-white" style="font-weight: 800;">Run every booking from one operator workspace</h2>
               <p class="text-base text-white/70">Set up the business side, event flow, guest experience, and delivery workflow in one practical Windows app.</p>
             </div>
@@ -610,9 +612,11 @@
           </div>
         </section>
 
-        <section class="py-24 px-6 max-w-7xl mx-auto">
+        <section class="py-24 px-6 bg-white border-t border-line">
+          <div class="max-w-7xl mx-auto">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="space-y-6">
+              <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Hardware & Setup</span>
               <h2 class="h2-display text-title">Everything your booth needs</h2>
               <p class="text-lg text-body">A Windows PC, a DSLR camera, a dye-sub printer, and an internet connection are all it takes to run a professional Korean-style photobooth workflow — no proprietary kiosk required.</p>
               <ul class="check-list space-y-3">
@@ -622,8 +626,8 @@
                 <li class="flex items-center gap-3 font-semibold text-title"><i class="fa-solid fa-circle-check text-green-500"></i> QR sharing and online gallery add-ons</li>
               </ul>
               <div class="pt-4">
-                <a href="/download" onclick="navigateTo('download');" class="btn-animation inline-flex items-center gap-2 bg-brand hover:bg-brand-600 text-white px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-colors shadow-sm">
-                  Download Now! <i class="fa-solid fa-calendar-plus"></i>
+                <a href="#download" onclick="goToSection('download'); return false;" class="btn-animation inline-flex items-center gap-2 bg-brand hover:bg-brand-600 text-white px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-colors shadow-sm">
+                  Get the App <i class="fa-solid fa-arrow-down"></i>
                 </a>
               </div>
             </div>
@@ -661,6 +665,7 @@
                 <p class="text-xs font-bold text-title text-center">Guest Phone</p>
               </div>
             </div>
+          </div>
           </div>
         </section>
 
@@ -700,9 +705,10 @@
         </section>
 
         <!-- Fixed Interactive Pro Plan pricing -->
-        <section id="pricing" class="py-24 px-6 bg-warm">
+        <section id="pricing" class="py-24 px-6 bg-white border-t border-line">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
+              <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Pricing</span>
               <h2 class="h2-display text-title">Simple pricing for every stage of growth</h2>
               <p class="text-base text-body">Start with a free trial, then choose monthly flexibility or yearly savings on the plan built for full-time operators.</p>
             </div>
@@ -781,8 +787,8 @@
         </section>
 
         <!-- Static reviews placeholder -->
-        <section class="py-24 px-6 max-w-7xl mx-auto">
-          <div class="space-y-16">
+        <section class="py-24 px-6 bg-warm border-t border-line">
+          <div class="max-w-7xl mx-auto space-y-16">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Customer Proof</span>
               <h2 class="h2-display text-title">Trusted by photo booth operators running real events</h2>
@@ -849,7 +855,7 @@
         </section>
 
         <!-- Dedicated Download Section -->
-        <section id="download" class="py-24 px-6 bg-warm">
+        <section id="download" class="py-24 px-6 bg-white border-t border-line">
           <div class="max-w-5xl mx-auto">
             <div class="bg-white border border-line rounded-3xl p-8 sm:p-12 shadow-luxe">
               <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
@@ -894,6 +900,7 @@
         <section id="faq" class="py-24 px-6 bg-navy-950">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
+              <span class="text-xs uppercase tracking-widest font-extrabold text-brand-300">FAQ</span>
               <h2 class="h2-display text-white" style="font-weight: 800;">Frequently asked questions</h2>
               <p class="text-base text-white/70">Everything aspiring and active operators ask before subscribing.</p>
             </div>
