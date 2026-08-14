@@ -316,15 +316,15 @@
 
     <header class="site-header fixed top-0 left-0 w-full z-40 bg-warm/90 backdrop-blur-md border-b border-[#dedfe6]/70 transition-all duration-300">
       <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a class="logo flex items-center gap-3" href="#" onclick="navigateTo('home'); return false;" aria-label="Studio Photuna">
-          <img src="/logo-dark.png" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+        <a class="logo flex items-center gap-3" href="/" onclick="navigateTo('home'); return false;" aria-label="Studio Photuna">
+          <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
         </a>
         
         <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Solutions</a>
+          <a href="/" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Solutions</a>
           <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand transition-colors">Features</a>
           <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
-          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Resources</a>
+          <a href="/help-support" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Resources</a>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
@@ -337,8 +337,8 @@
               <i class="fa-solid fa-chevron-down text-xs text-muted"></i>
             </button>
             <div class="dropdown-menu absolute top-full right-0 mt-2 w-56 border border-line rounded-2xl bg-white p-2 shadow-luxe hidden flex-col gap-1 z-50" role="menu">
-              <a href="#" onclick="navigateTo('account'); closeDropdown(); return false;" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-circle-user text-brand"></i> View Account</a>
-              <a href="#" onclick="navigateTo('bookings-admin'); closeDropdown(); return false;" id="adminBookingsOpen" class="hidden flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-chart-line text-green"></i> Admin Bookings</a>
+              <a href="/account" onclick="navigateTo('account'); closeDropdown(); return false;" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-circle-user text-brand"></i> View Account</a>
+              <a href="/bookings-admin" onclick="navigateTo('bookings-admin'); closeDropdown(); return false;" id="adminBookingsOpen" class="hidden flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-chart-line text-green"></i> Admin Bookings</a>
               <div class="h-[1px] my-1 bg-line"></div>
               <button type="button" id="logoutAction" class="w-full text-left flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition-colors"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
             </div>
@@ -353,13 +353,13 @@
     </header>
 
     <div id="mobile-menu" class="hidden md:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
-      <a href="#" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Solutions</a>
+      <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Solutions</a>
       <a href="/#features" onclick="goToSection('features'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Features</a>
       <a href="/#how-it-works" onclick="goToSection('how-it-works'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">How It Works</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
-      <a href="#" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
-      <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Resources</a>
-      <a href="#" data-nav="account" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
+      <a href="/download" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
+      <a href="/help-support" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Resources</a>
+      <a href="/account" data-nav="account" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
     </div>
 
     <main class="min-h-screen pt-20">
@@ -382,7 +382,7 @@
                 <button onclick="startFreeTrial()" class="btn-animation btn-primary">
                   <i class="fa-solid fa-rocket"></i> Start Free Trial
                 </button>
-                <a href="#" onclick="goToSection('how-it-works'); return false;" class="btn-animation btn-ghost">
+                <a href="#how-it-works" onclick="goToSection('how-it-works'); return false;" class="btn-animation btn-ghost">
                   <span class="w-6 h-6 rounded-full border border-line flex items-center justify-center"><i class="fa-solid fa-play text-[10px]"></i></span> View Interactive Demo
                 </a>
               </div>
@@ -403,7 +403,7 @@
                     <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
                   </div>
                   <div class="rounded-xl overflow-hidden bg-white border border-line">
-                    <img src="app_image_3.png" alt="Studio Photuna tone and frame picker with a live printed strip preview" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/1600x1000/f4f5f8/5f6678?text=Studio+Photuna'" />
+                    <img src="app_image_3.webp" width="1918" height="1080" fetchpriority="high" alt="Studio Photuna tone and frame picker with a live printed strip preview" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/1600x1000/f4f5f8/5f6678?text=Studio+Photuna'" />
                   </div>
                 </div>
               </div>
@@ -480,7 +480,7 @@
                 <!-- Step 1 -->
                 <div class="snap-start shrink-0 w-[340px] space-y-4">
                   <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_1.png" alt="Branded Tap to Start welcome screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Welcome+Screen'" />
+                    <img src="interact_image_1.webp" width="3200" height="2000" loading="lazy" alt="Branded Tap to Start welcome screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Welcome+Screen'" />
                   </div>
                   <h3 class="text-base font-bold text-title flex items-center gap-2">
                     <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">1</span>
@@ -492,7 +492,7 @@
                 <!-- Step 2 -->
                 <div class="snap-start shrink-0 w-[340px] space-y-4">
                   <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_2.png" alt="Choose your template screen with countdown" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Choose+Template'" />
+                    <img src="interact_image_2.webp" width="3200" height="2000" loading="lazy" alt="Choose your template screen with countdown" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Choose+Template'" />
                   </div>
                   <h3 class="text-base font-bold text-title flex items-center gap-2">
                     <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">2</span>
@@ -504,7 +504,7 @@
                 <!-- Step 3 -->
                 <div class="snap-start shrink-0 w-[340px] space-y-4">
                   <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="Interact_image_3.png" alt="Select photos to retake review screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Retake+Review'" />
+                    <img src="Interact_image_3.webp" width="3200" height="2000" loading="lazy" alt="Select photos to retake review screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Retake+Review'" />
                   </div>
                   <h3 class="text-base font-bold text-title flex items-center gap-2">
                     <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">3</span>
@@ -516,7 +516,7 @@
                 <!-- Step 4 -->
                 <div class="snap-start shrink-0 w-[340px] space-y-4">
                   <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_4.png" alt="Strip assembly preview screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Strip+Preview'" />
+                    <img src="interact_image_4.webp" width="3200" height="2000" loading="lazy" alt="Strip assembly preview screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Strip+Preview'" />
                   </div>
                   <h3 class="text-base font-bold text-title flex items-center gap-2">
                     <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">4</span>
@@ -528,7 +528,7 @@
                 <!-- Step 5 -->
                 <div class="snap-start shrink-0 w-[340px] space-y-4">
                   <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_5.png" alt="Tone and frame customization screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Tone+%26+Frame'" />
+                    <img src="interact_image_5.webp" width="3200" height="2000" loading="lazy" alt="Tone and frame customization screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Tone+%26+Frame'" />
                   </div>
                   <h3 class="text-base font-bold text-title flex items-center gap-2">
                     <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">5</span>
@@ -540,7 +540,7 @@
                 <!-- Step 6 -->
                 <div class="snap-start shrink-0 w-[340px] space-y-4">
                   <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_6.png" alt="Preparing your gallery loading screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Preparing+Gallery'" />
+                    <img src="interact_image_6.webp" width="3200" height="2000" loading="lazy" alt="Preparing your gallery loading screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Preparing+Gallery'" />
                   </div>
                   <h3 class="text-base font-bold text-title flex items-center gap-2">
                     <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">6</span>
@@ -552,7 +552,7 @@
                 <!-- Step 7 -->
                 <div class="snap-start shrink-0 w-[340px] space-y-4">
                   <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_7.png" alt="Now printing screen with QR code" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Printing+%2B+QR'" />
+                    <img src="interact_image_7.webp" width="3200" height="2000" loading="lazy" alt="Now printing screen with QR code" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Printing+%2B+QR'" />
                   </div>
                   <h3 class="text-base font-bold text-title flex items-center gap-2">
                     <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">7</span>
@@ -564,7 +564,7 @@
                 <!-- Step 8 -->
                 <div class="snap-start shrink-0 w-[340px] space-y-4">
                   <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_8.png" alt="Print ready thank you screen with auto reset" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Print+Ready'" />
+                    <img src="interact_image_8.webp" width="3200" height="2000" loading="lazy" alt="Print ready thank you screen with auto reset" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Print+Ready'" />
                   </div>
                   <h3 class="text-base font-bold text-title flex items-center gap-2">
                     <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">8</span>
@@ -618,7 +618,7 @@
                   <!-- Screen 0: Tap to Start -->
                   <div class="booth-screen active flex flex-col items-center justify-center text-center h-full" data-screen="0" style="background: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23f0ede8%22/%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.12%22/%3E%3C/svg%3E'); background-size: cover;">
                     <div class="space-y-6">
-                      <img src="logo-dark.png" alt="Studio Photuna" class="h-[180px] w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+                      <img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-[180px] w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
                       <button onclick="boothNext()" class="btn-animation bg-[#1a1a2e] text-white font-bold px-10 sm:px-12 py-3 sm:py-4 rounded-full text-sm sm:text-base shadow-lg hover:bg-[#2a2a3e] transition-colors">
                         Tap to Start
                       </button>
@@ -629,7 +629,7 @@
                   <div class="booth-screen hidden flex-col h-full p-4 sm:p-6 md:p-10" data-screen="1">
                     <div class="flex items-start justify-between mb-2 sm:mb-4">
                       <div>
-                        <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#1a1a2e] leading-tight" style="font-family: 'Playfair Display', serif;">Choose<br>your <em>Template</em></h2>
+                        <p class="text-2xl sm:text-3xl md:text-4xl font-black text-[#1a1a2e] leading-tight" style="font-family: 'Playfair Display', serif;">Choose<br>your <em>Template</em></p>
                       </div>
                       <div class="text-right space-y-1 sm:space-y-2">
                         <p class="text-[10px] sm:text-xs text-body max-w-[160px] sm:max-w-[200px] hidden sm:block">After you've selected your template, we'll jump straight to the camera.</p>
@@ -669,7 +669,7 @@
                       <div class="w-8 sm:w-10 h-1 sm:h-1.5 bg-[#1a1a2e] rounded-full"></div>
                     </div>
                     <div class="absolute bottom-3 right-4 sm:bottom-4 sm:right-6 md:bottom-6 md:right-10">
-                      <img src="logo-dark.png" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+                      <img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
                     </div>
                   </div>
 
@@ -677,7 +677,7 @@
                   <div class="booth-screen hidden flex-col h-full p-3 sm:p-5 md:p-8" data-screen="2">
                     <div class="flex items-start justify-between mb-2 sm:mb-3">
                       <div>
-                        <img src="logo-dark.png" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+                        <img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
                       </div>
                       <div class="text-right space-y-1">
                         <span class="inline-block bg-[#1a1a2e] text-white text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-0.5 sm:py-1 rounded-full">Retakes left: 2</span>
@@ -718,7 +718,7 @@
                   <!-- Screen 3: Arrange photos + strip preview -->
                   <div class="booth-screen hidden flex-col h-full p-3 sm:p-5 md:p-8" data-screen="3">
                     <div class="flex items-center justify-between mb-2 sm:mb-3">
-                      <img src="logo-dark.png" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+                      <img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
                       <span class="inline-block bg-[#1a1a2e] text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full"><p class="text-[10px] sm:text-xs" id="boothReturnTimer-3">10s</p></span>
                     </div>
                     <div class="flex-1 flex gap-3 sm:gap-6">
@@ -740,7 +740,7 @@
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                           </div>
-                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
+                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
                         </div>
                         <div class="w-14 sm:w-20 md:w-32 bg-white border border-gray-300 rounded-md sm:rounded-lg p-0.5 sm:p-1 shadow-sm flex flex-col hidden sm:flex">
                           <div class="flex-1 grid grid-rows-4 gap-0.5 sm:gap-1 mb-0.5 sm:mb-1">
@@ -749,7 +749,7 @@
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                           </div>
-                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
+                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
                         </div>
                       </div>
                     </div>
@@ -762,14 +762,14 @@
                   <!-- Screen 4: Tone & Frame -->
                   <div class="booth-screen hidden flex-col h-full p-3 sm:p-5 md:p-8" data-screen="4">
                     <div class="flex items-center justify-between mb-2 sm:mb-4">
-                      <img src="logo-dark.png" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+                      <img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
                       <span class="inline-block bg-[#1a1a2e] text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full"><p class="text-[10px] sm:text-xs" id="boothReturnTimer-4">10s</p></span>
                     </div>
                     <div class="flex-1 flex gap-3 sm:gap-6">
                       <!-- Options -->
                       <div class="basis-[60%] flex-1 space-y-3 sm:space-y-5">
                         <div>
-                          <h3 class="text-xl sm:text-2xl font-black text-[#1a1a2e] italic mb-2 sm:mb-3">Tone</h3>
+                          <p class="text-xl sm:text-2xl font-black text-[#1a1a2e] italic mb-2 sm:mb-3">Tone</p>
                           <div class="grid grid-cols-3 gap-1.5 sm:gap-2">
                             <button class="booth-tone-btn px-2 sm:px-3 py-1.5 sm:py-2 rounded-full border border-line text-[10px] sm:text-xs font-semibold text-title bg-white hover:bg-gray-50 transition-all">Normal</button>
                             <button class="booth-tone-btn px-2 sm:px-3 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-semibold bg-[#1a1a2e] text-white" onclick="selectBoothTone(this)">B&amp;W <span class="inline-block w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-white ml-0.5 sm:ml-1"></span></button>
@@ -780,7 +780,7 @@
                           </div>
                         </div>
                         <div>
-                          <h3 class="text-xl sm:text-2xl font-black text-[#1a1a2e] italic mb-2 sm:mb-3">Frame</h3>
+                          <p class="text-xl sm:text-2xl font-black text-[#1a1a2e] italic mb-2 sm:mb-3">Frame</p>
                           <button class="px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs font-semibold bg-[#1a1a2e] text-white">Studio Photuna Frame <span class="inline-block w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-white ml-0.5 sm:ml-1"></span></button>
                         </div>
                         <button onclick="boothNext()" class="btn-animation w-full bg-[#1a1a2e] text-white font-bold py-2.5 sm:py-3.5 rounded-full text-xs sm:text-sm hover:bg-[#2a2a3e] transition-colors mt-1 sm:mt-2">Print &rarr;</button>
@@ -794,7 +794,7 @@
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                           </div>
-                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
+                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
                         </div>
                         <div class="w-14 sm:w-20 md:w-32 bg-white border border-gray-300 rounded-md sm:rounded-lg p-0.5 sm:p-1 shadow-sm flex flex-col hidden sm:flex">
                           <div class="flex-1 grid grid-rows-4 gap-0.5 sm:gap-1 mb-0.5 sm:mb-1">
@@ -803,7 +803,7 @@
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                           </div>
-                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
+                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
                         </div>
                       </div>
                     </div>
@@ -815,7 +815,7 @@
                   <!-- Screen 5: Preparing your gallery -->
                   <div class="booth-screen hidden flex-col items-center justify-center text-center h-full" data-screen="5">
                     <div class="space-y-3 sm:space-y-4" id="boothPreparing">
-                      <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-[#1a1a2e]" style="font-family: 'Playfair Display', serif;">Preparing your gallery</h2>
+                      <p class="text-3xl sm:text-4xl md:text-5xl font-black text-[#1a1a2e]" style="font-family: 'Playfair Display', serif;">Preparing your gallery</p>
                       <p class="text-xs sm:text-sm text-body">Generating your QR code and getting your photos ready.</p>
                       <div class="flex items-center justify-center gap-2 mt-3 sm:mt-4">
                         <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-[#1a1a2e] animate-bounce" style="animation-delay: 0ms;"></span>
@@ -831,7 +831,7 @@
                       <!-- Left side: print status + QR -->
                       <div class="basis-[60%] flex-1 flex flex-col justify-center items-center text-center space-y-3 sm:space-y-5">
                         <span class="inline-block bg-[#1a1a2e] text-white text-xs sm:text-sm font-bold px-3 sm:px-4 py-1 sm:py-1.5 rounded-full"><p class="text-[10px] sm:text-xs" id="boothReturnTimer-6">10s</p></span>
-                        <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#1a1a2e] leading-tight" style="font-family: 'Playfair Display', serif;">We are now<br><em>Printing...</em></h2>
+                        <p class="text-2xl sm:text-3xl md:text-4xl font-black text-[#1a1a2e] leading-tight" style="font-family: 'Playfair Display', serif;">We are now<br><em>Printing...</em></p>
                         <div class="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 border-2 border-line rounded-xl flex items-center justify-center bg-white">
                           <i class="fa-solid fa-qrcode text-4xl sm:text-5xl md:text-6xl text-[#1a1a2e]"></i>
                         </div>
@@ -846,7 +846,7 @@
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                           </div>
-                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
+                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
                         </div>
                         <div class="w-14 sm:w-20 md:w-32 bg-white border border-gray-300 rounded-md sm:rounded-lg p-0.5 sm:p-1 shadow-sm flex flex-col hidden sm:flex">
                           <div class="flex-1 grid grid-rows-4 gap-0.5 sm:gap-1 mb-0.5 sm:mb-1">
@@ -855,7 +855,7 @@
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                             <div class="bg-gray-200 rounded-sm flex items-center justify-center"><i class="fa-solid fa-user text-gray-300 text-[8px] sm:text-[10px]"></i></div>
                           </div>
-                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
+                          <div class="rounded-sm h-3 sm:h-4 flex items-center justify-center"><img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-6 w-auto" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" /></div>
                         </div>
                       </div>
                     </div>
@@ -867,8 +867,8 @@
                   <!-- Screen 7: Your print is ready -> guest feedback -> signup CTA -->
                   <div class="booth-screen hidden flex-col items-center justify-center text-center h-full" data-screen="7">
                     <div class="space-y-3 sm:space-y-5">
-                      <img src="logo-dark.png" alt="Studio Photuna" class="h-11 w-auto mx-auto block" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
-                      <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#1a1a2e]" style="font-family: 'Playfair Display', serif;"><span class="text-xl sm:text-2xl">&#10024;</span> Your print is ready <span class="text-lg sm:text-xl">&#10024;</span></h2>
+                      <img src="logo-dark.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-11 w-auto mx-auto block" onerror="this.onerror=null; this.src='logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+                      <p class="text-2xl sm:text-3xl md:text-4xl font-black text-[#1a1a2e]" style="font-family: 'Playfair Display', serif;"><span class="text-xl sm:text-2xl">&#10024;</span> Your print is ready <span class="text-lg sm:text-xl">&#10024;</span></p>
                       <p class="text-xs sm:text-sm text-body max-w-sm mx-auto px-4">Thanks for posing with us! We loved capturing your moment.</p>
 
                       <div id="boothFeedbackPrompt" class="space-y-2 sm:space-y-3">
@@ -955,13 +955,13 @@
                 <li class="flex items-center gap-3 font-semibold text-title"><i class="fa-solid fa-circle-check text-green-500"></i> QR sharing and online gallery add-ons</li>
               </ul>
               <div class="pt-4">
-                <a href="#" onclick="navigateTo('download');" class="btn-animation inline-flex items-center gap-2 bg-brand hover:bg-brand-600 text-white px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-colors shadow-sm">
+                <a href="/download" onclick="navigateTo('download');" class="btn-animation inline-flex items-center gap-2 bg-brand hover:bg-brand-600 text-white px-8 py-4 rounded-full font-bold text-sm uppercase tracking-wider transition-colors shadow-sm">
                   Download Now! <i class="fa-solid fa-calendar-plus"></i>
                 </a>
               </div>
             </div>
             <div class="card-product relative">
-              <img class="w-full h-auto object-cover" src="app_image_2.png" alt="Studio Photuna Live Setup welcome interface screen" onerror="this.onerror=null; this.src='https://placehold.co/800x600/f4f5f8/5f6678?text=Hardware+Settings+Preview'" />
+              <img class="w-full h-auto object-cover" src="app_image_2.webp" width="1916" height="1080" loading="lazy" alt="Studio Photuna Live Setup welcome interface screen" onerror="this.onerror=null; this.src='https://placehold.co/800x600/f4f5f8/5f6678?text=Hardware+Settings+Preview'" />
             </div>
           </div>
         </section>
@@ -1092,6 +1092,7 @@
           </div>
         </section>
 
+        <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need a physical kiosk enclosure to run the app?","acceptedAnswer":{"@type":"Answer","text":"No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation."}},{"@type":"Question","name":"What cameras are compatible with the software?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices."}},{"@type":"Question","name":"Does the app support physical printing?","acceptedAnswer":{"@type":"Answer","text":"Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings."}},{"@type":"Question","name":"Can guests retake their photos during a session?","acceptedAnswer":{"@type":"Answer","text":"Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed."}},{"@type":"Question","name":"What photo strip layouts are available?","acceptedAnswer":{"@type":"Answer","text":"The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor."}},{"@type":"Question","name":"How does QR cloud sharing work?","acceptedAnswer":{"@type":"Answer","text":"After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end."}},{"@type":"Question","name":"Is there a free trial available?","acceptedAnswer":{"@type":"Answer","text":"Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start."}},{"@type":"Question","name":"Can I use the app offline during events?","acceptedAnswer":{"@type":"Answer","text":"The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue."}},{"@type":"Question","name":"How do software updates work?","acceptedAnswer":{"@type":"Answer","text":"Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience."}},{"@type":"Question","name":"What happens to guest photos after the event?","acceptedAnswer":{"@type":"Answer","text":"Photos captured locally stay on your PC indefinitely. Cloud-uploaded photos (via QR sharing) are retained for 30 days after the event, then permanently deleted from our servers to protect guest privacy."}}]}</script>
         <section id="faq" class="py-24 px-6 bg-navy-950">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
@@ -1213,7 +1214,7 @@
         <div class="bg-navy-950 rounded-3xl p-8 md:p-14">
           <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div class="space-y-4">
-              <img src="/logo-light.png" alt="Studio Photuna" class="h-10 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x40/ffffff/111827?text=Studio+Photuna'" />
+              <img src="/logo-light.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-10 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x40/ffffff/111827?text=Studio+Photuna'" />
               <p class="text-sm text-white/60 font-medium">Studio Photuna is photo booth business software that helps operators launch, run, and grow a Korean-style photobooth business — from event setup to guest delivery — on hardware they already own.</p>
 
               <!-- Only Facebook, Instagram, and TikTok -->
@@ -1226,8 +1227,8 @@
             <div>
               <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Company</p>
               <nav class="flex flex-col gap-2.5 text-sm text-white/70">
-                <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Home</a>
-                <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-brand transition-colors">Book an Event</a>
+                <a href="/" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Home</a>
+                <a href="/book-event" onclick="navigateTo('book-event'); return false;" class="hover:text-brand transition-colors">Book an Event</a>
                 <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand transition-colors">Features</a>
                 <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
               </nav>
@@ -1235,21 +1236,21 @@
             <div>
               <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Product</p>
               <nav class="flex flex-col gap-2.5 text-sm font-medium text-white/70">
-                <a href="#" onclick="navigateTo('account'); return false;" class="hover:text-brand transition-colors">My Account</a>
-                <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-brand transition-colors">Download the App</a>
-                <a href="#" onclick="navigateTo('changelog'); return false;" class="hover:text-brand transition-colors">Changelog</a>
-                <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Help & Support</a>
+                <a href="/account" onclick="navigateTo('account'); return false;" class="hover:text-brand transition-colors">My Account</a>
+                <a href="/download" onclick="navigateTo('download'); return false;" class="hover:text-brand transition-colors">Download the App</a>
+                <a href="/changelog" onclick="navigateTo('changelog'); return false;" class="hover:text-brand transition-colors">Changelog</a>
+                <a href="/help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Help & Support</a>
               </nav>
             </div>
             <div>
               <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Legal</p>
               <nav class="flex flex-col gap-2.5 text-sm text-white/70">
-                <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand transition-colors">Terms of Service</a>
-                <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand transition-colors">Privacy Policy</a>
-                <a href="#" onclick="navigateTo('refund-policy'); return false;" class="hover:text-brand transition-colors">Refund Policy</a>
-                <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="hover:text-brand transition-colors">Cookie Policy</a>
-                <a href="#" onclick="navigateTo('data-processing'); return false;" class="hover:text-brand transition-colors">Data Processing</a>
-                <a href="#" onclick="navigateTo('privacy-request'); return false;" class="hover:text-brand transition-colors">Privacy Request</a>
+                <a href="/operator-agreement" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand transition-colors">Terms of Service</a>
+                <a href="/privacy-framework" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand transition-colors">Privacy Policy</a>
+                <a href="/refund-policy" onclick="navigateTo('refund-policy'); return false;" class="hover:text-brand transition-colors">Refund Policy</a>
+                <a href="/cookie-policy" onclick="navigateTo('cookie-policy'); return false;" class="hover:text-brand transition-colors">Cookie Policy</a>
+                <a href="/data-processing" onclick="navigateTo('data-processing'); return false;" class="hover:text-brand transition-colors">Data Processing</a>
+                <a href="/privacy-request" onclick="navigateTo('privacy-request'); return false;" class="hover:text-brand transition-colors">Privacy Request</a>
               </nav>
             </div>
           </div>
@@ -1257,8 +1258,8 @@
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-8 text-xs text-muted font-bold tracking-tight">
           <span>Copyright © 2026 Studio Photuna. All rights reserved.</span>
           <div class="flex items-center gap-5">
-            <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand">Privacy Policy</a>
-            <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand">Terms of Service</a>
+            <a href="/privacy-framework" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand">Privacy Policy</a>
+            <a href="/operator-agreement" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand">Terms of Service</a>
           </div>
         </div>
       </div>
@@ -1292,7 +1293,7 @@
           <button class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey shrink-0" type="button" aria-label="Close" onclick="closeStartTrialModal()">&times;</button>
         </div>
         <p class="text-sm text-body mb-6" id="startTrialMessage">Download the Studio Photuna Booth App and activate your 14-day free trial right from inside the app — no credit card required.</p>
-        <a href="#" onclick="navigateTo('download'); return false;" class="btn-animation w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-600 text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors shadow-sm">
+        <a href="/download" onclick="navigateTo('download'); return false;" class="btn-animation w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-600 text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors shadow-sm">
           <i class="fa-solid fa-download"></i> Download the App
         </a>
       </div>
@@ -1326,7 +1327,7 @@
           <input id="authPassword" name="password" type="password" placeholder="Password" autocomplete="current-password" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
           <label id="authConsent" class="hidden flex items-start gap-2 text-xs text-body cursor-pointer">
             <input type="checkbox" id="consentCheck" class="mt-0.5 accent-[#0c66e4]" />
-            <span>I agree to the <a href="#" onclick="navigateTo('operator-agreement'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Terms of Service</a> and <a href="#" onclick="navigateTo('privacy-framework'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Privacy Policy</a>, including the processing of my personal data in accordance with the Data Privacy Act of 2012 (RA 10173).</span>
+            <span>I agree to the <a href="/operator-agreement" onclick="navigateTo('operator-agreement'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Terms of Service</a> and <a href="/privacy-framework" onclick="navigateTo('privacy-framework'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Privacy Policy</a>, including the processing of my personal data in accordance with the Data Privacy Act of 2012 (RA 10173).</span>
           </label>
           <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors shadow-sm" type="submit" id="authSubmit">Login</button>
           <p class="auth-message text-center text-xs font-bold" id="authMessage"></p>
@@ -1351,7 +1352,7 @@
           <!-- Left: QR + plan info -->
           <div class="flex flex-col items-center justify-center gap-4 p-8 bg-grey border-r border-line">
             <div class="rounded-2xl border border-line p-3 bg-white shadow-sm">
-              <img src="/gcash-qr.png" alt="GCash QR" class="w-44 h-44 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f4f5f8/5f6678?text=gcash-qr.png'" />
+              <img src="/gcash-qr.webp" width="1922" height="1900" loading="lazy" alt="GCash QR" class="w-44 h-44 object-contain" onerror="this.onerror=null;this.src='https://placehold.co/300x300/f4f5f8/5f6678?text=gcash-qr.png'" />
             </div>
 
             <div class="flex gap-2 bg-white p-1 rounded-full border border-line">
@@ -1386,12 +1387,12 @@
       <div class="max-w-5xl mx-auto p-4">
         <div class="bg-white border border-line rounded-2xl shadow-luxe p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <div class="flex-1 text-sm text-body font-medium">
-            We use cookies to enhance your experience. By continuing to use our site, you consent to our use of cookies. Read our <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="text-purple font-bold hover:underline">Cookie Policy</a> for details.
+            We use cookies to enhance your experience. By continuing to use our site, you consent to our use of cookies. Read our <a href="/cookie-policy" onclick="navigateTo('cookie-policy'); return false;" class="text-purple font-bold hover:underline">Cookie Policy</a> for details.
           </div>
           <div class="flex items-center gap-3 shrink-0">
             <button onclick="acceptAllCookies()" class="btn-animation bg-purple hover:bg-purple-dark text-white font-bold px-5 py-2.5 rounded-full text-xs uppercase tracking-wider">Accept All</button>
             <button onclick="acceptEssentialCookies()" class="btn-animation border border-line hover:bg-grey text-title font-bold px-5 py-2.5 rounded-full text-xs uppercase tracking-wider">Essential Only</button>
-            <a href="#" onclick="navigateTo('cookie-policy'); hideCookieBanner(); return false;" class="text-xs text-purple font-bold hover:underline whitespace-nowrap">Cookie Settings</a>
+            <a href="/cookie-policy" onclick="navigateTo('cookie-policy'); hideCookieBanner(); return false;" class="text-xs text-purple font-bold hover:underline whitespace-nowrap">Cookie Settings</a>
           </div>
         </div>
       </div>
