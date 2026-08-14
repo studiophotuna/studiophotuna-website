@@ -235,13 +235,13 @@
       /* Button system */
       .btn-primary {
         display: inline-flex; align-items: center; gap: 0.5rem;
-        background: #0c66e4; color: #fff;
+        background: #111827; color: #fff;
         padding: 1rem 2rem; border-radius: 999px;
         font-weight: 800; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;
-        box-shadow: 0 10px 30px rgba(12, 102, 228, 0.2);
+        box-shadow: 0 10px 30px rgba(17, 24, 39, 0.2);
         transition: background-color 0.2s ease;
       }
-      .btn-primary:hover { background: #0a52b8; }
+      .btn-primary:hover { background: #070c15; }
       .btn-secondary {
         display: inline-flex; align-items: center; gap: 0.5rem;
         background: #fff; color: #111827; border: 1px solid #dedfe6;
@@ -321,12 +321,10 @@
         </a>
         
         <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Home</a>
+          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Solutions</a>
           <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand transition-colors">Features</a>
-          <a href="/#how-it-works" onclick="goToSection('how-it-works'); return false;" class="hover:text-brand transition-colors">How It Works</a>
           <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
-          <a href="#" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-brand transition-colors">Download</a>
-          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Support</a>
+          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Resources</a>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
@@ -347,20 +345,20 @@
           </div>
 
           <!-- Auth Actions (Signed Out State) -->
-          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center border border-line rounded-full bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Sign In</button>
-          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-brand hover:bg-brand-600 text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex shadow-lg shadow-brand/20" href="/#pricing" onclick="goToSection('pricing'); return false;">Start Free Trial</a>
+          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand cursor-pointer transition-colors" type="button" id="loginOpen">Sign In</button>
+          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-title hover:bg-navy-950 text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex shadow-lg shadow-title/20" href="/#pricing" onclick="goToSection('pricing'); return false;">Get Started</a>
           <button class="hamburger md:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
       </div>
     </header>
 
     <div id="mobile-menu" class="hidden md:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
-      <a href="#" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
+      <a href="#" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Solutions</a>
       <a href="/#features" onclick="goToSection('features'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Features</a>
       <a href="/#how-it-works" onclick="goToSection('how-it-works'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">How It Works</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
       <a href="#" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
-      <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help & Support</a>
+      <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Resources</a>
       <a href="#" data-nav="account" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
     </div>
 
@@ -384,8 +382,8 @@
                 <button onclick="startFreeTrial()" class="btn-animation btn-primary">
                   <i class="fa-solid fa-rocket"></i> Start Free Trial
                 </button>
-                <a href="#" onclick="goToSection('how-it-works'); return false;" class="btn-animation btn-secondary">
-                  <i class="fa-solid fa-play text-brand text-xs"></i> View Interactive Demo
+                <a href="#" onclick="goToSection('how-it-works'); return false;" class="btn-animation btn-ghost">
+                  <span class="w-6 h-6 rounded-full border border-line flex items-center justify-center"><i class="fa-solid fa-play text-[10px]"></i></span> View Interactive Demo
                 </a>
               </div>
               <div id="heroProofCard" class="inline-flex items-center gap-3 bg-brand text-white rounded-2xl px-5 py-3 shadow-lg shadow-brand/20 max-w-xl mx-auto">
@@ -398,11 +396,13 @@
             <div class="mt-16 max-w-4xl mx-auto reveal">
               <div class="relative">
                 <div class="absolute -inset-4 gradient-accent-bg opacity-10 blur-2xl rounded-[2rem] pointer-events-none" aria-hidden="true"></div>
-                <div class="relative bg-navy-950 rounded-3xl p-3 sm:p-4 shadow-luxe hover-lift">
-                  <div class="flex justify-center pb-2">
-                    <div class="w-2.5 h-2.5 rounded-full bg-gray-600 ring-1 ring-gray-500"></div>
+                <div class="relative bg-white rounded-2xl border border-line p-2 sm:p-3 shadow-luxe hover-lift">
+                  <div class="flex items-center gap-1.5 px-2 pb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
                   </div>
-                  <div class="rounded-2xl overflow-hidden bg-white">
+                  <div class="rounded-xl overflow-hidden bg-white border border-line">
                     <img src="app_image_3.png" alt="Studio Photuna tone and frame picker with a live printed strip preview" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/1600x1000/f4f5f8/5f6678?text=Studio+Photuna'" />
                   </div>
                 </div>
@@ -432,6 +432,11 @@
               <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Compatible</p>
             </div>
           </div>
+        </section>
+
+        <!-- Coming soon teaser -->
+        <section class="py-3 px-6 bg-brand-50 text-center">
+          <p class="text-xs sm:text-sm font-bold text-brand-700"><i class="fa-solid fa-bolt text-[10px] mr-1"></i> Coming soon: expanding to Android and iPad platforms</p>
         </section>
 
         <!-- Value Proposition -->
@@ -602,11 +607,13 @@
                 <h3 class="h2-display text-title" style="font-size: 1.75rem;">Click through the exact screens your guests will see</h3>
               </div>
               <div class="max-w-4xl mx-auto reveal">
-                <div class="bg-black rounded-3xl p-3 sm:p-4 shadow-luxe">
-                <div class="flex justify-center pb-2">
-                  <div class="w-2.5 h-2.5 rounded-full bg-gray-600 ring-1 ring-gray-500"></div>
+                <div class="bg-white rounded-2xl border border-line p-2 sm:p-3 shadow-luxe">
+                <div class="flex items-center gap-1.5 px-2 pb-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
                 </div>
-                <div class="bg-white rounded-2xl overflow-hidden relative" style="aspect-ratio: 16/10;">
+                <div class="bg-white rounded-xl border border-line overflow-hidden relative" style="aspect-ratio: 16/10;">
 
                   <!-- Screen 0: Tap to Start -->
                   <div class="booth-screen active flex flex-col items-center justify-center text-center h-full" data-screen="0" style="background: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23f0ede8%22/%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.12%22/%3E%3C/svg%3E'); background-size: cover;">
@@ -1009,8 +1016,8 @@
                     <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-brand"></i> Priority support — real answers, not a ticket queue</li>
                   </ul>
                 </div>
-                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-8 w-full bg-brand hover:bg-brand-600 text-white py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
-                  Choose Pro Plan
+                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-8 w-full bg-white hover:bg-grey text-title py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
+                  Upgrade to Pro
                 </button>
               </div>
             </div>

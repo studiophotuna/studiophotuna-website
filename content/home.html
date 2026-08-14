@@ -17,8 +17,8 @@
                 <button onclick="startFreeTrial()" class="btn-animation btn-primary">
                   <i class="fa-solid fa-rocket"></i> Start Free Trial
                 </button>
-                <a href="#" onclick="goToSection('how-it-works'); return false;" class="btn-animation btn-secondary">
-                  <i class="fa-solid fa-play text-brand text-xs"></i> View Interactive Demo
+                <a href="#" onclick="goToSection('how-it-works'); return false;" class="btn-animation btn-ghost">
+                  <span class="w-6 h-6 rounded-full border border-line flex items-center justify-center"><i class="fa-solid fa-play text-[10px]"></i></span> View Interactive Demo
                 </a>
               </div>
               <div id="heroProofCard" class="inline-flex items-center gap-3 bg-brand text-white rounded-2xl px-5 py-3 shadow-lg shadow-brand/20 max-w-xl mx-auto">
@@ -31,11 +31,13 @@
             <div class="mt-16 max-w-4xl mx-auto reveal">
               <div class="relative">
                 <div class="absolute -inset-4 gradient-accent-bg opacity-10 blur-2xl rounded-[2rem] pointer-events-none" aria-hidden="true"></div>
-                <div class="relative bg-navy-950 rounded-3xl p-3 sm:p-4 shadow-luxe hover-lift">
-                  <div class="flex justify-center pb-2">
-                    <div class="w-2.5 h-2.5 rounded-full bg-gray-600 ring-1 ring-gray-500"></div>
+                <div class="relative bg-white rounded-2xl border border-line p-2 sm:p-3 shadow-luxe hover-lift">
+                  <div class="flex items-center gap-1.5 px-2 pb-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
                   </div>
-                  <div class="rounded-2xl overflow-hidden bg-white">
+                  <div class="rounded-xl overflow-hidden bg-white border border-line">
                     <img src="app_image_3.png" alt="Studio Photuna tone and frame picker with a live printed strip preview" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/1600x1000/f4f5f8/5f6678?text=Studio+Photuna'" />
                   </div>
                 </div>
@@ -65,6 +67,11 @@
               <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Compatible</p>
             </div>
           </div>
+        </section>
+
+        <!-- Coming soon teaser -->
+        <section class="py-3 px-6 bg-brand-50 text-center">
+          <p class="text-xs sm:text-sm font-bold text-brand-700"><i class="fa-solid fa-bolt text-[10px] mr-1"></i> Coming soon: expanding to Android and iPad platforms</p>
         </section>
 
         <!-- Value Proposition -->
@@ -235,11 +242,13 @@
                 <h3 class="h2-display text-title" style="font-size: 1.75rem;">Click through the exact screens your guests will see</h3>
               </div>
               <div class="max-w-4xl mx-auto reveal">
-                <div class="bg-black rounded-3xl p-3 sm:p-4 shadow-luxe">
-                <div class="flex justify-center pb-2">
-                  <div class="w-2.5 h-2.5 rounded-full bg-gray-600 ring-1 ring-gray-500"></div>
+                <div class="bg-white rounded-2xl border border-line p-2 sm:p-3 shadow-luxe">
+                <div class="flex items-center gap-1.5 px-2 pb-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
                 </div>
-                <div class="bg-white rounded-2xl overflow-hidden relative" style="aspect-ratio: 16/10;">
+                <div class="bg-white rounded-xl border border-line overflow-hidden relative" style="aspect-ratio: 16/10;">
 
                   <!-- Screen 0: Tap to Start -->
                   <div class="booth-screen active flex flex-col items-center justify-center text-center h-full" data-screen="0" style="background: url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22400%22%3E%3Cfilter id=%22n%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%224%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 fill=%22%23f0ede8%22/%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23n)%22 opacity=%220.12%22/%3E%3C/svg%3E'); background-size: cover;">
@@ -642,8 +651,8 @@
                     <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-brand"></i> Priority support — real answers, not a ticket queue</li>
                   </ul>
                 </div>
-                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-8 w-full bg-brand hover:bg-brand-600 text-white py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
-                  Choose Pro Plan
+                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-8 w-full bg-white hover:bg-grey text-title py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
+                  Upgrade to Pro
                 </button>
               </div>
             </div>
