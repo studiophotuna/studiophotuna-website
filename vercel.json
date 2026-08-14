@@ -28,5 +28,13 @@
   ],
   "rewrites": [
     { "source": "/booknow", "destination": "/book-event.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.studiophotuna.com" }],
+      "destination": "https://studiophotuna.com/:path*",
+      "permanent": true
+    }
   ]
 }
