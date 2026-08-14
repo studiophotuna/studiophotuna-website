@@ -1564,25 +1564,44 @@ function starIcons(rating) {
   return Array.from({ length: 5 }, (_, i) => `<i class="fa-solid fa-star${i < filled ? "" : " text-line"}"></i>`).join("");
 }
 
+function initials(name) {
+  const parts = (name || "").trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
+  return (parts[0][0] + (parts.length > 1 ? parts[parts.length - 1][0] : "")).toUpperCase();
+}
+
+function reviewCardHtml(r) {
+  return `<div class="stars text-yellow-400 text-sm">${starIcons(r.rating)}</div>
+    <p class="text-lg font-bold text-title leading-snug mt-3">"${r.review_text}"</p>
+    <div class="flex items-center gap-3 mt-5 pt-4 border-t border-line">
+      <div class="w-10 h-10 rounded-full bg-brand/10 text-brand flex items-center justify-center font-black text-sm shrink-0">${initials(r.name)}</div>
+      <div>
+        <p class="font-bold text-title text-sm">${r.name}</p>
+        <p class="text-xs text-muted font-semibold">${r.event_type || "Client"}</p>
+      </div>
+    </div>`;
+}
+
 function renderReviews(payload) {
   if (!googleReviewsList) return; // only exists on the home page
-  const list = Array.isArray(payload.reviews) ? payload.reviews.filter(r => r.review_text).slice(0, 3) : [];
+  const list = Array.isArray(payload.reviews) ? payload.reviews.filter(r => r.review_text).slice(0, 4) : [];
   googleReviewsList.innerHTML = "";
   if (!list.length) {
     const defaults = [
       { rating: 5, name: "Patricia Santos", review_text: "Studio Photuna completely transformed our wedding experience in Manila! The high-angle booth perspective felt super unique, and the instant prints matched our theme frames perfectly.", event_type: "Wedding Client" },
       { rating: 5, name: "Liam Mendoza", review_text: "Highly recommend the 14-day free trial app configurations. Calibrating connected DSLR camera variables worked smoothly, and local test sheets printed flawlessly.", event_type: "Photobooth Operator" },
-      { rating: 5, name: "Sloane Perez", review_text: "Our guests loved the retro filters and quick QR-scans on their phone. Exceptional technical support during our corporate anniversary event setup!", event_type: "Corporate Event Operator" }
+      { rating: 5, name: "Sloane Perez", review_text: "Our guests loved the retro filters and quick QR-scans on their phone. Exceptional technical support during our corporate anniversary event setup!", event_type: "Corporate Event Operator" },
+      { rating: 5, name: "Marco Villanueva", review_text: "Setup took minutes, not hours. Connected our DSLR and dye-sub printer, mapped a template, and we were running our first session the same afternoon.", event_type: "Birthday Party" }
     ];
     defaults.forEach(r => {
       const card = document.createElement("article"); card.className = "review-card card-testimonial hover-lift";
-      card.innerHTML = `<div class="stars text-yellow-400 text-sm">${starIcons(r.rating)}</div><h3 class="font-bold text-title text-base mt-2">${r.name}</h3><p class="text-sm text-body leading-relaxed font-medium mt-1">"${r.review_text}"</p><span class="block text-xs text-muted font-bold mt-3">${r.event_type}</span>`;
+      card.innerHTML = reviewCardHtml(r);
       googleReviewsList.appendChild(card);
     }); return;
   }
   list.forEach(r => {
     const card = document.createElement("article"); card.className = "review-card card-testimonial hover-lift";
-    card.innerHTML = `<div class="stars text-yellow-400 text-sm">${starIcons(r.rating)}</div><h3 class="font-bold text-title text-base mt-2">${r.name}</h3><p class="text-sm text-body leading-relaxed font-medium mt-1">"${r.review_text}"</p><span class="block text-xs text-muted font-bold mt-3">${r.event_type || "Client"}</span>`;
+    card.innerHTML = reviewCardHtml(r);
     googleReviewsList.appendChild(card);
   });
   // Once a real approved review exists, the hero proof card upgrades from a
