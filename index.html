@@ -65,6 +65,11 @@
                 50: '#eaf2fe', 100: '#d3e4fd', 200: '#a8c9fb', 300: '#7aadf7', 400: '#3d89ef',
                 500: '#0c66e4', 600: '#0a52b8', 700: '#083e8c', 800: '#062b61', 900: '#041b3d', 950: '#020f22',
               },
+              navy: {
+                DEFAULT: '#0b1220',
+                50: '#eef1f6', 100: '#dce2ec', 200: '#b3c0d4', 300: '#8a9dbb', 400: '#4f6288',
+                500: '#28395c', 600: '#1c2843', 700: '#141d31', 800: '#101725', 900: '#0b1220', 950: '#070c15',
+              },
               yellow: {
                 DEFAULT: '#f7d54a',
                 50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15',
@@ -202,6 +207,106 @@
       .booth-screen.hidden {
         opacity: 0;
       }
+
+      /* Radius convention (codifying existing usage, not a new rule):
+         rounded-full = pills/buttons/avatars, rounded-3xl = primary cards,
+         rounded-2xl = media frames/secondary cards, rounded-xl = form
+         inputs/small chips. */
+
+      /* Sparing violet-gradient accent. Reserved for: the pricing "Best
+         Value" badge, one hero highlight, small decorative blobs. Never
+         apply to large surfaces -- the site stays white/navy/electric-blue,
+         this is emphasis only. */
+      .gradient-accent-text {
+        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .gradient-accent-bg {
+        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+      }
+      .gradient-accent-ring {
+        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+        padding: 1.5px;
+        border-radius: inherit;
+      }
+
+      /* Button system */
+      .btn-primary {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: #0c66e4; color: #fff;
+        padding: 1rem 2rem; border-radius: 999px;
+        font-weight: 800; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;
+        box-shadow: 0 10px 30px rgba(12, 102, 228, 0.2);
+        transition: background-color 0.2s ease;
+      }
+      .btn-primary:hover { background: #0a52b8; }
+      .btn-secondary {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: #fff; color: #111827; border: 1px solid #dedfe6;
+        padding: 1rem 2rem; border-radius: 999px;
+        font-weight: 800; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;
+        transition: background-color 0.2s ease;
+      }
+      .btn-secondary:hover { background: #f4f5f8; }
+      .btn-ghost {
+        display: inline-flex; align-items: center; gap: 0.375rem;
+        color: #0c66e4; font-weight: 700; font-size: 0.875rem;
+        transition: gap 0.2s ease;
+      }
+      .btn-ghost:hover { gap: 0.625rem; }
+
+      /* Badge / pill label */
+      .badge {
+        display: inline-block;
+        font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+        padding: 0.375rem 0.875rem; border-radius: 999px;
+      }
+
+      /* Card system -- shared base, color/surface set per usage */
+      .card-feature, .card-product, .card-pricing, .card-testimonial, .card-faq {
+        border-radius: 1.5rem;
+        border: 1px solid #dedfe6;
+      }
+      .card-feature { padding: 2rem; }
+      .card-feature.card-dark {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+      .card-product {
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(17, 24, 39, 0.08);
+      }
+      .card-pricing { padding: 2rem; }
+      .card-testimonial { padding: 1.5rem; background: #fff; }
+      .card-faq {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        overflow: hidden;
+      }
+
+      /* Header blur/shadow intensifies past the scroll threshold set in
+         app.js (~10px), rather than introducing blur that wasn't there --
+         the header is always translucent+blurred; this just strengthens it. */
+      .site-header.scrolled {
+        background-color: rgba(249, 247, 243, 0.97);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal, .feature-card, .hover-lift, .btn-animation, .booth-screen,
+        .cta-glow, .btn-ghost {
+          transition: none !important;
+          animation: none !important;
+        }
+        .reveal, .feature-card {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      }
     </style>
 
   </head>
@@ -216,24 +321,25 @@
         </a>
         
         <nav class="hidden md:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-purple transition-colors">Home</a>
-          <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-purple transition-colors">Features</a>
-          <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-purple transition-colors">Pricing</a>
-          <a href="#" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-purple transition-colors">Download</a>
-          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-purple transition-colors">Support</a>
+          <a href="#" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Home</a>
+          <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand transition-colors">Features</a>
+          <a href="/#how-it-works" onclick="goToSection('how-it-works'); return false;" class="hover:text-brand transition-colors">How It Works</a>
+          <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
+          <a href="#" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-brand transition-colors">Download</a>
+          <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Support</a>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
           <!-- User Dropdown (Signed In State) -->
           <div class="relative hidden" id="userDropdown">
             <button class="dropdown-trigger inline-flex min-height-[44px] items-center gap-2 border border-line rounded-full bg-grey hover:bg-grey-2 pl-1.5 pr-2 sm:pr-4 py-1.5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="dropdownButton" aria-haspopup="true" aria-expanded="false">
-              <span id="navAvatar" class="w-7 h-7 rounded-full bg-purple/10 border border-line flex items-center justify-center text-[10px] font-black text-purple overflow-hidden shrink-0" aria-hidden="true"></span>
+              <span id="navAvatar" class="w-7 h-7 rounded-full bg-brand/10 border border-line flex items-center justify-center text-[10px] font-black text-brand overflow-hidden shrink-0" aria-hidden="true"></span>
               <span class="sr-only sm:hidden">Account menu</span>
               <span id="userPill" class="hidden sm:inline max-w-[120px] truncate">Account</span>
               <i class="fa-solid fa-chevron-down text-xs text-muted"></i>
             </button>
             <div class="dropdown-menu absolute top-full right-0 mt-2 w-56 border border-line rounded-2xl bg-white p-2 shadow-luxe hidden flex-col gap-1 z-50" role="menu">
-              <a href="#" onclick="navigateTo('account'); closeDropdown(); return false;" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-circle-user text-purple"></i> View Account</a>
+              <a href="#" onclick="navigateTo('account'); closeDropdown(); return false;" class="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-circle-user text-brand"></i> View Account</a>
               <a href="#" onclick="navigateTo('bookings-admin'); closeDropdown(); return false;" id="adminBookingsOpen" class="hidden flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-chart-line text-green"></i> Admin Bookings</a>
               <div class="h-[1px] my-1 bg-line"></div>
               <button type="button" id="logoutAction" class="w-full text-left flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 transition-colors"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
@@ -241,8 +347,8 @@
           </div>
 
           <!-- Auth Actions (Signed Out State) -->
-          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center border border-line rounded-full bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Login</button>
-          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-purple hover:bg-purple-dark text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex" href="/#pricing" onclick="goToSection('pricing'); return false;">Choose Plans</a>
+          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center border border-line rounded-full bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Sign In</button>
+          <a class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-brand hover:bg-brand-600 text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex shadow-lg shadow-brand/20" href="/#pricing" onclick="goToSection('pricing'); return false;">Start Free Trial</a>
           <button class="hamburger md:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
       </div>
@@ -250,6 +356,8 @@
 
     <div id="mobile-menu" class="hidden md:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
       <a href="#" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
+      <a href="/#features" onclick="goToSection('features'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Features</a>
+      <a href="/#how-it-works" onclick="goToSection('how-it-works'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">How It Works</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
       <a href="#" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download Setup</a>
       <a href="#" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help & Support</a>
@@ -265,6 +373,7 @@
 
           <div class="max-w-7xl mx-auto">
             <div class="text-center max-w-7xl mx-auto space-y-8">
+              <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2"><i class="fa-solid fa-display text-[10px]"></i> Windows 10/11 Compatible</span>
               <h1 class="h1-display text-[#111827] text-4xl sm:text-6xl md:text-7xl lg:text-8xl">
                 The software for your<br class="hidden sm:block"> Korean-style <em>photobooth</em> business
               </h1>
@@ -272,11 +381,11 @@
                 Studio Photuna is the all-in-one photo booth business software for operators — set up events, design templates, run the guest booth flow, print, and share photos by QR, all from one Windows app you run on hardware you already own.
               </p>
               <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-                <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 bg-brand hover:bg-brand-600 text-white px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors shadow-lg shadow-brand/20">
+                <button onclick="startFreeTrial()" class="btn-animation btn-primary">
                   <i class="fa-solid fa-rocket"></i> Start Free Trial
                 </button>
-                <a href="#" onclick="navigateTo('download');" class="btn-animation inline-flex items-center gap-2 border border-line bg-white hover:bg-grey text-title px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors">
-                  <i class="fa-solid fa-download text-brand text-xs"></i> Download Now
+                <a href="#" onclick="goToSection('how-it-works'); return false;" class="btn-animation btn-secondary">
+                  <i class="fa-solid fa-play text-brand text-xs"></i> View Interactive Demo
                 </a>
               </div>
               <div id="heroProofCard" class="inline-flex items-center gap-3 bg-brand text-white rounded-2xl px-5 py-3 shadow-lg shadow-brand/20 max-w-xl mx-auto">
@@ -285,9 +394,215 @@
               </div>
             </div>
 
-            <!-- Interactive Booth Console Preview — replaces static hero image; hidden on mobile -->
-            <div class="hidden sm:block mt-16 max-w-5xl mx-auto reveal">
-              <div class="bg-black rounded-3xl p-3 sm:p-4 shadow-luxe">
+            <!-- Hero product visual: real screenshot in a premium frame -->
+            <div class="mt-16 max-w-4xl mx-auto reveal">
+              <div class="relative">
+                <div class="absolute -inset-4 gradient-accent-bg opacity-10 blur-2xl rounded-[2rem] pointer-events-none" aria-hidden="true"></div>
+                <div class="relative bg-navy-950 rounded-3xl p-3 sm:p-4 shadow-luxe hover-lift">
+                  <div class="flex justify-center pb-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-gray-600 ring-1 ring-gray-500"></div>
+                  </div>
+                  <div class="rounded-2xl overflow-hidden bg-white">
+                    <img src="app_image_3.png" alt="Studio Photuna tone and frame picker with a live printed strip preview" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/1600x1000/f4f5f8/5f6678?text=Studio+Photuna'" />
+                  </div>
+                </div>
+              </div>
+              <p class="text-center text-xs text-muted font-bold mt-4">Real Studio Photuna software — tone, frame, and print, all from one screen.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Stats strip -->
+        <section class="py-12 px-6 border-y border-line bg-white">
+          <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <p class="text-3xl sm:text-4xl font-black text-title">14 Days</p>
+              <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Free Trial</p>
+            </div>
+            <div>
+              <p class="text-3xl sm:text-4xl font-black text-title">1 App</p>
+              <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Complete Workflow</p>
+            </div>
+            <div>
+              <p class="text-3xl sm:text-4xl font-black text-title">0</p>
+              <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Coding Required</p>
+            </div>
+            <div>
+              <p class="text-3xl sm:text-4xl font-black text-title">Win 10/11</p>
+              <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Compatible</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Value Proposition -->
+        <section class="py-20 px-6 bg-warm">
+          <div class="max-w-5xl mx-auto text-center space-y-4">
+            <h2 class="h2-display text-title">Why photo booth operators choose Studio Photuna</h2>
+            <p class="text-base text-body max-w-3xl mx-auto">Running a Korean-style photobooth business usually means stitching together a booking spreadsheet, a separate template design tool, and a clunky kiosk build. Studio Photuna replaces all of it with one photo booth business software you install on a Windows PC — so you spend less time managing tools and more time booked on events.</p>
+          </div>
+          <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+            <div class="card-feature hover-lift bg-white text-center space-y-3">
+              <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto"><i class="fa-solid fa-plug"></i></div>
+              <h3 class="text-lg font-bold text-title">Built for operators, not developers</h3>
+              <p class="text-sm text-body">No coding, no custom kiosk hardware. Plug in a DSLR and a dye-sub printer, and you're ready to run your first session.</p>
+            </div>
+            <div class="card-feature hover-lift bg-white text-center space-y-3">
+              <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto"><i class="fa-solid fa-layer-group"></i></div>
+              <h3 class="text-lg font-bold text-title">One subscription, the whole workflow</h3>
+              <p class="text-sm text-body">Event setup, template design, guest flow, printing, and reporting all live inside a single Pro plan.</p>
+            </div>
+            <div class="card-feature hover-lift bg-white text-center space-y-3">
+              <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto"><i class="fa-solid fa-share-nodes"></i></div>
+              <h3 class="text-lg font-bold text-title">A guest experience worth reposting</h3>
+              <p class="text-sm text-body">Branded welcome screens, tone presets, and instant QR delivery make every strip feel premium.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Live Photobooth Interface Showcase Gallery -->
+        <section id="how-it-works" class="py-16 px-6 bg-warm">
+          <div class="max-w-7xl mx-auto space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+              <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Interactive Client Screens</span>
+              <h2 class="h2-display text-title">Frictionless workflow for guests & admins</h2>
+              <p class="text-base text-body">From a branded "Tap to Start" trigger to a printed strip and QR gallery hand-off — every guest screen is timed, on-brand, and built to reset itself for the next walk-up.</p>
+            </div>
+
+            <!-- Step Carousel: full guest journey -->
+            <div class="relative">
+              <div class="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory custom-scrollbar -mx-6 px-6 lg:mx-0 lg:px-0">
+
+                <!-- Step 1 -->
+                <div class="snap-start shrink-0 w-[340px] space-y-4">
+                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
+                    <img src="interact_image_1.png" alt="Branded Tap to Start welcome screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Welcome+Screen'" />
+                  </div>
+                  <h3 class="text-base font-bold text-title flex items-center gap-2">
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">1</span>
+                    Branded Welcome Trigger
+                  </h3>
+                  <p class="text-sm text-body">A full-bleed, on-brand "Tap to Start" lobby screen invites guests to launch a session with zero staff intervention.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="snap-start shrink-0 w-[340px] space-y-4">
+                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
+                    <img src="interact_image_2.png" alt="Choose your template screen with countdown" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Choose+Template'" />
+                  </div>
+                  <h3 class="text-base font-bold text-title flex items-center gap-2">
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">2</span>
+                    Template Selection
+                  </h3>
+                  <p class="text-sm text-body">Guests pick a Sample, Classic, or 6×2 layout under a live countdown so the queue keeps moving.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="snap-start shrink-0 w-[340px] space-y-4">
+                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
+                    <img src="Interact_image_3.png" alt="Select photos to retake review screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Retake+Review'" />
+                  </div>
+                  <h3 class="text-base font-bold text-title flex items-center gap-2">
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">3</span>
+                    Retake Review
+                  </h3>
+                  <p class="text-sm text-body">Captured shots load instantly with a configurable retake allowance, so guests only redo the frames they want.</p>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="snap-start shrink-0 w-[340px] space-y-4">
+                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
+                    <img src="interact_image_4.png" alt="Strip assembly preview screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Strip+Preview'" />
+                  </div>
+                  <h3 class="text-base font-bold text-title flex items-center gap-2">
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">4</span>
+                    Strip Assembly Preview
+                  </h3>
+                  <p class="text-sm text-body">Approved photos are arranged live into the final strip layout side-by-side, exactly as it will print.</p>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="snap-start shrink-0 w-[340px] space-y-4">
+                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
+                    <img src="interact_image_5.png" alt="Tone and frame customization screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Tone+%26+Frame'" />
+                  </div>
+                  <h3 class="text-base font-bold text-title flex items-center gap-2">
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">5</span>
+                    Tone & Frame Studio
+                  </h3>
+                  <p class="text-sm text-body">One-tap tone presets — Normal, B&W, Sepia, Vintage, Warm, Cool — plus frame styles update the live strip preview.</p>
+                </div>
+
+                <!-- Step 6 -->
+                <div class="snap-start shrink-0 w-[340px] space-y-4">
+                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
+                    <img src="interact_image_6.png" alt="Preparing your gallery loading screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Preparing+Gallery'" />
+                  </div>
+                  <h3 class="text-base font-bold text-title flex items-center gap-2">
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">6</span>
+                    Gallery Generation
+                  </h3>
+                  <p class="text-sm text-body">While the strip prints, the system quietly generates the QR code and online gallery in the background.</p>
+                </div>
+
+                <!-- Step 7 -->
+                <div class="snap-start shrink-0 w-[340px] space-y-4">
+                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
+                    <img src="interact_image_7.png" alt="Now printing screen with QR code" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Printing+%2B+QR'" />
+                  </div>
+                  <h3 class="text-base font-bold text-title flex items-center gap-2">
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">7</span>
+                    Live Print + QR Hand-off
+                  </h3>
+                  <p class="text-sm text-body">A scannable QR code appears immediately so guests can download photos and GIFs while the print finishes.</p>
+                </div>
+
+                <!-- Step 8 -->
+                <div class="snap-start shrink-0 w-[340px] space-y-4">
+                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
+                    <img src="interact_image_8.png" alt="Print ready thank you screen with auto reset" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Print+Ready'" />
+                  </div>
+                  <h3 class="text-base font-bold text-title flex items-center gap-2">
+                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">8</span>
+                    Auto-Reset for Next Guest
+                  </h3>
+                  <p class="text-sm text-body">A thank-you screen confirms the print is ready, then the kiosk resets itself for the next walk-up — no admin needed.</p>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Frictionless safeguards strip -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+              <div class="flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5">
+                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-stopwatch"></i></div>
+                <div>
+                  <p class="text-sm font-bold text-title">On-screen countdowns</p>
+                  <p class="text-xs text-body">Every step shows a live timer so sessions move on their own.</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5">
+                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-rotate-left"></i></div>
+                <div>
+                  <p class="text-sm font-bold text-title">Configurable retake limits</p>
+                  <p class="text-xs text-body">Cap retakes per session to keep queues fair and fast.</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5">
+                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-qrcode"></i></div>
+                <div>
+                  <p class="text-sm font-bold text-title">Instant QR delivery</p>
+                  <p class="text-xs text-body">Photos and GIFs are ready to scan before the print even finishes.</p>
+                </div>
+              </div>
+            </div>
+            <!-- Try it yourself: relocated interactive booth demo -->
+            <div class="pt-4 space-y-6">
+              <div class="text-center max-w-2xl mx-auto space-y-3">
+                <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Try It Yourself</span>
+                <h3 class="h2-display text-title" style="font-size: 1.75rem;">Click through the exact screens your guests will see</h3>
+              </div>
+              <div class="max-w-4xl mx-auto reveal">
+                <div class="bg-black rounded-3xl p-3 sm:p-4 shadow-luxe">
                 <div class="flex justify-center pb-2">
                   <div class="w-2.5 h-2.5 rounded-full bg-gray-600 ring-1 ring-gray-500"></div>
                 </div>
@@ -571,178 +886,15 @@
 
                 </div>
               </div>
-              <!-- Monitor stand -->
-              <p class="text-center text-xs text-muted font-bold mt-4">Interactive demo — click through the screens your guests will see.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Value Proposition -->
-        <section class="py-20 px-6 bg-warm">
-          <div class="max-w-5xl mx-auto text-center space-y-4">
-            <h2 class="h2-display text-title">Why photo booth operators choose Studio Photuna</h2>
-            <p class="text-base text-body max-w-3xl mx-auto">Running a Korean-style photobooth business usually means stitching together a booking spreadsheet, a separate template design tool, and a clunky kiosk build. Studio Photuna replaces all of it with one photo booth business software you install on a Windows PC — so you spend less time managing tools and more time booked on events.</p>
-          </div>
-          <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-            <div class="text-center space-y-2 px-4">
-              <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto mb-2"><i class="fa-solid fa-plug"></i></div>
-              <h3 class="text-lg font-bold text-title">Built for operators, not developers</h3>
-              <p class="text-sm text-body">No coding, no custom kiosk hardware. Plug in a DSLR and a dye-sub printer, and you're ready to run your first session.</p>
-            </div>
-            <div class="text-center space-y-2 px-4">
-              <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto mb-2"><i class="fa-solid fa-layer-group"></i></div>
-              <h3 class="text-lg font-bold text-title">One subscription, the whole workflow</h3>
-              <p class="text-sm text-body">Event setup, template design, guest flow, printing, and reporting all live inside a single Pro plan.</p>
-            </div>
-            <div class="text-center space-y-2 px-4">
-              <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto mb-2"><i class="fa-solid fa-share-nodes"></i></div>
-              <h3 class="text-lg font-bold text-title">A guest experience worth reposting</h3>
-              <p class="text-sm text-body">Branded welcome screens, tone presets, and instant QR delivery make every strip feel premium.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Live Photobooth Interface Showcase Gallery -->
-        <section class="py-16 px-6 bg-warm">
-          <div class="max-w-7xl mx-auto space-y-12">
-            <div class="text-center max-w-2xl mx-auto space-y-4">
-              <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Interactive Client Screens</span>
-              <h2 class="h2-display text-title">Frictionless workflow for guests & admins</h2>
-              <p class="text-base text-body">From a branded "Tap to Start" trigger to a printed strip and QR gallery hand-off — every guest screen is timed, on-brand, and built to reset itself for the next walk-up.</p>
-            </div>
-
-            <!-- Step Carousel: full guest journey -->
-            <div class="relative">
-              <div class="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory custom-scrollbar -mx-6 px-6 lg:mx-0 lg:px-0">
-
-                <!-- Step 1 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_1.png" alt="Branded Tap to Start welcome screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Welcome+Screen'" />
-                  </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">1</span>
-                    Branded Welcome Trigger
-                  </h3>
-                  <p class="text-sm text-body">A full-bleed, on-brand "Tap to Start" lobby screen invites guests to launch a session with zero staff intervention.</p>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_2.png" alt="Choose your template screen with countdown" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Choose+Template'" />
-                  </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">2</span>
-                    Template Selection
-                  </h3>
-                  <p class="text-sm text-body">Guests pick a Sample, Classic, or 6×2 layout under a live countdown so the queue keeps moving.</p>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="Interact_image_3.png" alt="Select photos to retake review screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Retake+Review'" />
-                  </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">3</span>
-                    Retake Review
-                  </h3>
-                  <p class="text-sm text-body">Captured shots load instantly with a configurable retake allowance, so guests only redo the frames they want.</p>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_4.png" alt="Strip assembly preview screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Strip+Preview'" />
-                  </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">4</span>
-                    Strip Assembly Preview
-                  </h3>
-                  <p class="text-sm text-body">Approved photos are arranged live into the final strip layout side-by-side, exactly as it will print.</p>
-                </div>
-
-                <!-- Step 5 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_5.png" alt="Tone and frame customization screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Tone+%26+Frame'" />
-                  </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">5</span>
-                    Tone & Frame Studio
-                  </h3>
-                  <p class="text-sm text-body">One-tap tone presets — Normal, B&W, Sepia, Vintage, Warm, Cool — plus frame styles update the live strip preview.</p>
-                </div>
-
-                <!-- Step 6 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_6.png" alt="Preparing your gallery loading screen" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Preparing+Gallery'" />
-                  </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">6</span>
-                    Gallery Generation
-                  </h3>
-                  <p class="text-sm text-body">While the strip prints, the system quietly generates the QR code and online gallery in the background.</p>
-                </div>
-
-                <!-- Step 7 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_7.png" alt="Now printing screen with QR code" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Printing+%2B+QR'" />
-                  </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">7</span>
-                    Live Print + QR Hand-off
-                  </h3>
-                  <p class="text-sm text-body">A scannable QR code appears immediately so guests can download photos and GIFs while the print finishes.</p>
-                </div>
-
-                <!-- Step 8 -->
-                <div class="snap-start shrink-0 w-[340px] space-y-4">
-                  <div class="rounded-2xl overflow-hidden border border-line shadow-sm hover:shadow-md transition-shadow bg-grey">
-                    <img src="interact_image_8.png" alt="Print ready thank you screen with auto reset" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/600x800/f4f5f8/5f6678?text=Print+Ready'" />
-                  </div>
-                  <h3 class="text-base font-bold text-title flex items-center gap-2">
-                    <span class="w-6 h-6 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center text-xs">8</span>
-                    Auto-Reset for Next Guest
-                  </h3>
-                  <p class="text-sm text-body">A thank-you screen confirms the print is ready, then the kiosk resets itself for the next walk-up — no admin needed.</p>
-                </div>
-
+                <p class="text-center text-xs text-muted font-bold mt-4">Interactive demo — click through the screens your guests will see.</p>
               </div>
             </div>
 
-            <!-- Frictionless safeguards strip -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              <div class="flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5">
-                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-stopwatch"></i></div>
-                <div>
-                  <p class="text-sm font-bold text-title">On-screen countdowns</p>
-                  <p class="text-xs text-body">Every step shows a live timer so sessions move on their own.</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5">
-                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-rotate-left"></i></div>
-                <div>
-                  <p class="text-sm font-bold text-title">Configurable retake limits</p>
-                  <p class="text-xs text-body">Cap retakes per session to keep queues fair and fast.</p>
-                </div>
-              </div>
-              <div class="flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5">
-                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-qrcode"></i></div>
-                <div>
-                  <p class="text-sm font-bold text-title">Instant QR delivery</p>
-                  <p class="text-xs text-body">Photos and GIFs are ready to scan before the print even finishes.</p>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
         <!-- Dynamic Core Features Grid -->
-        <section id="features" class="py-24 px-6 bg-black">
+        <section id="features" class="py-24 px-6 bg-navy-950">
           <div class="max-w-7xl mx-auto space-y-16">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-white" style="font-weight: 800;">Run every booking from one operator workspace</h2>
@@ -750,35 +902,35 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <article class="feature-card bg-white/5 rounded-3xl p-8 space-y-4 hover-lift" style="transition-delay: 0ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-calendar-days"></i></div>
+              <article class="feature-card card-feature card-dark hover-lift" style="transition-delay: 0ms;">
+                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-calendar-days"></i></div>
                 <h3 class="text-xl font-bold text-white">Event workspace</h3>
-                <p class="text-sm text-white/70 leading-relaxed">Create a profile for every client event, map your layout, and organize booking details — no more juggling spreadsheets between gigs.</p>
+                <p class="text-sm text-white/70 leading-relaxed mt-2">Create a profile for every client event, map your layout, and organize booking details — no more juggling spreadsheets between gigs.</p>
               </article>
-              <article class="feature-card bg-white/5 rounded-3xl p-8 space-y-4 hover-lift" style="transition-delay: 80ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-palette"></i></div>
+              <article class="feature-card card-feature card-dark hover-lift" style="transition-delay: 80ms;">
+                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-palette"></i></div>
                 <h3 class="text-xl font-bold text-white">Template editor</h3>
-                <p class="text-sm text-white/70 leading-relaxed">Design custom photo strip layouts in 4x6, 6x4, 2x6, and 6x2 formats with a drag-and-drop camera placeholder editor.</p>
+                <p class="text-sm text-white/70 leading-relaxed mt-2">Design custom photo strip layouts in 4x6, 6x4, 2x6, and 6x2 formats with a drag-and-drop camera placeholder editor.</p>
               </article>
-              <article class="feature-card bg-white/5 rounded-3xl p-8 space-y-4 hover-lift" style="transition-delay: 160ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+              <article class="feature-card card-feature card-dark hover-lift" style="transition-delay: 160ms;">
+                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                 <h3 class="text-xl font-bold text-white">Brand controls</h3>
-                <p class="text-sm text-white/70 leading-relaxed">Style welcome screens, logos, frames, and overlay borders so every event looks like it was custom-built for that client.</p>
+                <p class="text-sm text-white/70 leading-relaxed mt-2">Style welcome screens, logos, frames, and overlay borders so every event looks like it was custom-built for that client.</p>
               </article>
-              <article class="feature-card bg-white/5 rounded-3xl p-8 space-y-4 hover-lift" style="transition-delay: 240ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-display"></i></div>
+              <article class="feature-card card-feature card-dark hover-lift" style="transition-delay: 240ms;">
+                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-display"></i></div>
                 <h3 class="text-xl font-bold text-white">Guest flow console</h3>
-                <p class="text-sm text-white/70 leading-relaxed">Run the welcome lobby, template picker, payment terminal, capture counter, retake screen, and QR download — guests self-serve from tap to print.</p>
+                <p class="text-sm text-white/70 leading-relaxed mt-2">Run the welcome lobby, template picker, payment terminal, capture counter, retake screen, and QR download — guests self-serve from tap to print.</p>
               </article>
-              <article class="feature-card bg-white/5 rounded-3xl p-8 space-y-4 hover-lift" style="transition-delay: 320ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-print"></i></div>
+              <article class="feature-card card-feature card-dark hover-lift" style="transition-delay: 320ms;">
+                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-print"></i></div>
                 <h3 class="text-xl font-bold text-white">Printer & outputs</h3>
-                <p class="text-sm text-white/70 leading-relaxed">Connect your DSLR and dye-sub printer once, then control margins, orientation, and copies per session.</p>
+                <p class="text-sm text-white/70 leading-relaxed mt-2">Connect your DSLR and dye-sub printer once, then control margins, orientation, and copies per session.</p>
               </article>
-              <article class="feature-card bg-white/5 rounded-3xl p-8 space-y-4 hover-lift" style="transition-delay: 400ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg"><i class="fa-solid fa-chart-line"></i></div>
+              <article class="feature-card card-feature card-dark hover-lift" style="transition-delay: 400ms;">
+                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-chart-line"></i></div>
                 <h3 class="text-xl font-bold text-white">Active analytics</h3>
-                <p class="text-sm text-white/70 leading-relaxed">Track session counts, live revenue, print sheets, and your most-booked templates in real time.</p>
+                <p class="text-sm text-white/70 leading-relaxed mt-2">Track session counts, live revenue, print sheets, and your most-booked templates in real time.</p>
               </article>
             </div>
           </div>
@@ -787,7 +939,7 @@
         <section class="py-24 px-6 max-w-7xl mx-auto">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="space-y-6">
-              <h2 class="h2-display text-title">Set up the booth with equipment you already own</h2>
+              <h2 class="h2-display text-title">Everything your booth needs</h2>
               <p class="text-lg text-body">A Windows PC, a DSLR camera, a dye-sub printer, and an internet connection are all it takes to run a professional Korean-style photobooth workflow — no proprietary kiosk required.</p>
               <ul class="check-list space-y-3">
                 <li class="flex items-center gap-3 font-semibold text-title"><i class="fa-solid fa-circle-check text-green-500"></i> Windows-based booth operation</li>
@@ -801,8 +953,8 @@
                 </a>
               </div>
             </div>
-            <div class="relative rounded-2xl overflow-hidden border border-line bg-white shadow-lg p-6">
-              <img class="w-full h-auto object-cover rounded-xl border border-line/50" src="app_image_2.png" alt="Studio Photuna Live Setup welcome interface screen" onerror="this.onerror=null; this.src='https://placehold.co/800x600/f4f5f8/5f6678?text=Hardware+Settings+Preview'" />
+            <div class="card-product relative">
+              <img class="w-full h-auto object-cover" src="app_image_2.png" alt="Studio Photuna Live Setup welcome interface screen" onerror="this.onerror=null; this.src='https://placehold.co/800x600/f4f5f8/5f6678?text=Hardware+Settings+Preview'" />
             </div>
           </div>
         </section>
@@ -817,9 +969,9 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
               <!-- Trial Card -->
-              <div class="bg-white border border-line rounded-3xl p-8 flex flex-col justify-between hover:shadow-md transition-shadow">
+              <div class="bg-white border border-line rounded-3xl p-8 flex flex-col justify-between hover-lift">
                 <div class="space-y-4">
-                  <span class="badge bg-brand/10 text-brand text-xs font-black uppercase tracking-widest px-3 py-1.5 rounded-full inline-block">Trial</span>
+                  <span class="badge bg-brand/10 text-brand">Trial</span>
                   <h3 class="text-2xl font-bold text-title">14-Day Free Trial</h3>
                   <div class="text-5xl font-black text-title">₱0</div>
                   <p class="text-sm text-body">Test every operator workspace feature before committing to plans.</p>
@@ -835,8 +987,8 @@
               </div>
 
               <!-- Pro Card with fully functioning toggles -->
-              <div class="bg-black border-2 border-brand rounded-3xl p-8 flex flex-col justify-between shadow-luxe text-white transform md:scale-105 relative">
-                <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-brand text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full" id="proPlanBadge">
+              <div class="bg-navy-950 border-2 border-brand rounded-3xl p-8 flex flex-col justify-between shadow-luxe text-white transform md:scale-105 relative hover-lift">
+                <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 gradient-accent-bg text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg" id="proPlanBadge">
                   Best Value
                 </span>
                 <div class="space-y-4">
@@ -867,8 +1019,9 @@
 
         <!-- Static reviews placeholder -->
         <section class="py-24 px-6 max-w-7xl mx-auto">
-          <div class="space-y-12">
+          <div class="space-y-16">
             <div class="text-center max-w-2xl mx-auto space-y-4">
+              <span class="text-xs uppercase tracking-widest font-extrabold text-brand">Customer Proof</span>
               <h2 class="h2-display text-title">Trusted by photo booth operators running real events</h2>
               <p class="text-base text-body">See what booth operators and their guests are saying about running their business on Studio Photuna.</p>
             </div>
@@ -877,16 +1030,16 @@
               <!-- Rendered Dynamically via JS state -->
             </div>
 
-            <!-- Submit a Review (Collapsible) -->
-            <div class="max-w-2xl mx-auto bg-white border border-line rounded-3xl shadow-sm overflow-hidden" id="reviewFormSection">
-              <button type="button" onclick="toggleReviewForm()" class="w-full flex items-center justify-between px-8 py-5 text-left hover:bg-grey/50 transition-colors">
-                <div class="space-y-1">
-                  <h3 class="text-xl font-black text-title">Share your experience</h3>
-                  <p class="text-sm text-body">Had a great time with Studio Photuna? Leave a review and let others know!</p>
+            <!-- Submit a Review (Collapsible) — visually distinct from the proof cards above -->
+            <div class="max-w-xl mx-auto bg-grey border border-line rounded-2xl overflow-hidden" id="reviewFormSection">
+              <button type="button" onclick="toggleReviewForm()" class="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-grey-2 transition-colors">
+                <div class="space-y-0.5">
+                  <h3 class="text-base font-black text-title">Share your experience</h3>
+                  <p class="text-xs text-body">Had a great time with Studio Photuna? Leave a review and let others know!</p>
                 </div>
                 <i class="fa-solid fa-chevron-down text-muted transition-transform duration-300" id="reviewFormChevron"></i>
               </button>
-              <div id="reviewFormBody" class="hidden px-8 pb-8 space-y-6">
+              <div id="reviewFormBody" class="hidden px-6 pb-6 space-y-5 bg-white">
               <form id="publicReviewForm" class="space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div class="space-y-1.5">
@@ -932,7 +1085,7 @@
           </div>
         </section>
 
-        <section id="faq" class="py-24 px-6 bg-black">
+        <section id="faq" class="py-24 px-6 bg-navy-950">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-white" style="font-weight: 800;">Frequently asked questions</h2>
@@ -940,7 +1093,7 @@
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="faqAccordion">
               <!-- FAQ items as collapsible accordion -->
-              <div class="faq-item bg-white/5 rounded-2xl overflow-hidden">
+              <div class="faq-item card-faq">
                 <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/10 transition-colors">
                   <h3 class="font-bold text-white pr-4">Do I need a physical kiosk enclosure to run the app?</h3>
                   <i class="fa-solid fa-chevron-down text-white/50 text-xs transition-transform duration-300 shrink-0"></i>
@@ -949,7 +1102,7 @@
                   <p class="text-sm text-white/70">No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation.</p>
                 </div>
               </div>
-              <div class="faq-item bg-white/5 rounded-2xl overflow-hidden">
+              <div class="faq-item card-faq">
                 <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/10 transition-colors">
                   <h3 class="font-bold text-white pr-4">What cameras are compatible with the software?</h3>
                   <i class="fa-solid fa-chevron-down text-white/50 text-xs transition-transform duration-300 shrink-0"></i>
@@ -958,7 +1111,7 @@
                   <p class="text-sm text-white/70">Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices.</p>
                 </div>
               </div>
-              <div class="faq-item bg-white/5 rounded-2xl overflow-hidden">
+              <div class="faq-item card-faq">
                 <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/10 transition-colors">
                   <h3 class="font-bold text-white pr-4">Does the app support physical printing?</h3>
                   <i class="fa-solid fa-chevron-down text-white/50 text-xs transition-transform duration-300 shrink-0"></i>
@@ -967,7 +1120,7 @@
                   <p class="text-sm text-white/70">Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings.</p>
                 </div>
               </div>
-              <div class="faq-item bg-white/5 rounded-2xl overflow-hidden">
+              <div class="faq-item card-faq">
                 <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/10 transition-colors">
                   <h3 class="font-bold text-white pr-4">Can guests retake their photos during a session?</h3>
                   <i class="fa-solid fa-chevron-down text-white/50 text-xs transition-transform duration-300 shrink-0"></i>
@@ -976,7 +1129,7 @@
                   <p class="text-sm text-white/70">Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed.</p>
                 </div>
               </div>
-              <div class="faq-item bg-white/5 rounded-2xl overflow-hidden">
+              <div class="faq-item card-faq">
                 <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/10 transition-colors">
                   <h3 class="font-bold text-white pr-4">What photo strip layouts are available?</h3>
                   <i class="fa-solid fa-chevron-down text-white/50 text-xs transition-transform duration-300 shrink-0"></i>
@@ -985,7 +1138,7 @@
                   <p class="text-sm text-white/70">The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor.</p>
                 </div>
               </div>
-              <div class="faq-item bg-white/5 rounded-2xl overflow-hidden">
+              <div class="faq-item card-faq">
                 <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/10 transition-colors">
                   <h3 class="font-bold text-white pr-4">How does QR cloud sharing work?</h3>
                   <i class="fa-solid fa-chevron-down text-white/50 text-xs transition-transform duration-300 shrink-0"></i>
@@ -994,7 +1147,7 @@
                   <p class="text-sm text-white/70">After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end.</p>
                 </div>
               </div>
-              <div class="faq-item bg-white/5 rounded-2xl overflow-hidden">
+              <div class="faq-item card-faq">
                 <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/10 transition-colors">
                   <h3 class="font-bold text-white pr-4">Is there a free trial available?</h3>
                   <i class="fa-solid fa-chevron-down text-white/50 text-xs transition-transform duration-300 shrink-0"></i>
@@ -1003,7 +1156,7 @@
                   <p class="text-sm text-white/70">Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start.</p>
                 </div>
               </div>
-              <div class="faq-item bg-white/5 rounded-2xl overflow-hidden">
+              <div class="faq-item card-faq">
                 <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/10 transition-colors">
                   <h3 class="font-bold text-white pr-4">Can I use the app offline during events?</h3>
                   <i class="fa-solid fa-chevron-down text-white/50 text-xs transition-transform duration-300 shrink-0"></i>
@@ -1012,7 +1165,7 @@
                   <p class="text-sm text-white/70">The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue.</p>
                 </div>
               </div>
-              <div class="faq-item bg-white/5 rounded-2xl overflow-hidden">
+              <div class="faq-item card-faq">
                 <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/10 transition-colors">
                   <h3 class="font-bold text-white pr-4">How do software updates work?</h3>
                   <i class="fa-solid fa-chevron-down text-white/50 text-xs transition-transform duration-300 shrink-0"></i>
@@ -1021,7 +1174,7 @@
                   <p class="text-sm text-white/70">Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience.</p>
                 </div>
               </div>
-              <div class="faq-item bg-white/5 rounded-2xl overflow-hidden">
+              <div class="faq-item card-faq">
                 <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-white/10 transition-colors">
                   <h3 class="font-bold text-white pr-4">What happens to guest photos after the event?</h3>
                   <i class="fa-solid fa-chevron-down text-white/50 text-xs transition-transform duration-300 shrink-0"></i>
@@ -1034,15 +1187,27 @@
           </div>
         </section>
 
+        <!-- Closing CTA banner -->
+        <section class="py-20 px-6">
+          <div class="max-w-5xl mx-auto rounded-3xl gradient-accent-bg px-8 py-16 sm:py-20 text-center space-y-6 relative overflow-hidden">
+            <div class="absolute -top-24 -right-24 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+            <h2 class="h2-display text-white" style="font-weight: 800;">Ready to run your booth on Studio Photuna?</h2>
+            <p class="text-base text-white/85 max-w-xl mx-auto">Start your 14-day free trial today — no credit card required, cancel anytime.</p>
+            <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 bg-white hover:bg-grey text-title px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors shadow-lg">
+              <i class="fa-solid fa-rocket"></i> Start Free Trial
+            </button>
+          </div>
+        </section>
+
     </main>
 
     <footer class="py-16 px-6 bg-white">
       <div class="max-w-7xl mx-auto">
-        <div class="bg-grey rounded-3xl p-8 md:p-14">
+        <div class="bg-navy-950 rounded-3xl p-8 md:p-14">
           <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div class="space-y-4">
-              <img src="/logo-dark.png" alt="Studio Photuna" class="h-10 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x40/111827/ffffff?text=Studio+Photuna'" />
-              <p class="text-sm text-body font-medium">Studio Photuna is photo booth business software that helps operators launch, run, and grow a Korean-style photobooth business — from event setup to guest delivery — on hardware they already own.</p>
+              <img src="/logo-light.png" alt="Studio Photuna" class="h-10 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x40/ffffff/111827?text=Studio+Photuna'" />
+              <p class="text-sm text-white/60 font-medium">Studio Photuna is photo booth business software that helps operators launch, run, and grow a Korean-style photobooth business — from event setup to guest delivery — on hardware they already own.</p>
 
               <!-- Only Facebook, Instagram, and TikTok -->
               <div class="socials flex gap-3">
@@ -1052,32 +1217,32 @@
               </div>
             </div>
             <div>
-              <p class="font-bold text-title text-xs uppercase tracking-wider mb-4">Company</p>
-              <nav class="flex flex-col gap-2.5 text-sm">
-                <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-brand">Home</a>
-                <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-brand">Book an Event</a>
-                <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand">Features</a>
-                <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand">Pricing</a>
+              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Company</p>
+              <nav class="flex flex-col gap-2.5 text-sm text-white/70">
+                <a href="#" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Home</a>
+                <a href="#" onclick="navigateTo('book-event'); return false;" class="hover:text-brand transition-colors">Book an Event</a>
+                <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand transition-colors">Features</a>
+                <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
               </nav>
             </div>
             <div>
-              <p class="font-bold text-title text-xs uppercase tracking-wider mb-4">Product</p>
-              <nav class="flex flex-col gap-2.5 text-sm font-medium">
-                <a href="#" onclick="navigateTo('account'); return false;" class="hover:text-brand">My Account</a>
-                <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-brand">Download the App</a>
-                <a href="#" onclick="navigateTo('changelog'); return false;" class="hover:text-brand">Changelog</a>
-                <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-brand">Help & Support</a>
+              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Product</p>
+              <nav class="flex flex-col gap-2.5 text-sm font-medium text-white/70">
+                <a href="#" onclick="navigateTo('account'); return false;" class="hover:text-brand transition-colors">My Account</a>
+                <a href="#" onclick="navigateTo('download'); return false;" class="hover:text-brand transition-colors">Download the App</a>
+                <a href="#" onclick="navigateTo('changelog'); return false;" class="hover:text-brand transition-colors">Changelog</a>
+                <a href="#" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Help & Support</a>
               </nav>
             </div>
             <div>
-              <p class="font-bold text-title text-xs uppercase tracking-wider mb-4">Legal</p>
-              <nav class="flex flex-col gap-2.5 text-sm">
-                <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand">Terms of Service</a>
-                <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand">Privacy Policy</a>
-                <a href="#" onclick="navigateTo('refund-policy'); return false;" class="hover:text-brand">Refund Policy</a>
-                <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="hover:text-brand">Cookie Policy</a>
-                <a href="#" onclick="navigateTo('data-processing'); return false;" class="hover:text-brand">Data Processing</a>
-                <a href="#" onclick="navigateTo('privacy-request'); return false;" class="hover:text-brand">Privacy Request</a>
+              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Legal</p>
+              <nav class="flex flex-col gap-2.5 text-sm text-white/70">
+                <a href="#" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand transition-colors">Terms of Service</a>
+                <a href="#" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand transition-colors">Privacy Policy</a>
+                <a href="#" onclick="navigateTo('refund-policy'); return false;" class="hover:text-brand transition-colors">Refund Policy</a>
+                <a href="#" onclick="navigateTo('cookie-policy'); return false;" class="hover:text-brand transition-colors">Cookie Policy</a>
+                <a href="#" onclick="navigateTo('data-processing'); return false;" class="hover:text-brand transition-colors">Data Processing</a>
+                <a href="#" onclick="navigateTo('privacy-request'); return false;" class="hover:text-brand transition-colors">Privacy Request</a>
               </nav>
             </div>
           </div>

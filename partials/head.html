@@ -45,6 +45,11 @@
                 50: '#eaf2fe', 100: '#d3e4fd', 200: '#a8c9fb', 300: '#7aadf7', 400: '#3d89ef',
                 500: '#0c66e4', 600: '#0a52b8', 700: '#083e8c', 800: '#062b61', 900: '#041b3d', 950: '#020f22',
               },
+              navy: {
+                DEFAULT: '#0b1220',
+                50: '#eef1f6', 100: '#dce2ec', 200: '#b3c0d4', 300: '#8a9dbb', 400: '#4f6288',
+                500: '#28395c', 600: '#1c2843', 700: '#141d31', 800: '#101725', 900: '#0b1220', 950: '#070c15',
+              },
               yellow: {
                 DEFAULT: '#f7d54a',
                 50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15',
@@ -181,5 +186,105 @@
       }
       .booth-screen.hidden {
         opacity: 0;
+      }
+
+      /* Radius convention (codifying existing usage, not a new rule):
+         rounded-full = pills/buttons/avatars, rounded-3xl = primary cards,
+         rounded-2xl = media frames/secondary cards, rounded-xl = form
+         inputs/small chips. */
+
+      /* Sparing violet-gradient accent. Reserved for: the pricing "Best
+         Value" badge, one hero highlight, small decorative blobs. Never
+         apply to large surfaces -- the site stays white/navy/electric-blue,
+         this is emphasis only. */
+      .gradient-accent-text {
+        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .gradient-accent-bg {
+        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+      }
+      .gradient-accent-ring {
+        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+        padding: 1.5px;
+        border-radius: inherit;
+      }
+
+      /* Button system */
+      .btn-primary {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: #0c66e4; color: #fff;
+        padding: 1rem 2rem; border-radius: 999px;
+        font-weight: 800; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;
+        box-shadow: 0 10px 30px rgba(12, 102, 228, 0.2);
+        transition: background-color 0.2s ease;
+      }
+      .btn-primary:hover { background: #0a52b8; }
+      .btn-secondary {
+        display: inline-flex; align-items: center; gap: 0.5rem;
+        background: #fff; color: #111827; border: 1px solid #dedfe6;
+        padding: 1rem 2rem; border-radius: 999px;
+        font-weight: 800; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em;
+        transition: background-color 0.2s ease;
+      }
+      .btn-secondary:hover { background: #f4f5f8; }
+      .btn-ghost {
+        display: inline-flex; align-items: center; gap: 0.375rem;
+        color: #0c66e4; font-weight: 700; font-size: 0.875rem;
+        transition: gap 0.2s ease;
+      }
+      .btn-ghost:hover { gap: 0.625rem; }
+
+      /* Badge / pill label */
+      .badge {
+        display: inline-block;
+        font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
+        padding: 0.375rem 0.875rem; border-radius: 999px;
+      }
+
+      /* Card system -- shared base, color/surface set per usage */
+      .card-feature, .card-product, .card-pricing, .card-testimonial, .card-faq {
+        border-radius: 1.5rem;
+        border: 1px solid #dedfe6;
+      }
+      .card-feature { padding: 2rem; }
+      .card-feature.card-dark {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+      .card-product {
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(17, 24, 39, 0.08);
+      }
+      .card-pricing { padding: 2rem; }
+      .card-testimonial { padding: 1.5rem; background: #fff; }
+      .card-faq {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.08);
+        border-radius: 1rem;
+        overflow: hidden;
+      }
+
+      /* Header blur/shadow intensifies past the scroll threshold set in
+         app.js (~10px), rather than introducing blur that wasn't there --
+         the header is always translucent+blurred; this just strengthens it. */
+      .site-header.scrolled {
+        background-color: rgba(249, 247, 243, 0.97);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal, .feature-card, .hover-lift, .btn-animation, .booth-screen,
+        .cta-glow, .btn-ghost {
+          transition: none !important;
+          animation: none !important;
+        }
+        .reveal, .feature-card {
+          opacity: 1 !important;
+          transform: none !important;
+        }
       }
     </style>
