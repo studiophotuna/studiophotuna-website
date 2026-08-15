@@ -922,6 +922,7 @@ function renderBookings() {
   const search = (document.getElementById("bookingSearch")?.value || "").toLowerCase();
   let filtered = bookings.filter(b => {
     if (activeFilter === "custom_quote") return !!b.is_custom_quote;
+    if (activeFilter === "paid_any") return ["partial_paid", "paid"].includes(b.reservation_status);
     if (activeFilter !== "all" && b.status !== activeFilter) return false;
     if (!search) return true;
     return [b.full_name, b.event_type, b.venue_location, b.notes, b.profiles?.email].some(v => (v || "").toLowerCase().includes(search));
@@ -1934,7 +1935,10 @@ window.onload = async function () {
     applyBookingPaymentModeNote();
   } else if (CURRENT_VIEW === 'bookings-admin') {
     if (adminMessage) setMessage(adminMessage, "Loading bookings...");
-    loadBookings(); loadReviewsAdmin();
+    Promise.all([loadBookings(), loadReviewsAdmin()]).then(() => {
+      const stamp = document.getElementById("adminLastUpdated");
+      if (stamp) stamp.textContent = "Updated " + new Date().toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit" });
+    });
   } else if (CURRENT_VIEW === 'home') {
     loadReviews();
     if (window.location.hash) scrollAndHighlight(window.location.hash.slice(1));
@@ -2181,16 +2185,28 @@ let activeAdminGroup = "bookings";
 const adminGroupButtons = document.querySelectorAll(".admin-group-tabs [data-admin-group]");
 const adminSubtabsRow = document.getElementById("adminSubtabsRow");
 
-function loadActiveAdminTab() {
-  if (activeAdminTab === "bookings") loadBookings();
-  else if (activeAdminTab === "proofs") loadProofs();
-  else if (activeAdminTab === "tickets") loadTickets();
-  else if (activeAdminTab === "packages") { loadAdminPackages().then(() => renderPackagesAdmin()); }
-  else if (activeAdminTab === "inbox") loadInboxEmails();
-  else if (activeAdminTab === "privacy") loadPrivacyRequestsAdmin();
-  else if (activeAdminTab === "analytics") loadAnalytics();
-  else if (activeAdminTab === "settings") loadPaymentGatewaySettings();
-  else loadReviewsAdmin();
+async function loadActiveAdminTab() {
+  let task;
+  if (activeAdminTab === "bookings") task = loadBookings();
+  else if (activeAdminTab === "proofs") task = loadProofs();
+  else if (activeAdminTab === "tickets") task = loadTickets();
+  else if (activeAdminTab === "packages") task = loadAdminPackages().then(() => renderPackagesAdmin());
+  else if (activeAdminTab === "inbox") task = loadInboxEmails();
+  else if (activeAdminTab === "privacy") task = loadPrivacyRequestsAdmin();
+  else if (activeAdminTab === "analytics") task = loadAnalytics();
+  else if (activeAdminTab === "settings") task = loadPaymentGatewaySettings();
+  else task = loadReviewsAdmin();
+  await task;
+  const stamp = document.getElementById("adminLastUpdated");
+  if (stamp) stamp.textContent = "Updated " + new Date().toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit" });
+}
+
+// Jumps a stat card click to the matching group/tab, then simulates a click
+// on the filter button that reproduces exactly what the stat counted.
+function jumpToAdminFilter(group, tab, filterBtnId) {
+  activateAdminGroup(group, tab);
+  const btn = document.getElementById(filterBtnId);
+  if (btn) btn.click();
 }
 
 function activateAdminTab(tab) {
@@ -2317,7 +2333,12 @@ privacyFilterButtons.forEach(btn => {
 });
 
 if (refreshBookings) {
-  refreshBookings.onclick = () => loadActiveAdminTab();
+  refreshBookings.onclick = async () => {
+    const icon = refreshBookings.querySelector("i");
+    refreshBookings.disabled = true; icon?.classList.add("fa-spin");
+    try { await loadActiveAdminTab(); }
+    finally { refreshBookings.disabled = false; icon?.classList.remove("fa-spin"); }
+  };
 }
 
 document.getElementById("loginOpen").onclick = () => openAuthModal("login");

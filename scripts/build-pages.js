@@ -281,7 +281,7 @@ ${scriptsFooter}`;
     <meta name="twitter:image" content="${SOCIAL_IMAGE}" />${structuredDataTag}
 ${head}
   </head>
-  <body class="bg-warm text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="${page.viewId}">
+  <body class="bg-white text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="${page.viewId}">
 
 ${body}
   </body>

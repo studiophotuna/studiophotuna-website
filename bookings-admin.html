@@ -379,7 +379,7 @@
     </style>
 
   </head>
-  <body class="bg-warm text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="bookings-admin">
+  <body class="bg-white text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="bookings-admin">
 
     <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
@@ -438,39 +438,40 @@
             <h1 class="h1-display text-[#111827] text-4xl sm:text-5xl mt-2">Admin Dashboard</h1>
             <p class="text-sm text-body" id="adminMeta">Logged in as admin...</p>
           </div>
-          <div class="flex gap-2">
+          <div class="flex items-center gap-3">
+            <p class="text-[11px] text-muted font-medium" id="adminLastUpdated">&nbsp;</p>
             <button class="btn-animation border border-line bg-white hover:bg-grey px-4 py-2.5 rounded-full text-xs font-extrabold text-title flex items-center gap-1" type="button" id="refreshBookings">
               <i class="fa-solid fa-arrows-rotate text-purple"></i> Refresh
             </button>
           </div>
         </div>
 
-        <!-- Metrics Cards Grid -->
+        <!-- Metrics Cards Grid -- each card jumps to the matching filtered view -->
         <div class="stats grid grid-cols-2 md:grid-cols-6 gap-4">
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+          <button type="button" onclick="jumpToAdminFilter('bookings', 'bookings', 'filterPending')" class="stat-card hover-lift text-left border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-yellow-100 text-yellow-800 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-hourglass-half"></i></div>
             <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Pending</small><strong class="text-2xl font-black text-title" id="statPending">0</strong></div>
-          </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+          </button>
+          <button type="button" onclick="jumpToAdminFilter('bookings', 'bookings', 'filterApproved')" class="stat-card hover-lift text-left border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-green-100 text-green-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-circle-check"></i></div>
             <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Approved</small><strong class="text-2xl font-black text-title" id="statApproved">0</strong></div>
-          </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+          </button>
+          <button type="button" onclick="jumpToAdminFilter('bookings', 'bookings', 'filterPaidAny')" class="stat-card hover-lift text-left border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-money-bill-wave"></i></div>
             <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">50% Paid</small><strong class="text-2xl font-black text-title" id="statPaid">0</strong></div>
-          </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+          </button>
+          <button type="button" onclick="jumpToAdminFilter('bookings', 'bookings', 'filterAll')" class="stat-card hover-lift text-left border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-purple/10 text-purple flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-calendar-check"></i></div>
             <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Total Bookings</small><strong class="text-2xl font-black text-title" id="statTotal">0</strong></div>
-          </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+          </button>
+          <button type="button" onclick="jumpToAdminFilter('support', 'proofs', 'proofFilterPending')" class="stat-card hover-lift text-left border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-receipt"></i></div>
             <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Pending Proofs</small><strong class="text-2xl font-black text-orange-500" id="statProofsPending">0</strong></div>
-          </div>
-          <div class="stat-card border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
+          </button>
+          <button type="button" onclick="jumpToAdminFilter('bookings', 'bookings', 'filterCustomQuote')" class="stat-card hover-lift text-left border border-line rounded-2xl bg-white p-4 shadow-sm flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-purple/10 text-purple flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-envelope"></i></div>
             <div class="min-w-0"><small class="text-[10px] uppercase font-black tracking-widest text-muted block mb-0.5">Custom Quotes</small><strong class="text-2xl font-black text-purple" id="statCustomQuotes">0</strong></div>
-          </div>
+          </button>
         </div>
 
         <!-- Toolbar -->
@@ -518,19 +519,20 @@
           <div id="bookingSubToolbar" class="flex flex-col sm:flex-row gap-3">
             <input id="bookingSearch" type="text" placeholder="Search by name, email, event type…" class="flex-1 border border-line rounded-xl px-4 py-2.5 text-xs focus:border-purple outline-none" oninput="renderBookings()" />
             <div class="filters flex flex-wrap gap-1.5">
-              <button type="button" class="active border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="all">All</button>
-              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="pending">Pending</button>
-              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="approved">Approved</button>
-              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="declined">Declined</button>
-              <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="cancelled">Cancelled</button>
-              <button type="button" class="border border-purple/40 rounded-full bg-purple/5 text-purple px-4 py-2 text-xs font-bold" data-filter="custom_quote">Custom Quotes</button>
+              <button type="button" id="filterAll" class="active border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="all">All</button>
+              <button type="button" id="filterPending" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="pending">Pending</button>
+              <button type="button" id="filterApproved" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="approved">Approved</button>
+              <button type="button" id="filterDeclined" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="declined">Declined</button>
+              <button type="button" id="filterCancelled" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="cancelled">Cancelled</button>
+              <button type="button" id="filterPaidAny" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-filter="paid_any">Paid (50%+)</button>
+              <button type="button" id="filterCustomQuote" class="border border-purple/40 rounded-full bg-purple/5 text-purple px-4 py-2 text-xs font-bold" data-filter="custom_quote">Custom Quotes</button>
             </div>
           </div>
 
           <!-- Proofs sub-toolbar -->
           <div id="proofsSubToolbar" class="hidden flex-wrap gap-1.5">
-            <button type="button" class="active border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="all">All</button>
-            <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="pending">Pending</button>
+            <button type="button" id="proofFilterAll" class="active border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="all">All</button>
+            <button type="button" id="proofFilterPending" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="pending">Pending</button>
             <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="approved">Approved</button>
             <button type="button" class="border border-line rounded-full bg-white text-title px-4 py-2 text-xs font-bold" data-proof-filter="rejected">Rejected</button>
           </div>
