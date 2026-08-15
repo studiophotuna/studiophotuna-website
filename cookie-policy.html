@@ -639,35 +639,35 @@
           <button class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey shrink-0" type="button" aria-label="Close" onclick="closeTrialInfoModal()">&times;</button>
         </div>
 
-        <div class="flex flex-wrap items-start justify-center gap-3 sm:gap-4 mb-8">
-          <div class="flow-icon is-active flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="1" data-flow-group="trial" onmouseenter="showFlowStep(this, 1, 'trial')" onfocus="showFlowStep(this, 1, 'trial')">
-            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">1</div>
-            <p class="text-xs font-bold text-title text-center">Create account</p>
+        <div class="flex flex-nowrap items-start justify-start sm:justify-center gap-2 sm:gap-3 overflow-x-auto pb-2 mb-8">
+          <div class="flow-icon is-active shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="1" data-flow-group="trial" onmouseenter="showFlowStep(this, 1, 'trial')" onfocus="showFlowStep(this, 1, 'trial')" onclick="closeTrialInfoModal(); startFreeTrial();">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">1</div>
+            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Create account</p>
           </div>
-          <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-4" aria-hidden="true"></i>
-          <div class="flow-icon flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="2" data-flow-group="trial" onmouseenter="showFlowStep(this, 2, 'trial')" onfocus="showFlowStep(this, 2, 'trial')">
-            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">2</div>
-            <p class="text-xs font-bold text-title text-center">Download app</p>
+          <i class="fa-solid fa-chevron-right text-line shrink-0 hidden sm:block mt-4" aria-hidden="true"></i>
+          <div class="flow-icon shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="2" data-flow-group="trial" onmouseenter="showFlowStep(this, 2, 'trial')" onfocus="showFlowStep(this, 2, 'trial')" onclick="closeTrialInfoModal(); navigateTo('download');">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">2</div>
+            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Download app</p>
           </div>
-          <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-4" aria-hidden="true"></i>
-          <div class="flow-icon flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="3" data-flow-group="trial" onmouseenter="showFlowStep(this, 3, 'trial')" onfocus="showFlowStep(this, 3, 'trial')">
-            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">3</div>
-            <p class="text-xs font-bold text-title text-center">Log in</p>
+          <i class="fa-solid fa-chevron-right text-line shrink-0 hidden sm:block mt-4" aria-hidden="true"></i>
+          <div class="flow-icon shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="3" data-flow-group="trial" onmouseenter="showFlowStep(this, 3, 'trial')" onfocus="showFlowStep(this, 3, 'trial')">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">3</div>
+            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Log in</p>
           </div>
-          <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-4" aria-hidden="true"></i>
-          <div class="flow-icon flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="4" data-flow-group="trial" onmouseenter="showFlowStep(this, 4, 'trial')" onfocus="showFlowStep(this, 4, 'trial')">
-            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">4</div>
-            <p class="text-xs font-bold text-title text-center">Open Billing</p>
+          <i class="fa-solid fa-chevron-right text-line shrink-0 hidden sm:block mt-4" aria-hidden="true"></i>
+          <div class="flow-icon shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="4" data-flow-group="trial" onmouseenter="showFlowStep(this, 4, 'trial')" onfocus="showFlowStep(this, 4, 'trial')">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">4</div>
+            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Open Billing</p>
           </div>
-          <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-4" aria-hidden="true"></i>
-          <div class="flow-icon flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="5" data-flow-group="trial" onmouseenter="showFlowStep(this, 5, 'trial')" onfocus="showFlowStep(this, 5, 'trial')">
-            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">5</div>
-            <p class="text-xs font-bold text-title text-center">Start Trial</p>
+          <i class="fa-solid fa-chevron-right text-line shrink-0 hidden sm:block mt-4" aria-hidden="true"></i>
+          <div class="flow-icon shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="5" data-flow-group="trial" onmouseenter="showFlowStep(this, 5, 'trial')" onfocus="showFlowStep(this, 5, 'trial')">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">5</div>
+            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Start Trial</p>
           </div>
-          <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-4" aria-hidden="true"></i>
-          <div class="flow-icon flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="6" data-flow-group="trial" onmouseenter="showFlowStep(this, 6, 'trial')" onfocus="showFlowStep(this, 6, 'trial')">
-            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">6</div>
-            <p class="text-xs font-bold text-title text-center">Run events</p>
+          <i class="fa-solid fa-chevron-right text-line shrink-0 hidden sm:block mt-4" aria-hidden="true"></i>
+          <div class="flow-icon shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="6" data-flow-group="trial" onmouseenter="showFlowStep(this, 6, 'trial')" onfocus="showFlowStep(this, 6, 'trial')">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">6</div>
+            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Run events</p>
           </div>
         </div>
 
@@ -704,11 +704,7 @@
           </div>
         </div>
 
-        <p class="text-center text-xs text-muted font-medium mb-6">Questions about billing? See our <a href="/refund-policy" onclick="navigateTo('refund-policy'); closeTrialInfoModal(); return false;" class="text-brand font-bold hover:underline">Refund &amp; Cancellation Policy</a>.</p>
-
-        <button onclick="closeTrialInfoModal(); startFreeTrial();" class="btn-animation w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-600 text-white font-extrabold py-3.5 rounded-full text-sm uppercase tracking-wider transition-colors shadow-sm">
-          <i class="fa-solid fa-rocket"></i> Start Free Trial
-        </button>
+        <p class="text-center text-xs text-muted font-medium">Questions about billing? See our <a href="/refund-policy" onclick="navigateTo('refund-policy'); closeTrialInfoModal(); return false;" class="text-brand font-bold hover:underline">Refund &amp; Cancellation Policy</a>.</p>
       </div>
     </div>
 
