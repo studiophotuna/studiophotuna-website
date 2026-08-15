@@ -1894,12 +1894,15 @@ function toggleFaq(btn) {
   document.querySelectorAll(".faq-item").forEach(other => {
     if (other !== item) {
       other.querySelector(".faq-answer")?.classList.add("hidden");
+      other.classList.remove("is-open");
       const otherChevron = other.querySelector("button i");
       if (otherChevron) otherChevron.style.transform = "";
     }
   });
   answer.classList.toggle("hidden");
-  if (chevron) chevron.style.transform = answer.classList.contains("hidden") ? "" : "rotate(180deg)";
+  const isOpen = !answer.classList.contains("hidden");
+  item.classList.toggle("is-open", isOpen);
+  if (chevron) chevron.style.transform = isOpen ? "rotate(180deg)" : "";
 }
 
 // Hardware flow diagram: swap the shared detail panel's content based on

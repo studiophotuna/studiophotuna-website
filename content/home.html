@@ -563,125 +563,163 @@
               <h2 class="h2-display text-title" style="font-weight: 800;">FAQ</h2>
               <p class="text-base text-body">Everything aspiring and active operators ask before subscribing.</p>
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="faqAccordion">
-              <!-- FAQ items as collapsible accordion -->
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">What is Studio Photuna?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">Studio Photuna is a Windows application for photo booth operators. It runs your camera, printer, templates, guest sessions, and QR photo delivery from one workspace — so you can operate a professional photobooth without proprietary kiosk hardware.</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-10 items-start" id="faqAccordion">
+              <div>
+                <div class="flex items-center gap-3 mb-4">
+                  <span class="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm shrink-0" aria-hidden="true"><i class="fa-solid fa-flag-checkered"></i></span>
+                  <h3 class="text-xs font-extrabold text-title uppercase tracking-widest">Getting Started</h3>
+                </div>
+                <div class="space-y-3">
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">What is Studio Photuna?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">Studio Photuna is a Windows application for photo booth operators. It runs your camera, printer, templates, guest sessions, and QR photo delivery from one workspace — so you can operate a professional photobooth without proprietary kiosk hardware.</p>
+                    </div>
+                  </div>
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">Do I need a physical kiosk enclosure to run the app?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation.</p>
+                    </div>
+                  </div>
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">Is there a free trial available?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start. Photo exports are watermarked during the trial and become watermark-free once you upgrade.</p>
+                    </div>
+                  </div>
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">How do I download the app?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">Head to the <a href="/download" onclick="navigateTo('download'); return false;" class="text-brand font-bold hover:underline">download page</a> to get the Windows installer, then sign in with your account to start your 14-day free trial from inside the app.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">Do I need a physical kiosk enclosure to run the app?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation.</p>
+
+              <div>
+                <div class="flex items-center gap-3 mb-4">
+                  <span class="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm shrink-0" aria-hidden="true"><i class="fa-solid fa-camera-retro"></i></span>
+                  <h3 class="text-xs font-extrabold text-title uppercase tracking-widest">Hardware &amp; Templates</h3>
+                </div>
+                <div class="space-y-3">
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">What cameras are compatible with the software?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices.</p>
+                    </div>
+                  </div>
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">Does the app support physical printing?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings.</p>
+                    </div>
+                  </div>
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">What photo strip layouts are available?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">What cameras are compatible with the software?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices.</p>
+
+              <div>
+                <div class="flex items-center gap-3 mb-4">
+                  <span class="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm shrink-0" aria-hidden="true"><i class="fa-solid fa-bolt"></i></span>
+                  <h3 class="text-xs font-extrabold text-title uppercase tracking-widest">Running Events</h3>
+                </div>
+                <div class="space-y-3">
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">Can guests retake their photos during a session?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed.</p>
+                    </div>
+                  </div>
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">How does QR cloud sharing work?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end.</p>
+                    </div>
+                  </div>
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">Can I use the app offline during events?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue.</p>
+                    </div>
+                  </div>
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">What happens to guest photos after the event?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">Photos captured locally stay on your PC indefinitely. Cloud-uploaded photos (via QR sharing) are retained for 30 days after the event, then permanently deleted from our servers to protect guest privacy.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">Does the app support physical printing?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings.</p>
+
+              <div>
+                <div class="flex items-center gap-3 mb-4">
+                  <span class="w-9 h-9 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm shrink-0" aria-hidden="true"><i class="fa-solid fa-credit-card"></i></span>
+                  <h3 class="text-xs font-extrabold text-title uppercase tracking-widest">Billing &amp; Account</h3>
+                </div>
+                <div class="space-y-3">
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">How do software updates work?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience.</p>
+                    </div>
+                  </div>
+                  <div class="faq-item card-faq">
+                    <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
+                      <h4 class="font-bold text-title pr-4">Can I cancel my subscription?</h4>
+                      <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
+                    </button>
+                    <div class="faq-answer hidden px-6 pb-5">
+                      <p class="text-sm text-body">Yes, anytime. Free trials carry no charges and can be cancelled with no financial obligation. Monthly plans can be cancelled to prevent the next billing cycle, and annual plans cancelled within 30 days receive a pro-rata refund for unused months — see our full <a href="/refund-policy" onclick="navigateTo('refund-policy'); return false;" class="text-brand font-bold hover:underline">Refund &amp; Cancellation Policy</a> for details.</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">Can guests retake their photos during a session?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed.</p>
-                </div>
-              </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">What photo strip layouts are available?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor.</p>
-                </div>
-              </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">How does QR cloud sharing work?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end.</p>
-                </div>
-              </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">Is there a free trial available?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start. Photo exports are watermarked during the trial and become watermark-free once you upgrade.</p>
-                </div>
-              </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">Can I use the app offline during events?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue.</p>
-                </div>
-              </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">How do software updates work?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience.</p>
-                </div>
-              </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">What happens to guest photos after the event?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">Photos captured locally stay on your PC indefinitely. Cloud-uploaded photos (via QR sharing) are retained for 30 days after the event, then permanently deleted from our servers to protect guest privacy.</p>
-                </div>
-              </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">Can I cancel my subscription?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">Yes, anytime. Free trials carry no charges and can be cancelled with no financial obligation. Monthly plans can be cancelled to prevent the next billing cycle, and annual plans cancelled within 30 days receive a pro-rata refund for unused months — see our full <a href="/refund-policy" onclick="navigateTo('refund-policy'); return false;" class="text-brand font-bold hover:underline">Refund &amp; Cancellation Policy</a> for details.</p>
-                </div>
-              </div>
-              <div class="faq-item card-faq">
-                <button type="button" onclick="toggleFaq(this)" class="w-full flex items-center justify-between px-6 py-5 text-left hover:bg-grey transition-colors">
-                  <h3 class="font-bold text-title pr-4">How do I download the app?</h3>
-                  <i class="fa-solid fa-chevron-down text-muted text-xs transition-transform duration-300 shrink-0"></i>
-                </button>
-                <div class="faq-answer hidden px-6 pb-5">
-                  <p class="text-sm text-body">Head to the <a href="/download" onclick="navigateTo('download'); return false;" class="text-brand font-bold hover:underline">download page</a> to get the Windows installer, then sign in with your account to start your 14-day free trial from inside the app.</p>
-                </div>
-              </div>
+            </div>
+
+            <div class="text-center pt-2">
+              <p class="text-sm text-body">Still have questions? <a href="/help-support" onclick="navigateTo('help-support'); return false;" class="text-brand font-bold hover:underline">Visit Help &amp; Support</a> or email <a href="mailto:support@studiophotuna.com" class="text-brand font-bold hover:underline">support@studiophotuna.com</a>.</p>
             </div>
           </div>
         </section>

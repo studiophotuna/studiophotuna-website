@@ -325,6 +325,11 @@
         border-color: #dedfe6;
         border-radius: 1rem;
         overflow: hidden;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .card-faq.is-open {
+        border-color: #0c66e4;
+        box-shadow: 0 8px 24px rgba(12, 102, 228, 0.1);
       }
 
       /* Header is solid white at rest; past the scroll threshold set in
