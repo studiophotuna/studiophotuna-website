@@ -196,16 +196,6 @@
       .cta-glow {
         animation: pulse-glow 3s ease-in-out infinite;
       }
-      /* Booth screen transitions */
-      .booth-screen {
-        transition: opacity 0.3s ease;
-      }
-      .booth-screen.active {
-        opacity: 1;
-      }
-      .booth-screen.hidden {
-        opacity: 0;
-      }
 
       /* Animated flow connector -- traveling pulse between hardware-flow steps */
       .flow-connector {
@@ -370,7 +360,7 @@
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .reveal, .feature-card, .hover-lift, .btn-animation, .booth-screen,
+        .reveal, .feature-card, .hover-lift, .btn-animation,
         .cta-glow, .btn-ghost, .card-product img, .flow-dot {
           transition: none !important;
           animation: none !important;
