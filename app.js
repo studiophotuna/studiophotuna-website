@@ -2593,7 +2593,7 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     panelsWrap.style.height = panelHeight + "px";
     panels.forEach(p => { p.style.position = "absolute"; p.style.inset = "0"; p.style.transition = "opacity 0.35s ease"; });
 
-    perStepDistance = Math.max(320, Math.round(window.innerHeight * 0.55));
+    perStepDistance = Math.max(180, Math.round(window.innerHeight * 0.25));
     maxScroll = perStepDistance * (numSteps - 1);
     if (navWrap) navWrap.classList.remove("hidden");
     track.style.height = (sticky.offsetHeight + STICKY_TOP + maxScroll) + "px";
