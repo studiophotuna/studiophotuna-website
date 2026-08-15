@@ -283,6 +283,16 @@ function closeStartTrialModal() {
   modal.classList.add("hidden"); modal.classList.remove("grid"); modal.setAttribute("aria-hidden", "true");
 }
 
+function openTrialInfoModal() {
+  const modal = document.getElementById("trialInfoModal");
+  modal.classList.remove("hidden"); modal.classList.add("grid"); modal.setAttribute("aria-hidden", "false");
+}
+
+function closeTrialInfoModal() {
+  const modal = document.getElementById("trialInfoModal");
+  modal.classList.add("hidden"); modal.classList.remove("grid"); modal.setAttribute("aria-hidden", "true");
+}
+
 // Works for both first-time and returning users -- Supabase creates the
 // auth.users row (and, via the on_auth_user_created DB trigger, the
 // matching profiles row) automatically on first Google sign-in, so no
@@ -1902,110 +1912,6 @@ function showFlowStep(el, index, group) {
   });
 }
 
-// ===================================================================
-// Interactive Booth Console Preview
-// ===================================================================
-
-let currentBoothScreen = 0;
-const totalBoothScreens = 8;
-let boothReturnInterval = null;
-
-function showBoothScreen(index) {
-  currentBoothScreen = Math.max(0, Math.min(totalBoothScreens - 1, index));
-  document.querySelectorAll(".booth-screen").forEach(screen => {
-    const screenIndex = parseInt(screen.dataset.screen);
-    screen.classList.toggle("hidden", screenIndex !== currentBoothScreen);
-    screen.classList.toggle("active", screenIndex === currentBoothScreen);
-    if (screenIndex === currentBoothScreen) {
-      screen.classList.add("flex");
-    } else {
-      screen.classList.remove("flex");
-    }
-  });
-  // Auto-advance from "Preparing your gallery" (screen 5) after 2.5s
-  if (currentBoothScreen === 5) {
-    setTimeout(() => { if (currentBoothScreen === 5) boothNext(); }, 2500);
-  }
-  // Countdown on "Your print is ready" (screen 7)
-  const countdownScreens = new Set([1, 2, 3, 4, 6, 7]);
-
-  if (countdownScreens.has(currentBoothScreen)) {
-    if (boothReturnInterval) {
-      clearInterval(boothReturnInterval);
-      boothReturnInterval = null;
-    }
-
-    let sec = 10;
-    const timerEl = document.getElementById(`boothReturnTimer-${currentBoothScreen}`);
-
-    boothReturnInterval = setInterval(() => {
-      sec--;
-
-      if (timerEl) timerEl.textContent = `${sec}s`;
-
-      if (sec <= 0) {
-        clearInterval(boothReturnInterval);
-        boothReturnInterval = null;
-
-        if (currentBoothScreen === 6) {
-          boothNext();
-        } else {
-          boothReset();
-        }
-      }
-    }, 1000);
-  } else {
-    if (boothReturnInterval) {
-      clearInterval(boothReturnInterval);
-      boothReturnInterval = null;
-    }
-  }
-}
-
-function boothNext() {
-  showBoothScreen(currentBoothScreen + 1);
-}
-
-function boothReset() {
-  // Also resets the end-of-demo feedback step so a fresh pass through the
-  // demo shows the reaction prompt again instead of a stale signup CTA.
-  document.querySelectorAll(".booth-feedback-btn").forEach(b => { b.classList.remove("border-brand", "bg-brand/10"); b.classList.add("border-line"); });
-  document.getElementById("boothFeedbackCta")?.classList.add("hidden");
-  document.getElementById("boothFeedbackPrompt")?.classList.remove("hidden");
-  showBoothScreen(0);
-}
-
-function selectBoothLayout(btn, layout) {
-  document.querySelectorAll(".booth-layout-btn").forEach(b => {
-    b.classList.remove("active", "border-purple", "bg-purple/5");
-    b.classList.add("border-line");
-  });
-  btn.classList.add("active", "border-purple", "bg-purple/5");
-  btn.classList.remove("border-line");
-}
-
-function selectBoothTone(btn) {
-  document.querySelectorAll(".booth-tone-btn").forEach(b => {
-    b.classList.remove("bg-[#1a1a2e]", "text-white");
-    b.classList.add("border", "border-line", "text-title", "bg-white");
-  });
-  btn.classList.add("bg-[#1a1a2e]", "text-white");
-  btn.classList.remove("border", "border-line", "text-title", "bg-white");
-}
-
-// End-of-demo "how was your experience" reaction. Picking one stops the
-// auto-return countdown (so the signup CTA it reveals doesn't get yanked
-// away) and swaps the reaction prompt for the signup ask -- the guest just
-// made a small real choice in the live demo, so asking them to sign up
-// right after reads as "keep this experience" rather than a cold ask.
-function selectBoothFeedback(btn) {
-  document.querySelectorAll(".booth-feedback-btn").forEach(b => { b.classList.remove("border-brand", "bg-brand/10"); b.classList.add("border-line"); });
-  btn.classList.add("border-brand", "bg-brand/10");
-  btn.classList.remove("border-line");
-  if (boothReturnInterval) { clearInterval(boothReturnInterval); boothReturnInterval = null; }
-  document.getElementById("boothFeedbackPrompt")?.classList.add("hidden");
-  document.getElementById("boothFeedbackCta")?.classList.remove("hidden");
-}
 
 // ===================================================================
 // Init & Event Listeners
@@ -2593,7 +2499,10 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     panelsWrap.style.height = panelHeight + "px";
     panels.forEach(p => { p.style.position = "absolute"; p.style.inset = "0"; p.style.transition = "opacity 0.35s ease"; });
 
-    perStepDistance = Math.max(320, Math.round(window.innerHeight * 0.55));
+    // Fixed, viewport-independent distance -- scaling this off viewport
+    // height made the whole journey noticeably longer on larger/taller
+    // screens, which is exactly where this feature is most likely seen.
+    perStepDistance = 160;
     maxScroll = perStepDistance * (numSteps - 1);
     if (navWrap) navWrap.classList.remove("hidden");
     track.style.height = (sticky.offsetHeight + STICKY_TOP + maxScroll) + "px";
