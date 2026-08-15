@@ -604,6 +604,89 @@
       </div>
     </div>
 
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="trialInfoModal" aria-hidden="true">
+      <div class="w-full max-w-2xl bg-white border border-line rounded-3xl p-8 shadow-luxe max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="trialInfoTitle">
+        <div class="flex items-start justify-between border-b border-line pb-4 mb-6">
+          <div>
+            <h2 id="trialInfoTitle" class="text-2xl font-black text-title">How the free trial works</h2>
+            <p class="text-xs text-muted mt-1">Six steps from sign-up to running your first real event. Hover or tap each step for how it works.</p>
+          </div>
+          <button class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey shrink-0" type="button" aria-label="Close" onclick="closeTrialInfoModal()">&times;</button>
+        </div>
+
+        <div class="flex flex-wrap items-start justify-center gap-3 sm:gap-4 mb-8">
+          <div class="flow-icon is-active flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="1" data-flow-group="trial" onmouseenter="showFlowStep(this, 1, 'trial')" onfocus="showFlowStep(this, 1, 'trial')">
+            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">1</div>
+            <p class="text-xs font-bold text-title text-center">Create account</p>
+          </div>
+          <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-4" aria-hidden="true"></i>
+          <div class="flow-icon flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="2" data-flow-group="trial" onmouseenter="showFlowStep(this, 2, 'trial')" onfocus="showFlowStep(this, 2, 'trial')">
+            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">2</div>
+            <p class="text-xs font-bold text-title text-center">Download app</p>
+          </div>
+          <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-4" aria-hidden="true"></i>
+          <div class="flow-icon flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="3" data-flow-group="trial" onmouseenter="showFlowStep(this, 3, 'trial')" onfocus="showFlowStep(this, 3, 'trial')">
+            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">3</div>
+            <p class="text-xs font-bold text-title text-center">Log in</p>
+          </div>
+          <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-4" aria-hidden="true"></i>
+          <div class="flow-icon flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="4" data-flow-group="trial" onmouseenter="showFlowStep(this, 4, 'trial')" onfocus="showFlowStep(this, 4, 'trial')">
+            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">4</div>
+            <p class="text-xs font-bold text-title text-center">Open Billing</p>
+          </div>
+          <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-4" aria-hidden="true"></i>
+          <div class="flow-icon flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="5" data-flow-group="trial" onmouseenter="showFlowStep(this, 5, 'trial')" onfocus="showFlowStep(this, 5, 'trial')">
+            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">5</div>
+            <p class="text-xs font-bold text-title text-center">Start Trial</p>
+          </div>
+          <i class="fa-solid fa-chevron-right text-line hidden sm:block mt-4" aria-hidden="true"></i>
+          <div class="flow-icon flex flex-col items-center gap-2 w-24 cursor-pointer" tabindex="0" data-flow-step="6" data-flow-group="trial" onmouseenter="showFlowStep(this, 6, 'trial')" onfocus="showFlowStep(this, 6, 'trial')">
+            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">6</div>
+            <p class="text-xs font-bold text-title text-center">Run events</p>
+          </div>
+        </div>
+
+        <div class="bg-grey border border-line rounded-2xl p-6 mb-6">
+          <div class="flow-detail-step" data-flow-detail="1" data-flow-group="trial">
+            <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-3"><i class="fa-solid fa-user-plus text-[10px]"></i> Step 1 of 6</span>
+            <h3 class="text-lg font-bold text-title mb-1">Create your account</h3>
+            <p class="text-sm text-body leading-relaxed">Sign up with email or Google — no credit card required.</p>
+          </div>
+          <div class="flow-detail-step hidden" data-flow-detail="2" data-flow-group="trial">
+            <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-3"><i class="fa-solid fa-download text-[10px]"></i> Step 2 of 6</span>
+            <h3 class="text-lg font-bold text-title mb-1">Download the app</h3>
+            <p class="text-sm text-body leading-relaxed">Install the Studio Photuna Booth App on Windows.</p>
+          </div>
+          <div class="flow-detail-step hidden" data-flow-detail="3" data-flow-group="trial">
+            <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-3"><i class="fa-solid fa-right-to-bracket text-[10px]"></i> Step 3 of 6</span>
+            <h3 class="text-lg font-bold text-title mb-1">Log in</h3>
+            <p class="text-sm text-body leading-relaxed">Sign in with your account inside the app.</p>
+          </div>
+          <div class="flow-detail-step hidden" data-flow-detail="4" data-flow-group="trial">
+            <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-3"><i class="fa-solid fa-gear text-[10px]"></i> Step 4 of 6</span>
+            <h3 class="text-lg font-bold text-title mb-1">Open Account (Billing & Gallery)</h3>
+            <p class="text-sm text-body leading-relaxed">Find the trial activation option in your in-app account panel.</p>
+          </div>
+          <div class="flow-detail-step hidden" data-flow-detail="5" data-flow-group="trial">
+            <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-3"><i class="fa-solid fa-rocket text-[10px]"></i> Step 5 of 6</span>
+            <h3 class="text-lg font-bold text-title mb-1">Click Start Trial</h3>
+            <p class="text-sm text-body leading-relaxed">Activate your 14-day trial right from inside the app.</p>
+          </div>
+          <div class="flow-detail-step hidden" data-flow-detail="6" data-flow-group="trial">
+            <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-3"><i class="fa-solid fa-camera text-[10px]"></i> Step 6 of 6</span>
+            <h3 class="text-lg font-bold text-title mb-1">Run real events</h3>
+            <p class="text-sm text-body leading-relaxed">Full features unlocked for 14 days; photo exports carry a watermark until you upgrade.</p>
+          </div>
+        </div>
+
+        <p class="text-center text-xs text-muted font-medium mb-6">Questions about billing? See our <a href="/refund-policy" onclick="navigateTo('refund-policy'); closeTrialInfoModal(); return false;" class="text-brand font-bold hover:underline">Refund &amp; Cancellation Policy</a>.</p>
+
+        <button onclick="closeTrialInfoModal(); startFreeTrial();" class="btn-animation w-full flex items-center justify-center gap-2 bg-brand hover:bg-brand-600 text-white font-extrabold py-3.5 rounded-full text-sm uppercase tracking-wider transition-colors shadow-sm">
+          <i class="fa-solid fa-rocket"></i> Start Free Trial
+        </button>
+      </div>
+    </div>
+
     <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="startTrialModal" aria-hidden="true">
       <div class="w-full max-w-md bg-white border border-line rounded-3xl p-8 shadow-luxe" role="dialog" aria-modal="true" aria-labelledby="startTrialTitle">
         <div class="flex items-start justify-between border-b border-line pb-4 mb-4">

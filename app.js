@@ -283,6 +283,16 @@ function closeStartTrialModal() {
   modal.classList.add("hidden"); modal.classList.remove("grid"); modal.setAttribute("aria-hidden", "true");
 }
 
+function openTrialInfoModal() {
+  const modal = document.getElementById("trialInfoModal");
+  modal.classList.remove("hidden"); modal.classList.add("grid"); modal.setAttribute("aria-hidden", "false");
+}
+
+function closeTrialInfoModal() {
+  const modal = document.getElementById("trialInfoModal");
+  modal.classList.add("hidden"); modal.classList.remove("grid"); modal.setAttribute("aria-hidden", "true");
+}
+
 // Works for both first-time and returning users -- Supabase creates the
 // auth.users row (and, via the on_auth_user_created DB trigger, the
 // matching profiles row) automatically on first Google sign-in, so no
