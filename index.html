@@ -315,6 +315,12 @@
       }
       .btn-ghost:hover { gap: 0.625rem; }
 
+      /* Soft section seam -- marks a section boundary on an all-white page
+         via a faint fading shadow instead of a hard-edged border line. */
+      .section-seam {
+        box-shadow: inset 0 12px 16px -14px rgba(17, 24, 39, 0.08);
+      }
+
       /* Badge / pill label */
       .badge {
         display: inline-block;
@@ -480,7 +486,7 @@
         </section>
 
         <!-- Stats strip -->
-        <section class="py-12 px-6 border-y border-line bg-white">
+        <section class="py-12 px-6 bg-white section-seam">
           <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
               <p class="text-3xl sm:text-4xl font-black text-title">14 Days</p>
@@ -502,7 +508,7 @@
         </section>
 
         <!-- Coming soon teaser -->
-        <section class="py-3 px-6 bg-white border-b border-line text-center">
+        <section class="py-3 px-6 bg-white text-center">
           <p class="text-xs sm:text-sm font-bold text-brand-700"><i class="fa-solid fa-bolt text-[10px] mr-1"></i> Coming soon: expanding to Android and iPad platforms</p>
         </section>
 
@@ -532,7 +538,7 @@
         </section>
 
         <!-- Live Photobooth Interface Showcase Gallery -->
-        <section id="how-it-works" class="py-16 px-6 bg-white border-t border-line">
+        <section id="how-it-works" class="py-16 px-6 bg-white section-seam">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">How It Works</h2>
@@ -705,7 +711,7 @@
         </section>
 
         <!-- QR + Digital Delivery Experience -->
-        <section id="qr-delivery" class="py-24 px-6 bg-white border-t border-line">
+        <section id="qr-delivery" class="py-24 px-6 bg-white section-seam">
           <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="card-product relative reveal order-2 lg:order-1">
               <img class="w-full h-auto object-cover" src="interact_image_7.webp" width="3200" height="2000" loading="lazy" alt="Now printing screen with scannable QR code for guest photo delivery" onerror="this.onerror=null; this.src='https://placehold.co/800x600/f4f5f8/5f6678?text=QR+Delivery+Preview'" />
@@ -735,7 +741,7 @@
         </section>
 
         <!-- Dynamic Core Features Grid -->
-        <section id="features" class="py-24 px-6 bg-white border-t border-line">
+        <section id="features" class="py-24 px-6 bg-white section-seam">
           <div class="max-w-7xl mx-auto space-y-16">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">Operator Workspace</h2>
@@ -777,7 +783,7 @@
           </div>
         </section>
 
-        <section class="py-24 px-6 bg-white border-t border-line">
+        <section class="py-24 px-6 bg-white section-seam">
           <div class="max-w-7xl mx-auto">
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="space-y-6">
@@ -864,7 +870,7 @@
         </section>
 
         <!-- Fixed Interactive Pro Plan pricing -->
-        <section id="pricing" class="py-24 px-6 bg-white border-t border-line">
+        <section id="pricing" class="py-24 px-6 bg-white section-seam">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">Pricing</h2>
@@ -923,7 +929,7 @@
         </section>
 
         <!-- Static reviews placeholder -->
-        <section class="py-24 px-6 bg-white border-t border-line">
+        <section class="py-24 px-6 bg-white section-seam">
           <div class="max-w-7xl mx-auto space-y-16">
             <div class="reveal text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">Customer Proof</h2>
@@ -990,7 +996,7 @@
         </section>
 
         <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Studio Photuna?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna is a Windows application for photo booth operators. It runs your camera, printer, templates, guest sessions, and QR photo delivery from one workspace — so you can operate a professional photobooth without proprietary kiosk hardware."}},{"@type":"Question","name":"Do I need a physical kiosk enclosure to run the app?","acceptedAnswer":{"@type":"Answer","text":"No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation."}},{"@type":"Question","name":"What cameras are compatible with the software?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices."}},{"@type":"Question","name":"Does the app support physical printing?","acceptedAnswer":{"@type":"Answer","text":"Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings."}},{"@type":"Question","name":"Can guests retake their photos during a session?","acceptedAnswer":{"@type":"Answer","text":"Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed."}},{"@type":"Question","name":"What photo strip layouts are available?","acceptedAnswer":{"@type":"Answer","text":"The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor."}},{"@type":"Question","name":"How does QR cloud sharing work?","acceptedAnswer":{"@type":"Answer","text":"After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end."}},{"@type":"Question","name":"Is there a free trial available?","acceptedAnswer":{"@type":"Answer","text":"Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start. Photo exports are watermarked during the trial and become watermark-free once you upgrade."}},{"@type":"Question","name":"Can I use the app offline during events?","acceptedAnswer":{"@type":"Answer","text":"The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue."}},{"@type":"Question","name":"How do software updates work?","acceptedAnswer":{"@type":"Answer","text":"Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience."}},{"@type":"Question","name":"What happens to guest photos after the event?","acceptedAnswer":{"@type":"Answer","text":"Photos captured locally stay on your PC indefinitely. Cloud-uploaded photos (via QR sharing) are retained for 30 days after the event, then permanently deleted from our servers to protect guest privacy."}},{"@type":"Question","name":"Can I cancel my subscription?","acceptedAnswer":{"@type":"Answer","text":"Yes, anytime. Free trials carry no charges and can be cancelled with no financial obligation. Monthly plans can be cancelled to prevent the next billing cycle, and annual plans cancelled within 30 days receive a pro-rata refund for unused months — see our full Refund & Cancellation Policy for details."}},{"@type":"Question","name":"How do I download the app?","acceptedAnswer":{"@type":"Answer","text":"Head to the download page or use the download button on this page to get the Windows installer, then sign in with your account to start your 14-day free trial from inside the app."}}]}</script>
-        <section id="faq" class="py-24 px-6 bg-white border-t border-line">
+        <section id="faq" class="py-24 px-6 bg-white section-seam">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title" style="font-weight: 800;">FAQ</h2>
@@ -1120,7 +1126,7 @@
         </section>
 
         <!-- Closing CTA banner -->
-        <section class="py-20 px-6 bg-white border-t border-line">
+        <section class="py-20 px-6 bg-white section-seam">
           <div class="reveal max-w-5xl mx-auto rounded-3xl gradient-accent-bg px-8 py-16 sm:py-20 text-center space-y-6 relative overflow-hidden">
             <div class="absolute -top-24 -right-24 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
             <h2 class="h2-display text-white" style="font-weight: 800;">What are you waiting for?</h2>
@@ -1212,9 +1218,9 @@
       </div>
     </div>
 
-    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="trialInfoModal" aria-hidden="true">
-      <div class="w-full max-w-2xl bg-white border border-line rounded-3xl p-8 shadow-luxe max-h-[90vh] overflow-y-auto" role="dialog" aria-modal="true" aria-labelledby="trialInfoTitle">
-        <div class="flex items-start justify-between border-b border-line pb-4 mb-6">
+    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-3 sm:p-4" id="trialInfoModal" aria-hidden="true">
+      <div class="w-full max-w-2xl bg-white border border-line rounded-3xl p-5 sm:p-8 shadow-luxe" role="dialog" aria-modal="true" aria-labelledby="trialInfoTitle">
+        <div class="flex items-start justify-between border-b border-line pb-3 sm:pb-4 mb-4 sm:mb-6">
           <div>
             <h2 id="trialInfoTitle" class="text-2xl font-black text-title">How the free trial works</h2>
             <p class="text-xs text-muted mt-1">Six steps from sign-up to running your first real event. Hover or tap each step for how it works.</p>
@@ -1222,39 +1228,39 @@
           <button class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey shrink-0" type="button" aria-label="Close" onclick="closeTrialInfoModal()">&times;</button>
         </div>
 
-        <div class="flex flex-nowrap items-start justify-start sm:justify-center gap-2 sm:gap-3 overflow-x-auto pb-2 mb-8">
-          <div class="flow-icon is-active shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="1" data-flow-group="trial" onmouseenter="showFlowStep(this, 1, 'trial')" onfocus="showFlowStep(this, 1, 'trial')" onclick="closeTrialInfoModal(); startFreeTrial();">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">1</div>
-            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Create account</p>
+        <div class="flex flex-nowrap items-start justify-center gap-1 sm:gap-3 mb-5 sm:mb-8">
+          <div class="flow-icon is-active shrink-0 flex flex-col items-center gap-1 sm:gap-1.5 w-10 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="1" data-flow-group="trial" onmouseenter="showFlowStep(this, 1, 'trial')" onfocus="showFlowStep(this, 1, 'trial')" onclick="closeTrialInfoModal(); startFreeTrial();">
+            <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-xs sm:text-sm">1</div>
+            <p class="text-[9px] sm:text-xs font-bold text-title text-center leading-tight">Create account</p>
           </div>
           <i class="fa-solid fa-chevron-right text-line shrink-0 hidden sm:block mt-4" aria-hidden="true"></i>
-          <div class="flow-icon shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="2" data-flow-group="trial" onmouseenter="showFlowStep(this, 2, 'trial')" onfocus="showFlowStep(this, 2, 'trial')" onclick="closeTrialInfoModal(); navigateTo('download');">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">2</div>
-            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Download app</p>
+          <div class="flow-icon shrink-0 flex flex-col items-center gap-1 sm:gap-1.5 w-10 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="2" data-flow-group="trial" onmouseenter="showFlowStep(this, 2, 'trial')" onfocus="showFlowStep(this, 2, 'trial')" onclick="closeTrialInfoModal(); navigateTo('download');">
+            <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-xs sm:text-sm">2</div>
+            <p class="text-[9px] sm:text-xs font-bold text-title text-center leading-tight">Download app</p>
           </div>
           <i class="fa-solid fa-chevron-right text-line shrink-0 hidden sm:block mt-4" aria-hidden="true"></i>
-          <div class="flow-icon shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="3" data-flow-group="trial" onmouseenter="showFlowStep(this, 3, 'trial')" onfocus="showFlowStep(this, 3, 'trial')">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">3</div>
-            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Log in</p>
+          <div class="flow-icon shrink-0 flex flex-col items-center gap-1 sm:gap-1.5 w-10 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="3" data-flow-group="trial" onmouseenter="showFlowStep(this, 3, 'trial')" onfocus="showFlowStep(this, 3, 'trial')">
+            <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-xs sm:text-sm">3</div>
+            <p class="text-[9px] sm:text-xs font-bold text-title text-center leading-tight">Log in</p>
           </div>
           <i class="fa-solid fa-chevron-right text-line shrink-0 hidden sm:block mt-4" aria-hidden="true"></i>
-          <div class="flow-icon shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="4" data-flow-group="trial" onmouseenter="showFlowStep(this, 4, 'trial')" onfocus="showFlowStep(this, 4, 'trial')">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">4</div>
-            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Open Billing</p>
+          <div class="flow-icon shrink-0 flex flex-col items-center gap-1 sm:gap-1.5 w-10 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="4" data-flow-group="trial" onmouseenter="showFlowStep(this, 4, 'trial')" onfocus="showFlowStep(this, 4, 'trial')">
+            <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-xs sm:text-sm">4</div>
+            <p class="text-[9px] sm:text-xs font-bold text-title text-center leading-tight">Open Billing</p>
           </div>
           <i class="fa-solid fa-chevron-right text-line shrink-0 hidden sm:block mt-4" aria-hidden="true"></i>
-          <div class="flow-icon shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="5" data-flow-group="trial" onmouseenter="showFlowStep(this, 5, 'trial')" onfocus="showFlowStep(this, 5, 'trial')">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">5</div>
-            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Start Trial</p>
+          <div class="flow-icon shrink-0 flex flex-col items-center gap-1 sm:gap-1.5 w-10 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="5" data-flow-group="trial" onmouseenter="showFlowStep(this, 5, 'trial')" onfocus="showFlowStep(this, 5, 'trial')">
+            <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-xs sm:text-sm">5</div>
+            <p class="text-[9px] sm:text-xs font-bold text-title text-center leading-tight">Start Trial</p>
           </div>
           <i class="fa-solid fa-chevron-right text-line shrink-0 hidden sm:block mt-4" aria-hidden="true"></i>
-          <div class="flow-icon shrink-0 flex flex-col items-center gap-1.5 w-16 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="6" data-flow-group="trial" onmouseenter="showFlowStep(this, 6, 'trial')" onfocus="showFlowStep(this, 6, 'trial')">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-sm">6</div>
-            <p class="text-[11px] sm:text-xs font-bold text-title text-center">Run events</p>
+          <div class="flow-icon shrink-0 flex flex-col items-center gap-1 sm:gap-1.5 w-10 sm:w-20 cursor-pointer" tabindex="0" data-flow-step="6" data-flow-group="trial" onmouseenter="showFlowStep(this, 6, 'trial')" onfocus="showFlowStep(this, 6, 'trial')">
+            <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-brand text-white flex items-center justify-center font-black text-xs sm:text-sm">6</div>
+            <p class="text-[9px] sm:text-xs font-bold text-title text-center leading-tight">Run events</p>
           </div>
         </div>
 
-        <div class="bg-grey border border-line rounded-2xl p-6 mb-6">
+        <div class="bg-grey border border-line rounded-2xl p-4 sm:p-6 mb-4 sm:mb-6">
           <div class="flow-detail-step" data-flow-detail="1" data-flow-group="trial">
             <span class="badge bg-brand/10 text-brand inline-flex items-center gap-2 mb-3"><i class="fa-solid fa-user-plus text-[10px]"></i> Step 1 of 6</span>
             <h3 class="text-lg font-bold text-title mb-1">Create your account</h3>
