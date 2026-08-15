@@ -352,11 +352,10 @@
         overflow: hidden;
       }
 
-      /* Header blur/shadow intensifies past the scroll threshold set in
-         app.js (~10px), rather than introducing blur that wasn't there --
-         the header is always translucent+blurred; this just strengthens it. */
+      /* Header is solid white at rest; past the scroll threshold set in
+         app.js (~10px) it turns into a translucent glass panel. */
       .site-header.scrolled {
-        background-color: rgba(249, 247, 243, 0.97);
+        background-color: rgba(255, 255, 255, 0.75);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
       }
