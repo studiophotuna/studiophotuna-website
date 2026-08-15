@@ -327,10 +327,6 @@
         border: 1px solid #dedfe6;
       }
       .card-feature { padding: 2rem; }
-      .card-feature.card-dark {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.08);
-      }
       .card-product {
         overflow: hidden;
         box-shadow: 0 20px 60px rgba(17, 24, 39, 0.08);
@@ -344,17 +340,21 @@
       .card-pricing { padding: 2rem; }
       .card-testimonial { padding: 1.5rem; background: #fff; }
       .card-faq {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.08);
+        background: #fff;
+        border-color: #dedfe6;
         border-radius: 1rem;
         overflow: hidden;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .card-faq.is-open {
+        border-color: #0c66e4;
+        box-shadow: 0 8px 24px rgba(12, 102, 228, 0.1);
       }
 
-      /* Header blur/shadow intensifies past the scroll threshold set in
-         app.js (~10px), rather than introducing blur that wasn't there --
-         the header is always translucent+blurred; this just strengthens it. */
+      /* Header is solid white at rest; past the scroll threshold set in
+         app.js (~10px) it turns into a translucent glass panel. */
       .site-header.scrolled {
-        background-color: rgba(249, 247, 243, 0.97);
+        background-color: rgba(255, 255, 255, 0.75);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
       }
@@ -379,7 +379,7 @@
     </style>
 
   </head>
-  <body class="bg-warm text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="payment-guest-cancel">
+  <body class="bg-white text-[#5f6678] font-sans overflow-x-hidden custom-scrollbar" data-view="payment-guest-cancel">
 
     <main class="min-h-screen flex items-center justify-center px-6">
       <div class="max-w-md w-full mx-auto text-center space-y-5">
