@@ -178,7 +178,7 @@
         transform: translateX(-50%);
         width: 120px;
         height: 2px;
-        background: linear-gradient(90deg, transparent, #0c66e4, transparent);
+        background: #0c66e4;
         border-radius: 999px;
       }
       /* Smooth hover lift for cards */
@@ -271,21 +271,18 @@
          rounded-2xl = media frames/secondary cards, rounded-xl = form
          inputs/small chips. */
 
-      /* Sparing violet-gradient accent. Reserved for: the pricing "Best
-         Value" badge, one hero highlight, small decorative blobs. Never
-         apply to large surfaces -- the site stays white/navy/electric-blue,
-         this is emphasis only. */
+      /* Solid brand-blue accent. Reserved for: the pricing "Best Value"
+         badge, one hero highlight, small decorative blobs. Never apply to
+         large surfaces -- the site stays white/navy/electric-blue, this is
+         emphasis only. */
       .gradient-accent-text {
-        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        color: #0c66e4;
       }
       .gradient-accent-bg {
-        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+        background: #0c66e4;
       }
       .gradient-accent-ring {
-        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+        background: #0c66e4;
         padding: 1.5px;
         border-radius: inherit;
       }
@@ -568,7 +565,7 @@
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">02</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Template Selection</h3>
-                        <p class="text-lg text-body max-w-lg">Guests pick a Sample, Classic, or 6×2 layout under a live countdown so the queue keeps moving.</p>
+                        <p class="text-lg text-body max-w-lg">Guests pick a layout depending on the operator's setup under a live countdown so the queue keeps moving.</p>
                       </div>
                       <div class="order-1 lg:order-2 lg:scale-110 lg:rotate-2">
                         <div class="overflow-hidden border border-line shadow-luxe bg-grey">
@@ -678,31 +675,6 @@
 
               </div>
             </div>
-
-            <!-- Frictionless safeguards strip -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
-              <div class="feature-card flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5" style="transition-delay: 0ms;">
-                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-stopwatch"></i></div>
-                <div>
-                  <p class="text-sm font-bold text-title">On-screen countdowns</p>
-                  <p class="text-xs text-body">Every step shows a live timer so sessions move on their own.</p>
-                </div>
-              </div>
-              <div class="feature-card flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5" style="transition-delay: 100ms;">
-                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-rotate-left"></i></div>
-                <div>
-                  <p class="text-sm font-bold text-title">Configurable retake limits</p>
-                  <p class="text-xs text-body">Cap retakes per session to keep queues fair and fast.</p>
-                </div>
-              </div>
-              <div class="feature-card flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5" style="transition-delay: 200ms;">
-                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-qrcode"></i></div>
-                <div>
-                  <p class="text-sm font-bold text-title">Instant QR delivery</p>
-                  <p class="text-xs text-body">Photos and GIFs are ready to scan before the print even finishes.</p>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -731,6 +703,33 @@
                   <p class="text-xs font-bold text-title">Share</p>
                   <p class="text-[11px] text-muted">Ready to post straight from their gallery</p>
                 </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Frictionless safeguards strip -->
+        <section class="py-16 px-6 bg-white">
+          <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="feature-card flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5" style="transition-delay: 0ms;">
+              <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-stopwatch"></i></div>
+              <div>
+                <p class="text-sm font-bold text-title">On-screen countdowns</p>
+                <p class="text-xs text-body">Every step shows a live timer so sessions move on their own.</p>
+              </div>
+            </div>
+            <div class="feature-card flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5" style="transition-delay: 100ms;">
+              <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-rotate-left"></i></div>
+              <div>
+                <p class="text-sm font-bold text-title">Configurable retake limits</p>
+                <p class="text-xs text-body">Cap retakes per session to keep queues fair and fast.</p>
+              </div>
+            </div>
+            <div class="feature-card flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5" style="transition-delay: 200ms;">
+              <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-qrcode"></i></div>
+              <div>
+                <p class="text-sm font-bold text-title">Instant QR delivery</p>
+                <p class="text-xs text-body">Photos and GIFs are ready to scan before the print even finishes.</p>
               </div>
             </div>
           </div>
