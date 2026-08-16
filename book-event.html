@@ -177,7 +177,7 @@
         transform: translateX(-50%);
         width: 120px;
         height: 2px;
-        background: linear-gradient(90deg, transparent, #0c66e4, transparent);
+        background: #0c66e4;
         border-radius: 999px;
       }
       /* Smooth hover lift for cards */
@@ -270,21 +270,18 @@
          rounded-2xl = media frames/secondary cards, rounded-xl = form
          inputs/small chips. */
 
-      /* Sparing violet-gradient accent. Reserved for: the pricing "Best
-         Value" badge, one hero highlight, small decorative blobs. Never
-         apply to large surfaces -- the site stays white/navy/electric-blue,
-         this is emphasis only. */
+      /* Solid brand-blue accent. Reserved for: the pricing "Best Value"
+         badge, one hero highlight, small decorative blobs. Never apply to
+         large surfaces -- the site stays white/navy/electric-blue, this is
+         emphasis only. */
       .gradient-accent-text {
-        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        color: #0c66e4;
       }
       .gradient-accent-bg {
-        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+        background: #0c66e4;
       }
       .gradient-accent-ring {
-        background: linear-gradient(135deg, #0c66e4 0%, #7c3aed 100%);
+        background: #0c66e4;
         padding: 1.5px;
         border-radius: inherit;
       }
@@ -449,7 +446,7 @@
             
             <!-- Wizard Header Bar -->
             <div class="bg-title p-6 space-y-3 relative overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-br from-purple/20 via-transparent to-yellow/5 pointer-events-none"></div>
+              <div class="absolute inset-0 bg-brand/10 pointer-events-none"></div>
               <div class="relative z-10 flex items-center justify-between gap-4">
                 <div>
                   <h2 class="text-2xl font-extrabold text-white leading-tight">Request a booking quote</h2>
