@@ -946,23 +946,22 @@
               </button>
               <div id="reviewFormBody" class="hidden px-6 pb-6 space-y-5 bg-white">
               <form id="publicReviewForm" class="space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div class="space-y-1.5">
-                    <label class="text-xs font-extrabold text-title uppercase" for="reviewName">Your Name *</label>
-                    <input id="reviewName" type="text" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none" placeholder="Your full name" required />
+                <div class="space-y-1.5">
+                  <label class="text-xs font-extrabold text-title uppercase" for="reviewName">Your Name *</label>
+                  <input id="reviewName" type="text" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none" placeholder="Your full name" required />
+                  <p class="text-[11px] text-muted">Kept for our records — not always what's shown publicly, see below.</p>
+                </div>
+                <div class="space-y-1.5">
+                  <label class="text-xs font-extrabold text-title uppercase">Show my review as</label>
+                  <div class="review-display-toggle grid grid-cols-3 gap-1.5 bg-grey border border-line p-1.5 rounded-full" id="reviewDisplayToggle">
+                    <button type="button" data-display="name" class="active py-2 rounded-full text-xs font-extrabold transition-all duration-200 bg-white text-title shadow-sm" onclick="setReviewDisplayMode('name')">My Name</button>
+                    <button type="button" data-display="company" class="py-2 rounded-full text-xs font-extrabold transition-all duration-200 text-body" onclick="setReviewDisplayMode('company')">Company Name</button>
+                    <button type="button" data-display="operator" class="py-2 rounded-full text-xs font-extrabold transition-all duration-200 text-body" onclick="setReviewDisplayMode('operator')">Photobooth Operator</button>
                   </div>
-                  <div class="space-y-1.5">
-                    <label class="text-xs font-extrabold text-title uppercase" for="reviewEventType">Event Type</label>
-                    <select id="reviewEventType" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none">
-                      <option value="Wedding Client">Wedding</option>
-                      <option value="Corporate Event">Corporate Event</option>
-                      <option value="Birthday Party">Birthday Party</option>
-                      <option value="Debut">Debut</option>
-                      <option value="School Event">School Event</option>
-                      <option value="Photobooth Operator">Photobooth Operator</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
+                </div>
+                <div class="space-y-1.5 hidden" id="reviewCompanyNameWrap">
+                  <label class="text-xs font-extrabold text-title uppercase" for="reviewCompanyName">Company Name *</label>
+                  <input id="reviewCompanyName" type="text" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-brand outline-none" placeholder="Your business name" />
                 </div>
                 <div class="space-y-1.5">
                   <label class="text-xs font-extrabold text-title uppercase">Your Rating *</label>

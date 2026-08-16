@@ -1477,6 +1477,7 @@ async function reviewProof(proofId, userId, billing, action) {
 // ===================================================================
 
 let selectedReviewRating = 5;
+let selectedReviewDisplay = "name";
 
 function setReviewRating(rating) {
   selectedReviewRating = rating;
@@ -1487,6 +1488,17 @@ function setReviewRating(rating) {
     btn.classList.toggle("text-yellow-400", star <= rating);
     btn.classList.toggle("text-line", star > rating);
   });
+}
+
+function setReviewDisplayMode(mode) {
+  selectedReviewDisplay = mode;
+  document.querySelectorAll("#reviewDisplayToggle [data-display]").forEach(btn => {
+    const isActive = btn.dataset.display === mode;
+    btn.classList.toggle("active", isActive); btn.classList.toggle("bg-white", isActive); btn.classList.toggle("text-title", isActive); btn.classList.toggle("shadow-sm", isActive);
+    btn.classList.toggle("text-body", !isActive);
+  });
+  const companyWrap = document.getElementById("reviewCompanyNameWrap");
+  if (companyWrap) companyWrap.classList.toggle("hidden", mode !== "company");
 }
 
 async function handleReviewSubmit(event) {
@@ -1504,7 +1516,7 @@ async function handleReviewSubmit(event) {
 
   const name = document.getElementById("reviewName").value.trim();
   const reviewText = document.getElementById("reviewText").value.trim();
-  const eventType = document.getElementById("reviewEventType").value;
+  const companyName = document.getElementById("reviewCompanyName").value.trim();
   const rating = selectedReviewRating;
 
   if (!name || !reviewText) {
@@ -1512,6 +1524,15 @@ async function handleReviewSubmit(event) {
     message.style.color = "#dc2626";
     return;
   }
+  if (selectedReviewDisplay === "company" && !companyName) {
+    message.textContent = "Please enter your company name, or choose a different display option.";
+    message.style.color = "#dc2626";
+    return;
+  }
+
+  const eventType = selectedReviewDisplay === "company" ? companyName
+    : selectedReviewDisplay === "operator" ? "Photobooth Operator"
+    : null;
 
   submitBtn.disabled = true;
   submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Submitting...';
@@ -1533,6 +1554,7 @@ async function handleReviewSubmit(event) {
 
     document.getElementById("publicReviewForm").reset();
     setReviewRating(5);
+    setReviewDisplayMode("name");
     message.textContent = "Thank you! Your review has been submitted and will appear after moderation.";
     message.style.color = "#22c55e";
     spawnToast("Review Submitted", "Your review will be visible once approved. Thank you!", "fa-solid fa-circle-check", "success");
@@ -1560,7 +1582,8 @@ function renderReviewsAdmin() {
   if (!reviews.length) { reviewList.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-8 text-center text-muted"><p class="font-bold text-sm">No reviews submitted for moderation yet.</p></div>`; return; }
   reviews.forEach(r => {
     const card = document.createElement("div"); card.className = "border border-line rounded-2xl bg-white p-6 shadow-sm flex justify-between items-start";
-    card.innerHTML = `<div class="space-y-2"><span class="text-xs bg-purple/15 text-purple font-black px-2 py-0.5 rounded uppercase">${r.status}</span><h4 class="font-bold text-title text-base">${r.name}</h4><p class="text-xs text-yellow-500">${'★'.repeat(r.rating)}</p><p class="text-xs text-body font-medium">${r.review_text}</p></div><div class="flex gap-2"><button onclick="updateReviewStatus(${r.id}, 'approved')" class="bg-green-500 hover:bg-green-600 text-white font-extrabold px-3 py-1 text-[10px] rounded uppercase">Approve</button><button onclick="updateReviewStatus(${r.id}, 'rejected')" class="bg-red-500 hover:bg-red-600 text-white font-extrabold px-3 py-1 text-[10px] rounded uppercase">Decline</button></div>`;
+    const showsAs = r.event_type ? `Shows as: ${r.event_type}` : "Shows as: real name";
+    card.innerHTML = `<div class="space-y-2"><span class="text-xs bg-purple/15 text-purple font-black px-2 py-0.5 rounded uppercase">${r.status}</span><h4 class="font-bold text-title text-base">${r.name}</h4><p class="text-[10px] text-muted font-bold uppercase tracking-wide">${showsAs}</p><p class="text-xs text-yellow-500">${'★'.repeat(r.rating)}</p><p class="text-xs text-body font-medium">${r.review_text}</p></div><div class="flex gap-2"><button onclick="updateReviewStatus(${r.id}, 'approved')" class="bg-green-500 hover:bg-green-600 text-white font-extrabold px-3 py-1 text-[10px] rounded uppercase">Approve</button><button onclick="updateReviewStatus(${r.id}, 'rejected')" class="bg-red-500 hover:bg-red-600 text-white font-extrabold px-3 py-1 text-[10px] rounded uppercase">Decline</button></div>`;
     reviewList.appendChild(card);
   });
 }
@@ -1582,14 +1605,14 @@ function initials(name) {
 }
 
 function reviewCardHtml(r) {
+  const isOperator = r.event_type === "Photobooth Operator";
+  const displayLabel = r.event_type || r.name;
+  const avatarContent = isOperator ? '<i class="fa-solid fa-camera"></i>' : initials(displayLabel);
   return `<div class="stars text-yellow-400 text-sm">${starIcons(r.rating)}</div>
     <p class="text-lg font-bold text-title leading-snug mt-3">"${r.review_text}"</p>
     <div class="flex items-center gap-3 mt-5 pt-4 border-t border-line">
-      <div class="w-10 h-10 rounded-full bg-brand/10 text-brand flex items-center justify-center font-black text-sm shrink-0">${initials(r.name)}</div>
-      <div>
-        <p class="font-bold text-title text-sm">${r.name}</p>
-        <p class="text-xs text-muted font-semibold">${r.event_type || "Client"}</p>
-      </div>
+      <div class="w-10 h-10 rounded-full bg-brand/10 text-brand flex items-center justify-center font-black text-sm shrink-0">${avatarContent}</div>
+      <p class="font-bold text-title text-sm">${displayLabel}</p>
     </div>`;
 }
 
@@ -1599,10 +1622,10 @@ function renderReviews(payload) {
   googleReviewsList.innerHTML = "";
   if (!list.length) {
     const defaults = [
-      { rating: 5, name: "Patricia Santos", review_text: "Studio Photuna completely transformed our wedding experience in Manila! The high-angle booth perspective felt super unique, and the instant prints matched our theme frames perfectly.", event_type: "Wedding Client" },
-      { rating: 5, name: "Liam Mendoza", review_text: "Highly recommend the 14-day free trial app configurations. Calibrating connected DSLR camera variables worked smoothly, and local test sheets printed flawlessly.", event_type: "Photobooth Operator" },
-      { rating: 5, name: "Sloane Perez", review_text: "Our guests loved the retro filters and quick QR-scans on their phone. Exceptional technical support during our corporate anniversary event setup!", event_type: "Corporate Event Operator" },
-      { rating: 5, name: "Marco Villanueva", review_text: "Setup took minutes, not hours. Connected our DSLR and dye-sub printer, mapped a template, and we were running our first session the same afternoon.", event_type: "Birthday Party" }
+      { rating: 5, name: "Patricia Santos", review_text: "Studio Photuna completely transformed our wedding experience in Manila! The high-angle booth perspective felt super unique, and the instant prints matched our theme frames perfectly." },
+      { rating: 5, name: "Liam Mendoza", review_text: "Highly recommend the 14-day free trial app configurations. Calibrating connected DSLR camera variables worked smoothly, and local test sheets printed flawlessly." },
+      { rating: 5, name: "Sloane Perez", review_text: "Our guests loved the retro filters and quick QR-scans on their phone. Exceptional technical support during our corporate anniversary event setup!" },
+      { rating: 5, name: "Marco Villanueva", review_text: "Setup took minutes, not hours. Connected our DSLR and dye-sub printer, mapped a template, and we were running our first session the same afternoon." }
     ];
     defaults.forEach(r => {
       const card = document.createElement("article"); card.className = "review-card card-testimonial hover-lift";
