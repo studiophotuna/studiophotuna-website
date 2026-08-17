@@ -898,39 +898,119 @@
       </div>
     </div>
 
-    <div class="modal-backdrop fixed inset-0 bg-[#111827]/50 backdrop-blur-md z-50 hidden place-items-center p-4" id="authModal" aria-hidden="true">
-      <div class="auth-modal w-full max-w-md bg-white border border-line rounded-3xl p-8 shadow-luxe" role="dialog" aria-modal="true" aria-labelledby="authTitle">
-        <div class="auth-head flex items-start justify-between border-b border-line pb-4 mb-4">
-          <div>
-            <h2 id="authTitle" class="text-2xl font-black text-title">Access Studio Photuna</h2>
-            <p class="text-xs text-muted mt-1">Login or create your free trial workspace.</p>
+    <!-- Auth Modal — fullscreen gradient, matches in-app AuthGate design -->
+    <div class="fixed inset-0 z-50 hidden place-items-center p-4" id="authModal" aria-hidden="true"
+         style="background: linear-gradient(145deg, #1e3a8a 0%, #1d4ed8 55%, #93c5fd 100%);">
+
+      <!-- Logo -->
+      <a href="/" onclick="closeAuthModal(); navigateTo('home'); return false;"
+         class="absolute top-8 left-1/2 z-10 -translate-x-1/2 flex items-center" aria-label="Studio Photuna">
+        <img src="/logo.png" alt="Studio Photuna" class="h-20 sm:h-24 w-auto"
+             style="filter:brightness(0) invert(1)"
+             onerror="this.onerror=null;this.src='/logo-dark.png';this.style.filter='brightness(0) invert(1)'" />
+      </a>
+
+      <!-- Card -->
+      <div class="relative z-10 mt-20 rounded-[32px] bg-white px-7 py-8 shadow-[0_20px_60px_rgba(0,0,0,0.28)] w-[92%] sm:w-[78%] md:w-[65%] lg:w-[60%] max-w-[560px]"
+           role="dialog" aria-modal="true">
+
+        <!-- Close -->
+        <button type="button" onclick="closeAuthModal()"
+                class="absolute top-5 right-5 w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey text-title text-lg leading-none"
+                aria-label="Close">&times;</button>
+
+        <!-- LANDING PANEL -->
+        <div id="authLandingPanel">
+          <h2 class="text-2xl font-black text-[#1a1a2e] text-center mb-1">Let's get started!</h2>
+          <p class="text-sm text-center text-[#5f6678] mb-6">Sign up for free or sign in to your account.</p>
+
+          <div class="flex flex-col gap-3 mb-6">
+            <button type="button" onclick="setAuthMode('signup')"
+                    class="btn-animation w-full py-3 rounded-full text-sm font-extrabold text-white text-center transition-colors"
+                    style="background:#1a1a2e">
+              Sign Up
+            </button>
+            <button type="button" onclick="setAuthMode('login')"
+                    class="btn-animation w-full py-3 rounded-full text-sm font-extrabold border-2 border-[#1a1a2e] text-[#1a1a2e] text-center transition-colors hover:bg-grey">
+              Sign In
+            </button>
           </div>
-          <button class="modal-close w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey" type="button" id="authClose" aria-label="Close" onclick="closeAuthModal()">&times;</button>
+
+          <div class="flex items-center gap-3 mb-4">
+            <span class="flex-1 h-px bg-line"></span>
+            <span class="text-[11px] font-bold text-muted uppercase tracking-wider">or continue with</span>
+            <span class="flex-1 h-px bg-line"></span>
+          </div>
+
+          <div class="flex flex-col gap-3 mb-6">
+            <button type="button" onclick="signInWithGoogle()"
+                    class="btn-animation w-full flex items-center justify-center gap-3 border border-line bg-white hover:bg-grey text-title font-bold py-3 rounded-full text-sm transition-colors">
+              <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+                <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.09-1.8 2.73v2.27h2.91c1.7-1.57 2.69-3.88 2.69-6.64z"/>
+                <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.27c-.81.54-1.84.86-3.05.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.33C2.44 15.98 5.48 18 9 18z"/>
+                <path fill="#FBBC05" d="M3.96 10.71c-.18-.54-.28-1.11-.28-1.71s.1-1.17.28-1.71V4.96H.96C.35 6.17 0 7.55 0 9s.35 2.83.96 4.04l3-2.33z"/>
+                <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l3 2.33C4.67 5.16 6.66 3.58 9 3.58z"/>
+              </svg>
+              Continue with Google
+            </button>
+            <button type="button" disabled
+                    class="w-full flex items-center justify-center gap-3 border border-line bg-white text-title font-bold py-3 rounded-full text-sm opacity-40 cursor-not-allowed grayscale">
+              <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18">
+                <path fill="#1877F2" d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047v-2.66c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.514c-1.491 0-1.956.93-1.956 1.887v2.264h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/>
+              </svg>
+              Continue with Facebook
+            </button>
+            <button type="button" disabled
+                    class="w-full flex items-center justify-center gap-3 border border-line bg-white text-title font-bold py-3 rounded-full text-sm opacity-40 cursor-not-allowed grayscale">
+              <svg viewBox="0 0 24 24" aria-hidden="true" width="18" height="18" fill="currentColor">
+                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+              </svg>
+              Continue with Apple
+            </button>
+          </div>
+
+          <p class="text-center text-[11px] text-muted leading-relaxed">
+            By continuing, you agree to our
+            <a href="/operator-agreement" onclick="navigateTo('operator-agreement'); closeAuthModal(); return false;" class="font-bold hover:underline text-[#1d4ed8]">Terms of Service</a>
+            and
+            <a href="/privacy-framework" onclick="navigateTo('privacy-framework'); closeAuthModal(); return false;" class="font-bold hover:underline text-[#1d4ed8]">Privacy Policy</a>.
+          </p>
         </div>
-        <div class="auth-tabs grid grid-cols-2 bg-grey p-1 rounded-full mb-6 border border-line">
-          <button class="auth-tab active py-2 rounded-full text-xs font-black" type="button" data-auth-tab="login" onclick="setAuthMode('login')">Login</button>
-          <button class="auth-tab py-2 rounded-full text-xs font-black text-muted" type="button" data-auth-tab="signup" onclick="setAuthMode('signup')">Sign up</button>
+
+        <!-- FORM PANEL (login / signup) -->
+        <div id="authFormPanel" class="hidden">
+          <!-- Back + mode toggle -->
+          <div class="flex items-center mb-5">
+            <button type="button" onclick="showAuthLanding()"
+                    class="flex items-center gap-1.5 text-sm font-bold text-[#5f6678] hover:text-title transition-colors mr-auto">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6"/>
+              </svg>
+              Back
+            </button>
+            <div class="flex bg-grey p-1 rounded-full border border-line">
+              <button class="auth-tab px-4 py-1.5 rounded-full text-xs font-black transition-colors" type="button" data-auth-tab="login" onclick="setAuthMode('login')">Sign In</button>
+              <button class="auth-tab px-4 py-1.5 rounded-full text-xs font-black transition-colors text-muted" type="button" data-auth-tab="signup" onclick="setAuthMode('signup')">Sign Up</button>
+            </div>
+          </div>
+
+          <form class="auth-form space-y-4" id="authForm">
+            <input id="authName" name="name" type="text" placeholder="Full name" autocomplete="name"
+                   class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-[#1d4ed8] outline-none hidden" />
+            <input id="authEmail" name="email" type="email" placeholder="Email address" autocomplete="email"
+                   class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-[#1d4ed8] outline-none" required />
+            <input id="authPassword" name="password" type="password" placeholder="Password" autocomplete="current-password"
+                   class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-[#1d4ed8] outline-none" required />
+            <label id="authConsent" class="hidden items-start gap-2 text-xs text-body cursor-pointer">
+              <input type="checkbox" id="consentCheck" class="mt-0.5 accent-[#1d4ed8]" />
+              <span>I agree to the <a href="/operator-agreement" onclick="navigateTo('operator-agreement'); closeAuthModal(); return false;" class="text-[#1d4ed8] font-bold hover:underline">Terms of Service</a> and <a href="/privacy-framework" onclick="navigateTo('privacy-framework'); closeAuthModal(); return false;" class="text-[#1d4ed8] font-bold hover:underline">Privacy Policy</a>, including the processing of my personal data in accordance with the Data Privacy Act of 2012 (RA 10173).</span>
+            </label>
+            <button class="btn-animation w-full text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors shadow-sm"
+                    type="submit" id="authSubmit" style="background:#1a1a2e">Sign In</button>
+            <p class="auth-message text-center text-xs font-bold" id="authMessage"></p>
+          </form>
         </div>
-        <button type="button" onclick="signInWithGoogle()" class="btn-animation w-full flex items-center justify-center gap-3 border border-line bg-white hover:bg-grey text-title font-bold py-3 rounded-full text-sm transition-colors mb-4">
-          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.09-1.8 2.73v2.27h2.91c1.7-1.57 2.69-3.88 2.69-6.64z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.91-2.27c-.81.54-1.84.86-3.05.86-2.34 0-4.33-1.58-5.04-3.71H.96v2.33C2.44 15.98 5.48 18 9 18z"/><path fill="#FBBC05" d="M3.96 10.71c-.18-.54-.28-1.11-.28-1.71s.1-1.17.28-1.71V4.96H.96C.35 6.17 0 7.55 0 9s.35 2.83.96 4.04l3-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.44 2.02.96 4.96l3 2.33C4.67 5.16 6.66 3.58 9 3.58z"/></svg>
-          Continue with Google
-        </button>
-        <div class="flex items-center gap-3 mb-4" aria-hidden="true">
-          <span class="flex-1 h-px bg-line"></span>
-          <span class="text-[11px] font-bold text-muted uppercase tracking-wider">or</span>
-          <span class="flex-1 h-px bg-line"></span>
-        </div>
-        <form class="auth-form space-y-4" id="authForm">
-          <input id="authName" name="name" type="text" placeholder="Full name" autocomplete="name" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none hidden" />
-          <input id="authEmail" name="email" type="email" placeholder="Email address" autocomplete="email" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
-          <input id="authPassword" name="password" type="password" placeholder="Password" autocomplete="current-password" class="w-full border border-line rounded-xl px-4 py-3 text-sm focus:border-purple outline-none" required />
-          <label id="authConsent" class="hidden flex items-start gap-2 text-xs text-body cursor-pointer">
-            <input type="checkbox" id="consentCheck" class="mt-0.5 accent-[#0c66e4]" />
-            <span>I agree to the <a href="/operator-agreement" onclick="navigateTo('operator-agreement'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Terms of Service</a> and <a href="/privacy-framework" onclick="navigateTo('privacy-framework'); closeAuthModal(); return false;" class="text-purple font-bold hover:underline">Privacy Policy</a>, including the processing of my personal data in accordance with the Data Privacy Act of 2012 (RA 10173).</span>
-          </label>
-          <button class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-extrabold py-3 rounded-full text-sm uppercase transition-colors shadow-sm" type="submit" id="authSubmit">Login</button>
-          <p class="auth-message text-center text-xs font-bold" id="authMessage"></p>
-        </form>
+
       </div>
     </div>
 

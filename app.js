@@ -253,10 +253,13 @@ function spawnToast(title, description, iconClass = 'fa-circle-check', type = 'i
   setTimeout(() => { toast.classList.add('opacity-0', 'transition-opacity', 'duration-500'); setTimeout(() => toast.remove(), 500); }, 4000);
 }
 
-function openAuthModal(mode = "login") {
-  setAuthMode(mode); authModal.classList.remove("hidden"); authModal.classList.add("grid"); authModal.setAttribute("aria-hidden", "false"); authMessage.textContent = ""; document.getElementById("authEmail").focus();
+function openAuthModal(mode = "landing") {
+  authModal.classList.remove("hidden"); authModal.classList.add("grid"); authModal.setAttribute("aria-hidden", "false"); authMessage.textContent = "";
+  if (mode === "signup") { setAuthMode("signup"); } else { showAuthLanding(); }
 }
 function closeAuthModal() { authModal.classList.add("hidden"); authModal.classList.remove("grid"); authModal.setAttribute("aria-hidden", "true"); }
+function showAuthLanding() { document.getElementById("authLandingPanel").classList.remove("hidden"); document.getElementById("authFormPanel").classList.add("hidden"); }
+function showAuthForm() { document.getElementById("authLandingPanel").classList.add("hidden"); document.getElementById("authFormPanel").classList.remove("hidden"); setTimeout(() => document.getElementById("authEmail").focus(), 50); }
 
 // Shared handler for every "Start Free Trial" / "Sign Up Free" CTA (hero,
 // pricing trial card, demo feedback prompt). A signed-in visitor should
@@ -309,12 +312,15 @@ async function signInWithGoogle() {
 
 function setAuthMode(mode) {
   authMode = mode;
+  showAuthForm();
   document.querySelectorAll(".auth-tab").forEach((tab) => {
     const isActive = tab.dataset.authTab === mode;
     tab.classList.toggle("active", isActive); tab.classList.toggle("bg-white", isActive); tab.classList.toggle("text-purple", isActive); tab.classList.toggle("text-muted", !isActive);
   });
   authName.style.display = mode === "signup" ? "block" : "none";
   authName.toggleAttribute("required", mode === "signup");
+  const authConsentEl = document.getElementById("authConsent");
+  if (authConsentEl) { authConsentEl.classList.toggle("hidden", mode !== "signup"); authConsentEl.classList.toggle("flex", mode === "signup"); }
   authPassword.setAttribute("placeholder", mode === "signup" ? "Create a Password" : "Password");
   authSubmit.textContent = mode === "signup" ? "Create Free Account" : "Sign In";
 }
@@ -2364,7 +2370,7 @@ if (refreshBookings) {
   };
 }
 
-document.getElementById("loginOpen").onclick = () => openAuthModal("login");
+document.getElementById("loginOpen").onclick = () => openAuthModal();
 document.getElementById("gcashProofForm").onsubmit = handleGcashProofSubmit;
 const publicReviewForm = document.getElementById("publicReviewForm");
 if (publicReviewForm) publicReviewForm.onsubmit = handleReviewSubmit;
