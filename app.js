@@ -310,6 +310,16 @@ async function signInWithGoogle() {
   if (error) setAuthMessage(error.message || "Could not start Google sign-in.", true);
 }
 
+async function sendPasswordReset() {
+  const email = document.getElementById("authEmail").value.trim();
+  if (!email) { setAuthMessage("Enter your email above, then tap 'Forgot password?' again.", true); document.getElementById("authEmail").focus(); return; }
+  if (!supabaseClient) { setAuthMessage("Service temporarily unavailable.", true); return; }
+  setAuthMessage("Sending reset link...");
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/account` });
+  if (error) setAuthMessage(error.message || "Could not send reset email.", true);
+  else { setAuthMessage("Check your email for a password reset link.", false); spawnToast("Reset Link Sent", `We emailed a password reset link to ${email}.`, "fa-solid fa-envelope", "success"); }
+}
+
 function setAuthMode(mode) {
   authMode = mode;
   showAuthForm();
@@ -321,6 +331,8 @@ function setAuthMode(mode) {
   authName.toggleAttribute("required", mode === "signup");
   const authConsentEl = document.getElementById("authConsent");
   if (authConsentEl) { authConsentEl.classList.toggle("hidden", mode !== "signup"); authConsentEl.classList.toggle("flex", mode === "signup"); }
+  const authForgotLinkEl = document.getElementById("authForgotLink");
+  if (authForgotLinkEl) authForgotLinkEl.classList.toggle("hidden", mode !== "login");
   authPassword.setAttribute("placeholder", mode === "signup" ? "Create a Password" : "Password");
   authSubmit.textContent = mode === "signup" ? "Create Free Account" : "Sign In";
 }
@@ -1981,8 +1993,12 @@ window.onload = async function () {
       window.currentSupabaseUser = user;
       loadAccountState(user).then(() => { handleCheckoutRedirectResult(); if (CURRENT_VIEW === 'payment-app-success') initPaymentSuccessPage(); });
     });
-    supabaseClient.auth.onAuthStateChange((_evt, session) => {
+    supabaseClient.auth.onAuthStateChange((evt, session) => {
       const user = session?.user || null; window.currentSupabaseUser = user; loadAccountState(user);
+      if (evt === "PASSWORD_RECOVERY" && CURRENT_VIEW === 'account') {
+        document.getElementById("passwordForm")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        spawnToast("Reset Your Password", "Enter a new password below to finish resetting your account.", "fa-solid fa-key", "info");
+      }
     });
   } else { handleCheckoutRedirectResult(); if (CURRENT_VIEW === 'payment-app-success') initPaymentSuccessPage(); }
 
