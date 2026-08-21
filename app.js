@@ -2224,8 +2224,8 @@ document.onclick = () => { closeDropdown(); document.querySelector(".dropdown-me
 const proofList = document.getElementById("proofList");
 const proofFilterButtons = document.querySelectorAll("[data-proof-filter]");
 
-const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", privacy: "Privacy Requests", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics", settings: "Settings" };
-const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], privacy: ["privacy"], reviews: ["reviews"], analytics: ["analytics"], settings: ["settings"] };
+const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", privacy: "Privacy Requests", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics", settings: "Settings", discounts: "Discount Codes" };
+const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], privacy: ["privacy"], reviews: ["reviews"], analytics: ["analytics"], settings: ["settings", "discounts"] };
 let activeAdminGroup = "bookings";
 const adminGroupButtons = document.querySelectorAll(".admin-group-tabs [data-admin-group]");
 const adminSubtabsRow = document.getElementById("adminSubtabsRow");
@@ -2240,6 +2240,7 @@ async function loadActiveAdminTab() {
   else if (activeAdminTab === "privacy") task = loadPrivacyRequestsAdmin();
   else if (activeAdminTab === "analytics") task = loadAnalytics();
   else if (activeAdminTab === "settings") task = loadPaymentGatewaySettings();
+  else if (activeAdminTab === "discounts") task = loadDiscountCodes();
   else task = loadReviewsAdmin();
   await task;
   const stamp = document.getElementById("adminLastUpdated");
@@ -2271,6 +2272,7 @@ function activateAdminTab(tab) {
   const privacyRequestList = document.getElementById("privacyRequestList"); if (privacyRequestList) privacyRequestList.classList.toggle("hidden", activeAdminTab !== "privacy");
   const analyticsPanel = document.getElementById("analyticsPanel"); if (analyticsPanel) analyticsPanel.classList.toggle("hidden", activeAdminTab !== "analytics");
   const settingsPanel = document.getElementById("settingsPanel"); if (settingsPanel) settingsPanel.classList.toggle("hidden", activeAdminTab !== "settings");
+  const discountsPanel = document.getElementById("discountsPanel"); if (discountsPanel) discountsPanel.classList.toggle("hidden", activeAdminTab !== "discounts");
   const bookingSubToolbar = document.getElementById("bookingSubToolbar");
   const proofsSubToolbar = document.getElementById("proofsSubToolbar");
   const inboxSubToolbar = document.getElementById("inboxSubToolbar");
@@ -2338,6 +2340,202 @@ async function savePaymentGatewaySettings() {
 
 const saveGatewaySettingsBtn = document.getElementById("saveGatewaySettings");
 if (saveGatewaySettingsBtn) saveGatewaySettingsBtn.onclick = savePaymentGatewaySettings;
+
+/* ========================================================
+   Discount Codes Admin
+======================================================== */
+let _discountCodes = [];
+
+async function loadDiscountCodes() {
+  if (!supabaseClient || !window.currentSupabaseUser) return;
+  const panel = document.getElementById("discountsPanel"); if (!panel) return;
+  panel.innerHTML = `<p class="text-center text-xs text-muted py-10 font-bold">Loading discount codes…</p>`;
+  try {
+    const { data, error } = await supabaseClient.from("discount_codes").select("*").order("created_at", { ascending: false });
+    if (error) throw error;
+    _discountCodes = data || [];
+    renderDiscountCodes();
+  } catch (err) {
+    panel.innerHTML = `<p class="text-center text-xs text-red-500 py-10 font-bold">Load error: ${err.message}</p>`;
+  }
+}
+
+function renderDiscountCodes() {
+  const panel = document.getElementById("discountsPanel"); if (!panel) return;
+  if (!_discountCodes.length) {
+    panel.innerHTML = `
+      <div class="flex flex-col items-center gap-4 py-16 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-purple/10 flex items-center justify-center text-purple text-xl"><i class="fa-solid fa-tags"></i></div>
+        <p class="font-bold text-title">No discount codes yet</p>
+        <p class="text-sm text-muted max-w-sm">Create your first discount code to offer promos on monthly, yearly, or gallery add-on plans.</p>
+        <button type="button" onclick="openDiscountCodeModal('create')" class="btn-animation bg-purple hover:bg-purple-dark text-white font-extrabold px-6 py-2.5 rounded-full text-xs uppercase"><i class="fa-solid fa-plus mr-1.5"></i> Create Code</button>
+      </div>`;
+    return;
+  }
+  panel.innerHTML = `
+    <div class="bg-white border border-line rounded-3xl shadow-sm overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-line">
+        <h3 class="font-extrabold text-title">Discount Codes</h3>
+        <button type="button" onclick="openDiscountCodeModal('create')" class="btn-animation bg-purple hover:bg-purple-dark text-white font-extrabold px-5 py-2 rounded-full text-xs uppercase"><i class="fa-solid fa-plus mr-1.5"></i> Create Code</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-line bg-grey text-[10px] uppercase tracking-widest text-muted font-black">
+              <th class="text-left px-5 py-3">Code</th>
+              <th class="text-left px-5 py-3">Discount</th>
+              <th class="text-left px-5 py-3">Plans</th>
+              <th class="text-left px-5 py-3">Uses</th>
+              <th class="text-left px-5 py-3">Expiry</th>
+              <th class="text-left px-5 py-3">Status</th>
+              <th class="text-left px-5 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>${_discountCodes.map(c => {
+            const appliesTo = Array.isArray(c.applies_to) && c.applies_to.length ? c.applies_to.join(", ") : "All plans";
+            const uses = c.max_uses !== null && c.max_uses !== undefined ? `${c.uses_count}/${c.max_uses}` : `${c.uses_count} / ∞`;
+            const expiry = c.valid_until ? new Date(c.valid_until).toLocaleDateString("en-PH") : "No expiry";
+            const discount = c.discount_type === "percent" ? `${c.discount_value}% off` : `₱${c.discount_value} off`;
+            const statusCls = c.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-700";
+            return `<tr class="border-b border-line last:border-0 hover:bg-grey/50">
+              <td class="px-5 py-3.5"><span class="font-mono font-black text-title text-xs">${c.code}</span></td>
+              <td class="px-5 py-3.5 font-semibold text-purple text-sm">${discount}</td>
+              <td class="px-5 py-3.5 text-body text-xs">${appliesTo}</td>
+              <td class="px-5 py-3.5 font-mono text-xs">${uses}</td>
+              <td class="px-5 py-3.5 text-xs text-muted">${expiry}</td>
+              <td class="px-5 py-3.5"><span class="rounded-full px-2.5 py-1 text-[10px] font-black ${statusCls}">${c.is_active ? "Active" : "Inactive"}</span></td>
+              <td class="px-5 py-3.5">
+                <div class="flex items-center gap-3">
+                  <button onclick="openDiscountCodeModal('edit','${c.id}')" class="text-xs font-bold text-purple hover:underline">Edit</button>
+                  <button onclick="toggleDiscountCode('${c.id}',${!c.is_active})" class="text-xs font-bold text-muted hover:underline">${c.is_active ? "Deactivate" : "Activate"}</button>
+                  <button onclick="deleteDiscountCode('${c.id}')" class="text-xs font-bold text-red-500 hover:underline">Delete</button>
+                </div>
+              </td>
+            </tr>`;
+          }).join("")}</tbody>
+        </table>
+      </div>
+    </div>`;
+}
+
+async function toggleDiscountCode(id, newState) {
+  if (!supabaseClient) return;
+  try {
+    const { error } = await supabaseClient.from("discount_codes").update({ is_active: newState }).eq("id", id);
+    if (error) throw error;
+    spawnToast("Updated", `Code ${newState ? "activated" : "deactivated"}.`, "fa-solid fa-circle-check", "success");
+    loadDiscountCodes();
+  } catch (err) { spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); }
+}
+
+async function deleteDiscountCode(id) {
+  if (!supabaseClient) return;
+  if (!confirm("Permanently delete this discount code?")) return;
+  try {
+    const { error } = await supabaseClient.from("discount_codes").delete().eq("id", id);
+    if (error) throw error;
+    spawnToast("Deleted", "Discount code removed.", "fa-solid fa-circle-check", "success");
+    loadDiscountCodes();
+  } catch (err) { spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning"); }
+}
+
+function openDiscountCodeModal(mode, id) {
+  const existing = id ? _discountCodes.find(c => c.id === id) : null;
+  document.getElementById("discountCodeModal")?.remove();
+  const planOptions = ["monthly", "yearly", "plus", "business"].map(p =>
+    `<label class="flex items-center gap-2 cursor-pointer text-sm">
+      <input type="checkbox" name="dcPlan" value="${p}" ${existing?.applies_to?.includes(p) ? "checked" : ""} class="rounded accent-purple"/>
+      <span class="capitalize">${p}</span>
+    </label>`
+  ).join("");
+  const modal = document.createElement("div");
+  modal.id = "discountCodeModal";
+  modal.className = "fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4";
+  modal.innerHTML = `
+    <div class="w-full max-w-lg bg-white border border-line rounded-3xl shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
+      <div class="flex items-start justify-between px-6 pt-6 pb-4 border-b border-line">
+        <div>
+          <h3 class="text-lg font-black text-title">${mode === "edit" ? "Edit Discount Code" : "Create Discount Code"}</h3>
+          <p class="text-xs text-muted mt-0.5">Codes are stored and matched in uppercase.</p>
+        </div>
+        <button onclick="document.getElementById('discountCodeModal').remove()" class="w-9 h-9 border border-line rounded-full flex items-center justify-center hover:bg-grey text-body text-lg leading-none">&times;</button>
+      </div>
+      <div class="p-6 space-y-4 max-h-[68vh] overflow-y-auto">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="col-span-2">
+            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Code</label>
+            <input id="dcCode" type="text" value="${existing?.code || ""}" placeholder="e.g. SAVE20" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm font-mono uppercase focus:border-purple outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Discount Type</label>
+            <select id="dcType" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none">
+              <option value="percent" ${!existing || existing.discount_type === "percent" ? "selected" : ""}>Percent off</option>
+              <option value="fixed_php" ${existing?.discount_type === "fixed_php" ? "selected" : ""}>Fixed PHP amount off</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Value</label>
+            <input id="dcValue" type="number" min="0" value="${existing?.discount_value ?? ""}" placeholder="e.g. 20" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none"/>
+            <p class="text-[10px] text-muted mt-1">Percent: 0–100. Fixed: PHP amount.</p>
+          </div>
+          <div>
+            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Max Uses (blank = unlimited)</label>
+            <input id="dcMaxUses" type="number" min="1" value="${existing?.max_uses ?? ""}" placeholder="Unlimited" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none"/>
+          </div>
+          <div>
+            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Expiry Date (optional)</label>
+            <input id="dcExpiry" type="date" value="${existing?.valid_until ? existing.valid_until.slice(0,10) : ""}" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none"/>
+          </div>
+          <div class="col-span-2">
+            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Stripe Coupon ID (optional)</label>
+            <input id="dcStripeCoupon" type="text" value="${existing?.stripe_coupon_id || ""}" placeholder="e.g. promo_abc123" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm font-mono focus:border-purple outline-none"/>
+            <p class="text-[10px] text-muted mt-1">Links this code to a Stripe coupon for Stripe-hosted checkout.</p>
+          </div>
+          <div class="col-span-2">
+            <label class="block text-xs font-black text-title mb-2 uppercase tracking-wide">Applies to (blank = all plans)</label>
+            <div class="grid grid-cols-4 gap-3">${planOptions}</div>
+          </div>
+        </div>
+        <p class="text-xs text-red-500 font-bold hidden" id="dcError"></p>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t border-line">
+        <button type="button" onclick="document.getElementById('discountCodeModal').remove()" class="flex-1 border border-line rounded-full py-2.5 text-sm font-black text-body hover:bg-grey">Cancel</button>
+        <button type="button" onclick="saveDiscountCode('${mode}','${id || ''}')" class="flex-1 btn-animation bg-purple hover:bg-purple-dark text-white font-black rounded-full py-2.5 text-sm">${mode === "edit" ? "Save Changes" : "Create Code"}</button>
+      </div>
+    </div>`;
+  modal.onclick = () => modal.remove();
+  document.body.appendChild(modal);
+}
+
+async function saveDiscountCode(mode, id) {
+  if (!supabaseClient) return;
+  const code = document.getElementById("dcCode")?.value?.trim().toUpperCase();
+  const discountType = document.getElementById("dcType")?.value;
+  const discountValue = parseFloat(document.getElementById("dcValue")?.value);
+  const maxUses = document.getElementById("dcMaxUses")?.value?.trim();
+  const expiry = document.getElementById("dcExpiry")?.value?.trim();
+  const stripeCouponId = document.getElementById("dcStripeCoupon")?.value?.trim();
+  const appliesTo = Array.from(document.querySelectorAll("input[name='dcPlan']:checked")).map(el => el.value);
+  const errEl = document.getElementById("dcError");
+  if (!code) { errEl.textContent = "Code is required."; errEl.classList.remove("hidden"); return; }
+  if (isNaN(discountValue) || discountValue < 0) { errEl.textContent = "Enter a valid discount value."; errEl.classList.remove("hidden"); return; }
+  if (discountType === "percent" && discountValue > 100) { errEl.textContent = "Percent discount cannot exceed 100."; errEl.classList.remove("hidden"); return; }
+  errEl.classList.add("hidden");
+  const payload = { code, discount_type: discountType, discount_value: discountValue, applies_to: appliesTo, max_uses: maxUses ? parseInt(maxUses, 10) : null, valid_until: expiry ? new Date(expiry + "T23:59:59").toISOString() : null, stripe_coupon_id: stripeCouponId || null };
+  try {
+    if (mode === "edit" && id) {
+      const { error } = await supabaseClient.from("discount_codes").update(payload).eq("id", id);
+      if (error) throw error;
+      spawnToast("Saved", "Discount code updated.", "fa-solid fa-circle-check", "success");
+    } else {
+      const { error } = await supabaseClient.from("discount_codes").insert({ ...payload, is_active: true });
+      if (error) throw error;
+      spawnToast("Created", `Code "${code}" created.`, "fa-solid fa-circle-check", "success");
+    }
+    document.getElementById("discountCodeModal")?.remove();
+    loadDiscountCodes();
+  } catch (err) { errEl.textContent = err.message; errEl.classList.remove("hidden"); }
+}
 
 filterButtons.forEach(btn => {
   btn.onclick = () => {
