@@ -6,6 +6,38 @@
 
         <div class="space-y-8">
 
+          <!-- v0.2.9 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-2-9">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-brand/10 text-brand font-mono font-bold text-xs px-3 py-1 rounded-full">v0.2.9</span>
+                <h2 class="text-2xl font-black text-title">Security, Payments &amp; Gallery Fixes</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">August 21, 2026</span>
+            </div>
+            <p class="text-sm text-body -mt-2">Discount codes join PayMongo checkout, Gallery QR and Gallery Branding no longer require admin access, and the Windows installer build is more reliable — plus the embedded licensing server has been removed from the app entirely in favor of Supabase.</p>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-green-700"><i class="fa-solid fa-sparkles"></i> New</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Discount code support</strong> — Operators can apply a discount code during PayMongo checkout. The original price is shown with a strikethrough and the discounted total is highlighted in the payment modal header and QR screen.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Gallery QR — no admin access required</strong> — The QR Gallery modal now works in the distributed app. Gallery slug lookup and creation use the operator's own authenticated Supabase session instead of a server-side admin key.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">•</span> <span><strong class="text-title">Gallery Branding auto-login</strong> — Clicking "Gallery Branding" on an event now opens the branding editor in the browser and logs the operator in automatically. No manual login on the gallery site is required.</span></li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-red-600"><i class="fa-solid fa-bug"></i> Fixed</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span>Fixed Windows installer build failing with <code class="text-xs bg-grey px-1 rounded">'CI' is not recognized</code> — build scripts now use <code class="text-xs bg-grey px-1 rounded">cross-env</code> for compatibility with Windows CMD and PowerShell.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span>Fixed installer build attempting to recompile <code class="text-xs bg-grey px-1 rounded">better-sqlite3</code> native module without Python — native module rebuild is skipped since it is no longer used in the distributed app.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span>Fixed "Photuna account services are not configured on this build" error when opening QR Gallery for events.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span>Fixed "Access required" error when opening Gallery Branding from the dashboard.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">•</span> <span>Embedded licensing server removed from Electron main process — all licensing and payment operations now go through Supabase Edge Functions or direct Supabase queries.</span></li>
+              </ul>
+            </div>
+          </article>
+
           <!-- v0.2.7 -->
           <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-2-7">
             <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
