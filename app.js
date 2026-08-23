@@ -2358,7 +2358,7 @@ if (saveGatewaySettingsBtn) saveGatewaySettingsBtn.onclick = savePaymentGatewayS
    Discount Codes Admin
 ======================================================== */
 let _discountCodes = [];
-let _restrictedEmails = {}; // restricted_user_id -> email, for display + modal pre-fill
+let _restrictedUsers = {}; // discount_code_id -> [{id, email}], for display + modal pre-fill
 
 async function loadDiscountCodes() {
   if (!supabaseClient || !window.currentSupabaseUser) return;
@@ -2368,11 +2368,22 @@ async function loadDiscountCodes() {
     const { data, error } = await supabaseClient.from("discount_codes").select("*").order("created_at", { ascending: false });
     if (error) throw error;
     _discountCodes = data || [];
-    const restrictedIds = [...new Set(_discountCodes.map(c => c.restricted_user_id).filter(Boolean))];
-    _restrictedEmails = {};
-    if (restrictedIds.length) {
-      const { data: profiles } = await supabaseClient.from("profiles").select("id, email").in("id", restrictedIds);
-      (profiles || []).forEach(p => { _restrictedEmails[p.id] = p.email; });
+    _restrictedUsers = {};
+    if (_discountCodes.length) {
+      const { data: restrictions } = await supabaseClient
+        .from("discount_code_restricted_users")
+        .select("discount_code_id, user_id")
+        .in("discount_code_id", _discountCodes.map(c => c.id));
+      const userIds = [...new Set((restrictions || []).map(r => r.user_id))];
+      let emailsById = {};
+      if (userIds.length) {
+        const { data: profiles } = await supabaseClient.from("profiles").select("id, email").in("id", userIds);
+        (profiles || []).forEach(p => { emailsById[p.id] = p.email; });
+      }
+      (restrictions || []).forEach(r => {
+        if (!_restrictedUsers[r.discount_code_id]) _restrictedUsers[r.discount_code_id] = [];
+        _restrictedUsers[r.discount_code_id].push({ id: r.user_id, email: emailsById[r.user_id] || "Unknown user" });
+      });
     }
     renderDiscountCodes();
   } catch (err) {
@@ -2414,7 +2425,10 @@ function renderDiscountCodes() {
           </thead>
           <tbody>${_discountCodes.map(c => {
             const appliesTo = Array.isArray(c.applies_to) && c.applies_to.length ? c.applies_to.join(", ") : "All plans";
-            const restrictedTo = c.restricted_user_id ? (_restrictedEmails[c.restricted_user_id] || "Unknown user") : "Everyone";
+            const restrictedUsers = _restrictedUsers[c.id] || [];
+            const restrictedTo = !restrictedUsers.length ? "Everyone"
+              : restrictedUsers.length <= 2 ? restrictedUsers.map(u => u.email).join(", ")
+              : `${restrictedUsers.length} users`;
             const uses = c.max_uses !== null && c.max_uses !== undefined ? `${c.uses_count}/${c.max_uses}` : `${c.uses_count} / ∞`;
             const expiry = c.valid_until ? new Date(c.valid_until).toLocaleDateString("en-PH") : "No expiry";
             const discount = c.discount_type === "percent" ? `${c.discount_value}% off` : `₱${c.discount_value} off`;
@@ -2515,9 +2529,9 @@ function openDiscountCodeModal(mode, id) {
             <p class="text-[10px] text-muted mt-1">Links this code to a Stripe coupon for Stripe-hosted checkout.</p>
           </div>
           <div class="col-span-2">
-            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Restrict to a specific user (optional)</label>
-            <input id="dcRestrictedEmail" type="email" value="${existing?.restricted_user_id ? (_restrictedEmails[existing.restricted_user_id] || "") : ""}" placeholder="e.g. operator@example.com" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none"/>
-            <p class="text-[10px] text-muted mt-1">Leave blank for anyone to use. Regardless of this setting, once a given user redeems this code they can't use it again.</p>
+            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Restrict to specific users (optional)</label>
+            <textarea id="dcRestrictedEmails" rows="2" placeholder="e.g. operator@example.com, another@example.com" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none resize-none">${(existing ? (_restrictedUsers[existing.id] || []).map(u => u.email) : []).join(", ")}</textarea>
+            <p class="text-[10px] text-muted mt-1">Comma or newline separated. Leave blank for anyone to use. Regardless of this setting, once a given user redeems this code they can't use it again.</p>
           </div>
           <div class="col-span-2">
             <label class="block text-xs font-black text-title mb-2 uppercase tracking-wide">Applies to (blank = all plans)</label>
@@ -2543,29 +2557,40 @@ async function saveDiscountCode(mode, id) {
   const maxUses = document.getElementById("dcMaxUses")?.value?.trim();
   const expiry = document.getElementById("dcExpiry")?.value?.trim();
   const stripeCouponId = document.getElementById("dcStripeCoupon")?.value?.trim();
-  const restrictedEmail = document.getElementById("dcRestrictedEmail")?.value?.trim();
+  const restrictedEmails = (document.getElementById("dcRestrictedEmails")?.value || "").split(/[,\n]/).map(e => e.trim()).filter(Boolean);
   const appliesTo = Array.from(document.querySelectorAll("input[name='dcPlan']:checked")).map(el => el.value);
   const errEl = document.getElementById("dcError");
   if (!code) { errEl.textContent = "Code is required."; errEl.classList.remove("hidden"); return; }
   if (isNaN(discountValue) || discountValue < 0) { errEl.textContent = "Enter a valid discount value."; errEl.classList.remove("hidden"); return; }
   if (discountType === "percent" && discountValue > 100) { errEl.textContent = "Percent discount cannot exceed 100."; errEl.classList.remove("hidden"); return; }
-  let restrictedUserId = null;
-  if (restrictedEmail) {
-    const { data: restrictedProfile, error: lookupErr } = await supabaseClient.from("profiles").select("id").eq("email", restrictedEmail).maybeSingle();
-    if (lookupErr || !restrictedProfile) { errEl.textContent = `No user found with email "${restrictedEmail}".`; errEl.classList.remove("hidden"); return; }
-    restrictedUserId = restrictedProfile.id;
+  let restrictedUserIds = [];
+  if (restrictedEmails.length) {
+    const { data: restrictedProfiles, error: lookupErr } = await supabaseClient.from("profiles").select("id, email").in("email", restrictedEmails);
+    if (lookupErr) { errEl.textContent = lookupErr.message; errEl.classList.remove("hidden"); return; }
+    const foundEmails = (restrictedProfiles || []).map(p => p.email);
+    const missing = restrictedEmails.filter(e => !foundEmails.includes(e));
+    if (missing.length) { errEl.textContent = `No user found with email: ${missing.join(", ")}`; errEl.classList.remove("hidden"); return; }
+    restrictedUserIds = restrictedProfiles.map(p => p.id);
   }
   errEl.classList.add("hidden");
-  const payload = { code, discount_type: discountType, discount_value: discountValue, applies_to: appliesTo, max_uses: maxUses ? parseInt(maxUses, 10) : null, valid_until: expiry ? new Date(expiry + "T23:59:59").toISOString() : null, stripe_coupon_id: stripeCouponId || null, restricted_user_id: restrictedUserId };
+  const payload = { code, discount_type: discountType, discount_value: discountValue, applies_to: appliesTo, max_uses: maxUses ? parseInt(maxUses, 10) : null, valid_until: expiry ? new Date(expiry + "T23:59:59").toISOString() : null, stripe_coupon_id: stripeCouponId || null };
   try {
+    let codeId = id;
     if (mode === "edit" && id) {
       const { error } = await supabaseClient.from("discount_codes").update(payload).eq("id", id);
       if (error) throw error;
       spawnToast("Saved", "Discount code updated.", "fa-solid fa-circle-check", "success");
     } else {
-      const { error } = await supabaseClient.from("discount_codes").insert({ ...payload, is_active: true });
+      const { data: created, error } = await supabaseClient.from("discount_codes").insert({ ...payload, is_active: true }).select("id").single();
       if (error) throw error;
+      codeId = created.id;
       spawnToast("Created", `Code "${code}" created.`, "fa-solid fa-circle-check", "success");
+    }
+    // Replace the restricted-user set wholesale rather than diffing --
+    // code lists here are short and this keeps the logic simple.
+    await supabaseClient.from("discount_code_restricted_users").delete().eq("discount_code_id", codeId);
+    if (restrictedUserIds.length) {
+      await supabaseClient.from("discount_code_restricted_users").insert(restrictedUserIds.map(uid => ({ discount_code_id: codeId, user_id: uid })));
     }
     document.getElementById("discountCodeModal")?.remove();
     loadDiscountCodes();
@@ -2609,33 +2634,57 @@ async function lookupUserForGrant() {
     const { data: profile, error: profileErr } = await supabaseClient.from("profiles").select("id, email, full_name").eq("email", email).maybeSingle();
     if (profileErr) throw profileErr;
     if (!profile) { resultEl.innerHTML = `<p class="text-xs text-red-500 font-bold py-4">No user found with that email.</p>`; return; }
-    const { data: license } = await supabaseClient.from("licenses").select("plan, state, current_period_end").eq("user_id", profile.id).maybeSingle();
+    const { data: license } = await supabaseClient.from("licenses").select("plan, state, current_period_end, gallery_tier, gallery_addon").eq("user_id", profile.id).maybeSingle();
 
     const current = license
       ? `Currently: <strong class="text-title">${formatStatus(license.plan)}</strong> (${formatStatus(license.state)})${license.current_period_end ? `, through ${new Date(license.current_period_end).toLocaleDateString("en-PH")}` : ""}`
       : `No subscription on file for this user yet.`;
+    const currentGallery = `Gallery: <strong class="text-title">${formatStatus(license?.gallery_tier || "free")}</strong>`;
 
     resultEl.innerHTML = `
-      <div class="border-t border-line pt-4 mt-2 space-y-4">
+      <div class="border-t border-line pt-4 mt-2 space-y-6">
         <p class="text-sm text-body"><strong class="text-title">${profile.full_name || profile.email}</strong> — ${profile.email}</p>
-        <p class="text-xs text-muted">${current}</p>
-        <div class="grid grid-cols-2 gap-4">
+
+        <div class="space-y-4">
           <div>
-            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Plan</label>
-            <select id="grantPlan" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none">
-              <option value="free" ${!license || license.plan === "free" ? "selected" : ""}>Free</option>
-              <option value="trial" ${license?.plan === "trial" ? "selected" : ""}>Trial</option>
-              <option value="pro_monthly" ${license?.plan === "pro_monthly" ? "selected" : ""}>Pro Monthly</option>
-              <option value="pro_yearly" ${license?.plan === "pro_yearly" ? "selected" : ""}>Pro Yearly</option>
+            <h4 class="text-xs font-black text-title uppercase tracking-wide">Pro Plan</h4>
+            <p class="text-xs text-muted mt-0.5">${current}</p>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Plan</label>
+              <select id="grantPlan" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none">
+                <option value="free" ${!license || license.plan === "free" ? "selected" : ""}>Free</option>
+                <option value="trial" ${license?.plan === "trial" ? "selected" : ""}>Trial</option>
+                <option value="pro_monthly" ${license?.plan === "pro_monthly" ? "selected" : ""}>Pro Monthly</option>
+                <option value="pro_yearly" ${license?.plan === "pro_yearly" ? "selected" : ""}>Pro Yearly</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Period End (blank = no expiry)</label>
+              <input id="grantPeriodEnd" type="date" value="${license?.current_period_end ? license.current_period_end.slice(0, 10) : ""}" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none" />
+            </div>
+          </div>
+          <p class="text-xs text-red-500 font-bold hidden" id="grantError"></p>
+          <button type="button" onclick="grantManualSubscription('${profile.id}')" class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-black rounded-full py-2.5 text-sm">Grant / Update Subscription</button>
+        </div>
+
+        <div class="space-y-4 border-t border-line pt-6">
+          <div>
+            <h4 class="text-xs font-black text-title uppercase tracking-wide">Gallery Add-on</h4>
+            <p class="text-xs text-muted mt-0.5">${currentGallery}</p>
+          </div>
+          <div>
+            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Gallery Tier</label>
+            <select id="grantGalleryTier" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none">
+              <option value="free" ${!license || license.gallery_tier === "free" ? "selected" : ""}>Free</option>
+              <option value="plus" ${license?.gallery_tier === "plus" ? "selected" : ""}>Plus</option>
+              <option value="business" ${license?.gallery_tier === "business" ? "selected" : ""}>Business</option>
             </select>
           </div>
-          <div>
-            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Period End (blank = no expiry)</label>
-            <input id="grantPeriodEnd" type="date" value="${license?.current_period_end ? license.current_period_end.slice(0, 10) : ""}" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none" />
-          </div>
+          <p class="text-xs text-red-500 font-bold hidden" id="grantGalleryError"></p>
+          <button type="button" onclick="grantGalleryAccess('${profile.id}')" class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-black rounded-full py-2.5 text-sm">Grant / Update Gallery Access</button>
         </div>
-        <p class="text-xs text-red-500 font-bold hidden" id="grantError"></p>
-        <button type="button" onclick="grantManualSubscription('${profile.id}')" class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-black rounded-full py-2.5 text-sm">Grant / Update Subscription</button>
       </div>`;
   } catch (err) {
     resultEl.innerHTML = `<p class="text-xs text-red-500 font-bold py-4">Lookup error: ${err.message}</p>`;
@@ -2654,6 +2703,24 @@ async function grantManualSubscription(userId) {
     );
     if (error) throw error;
     spawnToast("Subscription Updated", "The user's plan has been granted.", "fa-solid fa-circle-check", "success");
+    lookupUserForGrant();
+  } catch (err) {
+    if (errEl) { errEl.textContent = err.message; errEl.classList.remove("hidden"); }
+    else spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning");
+  }
+}
+
+async function grantGalleryAccess(userId) {
+  if (!supabaseClient) return;
+  const galleryTier = document.getElementById("grantGalleryTier")?.value;
+  const errEl = document.getElementById("grantGalleryError");
+  try {
+    const { error } = await supabaseClient.from("licenses").upsert(
+      { user_id: userId, gallery_tier: galleryTier, gallery_addon: galleryTier !== "free" },
+      { onConflict: "user_id" }
+    );
+    if (error) throw error;
+    spawnToast("Gallery Access Updated", "The user's gallery tier has been granted.", "fa-solid fa-circle-check", "success");
     lookupUserForGrant();
   } catch (err) {
     if (errEl) { errEl.textContent = err.message; errEl.classList.remove("hidden"); }
