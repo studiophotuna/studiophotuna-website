@@ -77,7 +77,15 @@ serve(async (req) => {
       if (discount.valid_from && new Date(discount.valid_from) > now) return json({ error: "This code isn't active yet." }, 400);
       if (discount.valid_until && new Date(discount.valid_until) < now) return json({ error: "This code has expired." }, 400);
       if (discount.max_uses !== null && discount.uses_count >= discount.max_uses) return json({ error: "This code has reached its usage limit." }, 400);
-      if (discount.restricted_user_id && discount.restricted_user_id !== user.id) return json({ error: "This code isn't available for your account." }, 403);
+
+      const { data: restrictions } = await supabaseAdmin
+        .from("discount_code_restricted_users")
+        .select("user_id")
+        .eq("discount_code_id", discount.id);
+      if (restrictions && restrictions.length && !restrictions.some((r) => r.user_id === user.id)) {
+        return json({ error: "This code isn't available for your account." }, 403);
+      }
+
       if (Array.isArray(discount.applies_to) && discount.applies_to.length && !discount.applies_to.includes(billing)) {
         return json({ error: "This code doesn't apply to the selected plan." }, 400);
       }
