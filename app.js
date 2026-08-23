@@ -518,17 +518,28 @@ async function handleSubscribePlan(triggerId) {
   const originalLabels = ctas.map((el) => el.textContent);
   ctas.forEach((el) => { el.disabled = true; el.textContent = "Redirecting to checkout..."; });
   spawnToast("Processing", "Connecting to checkout...", "fa-solid fa-arrows-spin", "info");
+  const discountCode = document.getElementById("discountCodeField")?.value?.trim() || null;
   try {
     // Stripe keeps its own true recurring subscription; PayMongo/Xendit/
     // PayPal charge once for the selected billing period (no
     // auto-renewal yet) via a separate function.
     const functionName = gateway === "stripe" ? "create-checkout-session" : "create-subscription-checkout-session";
-    const { data, error } = await supabaseClient.functions.invoke(functionName, { body: { billing: requestedBilling } });
-    if (error) throw error; if (!data?.url) throw new Error(data?.error || "No checkout URL returned.");
+    const { data, error } = await supabaseClient.functions.invoke(functionName, { body: { billing: requestedBilling, discount_code: discountCode } });
+    if (error) throw error;
+    if (!data?.url) {
+      // A discount-code validation failure (bad/expired/already-used code)
+      // surfaces here as a clean error message instead of a checkout URL --
+      // stop and show it rather than silently proceeding at full price.
+      throw new Error(data?.error || "No checkout URL returned.");
+    }
     window.location.href = data.url;
   } catch (err) {
     console.error("Checkout session error:", err);
     ctas.forEach((el, i) => { el.disabled = false; el.textContent = originalLabels[i]; });
+    if (discountCode && /discount|code/i.test(err.message || "")) {
+      spawnToast("Discount Code", err.message, "fa-solid fa-tag", "warning");
+      return;
+    }
     if (gateway !== "stripe") {
       // Non-Stripe online checkout failed (e.g. missing provider
       // credentials) -- fall back to the always-working Manual GCash
@@ -2224,8 +2235,8 @@ document.onclick = () => { closeDropdown(); document.querySelector(".dropdown-me
 const proofList = document.getElementById("proofList");
 const proofFilterButtons = document.querySelectorAll("[data-proof-filter]");
 
-const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", privacy: "Privacy Requests", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics", settings: "Settings", discounts: "Discount Codes" };
-const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], privacy: ["privacy"], reviews: ["reviews"], analytics: ["analytics"], settings: ["settings", "discounts"] };
+const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", privacy: "Privacy Requests", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics", settings: "Settings", discounts: "Discount Codes", "manual-sub": "Manual Subscription" };
+const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], privacy: ["privacy"], reviews: ["reviews"], analytics: ["analytics"], settings: ["settings", "discounts", "manual-sub"] };
 let activeAdminGroup = "bookings";
 const adminGroupButtons = document.querySelectorAll(".admin-group-tabs [data-admin-group]");
 const adminSubtabsRow = document.getElementById("adminSubtabsRow");
@@ -2241,6 +2252,7 @@ async function loadActiveAdminTab() {
   else if (activeAdminTab === "analytics") task = loadAnalytics();
   else if (activeAdminTab === "settings") task = loadPaymentGatewaySettings();
   else if (activeAdminTab === "discounts") task = loadDiscountCodes();
+  else if (activeAdminTab === "manual-sub") task = loadManualSubPanel();
   else task = loadReviewsAdmin();
   await task;
   const stamp = document.getElementById("adminLastUpdated");
@@ -2273,6 +2285,7 @@ function activateAdminTab(tab) {
   const analyticsPanel = document.getElementById("analyticsPanel"); if (analyticsPanel) analyticsPanel.classList.toggle("hidden", activeAdminTab !== "analytics");
   const settingsPanel = document.getElementById("settingsPanel"); if (settingsPanel) settingsPanel.classList.toggle("hidden", activeAdminTab !== "settings");
   const discountsPanel = document.getElementById("discountsPanel"); if (discountsPanel) discountsPanel.classList.toggle("hidden", activeAdminTab !== "discounts");
+  const manualSubPanel = document.getElementById("manualSubPanel"); if (manualSubPanel) manualSubPanel.classList.toggle("hidden", activeAdminTab !== "manual-sub");
   const bookingSubToolbar = document.getElementById("bookingSubToolbar");
   const proofsSubToolbar = document.getElementById("proofsSubToolbar");
   const inboxSubToolbar = document.getElementById("inboxSubToolbar");
@@ -2345,6 +2358,7 @@ if (saveGatewaySettingsBtn) saveGatewaySettingsBtn.onclick = savePaymentGatewayS
    Discount Codes Admin
 ======================================================== */
 let _discountCodes = [];
+let _restrictedEmails = {}; // restricted_user_id -> email, for display + modal pre-fill
 
 async function loadDiscountCodes() {
   if (!supabaseClient || !window.currentSupabaseUser) return;
@@ -2354,6 +2368,12 @@ async function loadDiscountCodes() {
     const { data, error } = await supabaseClient.from("discount_codes").select("*").order("created_at", { ascending: false });
     if (error) throw error;
     _discountCodes = data || [];
+    const restrictedIds = [...new Set(_discountCodes.map(c => c.restricted_user_id).filter(Boolean))];
+    _restrictedEmails = {};
+    if (restrictedIds.length) {
+      const { data: profiles } = await supabaseClient.from("profiles").select("id, email").in("id", restrictedIds);
+      (profiles || []).forEach(p => { _restrictedEmails[p.id] = p.email; });
+    }
     renderDiscountCodes();
   } catch (err) {
     panel.innerHTML = `<p class="text-center text-xs text-red-500 py-10 font-bold">Load error: ${err.message}</p>`;
@@ -2385,6 +2405,7 @@ function renderDiscountCodes() {
               <th class="text-left px-5 py-3">Code</th>
               <th class="text-left px-5 py-3">Discount</th>
               <th class="text-left px-5 py-3">Plans</th>
+              <th class="text-left px-5 py-3">Restricted To</th>
               <th class="text-left px-5 py-3">Uses</th>
               <th class="text-left px-5 py-3">Expiry</th>
               <th class="text-left px-5 py-3">Status</th>
@@ -2393,6 +2414,7 @@ function renderDiscountCodes() {
           </thead>
           <tbody>${_discountCodes.map(c => {
             const appliesTo = Array.isArray(c.applies_to) && c.applies_to.length ? c.applies_to.join(", ") : "All plans";
+            const restrictedTo = c.restricted_user_id ? (_restrictedEmails[c.restricted_user_id] || "Unknown user") : "Everyone";
             const uses = c.max_uses !== null && c.max_uses !== undefined ? `${c.uses_count}/${c.max_uses}` : `${c.uses_count} / ∞`;
             const expiry = c.valid_until ? new Date(c.valid_until).toLocaleDateString("en-PH") : "No expiry";
             const discount = c.discount_type === "percent" ? `${c.discount_value}% off` : `₱${c.discount_value} off`;
@@ -2401,6 +2423,7 @@ function renderDiscountCodes() {
               <td class="px-5 py-3.5"><span class="font-mono font-black text-title text-xs">${c.code}</span></td>
               <td class="px-5 py-3.5 font-semibold text-purple text-sm">${discount}</td>
               <td class="px-5 py-3.5 text-body text-xs">${appliesTo}</td>
+              <td class="px-5 py-3.5 text-body text-xs">${restrictedTo}</td>
               <td class="px-5 py-3.5 font-mono text-xs">${uses}</td>
               <td class="px-5 py-3.5 text-xs text-muted">${expiry}</td>
               <td class="px-5 py-3.5"><span class="rounded-full px-2.5 py-1 text-[10px] font-black ${statusCls}">${c.is_active ? "Active" : "Inactive"}</span></td>
@@ -2492,6 +2515,11 @@ function openDiscountCodeModal(mode, id) {
             <p class="text-[10px] text-muted mt-1">Links this code to a Stripe coupon for Stripe-hosted checkout.</p>
           </div>
           <div class="col-span-2">
+            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Restrict to a specific user (optional)</label>
+            <input id="dcRestrictedEmail" type="email" value="${existing?.restricted_user_id ? (_restrictedEmails[existing.restricted_user_id] || "") : ""}" placeholder="e.g. operator@example.com" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none"/>
+            <p class="text-[10px] text-muted mt-1">Leave blank for anyone to use. Regardless of this setting, once a given user redeems this code they can't use it again.</p>
+          </div>
+          <div class="col-span-2">
             <label class="block text-xs font-black text-title mb-2 uppercase tracking-wide">Applies to (blank = all plans)</label>
             <div class="grid grid-cols-4 gap-3">${planOptions}</div>
           </div>
@@ -2515,13 +2543,20 @@ async function saveDiscountCode(mode, id) {
   const maxUses = document.getElementById("dcMaxUses")?.value?.trim();
   const expiry = document.getElementById("dcExpiry")?.value?.trim();
   const stripeCouponId = document.getElementById("dcStripeCoupon")?.value?.trim();
+  const restrictedEmail = document.getElementById("dcRestrictedEmail")?.value?.trim();
   const appliesTo = Array.from(document.querySelectorAll("input[name='dcPlan']:checked")).map(el => el.value);
   const errEl = document.getElementById("dcError");
   if (!code) { errEl.textContent = "Code is required."; errEl.classList.remove("hidden"); return; }
   if (isNaN(discountValue) || discountValue < 0) { errEl.textContent = "Enter a valid discount value."; errEl.classList.remove("hidden"); return; }
   if (discountType === "percent" && discountValue > 100) { errEl.textContent = "Percent discount cannot exceed 100."; errEl.classList.remove("hidden"); return; }
+  let restrictedUserId = null;
+  if (restrictedEmail) {
+    const { data: restrictedProfile, error: lookupErr } = await supabaseClient.from("profiles").select("id").eq("email", restrictedEmail).maybeSingle();
+    if (lookupErr || !restrictedProfile) { errEl.textContent = `No user found with email "${restrictedEmail}".`; errEl.classList.remove("hidden"); return; }
+    restrictedUserId = restrictedProfile.id;
+  }
   errEl.classList.add("hidden");
-  const payload = { code, discount_type: discountType, discount_value: discountValue, applies_to: appliesTo, max_uses: maxUses ? parseInt(maxUses, 10) : null, valid_until: expiry ? new Date(expiry + "T23:59:59").toISOString() : null, stripe_coupon_id: stripeCouponId || null };
+  const payload = { code, discount_type: discountType, discount_value: discountValue, applies_to: appliesTo, max_uses: maxUses ? parseInt(maxUses, 10) : null, valid_until: expiry ? new Date(expiry + "T23:59:59").toISOString() : null, stripe_coupon_id: stripeCouponId || null, restricted_user_id: restrictedUserId };
   try {
     if (mode === "edit" && id) {
       const { error } = await supabaseClient.from("discount_codes").update(payload).eq("id", id);
@@ -2535,6 +2570,95 @@ async function saveDiscountCode(mode, id) {
     document.getElementById("discountCodeModal")?.remove();
     loadDiscountCodes();
   } catch (err) { errEl.textContent = err.message; errEl.classList.remove("hidden"); }
+}
+
+// ===================================================================
+// Admin: Manual Subscription Grant
+// ===================================================================
+// Lets an admin set a user's plan/expiry directly, without them going
+// through a payment gateway -- e.g. comping an account or fixing up a
+// subscription after a support issue. Mirrors what reviewProof() already
+// does for GCash proof approvals, generalized to any user found by email.
+// The licenses table's own lock_expires_at_to_period_end trigger derives
+// expires_at/watermark/max_events/templates/priority_support from just
+// plan + current_period_end, so this only needs to submit those two
+// (plus state) -- no need to duplicate that tier-limit logic here.
+
+async function loadManualSubPanel() {
+  const panel = document.getElementById("manualSubPanel"); if (!panel) return;
+  panel.innerHTML = `
+    <div class="bg-white border border-line rounded-3xl shadow-sm p-6 space-y-4">
+      <div>
+        <h3 class="font-extrabold text-title">Manual Subscription Grant</h3>
+        <p class="text-xs text-muted mt-1">Look up a user by email to view or set their plan directly.</p>
+      </div>
+      <div class="flex gap-3">
+        <input id="manualSubEmail" type="email" placeholder="user@example.com" class="flex-1 border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none" />
+        <button type="button" onclick="lookupUserForGrant()" class="btn-animation bg-purple hover:bg-purple-dark text-white font-extrabold px-5 py-2.5 rounded-full text-xs uppercase">Look Up</button>
+      </div>
+      <div id="manualSubResult"></div>
+    </div>`;
+}
+
+async function lookupUserForGrant() {
+  const email = document.getElementById("manualSubEmail")?.value?.trim();
+  const resultEl = document.getElementById("manualSubResult");
+  if (!email || !resultEl) return;
+  resultEl.innerHTML = `<p class="text-xs text-muted font-bold py-4">Looking up...</p>`;
+  try {
+    const { data: profile, error: profileErr } = await supabaseClient.from("profiles").select("id, email, full_name").eq("email", email).maybeSingle();
+    if (profileErr) throw profileErr;
+    if (!profile) { resultEl.innerHTML = `<p class="text-xs text-red-500 font-bold py-4">No user found with that email.</p>`; return; }
+    const { data: license } = await supabaseClient.from("licenses").select("plan, state, current_period_end").eq("user_id", profile.id).maybeSingle();
+
+    const current = license
+      ? `Currently: <strong class="text-title">${formatStatus(license.plan)}</strong> (${formatStatus(license.state)})${license.current_period_end ? `, through ${new Date(license.current_period_end).toLocaleDateString("en-PH")}` : ""}`
+      : `No subscription on file for this user yet.`;
+
+    resultEl.innerHTML = `
+      <div class="border-t border-line pt-4 mt-2 space-y-4">
+        <p class="text-sm text-body"><strong class="text-title">${profile.full_name || profile.email}</strong> — ${profile.email}</p>
+        <p class="text-xs text-muted">${current}</p>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Plan</label>
+            <select id="grantPlan" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none">
+              <option value="free" ${!license || license.plan === "free" ? "selected" : ""}>Free</option>
+              <option value="trial" ${license?.plan === "trial" ? "selected" : ""}>Trial</option>
+              <option value="pro_monthly" ${license?.plan === "pro_monthly" ? "selected" : ""}>Pro Monthly</option>
+              <option value="pro_yearly" ${license?.plan === "pro_yearly" ? "selected" : ""}>Pro Yearly</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-black text-title mb-1.5 uppercase tracking-wide">Period End (blank = no expiry)</label>
+            <input id="grantPeriodEnd" type="date" value="${license?.current_period_end ? license.current_period_end.slice(0, 10) : ""}" class="w-full border border-line rounded-xl px-4 py-2.5 text-sm focus:border-purple outline-none" />
+          </div>
+        </div>
+        <p class="text-xs text-red-500 font-bold hidden" id="grantError"></p>
+        <button type="button" onclick="grantManualSubscription('${profile.id}')" class="btn-animation w-full bg-purple hover:bg-purple-dark text-white font-black rounded-full py-2.5 text-sm">Grant / Update Subscription</button>
+      </div>`;
+  } catch (err) {
+    resultEl.innerHTML = `<p class="text-xs text-red-500 font-bold py-4">Lookup error: ${err.message}</p>`;
+  }
+}
+
+async function grantManualSubscription(userId) {
+  if (!supabaseClient) return;
+  const plan = document.getElementById("grantPlan")?.value;
+  const periodEnd = document.getElementById("grantPeriodEnd")?.value?.trim();
+  const errEl = document.getElementById("grantError");
+  try {
+    const { error } = await supabaseClient.from("licenses").upsert(
+      { user_id: userId, plan, current_period_end: periodEnd ? new Date(periodEnd + "T23:59:59").toISOString() : null, state: "active" },
+      { onConflict: "user_id" }
+    );
+    if (error) throw error;
+    spawnToast("Subscription Updated", "The user's plan has been granted.", "fa-solid fa-circle-check", "success");
+    lookupUserForGrant();
+  } catch (err) {
+    if (errEl) { errEl.textContent = err.message; errEl.classList.remove("hidden"); }
+    else spawnToast("Failed", err.message, "fa-solid fa-circle-exclamation", "warning");
+  }
 }
 
 filterButtons.forEach(btn => {

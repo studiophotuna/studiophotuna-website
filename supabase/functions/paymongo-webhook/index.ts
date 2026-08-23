@@ -35,6 +35,28 @@ function periodEndFor(billing: string): string {
   return end.toISOString();
 }
 
+// Only called once payment has actually cleared -- a code validated at
+// checkout-session creation isn't consumed until here, so an abandoned
+// checkout never burns a single-use code.
+async function finalizeDiscountRedemption(discountCodeId: string | null, userId: string) {
+  if (!discountCodeId) return;
+  const { error: redeemErr } = await supabaseAdmin
+    .from("discount_code_redemptions")
+    .insert({ discount_code_id: discountCodeId, user_id: userId });
+  if (redeemErr) return; // already redeemed (race with another session) -- nothing more to do
+  const { data: discount } = await supabaseAdmin
+    .from("discount_codes")
+    .select("uses_count")
+    .eq("id", discountCodeId)
+    .maybeSingle();
+  if (discount) {
+    await supabaseAdmin
+      .from("discount_codes")
+      .update({ uses_count: discount.uses_count + 1 })
+      .eq("id", discountCodeId);
+  }
+}
+
 async function verifySignature(rawBody: string, header: string | null): Promise<boolean> {
   if (!header) return false;
   const secret = Deno.env.get("PAYMONGO_WEBHOOK_SECRET")!;
@@ -84,7 +106,7 @@ serve(async (req) => {
       } else if (userId) {
         const { data: license } = await supabaseAdmin
           .from("licenses")
-          .select("pending_billing")
+          .select("pending_billing, pending_discount_code_id")
           .eq("user_id", userId)
           .eq("payment_session_id", checkoutSession.id)
           .maybeSingle();
@@ -97,8 +119,10 @@ serve(async (req) => {
               plan: billing === "yearly" ? "pro_yearly" : "pro_monthly",
               current_period_end: periodEndFor(billing),
               cancel_at_period_end: true,
+              pending_discount_code_id: null,
             })
             .eq("user_id", userId);
+          await finalizeDiscountRedemption(license.pending_discount_code_id, userId);
         }
       }
     }

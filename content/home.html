@@ -483,7 +483,11 @@
                     <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-brand"></i> Priority support — real answers, not a ticket queue</li>
                   </ul>
                 </div>
-                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-8 w-full bg-white hover:bg-grey text-title py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
+                <button type="button" onclick="document.getElementById('discountCodeWrap').classList.toggle('hidden')" class="text-xs font-bold text-white/70 hover:text-white underline underline-offset-2 mt-6 text-left">Have a discount code?</button>
+                <div class="hidden mt-2" id="discountCodeWrap">
+                  <input type="text" id="discountCodeField" placeholder="Discount code" autocapitalize="characters" class="w-full border border-white/20 bg-white/10 text-white placeholder-white/50 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-white/40" />
+                </div>
+                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-4 w-full bg-white hover:bg-grey text-title py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
                   Upgrade to Pro
                 </button>
               </div>
