@@ -507,6 +507,21 @@ async function getActiveAppGateway() {
   } catch { return "manual_gcash"; }
 }
 
+// supabase-js's functions.invoke() only ever sets error.message to a
+// generic "Edge Function returned a non-2xx status code" on failure --
+// the actual `{ error: "..." }` reason our own functions return in the
+// response body has to be read separately from error.context (the raw
+// Response object).
+async function resolveFunctionError(error) {
+  if (error?.context && typeof error.context.json === "function") {
+    try {
+      const body = await error.context.json();
+      if (body?.error) return new Error(body.error);
+    } catch (_) { /* body wasn't JSON, or was already consumed -- fall through */ }
+  }
+  return error;
+}
+
 function clearAppliedDiscount() {
   _appliedDiscount = null;
   const msg = document.getElementById("discountCodeMessage");
@@ -538,7 +553,7 @@ async function applyDiscountCode() {
   msg.textContent = "Checking code...";
   try {
     const { data, error } = await supabaseClient.functions.invoke("validate-discount-code", { body: { code, plan: selectedBilling } });
-    if (error) throw error;
+    if (error) throw await resolveFunctionError(error);
     if (!data?.valid) throw new Error(data?.error || "This code isn't valid.");
     _appliedDiscount = { code: data.code, discount_type: data.discount_type, discount_value: data.discount_value };
     const baseAmount = PHP_AMOUNTS[selectedBilling];
@@ -576,7 +591,7 @@ async function handleSubscribePlan(triggerId) {
     // auto-renewal yet) via a separate function.
     const functionName = gateway === "stripe" ? "create-checkout-session" : "create-subscription-checkout-session";
     const { data, error } = await supabaseClient.functions.invoke(functionName, { body: { billing: requestedBilling, discount_code: discountCode } });
-    if (error) throw error;
+    if (error) throw await resolveFunctionError(error);
     if (!data?.url) {
       // A discount-code validation failure (bad/expired/already-used code)
       // surfaces here as a clean error message instead of a checkout URL --
@@ -2919,7 +2934,7 @@ async function confirmDeleteAccount() {
   message.className = "text-center text-xs font-bold mt-3 text-body"; message.textContent = "Deleting your account -- this may take a few seconds.";
   try {
     const { data, error } = await supabaseClient.functions.invoke("delete-account", { body: {} });
-    if (error) throw error;
+    if (error) throw await resolveFunctionError(error);
     if (data?.error) throw new Error(data.error);
     closeDeleteAccountModal();
     spawnToast("Account Deleted", "Your account and personal data have been permanently removed.", "fa-solid fa-circle-check", "success");
