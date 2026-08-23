@@ -460,9 +460,12 @@ function updateAuthUi(user) {
 
 function isAdminProfile(profile) { return ["admin", "superadmin"].includes(String(profile?.role || "").toLowerCase()); }
 
+let _appliedDiscount = null; // {code, discount_type, discount_value} once validated via applyDiscountCode()
+
 function setBillingPlan(plan) {
   selectedBilling = billingPlans[plan] ? plan : "yearly";
   const selected = billingPlans[selectedBilling];
+  clearAppliedDiscount(); // discount validity/eligibility can differ per billing cycle -- require re-checking
   billingToggleButtons.forEach((button) => {
     const isActive = button.dataset.billing === selectedBilling;
     button.classList.toggle("active", isActive); button.classList.toggle("bg-white", isActive); button.classList.toggle("text-title", isActive);
@@ -502,6 +505,54 @@ async function getActiveAppGateway() {
     if (error || !data) return "manual_gcash";
     return data.provider;
   } catch { return "manual_gcash"; }
+}
+
+function clearAppliedDiscount() {
+  _appliedDiscount = null;
+  const msg = document.getElementById("discountCodeMessage");
+  if (msg) { msg.textContent = ""; msg.classList.add("hidden"); msg.classList.remove("text-green-300", "text-red-300"); }
+}
+
+// Read-only pre-check via validate-discount-code -- lets a visitor see
+// whether their code actually works (and what it's worth) before they
+// commit to checkout. The code isn't consumed here; that only happens
+// once payment clears, inside create-subscription-checkout-session and
+// the payment-confirmation webhooks.
+async function applyDiscountCode() {
+  const input = document.getElementById("discountCodeField");
+  const btn = document.getElementById("discountApplyBtn");
+  const msg = document.getElementById("discountCodeMessage");
+  const code = input?.value?.trim();
+  if (!msg) return;
+  if (!code) { msg.textContent = "Enter a code first."; msg.classList.remove("hidden", "text-green-300"); msg.classList.add("text-red-300"); return; }
+  if (!window.currentSupabaseUser) {
+    spawnToast("Sign In Required", "Log in first so we can check this code against your account.", "fa-solid fa-user-lock", "warning");
+    openAuthModal("signup");
+    return;
+  }
+  if (!supabaseClient) { msg.textContent = "Service temporarily unavailable."; msg.classList.remove("hidden", "text-green-300"); msg.classList.add("text-red-300"); return; }
+  clearAppliedDiscount();
+  const originalLabel = btn?.textContent;
+  if (btn) { btn.disabled = true; btn.textContent = "Checking..."; }
+  msg.classList.remove("hidden", "text-green-300", "text-red-300");
+  msg.textContent = "Checking code...";
+  try {
+    const { data, error } = await supabaseClient.functions.invoke("validate-discount-code", { body: { code, plan: selectedBilling } });
+    if (error) throw error;
+    if (!data?.valid) throw new Error(data?.error || "This code isn't valid.");
+    _appliedDiscount = { code: data.code, discount_type: data.discount_type, discount_value: data.discount_value };
+    const baseAmount = PHP_AMOUNTS[selectedBilling];
+    const discounted = data.discount_type === "percent"
+      ? Math.max(0, Math.round(baseAmount * (1 - data.discount_value / 100)))
+      : Math.max(0, Math.round(baseAmount - data.discount_value));
+    msg.textContent = `"${data.code}" applied — new total ${formatPhp(discounted)} (was ${formatPhp(baseAmount)}).`;
+    msg.classList.add("text-green-300");
+  } catch (err) {
+    msg.textContent = err.message || "Could not validate this code.";
+    msg.classList.add("text-red-300");
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+  }
 }
 
 async function handleSubscribePlan(triggerId) {
