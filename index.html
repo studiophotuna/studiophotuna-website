@@ -213,30 +213,45 @@
       }
 
       /* Numbered step navigator for the scroll-driven How It Works flow */
+      /* Booth flow leaves on a blur like the other sections, but only over its
+         final screenful -- see the exit-late mode in app.js. The filter sits
+         on the sticky element itself rather than a wrapper: on an ancestor it
+         would create a containing block and break position: sticky, whereas
+         on the sticky element it is harmless. */
+      #boothFlowSticky {
+        filter: blur(calc(var(--exit, 0) * 14px));
+        opacity: calc(1 - var(--exit, 0) * 0.85);
+      }
+
+      /* Plain dots, no numerals. The button itself is a 1.5rem hit target;
+         the visible mark is the pseudo-element, which stretches into a short
+         bar on the active step. */
       .flow-step-dot {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 999px;
-        border: 1px solid #dedfe6;
-        background: #fff;
-        color: #5f6678;
-        font-size: 0.75rem;
-        font-weight: 800;
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0;
+        border: 0;
+        background: transparent;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease;
         cursor: pointer;
       }
-      .flow-step-dot:hover {
-        border-color: #0c66e4;
-        color: #0c66e4;
+      .flow-step-dot::before {
+        content: '';
+        display: block;
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 999px;
+        background: #dedfe6;
+        transition: background-color 0.2s ease, width 0.2s ease;
       }
-      .flow-step-dot.active {
+      .flow-step-dot:hover::before {
+        background: #8b92a6;
+      }
+      .flow-step-dot.active::before {
         background: #0c66e4;
-        color: #fff;
-        border-color: #0c66e4;
-        transform: scale(1.15);
+        width: 1.15rem;
       }
 
       /* Radius convention (codifying existing usage, not a new rule):
@@ -438,11 +453,10 @@
         opacity: calc(1 - var(--exit) * 0.85);
       }
 
-      /* Pulls a section up over the one before it. Square edges by design --
-         the rounded top is reserved for the footer alone. */
+      /* Pulls a section up over the one before it. Square edges and no
+         shadow by design -- the rounded top is reserved for the footer. */
       .fs-lift {
         margin-top: -2.75rem;
-        box-shadow: 0 -18px 50px rgba(17, 24, 39, 0.09);
       }
 
       /* Closing CTA: a sticky panel one screen tall inside a taller section,
@@ -472,24 +486,18 @@
         66%      { transform: translate(-34px, 24px) scale(0.92); }
       }
 
-      /* Photo strips drifting up and back, the product's own artefact. */
+      /* Real printed strips drifting up and back -- the product's own output.
+         The artwork already carries its white border and transparent
+         surround, so the element is just a positioned frame for it. */
       .ph-strip {
         position: absolute;
-        width: 3.6rem;
-        padding: 0.35rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-        background: #fff;
-        border-radius: 0.45rem;
-        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.13);
         animation: ph-strip-drift 15s ease-in-out infinite;
       }
-      .ph-strip span {
+      .ph-strip img {
         display: block;
-        height: 2rem;
-        border-radius: 0.22rem;
-        background: linear-gradient(160deg, #dbeafe, #bfdbfe);
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 18px 34px rgba(17, 24, 39, 0.16));
       }
       @keyframes ph-strip-drift {
         0%, 100% { transform: rotate(var(--r, 0deg)) translateY(0); }
@@ -731,23 +739,6 @@
         filter: brightness(1.15);
       }
 
-      /* Oversized ghosted wordmark behind the footer columns. Decorative
-         only -- aria-hidden in the markup so it never reaches a screen
-         reader as stray text. */
-      .footer-watermark {
-        position: absolute;
-        left: 0;
-        bottom: -0.3em;
-        font-size: clamp(5rem, 17vw, 13rem);
-        font-weight: 800;
-        letter-spacing: -0.045em;
-        line-height: 0.78;
-        color: rgba(255, 255, 255, 0.028);
-        pointer-events: none;
-        user-select: none;
-        white-space: nowrap;
-      }
-
       /* The header is a floating pill: the header element itself is a
          transparent full-width positioning shell, .header-shell is the visible
          rounded bar inside it. Solid white at rest; past the scroll
@@ -796,8 +787,11 @@
         .closing-panel {
           border-radius: 0 !important;
         }
-        .hero-content, .fs-body {
+        .hero-content, .fs-body, #boothFlowSticky {
           filter: none !important;
+        }
+        #boothFlowSticky {
+          opacity: 1 !important;
         }
         /* Hold the background art and the review marquee still. The marquee
            keeps its overflow clip, so the cards past the first screenful stay
@@ -821,9 +815,9 @@
 
     <header class="site-header fixed top-0 left-0 w-full z-40 transition-all duration-300">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-2.5">
-        <div class="header-shell h-16 px-4 sm:px-6 rounded-full bg-white border border-[#dedfe6]/70 shadow-[0_6px_24px_rgba(17,24,39,0.07)] flex items-center justify-between gap-4 transition-all duration-300">
+        <div class="header-shell h-16 px-4 sm:px-6 rounded-2xl bg-white border border-[#dedfe6]/70 shadow-[0_6px_24px_rgba(17,24,39,0.07)] flex items-center justify-between gap-4 transition-all duration-300">
         <a class="logo flex items-center gap-3" href="/" onclick="navigateTo('home'); return false;" aria-label="Studio Photuna">
-          <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+          <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-9 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
         </a>
         
         <nav class="hidden lg:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
@@ -862,7 +856,7 @@
 
     <!-- Insets match the header pill's px-3 / sm:px-6 container so the two
          line up as one floating stack. -->
-    <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-3xl p-4 flex flex-col gap-2 shadow-luxe z-30">
+    <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-2xl p-4 flex flex-col gap-2 shadow-luxe z-30">
       <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
       <a href="/download" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download</a>
@@ -886,10 +880,10 @@
             <span class="ph-ring" style="width:16rem;height:16rem;top:14%;left:12%;"></span>
             <span class="ph-ring" style="width:22rem;height:22rem;bottom:8%;right:10%;animation-delay:-3.5s;"></span>
 
-            <span class="ph-strip hidden sm:flex" style="top:16%;left:6%;--r:-11deg;"><span></span><span></span><span></span></span>
-            <span class="ph-strip hidden lg:flex" style="top:58%;left:13%;--r:7deg;animation-delay:-4s;"><span></span><span></span><span></span></span>
-            <span class="ph-strip hidden sm:flex" style="top:22%;right:8%;--r:9deg;animation-delay:-8s;"><span></span><span></span><span></span></span>
-            <span class="ph-strip hidden lg:flex" style="bottom:14%;right:15%;--r:-6deg;animation-delay:-11s;"><span></span><span></span><span></span></span>
+            <span class="ph-strip hidden sm:block" style="top:11%;left:4%;width:8rem;--r:-11deg;"><img src="strip-a.webp" width="360" height="640" alt="" /></span>
+            <span class="ph-strip hidden lg:block" style="bottom:9%;left:9%;width:9.5rem;--r:6deg;animation-delay:-4s;"><img src="strip-c.webp" width="420" height="632" alt="" /></span>
+            <span class="ph-strip hidden sm:block" style="top:14%;right:5%;width:8rem;--r:9deg;animation-delay:-8s;"><img src="strip-b.webp" width="360" height="640" alt="" /></span>
+            <span class="ph-strip hidden lg:block" style="bottom:12%;right:7%;width:13rem;--r:-5deg;animation-delay:-11s;"><img src="strip-d.webp" width="620" height="349" alt="" /></span>
           </div>
 
           <div class="hero-content relative max-w-5xl mx-auto text-center space-y-6">
@@ -926,51 +920,63 @@
               <p class="text-base text-body">One licence, one install, and everything needed to run a booth as a business — no add-ons to buy later.</p>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">14 Days</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Free Trial</p>
-              </div>
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">1 App</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Complete Workflow</p>
-              </div>
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">0</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Coding Required</p>
-              </div>
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">Win 10/11</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Compatible</p>
+            <!-- Bento: the licence claim carries the weight, with the trial and
+                 hardware answers beside it and the day-to-day specifics under. -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <article class="feature-card card-accent lg:col-span-2 rounded-2xl bg-navy-950 p-7 sm:p-8 flex flex-col justify-between gap-6" style="transition-delay: 0ms;">
+                <div class="space-y-3">
+                  <span class="badge bg-white/10 text-white/80">One licence</span>
+                  <h3 class="text-2xl sm:text-3xl font-bold text-white leading-tight">Every part of the job, in one install</h3>
+                  <p class="text-sm text-white/70 max-w-md">Event setup, template design, the guest flow, printing, QR delivery, and reporting — all in the same app. Nothing here is a paid module.</p>
+                </div>
+                <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-white/85">
+                  <li><i class="fa-solid fa-check text-brand-300 mr-1.5"></i>No per-event fees</li>
+                  <li><i class="fa-solid fa-check text-brand-300 mr-1.5"></i>No add-on modules</li>
+                  <li><i class="fa-solid fa-check text-brand-300 mr-1.5"></i>Updates included</li>
+                </ul>
+              </article>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                <article class="feature-card card-accent rounded-2xl bg-brand p-6 flex flex-col justify-center" style="transition-delay: 80ms;">
+                  <p class="text-4xl font-black text-white leading-none">14 days</p>
+                  <p class="text-sm font-bold text-white/85 mt-1">Free trial, no card required</p>
+                  <button onclick="startFreeTrial()" class="btn-animation mt-4 self-start inline-flex items-center gap-2 rounded-full bg-white text-title px-4 py-2 text-xs font-extrabold transition-colors hover:bg-grey">
+                    Start free trial <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                  </button>
+                </article>
+                <article class="feature-card rounded-2xl border border-line bg-grey p-6 flex flex-col justify-center" style="transition-delay: 160ms;">
+                  <p class="text-2xl font-black text-title leading-none">Windows 10 / 11</p>
+                  <p class="text-sm text-body mt-1.5">Runs on the PC you already have — no proprietary kiosk to buy.</p>
+                </article>
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 0ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-camera"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 0ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-camera"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Works with your DSLR</p>
-                  <p class="text-xs text-body mt-0.5">Connect the camera and dye-sub printer you already own.</p>
+                  <p class="text-sm font-bold text-title">Your own DSLR</p>
+                  <p class="text-xs text-body mt-0.5">Pair the camera and dye-sub printer you already own.</p>
                 </div>
               </div>
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 80ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-wifi"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 80ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-wifi"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Runs through the event</p>
-                  <p class="text-xs text-body mt-0.5">Sessions and printing keep going if the venue Wi-Fi drops.</p>
+                  <p class="text-sm font-bold text-title">Survives bad venue Wi-Fi</p>
+                  <p class="text-xs text-body mt-0.5">Sessions and printing keep running if the connection drops.</p>
                 </div>
               </div>
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 160ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-peso-sign"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 160ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-peso-sign"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Takes payments on site</p>
-                  <p class="text-xs text-body mt-0.5">Rental mode and a payment terminal built into the guest flow.</p>
+                  <p class="text-sm font-bold text-title">Takes payment at the booth</p>
+                  <p class="text-xs text-body mt-0.5">Rental mode and a payment terminal inside the guest flow.</p>
                 </div>
               </div>
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 240ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-chart-simple"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 240ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-chart-simple"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Reports as you go</p>
+                  <p class="text-sm font-bold text-title">Knows what each event made</p>
                   <p class="text-xs text-body mt-0.5">Live session counts, revenue, and print totals per event.</p>
                 </div>
               </div>
@@ -1014,7 +1020,7 @@
              opacity-only variant for the same reason. -->
         <!-- No exit treatment at all: this section is walked a step at a time,
              so dimming it on the way out fights the thing it is for. -->
-        <section id="how-it-works" class="fs-block fs-lift bg-white py-20 px-6">
+        <section id="how-it-works" data-exit-late class="fs-block fs-lift bg-white py-20 px-6">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">How It Works</h2>
@@ -1028,7 +1034,7 @@
 
                   <!-- Step 1 -->
                   <div class="flow-step-panel py-10" data-step-index="0">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">01</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Branded Welcome Trigger</h3>
@@ -1044,7 +1050,7 @@
 
                   <!-- Step 2 -->
                   <div class="flow-step-panel py-10" data-step-index="1">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">02</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Template Selection</h3>
@@ -1060,7 +1066,7 @@
 
                   <!-- Step 3 -->
                   <div class="flow-step-panel py-10" data-step-index="2">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">03</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Retake Review</h3>
@@ -1076,7 +1082,7 @@
 
                   <!-- Step 4 -->
                   <div class="flow-step-panel py-10" data-step-index="3">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">04</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Strip Assembly Preview</h3>
@@ -1092,7 +1098,7 @@
 
                   <!-- Step 5 -->
                   <div class="flow-step-panel py-10" data-step-index="4">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">05</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Tone & Frame Studio</h3>
@@ -1108,7 +1114,7 @@
 
                   <!-- Step 6 -->
                   <div class="flow-step-panel py-10" data-step-index="5">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">06</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Gallery Generation</h3>
@@ -1124,7 +1130,7 @@
 
                   <!-- Step 7 -->
                   <div class="flow-step-panel py-10" data-step-index="6">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">07</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Live Print + QR Hand-off</h3>
@@ -1140,7 +1146,7 @@
 
                   <!-- Step 8 -->
                   <div class="flow-step-panel py-10" data-step-index="7">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">08</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Auto-Reset for Next Guest</h3>
@@ -1156,6 +1162,23 @@
 
                 </div>
 
+
+                <!-- Step identifier. app.js already wires .flow-step-dot for the
+                     active state and click-to-jump, and unhides this wrapper
+                     when the scroll-driven flow activates -- so it stays hidden
+                     wherever the panels fall back to a plain stacked list. -->
+                <div id="boothFlowNavWrap" class="hidden pt-6">
+                  <div class="flex items-center justify-center gap-2" role="tablist" aria-label="Booth flow steps">
+                    <button type="button" class="flow-step-dot" aria-label="Step 1: Branded Welcome Trigger" title="Branded Welcome Trigger"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 2: Template Selection" title="Template Selection"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 3: Retake Review" title="Retake Review"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 4: Strip Assembly Preview" title="Strip Assembly Preview"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 5: Tone and Frame Studio" title="Tone &amp; Frame Studio"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 6: Gallery Generation" title="Gallery Generation"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 7: Live Print and QR Hand-off" title="Live Print + QR Hand-off"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 8: Auto-Reset for Next Guest" title="Auto-Reset for Next Guest"></button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -1613,7 +1636,6 @@
          page, with the copyright strip banded inside it rather than sitting
          out on the white below. -->
     <footer class="relative overflow-hidden bg-navy-950 rounded-t-[2.5rem]">
-      <span class="footer-watermark" aria-hidden="true">PHOTUNA</span>
       <div class="relative max-w-7xl mx-auto px-6 md:px-12 pt-14 md:pt-16 pb-14">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div class="space-y-4">

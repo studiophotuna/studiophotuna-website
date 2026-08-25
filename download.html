@@ -212,30 +212,45 @@
       }
 
       /* Numbered step navigator for the scroll-driven How It Works flow */
+      /* Booth flow leaves on a blur like the other sections, but only over its
+         final screenful -- see the exit-late mode in app.js. The filter sits
+         on the sticky element itself rather than a wrapper: on an ancestor it
+         would create a containing block and break position: sticky, whereas
+         on the sticky element it is harmless. */
+      #boothFlowSticky {
+        filter: blur(calc(var(--exit, 0) * 14px));
+        opacity: calc(1 - var(--exit, 0) * 0.85);
+      }
+
+      /* Plain dots, no numerals. The button itself is a 1.5rem hit target;
+         the visible mark is the pseudo-element, which stretches into a short
+         bar on the active step. */
       .flow-step-dot {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 999px;
-        border: 1px solid #dedfe6;
-        background: #fff;
-        color: #5f6678;
-        font-size: 0.75rem;
-        font-weight: 800;
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0;
+        border: 0;
+        background: transparent;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease;
         cursor: pointer;
       }
-      .flow-step-dot:hover {
-        border-color: #0c66e4;
-        color: #0c66e4;
+      .flow-step-dot::before {
+        content: '';
+        display: block;
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 999px;
+        background: #dedfe6;
+        transition: background-color 0.2s ease, width 0.2s ease;
       }
-      .flow-step-dot.active {
+      .flow-step-dot:hover::before {
+        background: #8b92a6;
+      }
+      .flow-step-dot.active::before {
         background: #0c66e4;
-        color: #fff;
-        border-color: #0c66e4;
-        transform: scale(1.15);
+        width: 1.15rem;
       }
 
       /* Radius convention (codifying existing usage, not a new rule):
@@ -437,11 +452,10 @@
         opacity: calc(1 - var(--exit) * 0.85);
       }
 
-      /* Pulls a section up over the one before it. Square edges by design --
-         the rounded top is reserved for the footer alone. */
+      /* Pulls a section up over the one before it. Square edges and no
+         shadow by design -- the rounded top is reserved for the footer. */
       .fs-lift {
         margin-top: -2.75rem;
-        box-shadow: 0 -18px 50px rgba(17, 24, 39, 0.09);
       }
 
       /* Closing CTA: a sticky panel one screen tall inside a taller section,
@@ -471,24 +485,18 @@
         66%      { transform: translate(-34px, 24px) scale(0.92); }
       }
 
-      /* Photo strips drifting up and back, the product's own artefact. */
+      /* Real printed strips drifting up and back -- the product's own output.
+         The artwork already carries its white border and transparent
+         surround, so the element is just a positioned frame for it. */
       .ph-strip {
         position: absolute;
-        width: 3.6rem;
-        padding: 0.35rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-        background: #fff;
-        border-radius: 0.45rem;
-        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.13);
         animation: ph-strip-drift 15s ease-in-out infinite;
       }
-      .ph-strip span {
+      .ph-strip img {
         display: block;
-        height: 2rem;
-        border-radius: 0.22rem;
-        background: linear-gradient(160deg, #dbeafe, #bfdbfe);
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 18px 34px rgba(17, 24, 39, 0.16));
       }
       @keyframes ph-strip-drift {
         0%, 100% { transform: rotate(var(--r, 0deg)) translateY(0); }
@@ -730,23 +738,6 @@
         filter: brightness(1.15);
       }
 
-      /* Oversized ghosted wordmark behind the footer columns. Decorative
-         only -- aria-hidden in the markup so it never reaches a screen
-         reader as stray text. */
-      .footer-watermark {
-        position: absolute;
-        left: 0;
-        bottom: -0.3em;
-        font-size: clamp(5rem, 17vw, 13rem);
-        font-weight: 800;
-        letter-spacing: -0.045em;
-        line-height: 0.78;
-        color: rgba(255, 255, 255, 0.028);
-        pointer-events: none;
-        user-select: none;
-        white-space: nowrap;
-      }
-
       /* The header is a floating pill: the header element itself is a
          transparent full-width positioning shell, .header-shell is the visible
          rounded bar inside it. Solid white at rest; past the scroll
@@ -795,8 +786,11 @@
         .closing-panel {
           border-radius: 0 !important;
         }
-        .hero-content, .fs-body {
+        .hero-content, .fs-body, #boothFlowSticky {
           filter: none !important;
+        }
+        #boothFlowSticky {
+          opacity: 1 !important;
         }
         /* Hold the background art and the review marquee still. The marquee
            keeps its overflow clip, so the cards past the first screenful stay
@@ -820,9 +814,9 @@
 
     <header class="site-header fixed top-0 left-0 w-full z-40 transition-all duration-300">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-2.5">
-        <div class="header-shell h-16 px-4 sm:px-6 rounded-full bg-white border border-[#dedfe6]/70 shadow-[0_6px_24px_rgba(17,24,39,0.07)] flex items-center justify-between gap-4 transition-all duration-300">
+        <div class="header-shell h-16 px-4 sm:px-6 rounded-2xl bg-white border border-[#dedfe6]/70 shadow-[0_6px_24px_rgba(17,24,39,0.07)] flex items-center justify-between gap-4 transition-all duration-300">
         <a class="logo flex items-center gap-3" href="/" onclick="navigateTo('home'); return false;" aria-label="Studio Photuna">
-          <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+          <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-9 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
         </a>
         
         <nav class="hidden lg:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
@@ -861,7 +855,7 @@
 
     <!-- Insets match the header pill's px-3 / sm:px-6 container so the two
          line up as one floating stack. -->
-    <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-3xl p-4 flex flex-col gap-2 shadow-luxe z-30">
+    <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-2xl p-4 flex flex-col gap-2 shadow-luxe z-30">
       <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
       <a href="/download" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download</a>
@@ -1031,7 +1025,6 @@
          page, with the copyright strip banded inside it rather than sitting
          out on the white below. -->
     <footer class="relative overflow-hidden bg-navy-950 rounded-t-[2.5rem]">
-      <span class="footer-watermark" aria-hidden="true">PHOTUNA</span>
       <div class="relative max-w-7xl mx-auto px-6 md:px-12 pt-14 md:pt-16 pb-14">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div class="space-y-4">

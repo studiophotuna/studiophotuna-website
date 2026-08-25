@@ -2008,7 +2008,17 @@ function toggleReviewForm() {
   const chevron = document.getElementById("reviewFormChevron");
   if (!body) return;
   body.classList.toggle("hidden");
-  if (chevron) chevron.style.transform = body.classList.contains("hidden") ? "" : "rotate(180deg)";
+  const open = !body.classList.contains("hidden");
+  if (chevron) chevron.style.transform = open ? "rotate(180deg)" : "";
+
+  // Opening the form pushes its fields below the fold, and scrolling down to
+  // reach them would otherwise drive this section's exit blur -- leaving the
+  // visitor typing into blurred inputs. Pin the effect off while it is open.
+  const section = body.closest("[data-exit]");
+  if (section) {
+    section.classList.toggle("exit-locked", open);
+    if (open) section.style.setProperty("--exit", "0");
+  }
 }
 
 function toggleFaq(btn) {
@@ -3030,6 +3040,9 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
   document.querySelectorAll("[data-exit]").forEach(el => {
     targets.push({ el, prop: "--exit", mode: "exit", span: 0.66 });
   });
+  document.querySelectorAll("[data-exit-late]").forEach(el => {
+    targets.push({ el, prop: "--exit", mode: "exit-late", span: 0.7 });
+  });
   const panel = document.getElementById("statementPanel");
   // Fully open by the time the panel's top edge reaches mid-viewport.
   if (panel) targets.push({ el: panel, prop: "--flood", from: 1, to: 0.5 });
@@ -3046,10 +3059,29 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     ticking = false;
     const vh = window.innerHeight;
     for (const t of targets) {
+      // A section can pin its exit effect off while something inside it needs
+      // to stay legible -- see toggleReviewForm().
+      if (t.el.classList.contains("exit-locked")) continue;
       let progress;
       if (t.mode === "exit") {
-        const travel = (t.el.offsetHeight || vh) * t.span;
-        progress = travel > 0 ? -t.el.getBoundingClientRect().top / travel : 0;
+        const rect = t.el.getBoundingClientRect();
+        const h = t.el.offsetHeight || vh;
+        // On narrow screens the fade used to begin while the section was
+        // still comfortably in view. Hold it off until the section is nearly
+        // spent, so it only reads as the section leaving.
+        const narrow = window.innerWidth < 640;
+        const hold = narrow ? h * 0.45 : 0;
+        const travel = h * (narrow ? 0.4 : t.span);
+        progress = travel > 0 ? (-rect.top - hold) / travel : 0;
+      } else if (t.mode === "exit-late") {
+        // Measured from the section's bottom edge rather than its top, so a
+        // very tall section only fades over its final stretch: the ramp runs
+        // as that edge closes the last `span` viewports. Measured against the
+        // booth flow, its final step becomes active at 0.65 viewports out, so
+        // 0.7 starts the blur just as that step settles and finishes it as
+        // the section leaves -- the earlier steps stay perfectly sharp.
+        const rect = t.el.getBoundingClientRect();
+        progress = 1 - rect.bottom / (vh * t.span);
       } else {
         const start = vh * t.from;
         const end = vh * t.to;

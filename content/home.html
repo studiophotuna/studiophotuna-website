@@ -12,10 +12,10 @@
             <span class="ph-ring" style="width:16rem;height:16rem;top:14%;left:12%;"></span>
             <span class="ph-ring" style="width:22rem;height:22rem;bottom:8%;right:10%;animation-delay:-3.5s;"></span>
 
-            <span class="ph-strip hidden sm:flex" style="top:16%;left:6%;--r:-11deg;"><span></span><span></span><span></span></span>
-            <span class="ph-strip hidden lg:flex" style="top:58%;left:13%;--r:7deg;animation-delay:-4s;"><span></span><span></span><span></span></span>
-            <span class="ph-strip hidden sm:flex" style="top:22%;right:8%;--r:9deg;animation-delay:-8s;"><span></span><span></span><span></span></span>
-            <span class="ph-strip hidden lg:flex" style="bottom:14%;right:15%;--r:-6deg;animation-delay:-11s;"><span></span><span></span><span></span></span>
+            <span class="ph-strip hidden sm:block" style="top:11%;left:4%;width:8rem;--r:-11deg;"><img src="strip-a.webp" width="360" height="640" alt="" /></span>
+            <span class="ph-strip hidden lg:block" style="bottom:9%;left:9%;width:9.5rem;--r:6deg;animation-delay:-4s;"><img src="strip-c.webp" width="420" height="632" alt="" /></span>
+            <span class="ph-strip hidden sm:block" style="top:14%;right:5%;width:8rem;--r:9deg;animation-delay:-8s;"><img src="strip-b.webp" width="360" height="640" alt="" /></span>
+            <span class="ph-strip hidden lg:block" style="bottom:12%;right:7%;width:13rem;--r:-5deg;animation-delay:-11s;"><img src="strip-d.webp" width="620" height="349" alt="" /></span>
           </div>
 
           <div class="hero-content relative max-w-5xl mx-auto text-center space-y-6">
@@ -52,51 +52,63 @@
               <p class="text-base text-body">One licence, one install, and everything needed to run a booth as a business — no add-ons to buy later.</p>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">14 Days</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Free Trial</p>
-              </div>
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">1 App</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Complete Workflow</p>
-              </div>
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">0</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Coding Required</p>
-              </div>
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">Win 10/11</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Compatible</p>
+            <!-- Bento: the licence claim carries the weight, with the trial and
+                 hardware answers beside it and the day-to-day specifics under. -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <article class="feature-card card-accent lg:col-span-2 rounded-2xl bg-navy-950 p-7 sm:p-8 flex flex-col justify-between gap-6" style="transition-delay: 0ms;">
+                <div class="space-y-3">
+                  <span class="badge bg-white/10 text-white/80">One licence</span>
+                  <h3 class="text-2xl sm:text-3xl font-bold text-white leading-tight">Every part of the job, in one install</h3>
+                  <p class="text-sm text-white/70 max-w-md">Event setup, template design, the guest flow, printing, QR delivery, and reporting — all in the same app. Nothing here is a paid module.</p>
+                </div>
+                <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-white/85">
+                  <li><i class="fa-solid fa-check text-brand-300 mr-1.5"></i>No per-event fees</li>
+                  <li><i class="fa-solid fa-check text-brand-300 mr-1.5"></i>No add-on modules</li>
+                  <li><i class="fa-solid fa-check text-brand-300 mr-1.5"></i>Updates included</li>
+                </ul>
+              </article>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                <article class="feature-card card-accent rounded-2xl bg-brand p-6 flex flex-col justify-center" style="transition-delay: 80ms;">
+                  <p class="text-4xl font-black text-white leading-none">14 days</p>
+                  <p class="text-sm font-bold text-white/85 mt-1">Free trial, no card required</p>
+                  <button onclick="startFreeTrial()" class="btn-animation mt-4 self-start inline-flex items-center gap-2 rounded-full bg-white text-title px-4 py-2 text-xs font-extrabold transition-colors hover:bg-grey">
+                    Start free trial <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                  </button>
+                </article>
+                <article class="feature-card rounded-2xl border border-line bg-grey p-6 flex flex-col justify-center" style="transition-delay: 160ms;">
+                  <p class="text-2xl font-black text-title leading-none">Windows 10 / 11</p>
+                  <p class="text-sm text-body mt-1.5">Runs on the PC you already have — no proprietary kiosk to buy.</p>
+                </article>
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 0ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-camera"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 0ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-camera"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Works with your DSLR</p>
-                  <p class="text-xs text-body mt-0.5">Connect the camera and dye-sub printer you already own.</p>
+                  <p class="text-sm font-bold text-title">Your own DSLR</p>
+                  <p class="text-xs text-body mt-0.5">Pair the camera and dye-sub printer you already own.</p>
                 </div>
               </div>
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 80ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-wifi"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 80ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-wifi"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Runs through the event</p>
-                  <p class="text-xs text-body mt-0.5">Sessions and printing keep going if the venue Wi-Fi drops.</p>
+                  <p class="text-sm font-bold text-title">Survives bad venue Wi-Fi</p>
+                  <p class="text-xs text-body mt-0.5">Sessions and printing keep running if the connection drops.</p>
                 </div>
               </div>
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 160ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-peso-sign"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 160ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-peso-sign"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Takes payments on site</p>
-                  <p class="text-xs text-body mt-0.5">Rental mode and a payment terminal built into the guest flow.</p>
+                  <p class="text-sm font-bold text-title">Takes payment at the booth</p>
+                  <p class="text-xs text-body mt-0.5">Rental mode and a payment terminal inside the guest flow.</p>
                 </div>
               </div>
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 240ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-chart-simple"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 240ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-chart-simple"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Reports as you go</p>
+                  <p class="text-sm font-bold text-title">Knows what each event made</p>
                   <p class="text-xs text-body mt-0.5">Live session counts, revenue, and print totals per event.</p>
                 </div>
               </div>
@@ -140,7 +152,7 @@
              opacity-only variant for the same reason. -->
         <!-- No exit treatment at all: this section is walked a step at a time,
              so dimming it on the way out fights the thing it is for. -->
-        <section id="how-it-works" class="fs-block fs-lift bg-white py-20 px-6">
+        <section id="how-it-works" data-exit-late class="fs-block fs-lift bg-white py-20 px-6">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">How It Works</h2>
@@ -154,7 +166,7 @@
 
                   <!-- Step 1 -->
                   <div class="flow-step-panel py-10" data-step-index="0">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">01</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Branded Welcome Trigger</h3>
@@ -170,7 +182,7 @@
 
                   <!-- Step 2 -->
                   <div class="flow-step-panel py-10" data-step-index="1">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">02</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Template Selection</h3>
@@ -186,7 +198,7 @@
 
                   <!-- Step 3 -->
                   <div class="flow-step-panel py-10" data-step-index="2">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">03</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Retake Review</h3>
@@ -202,7 +214,7 @@
 
                   <!-- Step 4 -->
                   <div class="flow-step-panel py-10" data-step-index="3">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">04</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Strip Assembly Preview</h3>
@@ -218,7 +230,7 @@
 
                   <!-- Step 5 -->
                   <div class="flow-step-panel py-10" data-step-index="4">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">05</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Tone & Frame Studio</h3>
@@ -234,7 +246,7 @@
 
                   <!-- Step 6 -->
                   <div class="flow-step-panel py-10" data-step-index="5">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">06</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Gallery Generation</h3>
@@ -250,7 +262,7 @@
 
                   <!-- Step 7 -->
                   <div class="flow-step-panel py-10" data-step-index="6">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">07</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Live Print + QR Hand-off</h3>
@@ -266,7 +278,7 @@
 
                   <!-- Step 8 -->
                   <div class="flow-step-panel py-10" data-step-index="7">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">08</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Auto-Reset for Next Guest</h3>
@@ -282,6 +294,23 @@
 
                 </div>
 
+
+                <!-- Step identifier. app.js already wires .flow-step-dot for the
+                     active state and click-to-jump, and unhides this wrapper
+                     when the scroll-driven flow activates -- so it stays hidden
+                     wherever the panels fall back to a plain stacked list. -->
+                <div id="boothFlowNavWrap" class="hidden pt-6">
+                  <div class="flex items-center justify-center gap-2" role="tablist" aria-label="Booth flow steps">
+                    <button type="button" class="flow-step-dot" aria-label="Step 1: Branded Welcome Trigger" title="Branded Welcome Trigger"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 2: Template Selection" title="Template Selection"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 3: Retake Review" title="Retake Review"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 4: Strip Assembly Preview" title="Strip Assembly Preview"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 5: Tone and Frame Studio" title="Tone &amp; Frame Studio"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 6: Gallery Generation" title="Gallery Generation"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 7: Live Print and QR Hand-off" title="Live Print + QR Hand-off"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 8: Auto-Reset for Next Guest" title="Auto-Reset for Next Guest"></button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
