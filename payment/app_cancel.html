@@ -197,32 +197,18 @@
         animation: pulse-glow 3s ease-in-out infinite;
       }
 
-      /* Animated flow connector -- traveling pulse between hardware-flow steps */
-      .flow-connector {
-        position: relative;
-        width: 2rem;
-        height: 2px;
-        background: #dedfe6;
-        border-radius: 999px;
-        overflow: visible;
-      }
-      .flow-dot {
+      /* One invisible snap anchor per booth-flow step. Steps are only ~160px
+         of scroll apart, so without these a single wheel gesture travels
+         several steps at once; scroll-snap-stop: always makes each gesture
+         come to rest on the next step instead. Positioned by app.js. */
+      .flow-snap-anchor {
         position: absolute;
-        top: 50%;
         left: 0;
-        width: 8px;
-        height: 8px;
-        margin-top: -4px;
-        border-radius: 999px;
-        background: #0c66e4;
-        box-shadow: 0 0 8px rgba(12, 102, 228, 0.7);
-        animation: flow-travel 3.2s ease-in-out infinite;
-      }
-      @keyframes flow-travel {
-        0% { left: 0; opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { left: calc(100% - 8px); opacity: 0; }
+        width: 1px;
+        height: 1px;
+        pointer-events: none;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
       }
 
       /* Numbered step navigator for the scroll-driven How It Works flow */
@@ -250,19 +236,6 @@
         color: #fff;
         border-color: #0c66e4;
         transform: scale(1.15);
-      }
-
-      /* Hardware flow icon row -- highlights whichever step's full detail
-         panel is currently shown below it */
-      .flow-icon .w-14 {
-        transition: background-color 0.2s ease, color 0.2s ease;
-      }
-      .flow-icon.is-active .w-14 {
-        background: #0c66e4;
-        color: #fff;
-      }
-      .flow-icon p {
-        border-bottom: 1px dashed #dedfe6;
       }
 
       /* Radius convention (codifying existing usage, not a new rule):
@@ -348,22 +321,458 @@
         box-shadow: 0 8px 24px rgba(12, 102, 228, 0.1);
       }
 
-      /* Header is solid white at rest; past the scroll threshold set in
-         app.js (~10px) it turns into a translucent glass panel. */
-      .site-header.scrolled {
-        background-color: rgba(255, 255, 255, 0.75);
+      /* Full-bleed statement panel that "floods" open on scroll. The top
+         edge starts as a shallow trapezoid -- angled shoulders at both
+         corners -- and squares off into a full rectangle as the section
+         crosses the viewport. app.js drives --flood from 0 to 1; the
+         polygon below derives both the shoulder height and the corner
+         inset from that single value, so there's one source of truth for
+         the animation and CSS does the interpolation. */
+      .flood-panel {
+        --flood: 0;
+        clip-path: polygon(
+          0% calc((1 - var(--flood)) * 80px),
+          calc((1 - var(--flood)) * 4%) 0%,
+          calc(100% - (1 - var(--flood)) * 4%) 0%,
+          100% calc((1 - var(--flood)) * 80px),
+          100% 100%,
+          0% 100%
+        );
+      }
+      /* The headline tracks the same progress a beat behind the panel, so
+         the copy lands after the colour has actually arrived under it. */
+      .flood-copy {
+        opacity: calc(var(--flood) * 1.6 - 0.3);
+        transform: translateY(calc((1 - var(--flood)) * 24px));
+      }
+
+      /* Feature cards on a filled surface get an oversized soft circle
+         bleeding out of the top-right corner -- decorative depth only,
+         clipped by the card's own overflow. Children are lifted above it
+         so the shape never sits over the text. */
+      .card-accent {
+        position: relative;
+        overflow: hidden;
+        /* Defined after .card-feature so this drops the shared light hairline
+           border, which would read as a seam on a filled card. */
+        border-color: transparent;
+      }
+      .card-accent > * {
+        position: relative;
+        z-index: 1;
+      }
+      .card-accent::after {
+        content: '';
+        position: absolute;
+        right: -28%;
+        top: -38%;
+        width: 76%;
+        aspect-ratio: 1;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.07);
+        pointer-events: none;
+      }
+
+      /* ---- Full-screen section rhythm -------------------------------- */
+
+      /* Each major section fills the viewport and the next one rides up over
+         it. svh keeps mobile browser chrome from pushing the fold off-screen.
+         Sections are snap points, so a scroll gesture settles on a section
+         rather than running past it; scroll-snap-stop stops a fast fling from
+         skipping one entirely. Sections taller than the viewport (How It
+         Works, FAQ) are handled by the spec's larger-than-snapport rule --
+         they only snap at their edges, so their interiors scroll freely. */
+      /* Scoped with :has so only pages that actually have full-screen
+         sections become snap containers -- this stylesheet is shared by
+         every page. */
+      html:has(.fs) {
+        scroll-snap-type: y mandatory;
+      }
+      .fs, .fs-block {
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+      /* The footer has to be a snap target too. Without it the last section's
+         bottom edge is the final snap position, and scroll-snap-stop pins the
+         page there -- leaving the footer permanently cut off. */
+      footer {
+        scroll-snap-align: end;
+      }
+      .fs {
+        position: relative;
+        min-height: 100vh;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      /* Same height, normal block flow. For sections containing position:
+         sticky children, which a flex parent can disturb. */
+      .fs-block {
+        position: relative;
+        min-height: 100vh;
+        min-height: 100svh;
+      }
+      /* The hero runs up behind the floating header instead of starting below
+         it: the negative margin cancels main's 5rem top padding, and the
+         matching padding keeps the content itself clear of the bar. */
+      .fs-first {
+        margin-top: -5rem;
+        padding-top: 5rem;
+        min-height: 100vh;
+        min-height: 100svh;
+      }
+      .fs > .fs-body, .fs > .fs-body-soft { width: 100%; }
+
+      /* Exit treatment as a section scrolls away: app.js publishes --exit. */
+      .fs-body {
+        filter: blur(calc(var(--exit) * 14px));
+        opacity: calc(1 - var(--exit) * 0.85);
+        transform: scale(calc(1 - var(--exit) * 0.04));
+      }
+      /* Opacity-only variant. filter and transform both create a containing
+         block that breaks position: sticky descendants; plain opacity does
+         not, so scroll-driven sections use this instead. */
+      .fs-body-soft {
+        opacity: calc(1 - var(--exit) * 0.85);
+      }
+
+      /* Pulls a section up over the one before it. Square edges by design --
+         the rounded top is reserved for the footer alone. */
+      .fs-lift {
+        margin-top: -2.75rem;
+        box-shadow: 0 -18px 50px rgba(17, 24, 39, 0.09);
+      }
+
+      /* Closing CTA: a sticky panel one screen tall inside a taller section,
+         so it stays pinned and scales down as the section scrolls past --
+         receding toward the footer rather than sliding away. The extra height
+         is what gives it somewhere to travel; a single-viewport section would
+         be pinned between two snap points with no room for the effect. */
+      .closing-panel {
+        transform: scale(calc(1 - var(--exit) * 0.28));
+        border-radius: calc(var(--exit) * 2.5rem);
+        opacity: calc(1 - var(--exit) * 0.3);
+        transform-origin: center center;
+      }
+
+      /* ---- Hero background ------------------------------------------- */
+
+      /* Drifting soft light pools -- the studio-lighting read. */
+      .ph-glow {
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(70px);
+        animation: ph-glow-drift 20s ease-in-out infinite;
+      }
+      @keyframes ph-glow-drift {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33%      { transform: translate(46px, -34px) scale(1.14); }
+        66%      { transform: translate(-34px, 24px) scale(0.92); }
+      }
+
+      /* Photo strips drifting up and back, the product's own artefact. */
+      .ph-strip {
+        position: absolute;
+        width: 3.6rem;
+        padding: 0.35rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        background: #fff;
+        border-radius: 0.45rem;
+        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.13);
+        animation: ph-strip-drift 15s ease-in-out infinite;
+      }
+      .ph-strip span {
+        display: block;
+        height: 2rem;
+        border-radius: 0.22rem;
+        background: linear-gradient(160deg, #dbeafe, #bfdbfe);
+      }
+      @keyframes ph-strip-drift {
+        0%, 100% { transform: rotate(var(--r, 0deg)) translateY(0); }
+        50%      { transform: rotate(var(--r, 0deg)) translateY(-22px); }
+      }
+
+      /* Slow shutter-style pulse on the ring accents. */
+      .ph-ring {
+        position: absolute;
+        border-radius: 999px;
+        border: 2px solid rgba(12, 102, 228, 0.18);
+        animation: ph-ring-pulse 7s ease-out infinite;
+      }
+      @keyframes ph-ring-pulse {
+        0%   { transform: scale(0.75); opacity: 0; }
+        35%  { opacity: 0.9; }
+        100% { transform: scale(1.5); opacity: 0; }
+      }
+
+      /* ---- Review marquee -------------------------------------------- */
+
+      .marquee {
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+        mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+      }
+      .marquee-track {
+        display: flex;
+        gap: 1.5rem;
+        width: max-content;
+        animation: marquee-scroll 52s linear infinite;
+      }
+      /* Card width lives here rather than on a Tailwind utility: these cards
+         are injected by app.js after the CDN's content scan, so an arbitrary
+         value class like w-[22rem] would never be generated. */
+      .marquee-track .review-card {
+        width: 20rem;
+        flex-shrink: 0;
+      }
+      @media (min-width: 640px) {
+        .marquee-track .review-card { width: 22rem; }
+      }
+      /* The track holds the cards twice, so -50% lands exactly on the seam. */
+      @keyframes marquee-scroll {
+        from { transform: translateX(0); }
+        to   { transform: translateX(-50%); }
+      }
+      .marquee:hover .marquee-track,
+      .marquee:focus-within .marquee-track {
+        animation-play-state: paused;
+      }
+
+      /* ---- Hero ----------------------------------------------------- */
+
+      /* The hero blurs back and fades as the page scrolls, so the section
+         below (which is pulled up over it) reads as sliding on top.
+         --exit is published by app.js from scroll depth over the hero. */
+      .hero-content {
+        filter: blur(calc(var(--exit) * 14px));
+        opacity: calc(1 - var(--exit) * 0.85);
+        transform: scale(calc(1 - var(--exit) * 0.05));
+      }
+      .hero-decor {
+        opacity: calc(1 - var(--exit) * 1.2);
+      }
+
+      /* Toggle-switch flourish set inline in the headline. Sized entirely
+         in em so it tracks the heading's responsive font size. */
+      .hero-toggle {
+        display: inline-flex;
+        align-items: center;
+        vertical-align: -0.06em;
+        width: 1.85em;
+        height: 0.95em;
+        padding: 0.1em;
+        margin: 0 0.14em;
+        border-radius: 999px;
+        background: linear-gradient(115deg, #1d4ed8 0%, #0b1220 88%);
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+      }
+      .hero-toggle-knob {
+        /* font-size first: the width/height em values resolve against it,
+           so 0.5 x 1.5 lands the knob at 0.75em of the heading. */
+        font-size: 0.5em;
+        width: 1.5em;
+        height: 1.5em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: #fff;
+        color: #111827;
+        font-family: system-ui, sans-serif;
+        font-weight: 400;
+        line-height: 1;
+      }
+
+      /* Four-point sparkles scattered around the headline. */
+      .hero-sparkle {
+        position: absolute;
+        background: #3d89ef;
+        clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+        pointer-events: none;
+      }
+
+      /* Blue arch (left) and the pair of quarter-rounds (right). */
+      .hero-arch {
+        position: absolute;
+        width: 9rem;
+        height: 4.5rem;
+        border: 2.2rem solid #0c66e4;
+        border-bottom: none;
+        border-radius: 9rem 9rem 0 0;
+        pointer-events: none;
+      }
+      .hero-quarters {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        pointer-events: none;
+      }
+      .hero-quarters span {
+        width: 3.4rem;
+        height: 3.4rem;
+        background: #a8c9fb;
+      }
+      .hero-quarters span:first-child { border-radius: 3.4rem 3.4rem 0 3.4rem; }
+      .hero-quarters span:last-child  { border-radius: 0 3.4rem 3.4rem 3.4rem; }
+
+      /* Floating abstract app-window cards with a badge and a cursor. */
+      .hero-float {
+        position: absolute;
+        pointer-events: none;
+      }
+      .hero-float-card {
+        width: 15rem;
+        border-radius: 0.85rem;
+        background: #fff;
+        border: 1px solid var(--line);
+        box-shadow: 0 18px 50px rgba(17, 24, 39, 0.1);
+        padding: 0.65rem;
+      }
+      .hero-float-dots {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 0.6rem;
+      }
+      .hero-float-dots span {
+        width: 0.4rem;
+        height: 0.4rem;
+        border-radius: 999px;
+      }
+      .hero-float-dots span:nth-child(1) { background: #f87171; }
+      .hero-float-dots span:nth-child(2) { background: #fbbf24; }
+      .hero-float-dots span:nth-child(3) { background: #34d399; }
+      .hero-float-body {
+        display: flex;
+        gap: 0.5rem;
+      }
+      .hero-float-body i {
+        display: block;
+        background: var(--grey);
+        border-radius: 0.3rem;
+      }
+      .hero-float-rail {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        width: 3.2rem;
+        flex-shrink: 0;
+      }
+      .hero-float-rail i { height: 0.5rem; }
+      .hero-float-main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.35rem;
+        flex: 1;
+      }
+      .hero-float-main i:first-child { height: 2rem; }
+      .hero-float-main i:nth-child(2) { height: 2rem; }
+      .hero-float-main i:last-child { height: 1.6rem; grid-column: 1 / -1; }
+      .hero-badge-chip {
+        position: absolute;
+        border-radius: 999px;
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 0.3rem 0.75rem;
+        box-shadow: 0 6px 18px rgba(17, 24, 39, 0.18);
+      }
+      .hero-cursor {
+        position: absolute;
+        font-size: 0.9rem;
+      }
+
+      /* Scroll-linked scene: app.js publishes --enter (0..1) from the
+         section's travel through the viewport, and the two halves ride it
+         at different rates so the media leads and the copy follows. The
+         opacity ramps deliberately over- and undershoot 0..1 -- opacity
+         clamps on its own, which is what produces the lag without needing
+         per-child delays. */
+      .scroll-scene {
+        --enter: 0;
+      }
+      .scene-media {
+        opacity: calc(var(--enter) * 1.5 - 0.1);
+        transform: translateY(calc((1 - var(--enter)) * 56px)) scale(calc(0.94 + var(--enter) * 0.06));
+      }
+      .scene-copy {
+        opacity: calc(var(--enter) * 1.5 - 0.45);
+        transform: translateY(calc((1 - var(--enter)) * 30px));
+      }
+
+      /* Footer social buttons. Neutral on the dark panel by default, taking
+         each network's own colour on hover; Instagram carries its gradient
+         at rest since a flat swatch cannot stand in for it. */
+      .social-dot {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 0.8125rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+      }
+      .social-dot:hover {
+        background: var(--brand);
+        transform: translateY(-2px);
+      }
+      .social-instagram {
+        background: linear-gradient(45deg, #f09433, #dc2743 45%, #bc1888 70%, #8134af);
+      }
+      .social-instagram:hover {
+        background: linear-gradient(45deg, #f09433, #dc2743 45%, #bc1888 70%, #8134af);
+        filter: brightness(1.15);
+      }
+
+      /* Oversized ghosted wordmark behind the footer columns. Decorative
+         only -- aria-hidden in the markup so it never reaches a screen
+         reader as stray text. */
+      .footer-watermark {
+        position: absolute;
+        left: 0;
+        bottom: -0.3em;
+        font-size: clamp(5rem, 17vw, 13rem);
+        font-weight: 800;
+        letter-spacing: -0.045em;
+        line-height: 0.78;
+        color: rgba(255, 255, 255, 0.028);
+        pointer-events: none;
+        user-select: none;
+        white-space: nowrap;
+      }
+
+      /* The header is a floating pill: the header element itself is a
+         transparent full-width positioning shell, .header-shell is the visible
+         rounded bar inside it. Solid white at rest; past the scroll
+         threshold set in app.js (~10px) it turns into a translucent glass
+         panel and lifts slightly. */
+      /* Slides the whole bar clear of the viewport while scrolling down.
+         The extra 1.5rem covers the pill's top offset and its shadow so
+         nothing peeks over the edge mid-transition. */
+      .site-header {
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .site-header.header-hidden {
+        transform: translateY(calc(-100% - 1.5rem));
+      }
+      .site-header.scrolled .header-shell {
+        background-color: rgba(255, 255, 255, 0.78);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 10px 34px rgba(17, 24, 39, 0.12);
       }
 
       @media (prefers-reduced-motion: reduce) {
         .reveal, .feature-card, .hover-lift, .btn-animation,
-        .cta-glow, .btn-ghost, .card-product img, .flow-dot {
+        .cta-glow, .btn-ghost, .card-product img {
           transition: none !important;
           animation: none !important;
-        }
-        .flow-dot {
-          display: none !important;
         }
         .reveal, .feature-card {
           opacity: 1 !important;
@@ -371,6 +780,35 @@
         }
         .card-product:hover img {
           transform: none !important;
+        }
+        /* Land the scroll-driven pieces in their finished state -- full-bleed
+           rectangle, everything in place and visible -- rather than
+           animating them. */
+        .flood-panel {
+          clip-path: none !important;
+        }
+        .flood-copy, .scene-media, .scene-copy, .hero-content, .hero-decor,
+        .fs-body, .fs-body-soft, .closing-panel {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+        .closing-panel {
+          border-radius: 0 !important;
+        }
+        .hero-content, .fs-body {
+          filter: none !important;
+        }
+        /* Hold the background art and the review marquee still. The marquee
+           keeps its overflow clip, so the cards past the first screenful stay
+           reachable by scrolling the strip rather than by waiting for it. */
+        .ph-glow, .ph-strip, .ph-ring {
+          animation: none !important;
+        }
+        .marquee-track {
+          animation: none !important;
+        }
+        .marquee {
+          overflow-x: auto;
         }
       }
     </style>
@@ -380,8 +818,9 @@
 
     <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
-    <header class="site-header fixed top-0 left-0 w-full z-40 bg-white border-b border-[#dedfe6]/70 transition-all duration-300">
-      <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <header class="site-header fixed top-0 left-0 w-full z-40 transition-all duration-300">
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-2.5">
+        <div class="header-shell h-16 px-4 sm:px-6 rounded-full bg-white border border-[#dedfe6]/70 shadow-[0_6px_24px_rgba(17,24,39,0.07)] flex items-center justify-between gap-4 transition-all duration-300">
         <a class="logo flex items-center gap-3" href="/" onclick="navigateTo('home'); return false;" aria-label="Studio Photuna">
           <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
         </a>
@@ -412,14 +851,17 @@
           </div>
 
           <!-- Auth Actions (Signed Out State) -->
-          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
-          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-title hover:bg-navy-950 text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex shadow-lg shadow-title/20" type="button" onclick="startFreeTrial()">Start Free Trial</button>
+          <button class="btn-animation inline-flex min-h-[44px] items-center justify-center rounded-full border border-line bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
+          <button class="btn-animation hidden sm:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-5 text-sm font-extrabold transition-colors shadow-lg shadow-brand/25" type="button" onclick="startFreeTrial()">Start Free Trial <i class="fa-solid fa-arrow-right text-xs"></i></button>
           <button class="hamburger lg:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
+        </div>
         </div>
       </div>
     </header>
 
-    <div id="mobile-menu" class="hidden lg:hidden fixed top-20 left-0 w-full bg-white border-b border-line p-6 flex flex-col gap-3 shadow-lg z-30">
+    <!-- Insets match the header pill's px-3 / sm:px-6 container so the two
+         line up as one floating stack. -->
+    <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-3xl p-4 flex flex-col gap-2 shadow-luxe z-30">
       <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
       <a href="/download" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download</a>
@@ -452,19 +894,22 @@
 
     </main>
 
-    <footer class="py-16 px-6 bg-white">
-      <div class="max-w-7xl mx-auto">
-        <div class="bg-navy-950 rounded-3xl p-8 md:p-14">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+    <!-- Full-bleed panel with rounded top corners, flush to the bottom of the
+         page, with the copyright strip banded inside it rather than sitting
+         out on the white below. -->
+    <footer class="relative overflow-hidden bg-navy-950 rounded-t-[2.5rem]">
+      <span class="footer-watermark" aria-hidden="true">PHOTUNA</span>
+      <div class="relative max-w-7xl mx-auto px-6 md:px-12 pt-14 md:pt-16 pb-14">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div class="space-y-4">
               <img src="/logo-light.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-10 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x40/ffffff/111827?text=Studio+Photuna'" />
               <p class="text-sm text-white/60 font-medium">Studio Photuna is photo booth business software that helps operators launch, run, and grow a Korean-style photobooth business — from event setup to guest delivery — on hardware they already own.</p>
 
               <!-- Only Facebook, Instagram, and TikTok -->
               <div class="socials flex gap-3">
-                <a href="https://www.facebook.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://www.tiktok.com/@studio.photuna" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="https://www.facebook.com/studio.photuna/" target="_blank" class="social-dot" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/studio.photuna/" target="_blank" class="social-dot social-instagram" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@studio.photuna" target="_blank" class="social-dot" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
               </div>
             </div>
             <div>
@@ -496,13 +941,14 @@
                 <a href="/privacy-request" onclick="navigateTo('privacy-request'); return false;" class="hover:text-brand transition-colors">Privacy Request</a>
               </nav>
             </div>
-          </div>
         </div>
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-8 text-xs text-muted font-bold tracking-tight">
+      </div>
+      <div class="relative bg-white/[0.05] border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50 font-bold tracking-tight">
           <span>Copyright © 2026 Studio Photuna. All rights reserved.</span>
           <div class="flex items-center gap-5">
-            <a href="/privacy-framework" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand">Privacy Policy</a>
-            <a href="/operator-agreement" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand">Terms of Service</a>
+            <a href="/privacy-framework" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/operator-agreement" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-white transition-colors">Terms of Service</a>
           </div>
         </div>
       </div>

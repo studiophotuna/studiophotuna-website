@@ -1711,35 +1711,42 @@ function reviewCardHtml(r) {
     </div>`;
 }
 
+const REVIEW_FALLBACKS = [
+  { rating: 5, name: "Patricia Santos", review_text: "Studio Photuna completely transformed our wedding experience in Manila! The high-angle booth perspective felt super unique, and the instant prints matched our theme frames perfectly." },
+  { rating: 5, name: "Liam Mendoza", review_text: "Highly recommend the 14-day free trial app configurations. Calibrating connected DSLR camera variables worked smoothly, and local test sheets printed flawlessly." },
+  { rating: 5, name: "Sloane Perez", review_text: "Our guests loved the retro filters and quick QR-scans on their phone. Exceptional technical support during our corporate anniversary event setup!" },
+  { rating: 5, name: "Marco Villanueva", review_text: "Setup took minutes, not hours. Connected our DSLR and dye-sub printer, mapped a template, and we were running our first session the same afternoon." }
+];
+
 function renderReviews(payload) {
   if (!googleReviewsList) return; // only exists on the home page
-  const list = Array.isArray(payload.reviews) ? payload.reviews.filter(r => r.review_text).slice(0, 4) : [];
+  const real = Array.isArray(payload.reviews) ? payload.reviews.filter(r => r.review_text).slice(0, 8) : [];
+  const list = real.length ? real : REVIEW_FALLBACKS;
+
   googleReviewsList.innerHTML = "";
-  if (!list.length) {
-    const defaults = [
-      { rating: 5, name: "Patricia Santos", review_text: "Studio Photuna completely transformed our wedding experience in Manila! The high-angle booth perspective felt super unique, and the instant prints matched our theme frames perfectly." },
-      { rating: 5, name: "Liam Mendoza", review_text: "Highly recommend the 14-day free trial app configurations. Calibrating connected DSLR camera variables worked smoothly, and local test sheets printed flawlessly." },
-      { rating: 5, name: "Sloane Perez", review_text: "Our guests loved the retro filters and quick QR-scans on their phone. Exceptional technical support during our corporate anniversary event setup!" },
-      { rating: 5, name: "Marco Villanueva", review_text: "Setup took minutes, not hours. Connected our DSLR and dye-sub printer, mapped a template, and we were running our first session the same afternoon." }
-    ];
-    defaults.forEach(r => {
-      const card = document.createElement("article"); card.className = "review-card card-testimonial hover-lift";
+  // The track is rendered twice end to end: the marquee keyframe translates it
+  // by -50%, which lands exactly on the start of the second copy, so the loop
+  // has no visible seam. The duplicate is decorative, hence aria-hidden.
+  for (const pass of [0, 1]) {
+    list.forEach(r => {
+      const card = document.createElement("article");
+      // Width is set in CSS (.marquee-track .review-card), not a utility
+      // class -- Tailwind's scan cannot see classes added at runtime.
+      card.className = "review-card card-testimonial hover-lift";
+      if (pass === 1) card.setAttribute("aria-hidden", "true");
       card.innerHTML = reviewCardHtml(r);
       googleReviewsList.appendChild(card);
-    }); return;
+    });
   }
-  list.forEach(r => {
-    const card = document.createElement("article"); card.className = "review-card card-testimonial hover-lift";
-    card.innerHTML = reviewCardHtml(r);
-    googleReviewsList.appendChild(card);
-  });
+
   // Once a real approved review exists, the hero proof card upgrades from a
   // generic trial/pricing line to an actual quote instead of a fabricated one.
+  if (!real.length) return;
   const heroProofText = document.getElementById("heroProofText");
   const heroProofIcon = document.getElementById("heroProofIcon");
-  if (heroProofText && list[0]) {
-    heroProofText.textContent = `"${list[0].review_text}" — ${list[0].name}`;
-    if (heroProofIcon) heroProofIcon.innerHTML = '<span class="text-yellow-300 text-xs">' + starIcons(list[0].rating || 5) + '</span>';
+  if (heroProofText && real[0]) {
+    heroProofText.textContent = `"${real[0].review_text}" — ${real[0].name}`;
+    if (heroProofIcon) heroProofIcon.innerHTML = '<span class="text-yellow-300 text-xs">' + starIcons(real[0].rating || 5) + '</span>';
   }
 }
 
@@ -2024,17 +2031,6 @@ function toggleFaq(btn) {
   if (chevron) chevron.style.transform = isOpen ? "rotate(180deg)" : "";
 }
 
-// Hardware flow diagram: swap the shared detail panel's content based on
-// which step icon is hovered/focused, instead of a small per-icon popup.
-function showFlowStep(el, index, group) {
-  const scope = group || "hardware";
-  document.querySelectorAll('.flow-icon[data-flow-group="' + scope + '"]').forEach(icon => icon.classList.toggle("is-active", icon === el));
-  document.querySelectorAll('.flow-detail-step[data-flow-group="' + scope + '"]').forEach(step => {
-    step.classList.toggle("hidden", Number(step.dataset.flowDetail) !== index);
-  });
-}
-
-
 // ===================================================================
 // Init & Event Listeners
 // ===================================================================
@@ -2271,7 +2267,51 @@ function handleCheckoutRedirectResult() {
   window.history.replaceState({}, document.title, cleanUrl);
 }
 
-window.addEventListener("scroll", () => { const header = document.querySelector(".site-header"); if (header) { const scrolled = window.scrollY > 10; header.classList.toggle("shadow-md", scrolled); header.classList.toggle("scrolled", scrolled); } });
+// Header state on scroll. Two things happen here:
+//   .scrolled     -- past ~10px; styled off `.scrolled .header-shell` in
+//                    head.html (glass + its own shadow), which is why no
+//                    shadow utility is toggled on the element itself.
+//   .header-hidden -- slides the bar out of view while scrolling down and
+//                    brings it straight back on any upward scroll.
+// Hiding is suppressed near the top of the page, while the mobile menu is
+// open (the menu is positioned independently and would be left stranded),
+// and entirely under prefers-reduced-motion, where a bar that jumps in and
+// out on every direction change is worse than one that simply stays put.
+(function initHeaderScrollState() {
+  const header = document.querySelector(".site-header");
+  if (!header) return;
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const HIDE_BELOW = 140; // px -- keep the header put over the top of the page
+  const DELTA = 6;        // px -- ignore inertial jitter around a stationary scroll
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  function update() {
+    ticking = false;
+    const y = window.scrollY;
+    header.classList.toggle("scrolled", y > 10);
+
+    const menu = document.getElementById("mobile-menu");
+    const menuOpen = menu && !menu.classList.contains("hidden");
+    if (motionQuery.matches || menuOpen) {
+      header.classList.remove("header-hidden");
+      lastY = y;
+      return;
+    }
+
+    const diff = y - lastY;
+    if (Math.abs(diff) < DELTA) return;
+    header.classList.toggle("header-hidden", diff > 0 && y > HIDE_BELOW);
+    lastY = y;
+  }
+
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  update();
+})();
 
 function toggleMobileMenu() { const menu = document.getElementById("mobile-menu"); menu.classList.toggle("hidden"); }
 if (hamburger) hamburger.onclick = toggleMobileMenu;
@@ -2971,6 +3011,64 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver.observe(el));
 
 // ===================================================================
+// Scroll-linked progress values. Each registered element gets a custom
+// property set to how far it has travelled through the viewport (0..1),
+// measured between two viewport-height fractions; all of the actual
+// interpolation lives in CSS -- see .flood-panel and .scroll-scene in
+// head.html. Skipped entirely under prefers-reduced-motion, where the
+// stylesheet already paints the finished state.
+// ===================================================================
+(function initScrollProgress() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const targets = [];
+  // Every full-screen section publishes --exit: how far its own top edge has
+  // travelled above the viewport, as a fraction of its height. That drives the
+  // blur/fade it leaves with as the next section rides up over it. Measuring
+  // against the element's own top (rather than a viewport crossing) means the
+  // hero works on the same rule despite starting already on screen.
+  document.querySelectorAll("[data-exit]").forEach(el => {
+    targets.push({ el, prop: "--exit", mode: "exit", span: 0.66 });
+  });
+  const panel = document.getElementById("statementPanel");
+  // Fully open by the time the panel's top edge reaches mid-viewport.
+  if (panel) targets.push({ el: panel, prop: "--flood", from: 1, to: 0.5 });
+  // Scenes start a touch later and finish higher up, so the media is still
+  // settling as the section arrives at a comfortable reading position.
+  document.querySelectorAll(".scroll-scene").forEach(el => {
+    targets.push({ el, prop: "--enter", from: 0.95, to: 0.45 });
+  });
+  if (!targets.length) return;
+
+  let ticking = false;
+
+  function update() {
+    ticking = false;
+    const vh = window.innerHeight;
+    for (const t of targets) {
+      let progress;
+      if (t.mode === "exit") {
+        const travel = (t.el.offsetHeight || vh) * t.span;
+        progress = travel > 0 ? -t.el.getBoundingClientRect().top / travel : 0;
+      } else {
+        const start = vh * t.from;
+        const end = vh * t.to;
+        progress = (start - t.el.getBoundingClientRect().top) / (start - end);
+      }
+      t.el.style.setProperty(t.prop, String(Math.min(1, Math.max(0, progress))));
+    }
+  }
+
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
+  update();
+})();
+
+// ===================================================================
 // Booth Flow: full-page numbered steps, scroll-driven crossfade (desktop +
 // motion-ok only). Falls back to the panels' natural stacked document flow
 // everywhere else -- no JS required for that state, it's the default markup.
@@ -3013,6 +3111,10 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     if (!ticking) { ticking = true; requestAnimationFrame(updatePosition); }
   }
 
+  function removeSnapAnchors() {
+    track.querySelectorAll(".flow-snap-anchor").forEach(a => a.remove());
+  }
+
   function activate() {
     // Always start measuring from a clean, normal-flow state so resizes
     // re-measure real content height instead of an already-stretched box.
@@ -3023,13 +3125,29 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     panelsWrap.style.height = panelHeight + "px";
     panels.forEach(p => { p.style.position = "absolute"; p.style.inset = "0"; p.style.transition = "opacity 0.35s ease"; });
 
-    // Fixed, viewport-independent distance -- scaling this off viewport
-    // height made the whole journey noticeably longer on larger/taller
-    // screens, which is exactly where this feature is most likely seen.
-    perStepDistance = 160;
+    // A step has to be at least one scroll gesture long, or a single flick
+    // crosses several and the reader lands on step 5 from step 1. Snap
+    // anchors alone do not prevent that: scroll-snap-stop is not honoured
+    // reliably for closely spaced targets, so the spacing itself has to do
+    // the work -- the same reason section-to-section snapping behaves.
+    perStepDistance = Math.max(360, Math.round(window.innerHeight * 0.9));
     maxScroll = perStepDistance * (numSteps - 1);
     if (navWrap) navWrap.classList.remove("hidden");
     track.style.height = (sticky.offsetHeight + STICKY_TOP + maxScroll) + "px";
+
+    // Drop a snap anchor at each step's scroll offset -- the same positions
+    // updatePosition() and the dot handler use. Steps sit only
+    // perStepDistance apart, so one flick would otherwise carry the reader
+    // through several at once; scroll-snap-stop on these lands each gesture
+    // on the next step.
+    removeSnapAnchors();
+    for (let i = 0; i < numSteps; i++) {
+      const anchor = document.createElement("div");
+      anchor.className = "flow-snap-anchor";
+      anchor.setAttribute("aria-hidden", "true");
+      anchor.style.top = (STICKY_TOP + i * perStepDistance) + "px";
+      track.appendChild(anchor);
+    }
 
     active = true;
     updatePosition();
@@ -3039,6 +3157,7 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
   function deactivate() {
     if (!active) return;
     active = false;
+    removeSnapAnchors();
     track.style.height = "";
     panelsWrap.style.height = "";
     panels.forEach(p => { p.style.position = ""; p.style.inset = ""; p.style.opacity = ""; p.style.pointerEvents = ""; p.style.transition = ""; });
