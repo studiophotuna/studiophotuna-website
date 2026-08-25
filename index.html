@@ -360,6 +360,140 @@
         pointer-events: none;
       }
 
+      /* ---- Full-screen section rhythm -------------------------------- */
+
+      /* Each major section fills the viewport and the next one rides up over
+         it on a rounded top edge. svh keeps mobile browser chrome from
+         pushing the fold off-screen. */
+      .fs {
+        position: relative;
+        min-height: 100vh;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      /* Same height, normal block flow. For sections containing position:
+         sticky children, which a flex parent can disturb. */
+      .fs-block {
+        position: relative;
+        min-height: 100vh;
+        min-height: 100svh;
+      }
+      /* The first section sits below main's 5rem top padding, so it subtracts
+         that to land exactly one screen tall. */
+      .fs-first {
+        min-height: calc(100vh - 5rem);
+        min-height: calc(100svh - 5rem);
+      }
+      .fs > .fs-body, .fs > .fs-body-soft { width: 100%; }
+
+      /* Exit treatment as a section scrolls away: app.js publishes --exit. */
+      .fs-body {
+        filter: blur(calc(var(--exit) * 14px));
+        opacity: calc(1 - var(--exit) * 0.85);
+        transform: scale(calc(1 - var(--exit) * 0.04));
+      }
+      /* Opacity-only variant. filter and transform both create a containing
+         block that breaks position: sticky descendants; plain opacity does
+         not, so scroll-driven sections use this instead. */
+      .fs-body-soft {
+        opacity: calc(1 - var(--exit) * 0.85);
+      }
+
+      /* Pulls a section up over the one before it. */
+      .fs-lift {
+        margin-top: -2.75rem;
+        border-top-left-radius: 2.5rem;
+        border-top-right-radius: 2.5rem;
+        box-shadow: 0 -18px 50px rgba(17, 24, 39, 0.09);
+      }
+
+      /* ---- Hero background ------------------------------------------- */
+
+      /* Drifting soft light pools -- the studio-lighting read. */
+      .ph-glow {
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(70px);
+        animation: ph-glow-drift 20s ease-in-out infinite;
+      }
+      @keyframes ph-glow-drift {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33%      { transform: translate(46px, -34px) scale(1.14); }
+        66%      { transform: translate(-34px, 24px) scale(0.92); }
+      }
+
+      /* Photo strips drifting up and back, the product's own artefact. */
+      .ph-strip {
+        position: absolute;
+        width: 3.6rem;
+        padding: 0.35rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        background: #fff;
+        border-radius: 0.45rem;
+        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.13);
+        animation: ph-strip-drift 15s ease-in-out infinite;
+      }
+      .ph-strip span {
+        display: block;
+        height: 2rem;
+        border-radius: 0.22rem;
+        background: linear-gradient(160deg, #dbeafe, #bfdbfe);
+      }
+      @keyframes ph-strip-drift {
+        0%, 100% { transform: rotate(var(--r, 0deg)) translateY(0); }
+        50%      { transform: rotate(var(--r, 0deg)) translateY(-22px); }
+      }
+
+      /* Slow shutter-style pulse on the ring accents. */
+      .ph-ring {
+        position: absolute;
+        border-radius: 999px;
+        border: 2px solid rgba(12, 102, 228, 0.18);
+        animation: ph-ring-pulse 7s ease-out infinite;
+      }
+      @keyframes ph-ring-pulse {
+        0%   { transform: scale(0.75); opacity: 0; }
+        35%  { opacity: 0.9; }
+        100% { transform: scale(1.5); opacity: 0; }
+      }
+
+      /* ---- Review marquee -------------------------------------------- */
+
+      .marquee {
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+        mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+      }
+      .marquee-track {
+        display: flex;
+        gap: 1.5rem;
+        width: max-content;
+        animation: marquee-scroll 52s linear infinite;
+      }
+      /* Card width lives here rather than on a Tailwind utility: these cards
+         are injected by app.js after the CDN's content scan, so an arbitrary
+         value class like w-[22rem] would never be generated. */
+      .marquee-track .review-card {
+        width: 20rem;
+        flex-shrink: 0;
+      }
+      @media (min-width: 640px) {
+        .marquee-track .review-card { width: 22rem; }
+      }
+      /* The track holds the cards twice, so -50% lands exactly on the seam. */
+      @keyframes marquee-scroll {
+        from { transform: translateX(0); }
+        to   { transform: translateX(-50%); }
+      }
+      .marquee:hover .marquee-track,
+      .marquee:focus-within .marquee-track {
+        animation-play-state: paused;
+      }
+
       /* ---- Hero ----------------------------------------------------- */
 
       /* The hero blurs back and fades as the page scrolls, so the section
@@ -606,12 +740,25 @@
         .flood-panel {
           clip-path: none !important;
         }
-        .flood-copy, .scene-media, .scene-copy, .hero-content, .hero-decor {
+        .flood-copy, .scene-media, .scene-copy, .hero-content, .hero-decor,
+        .fs-body, .fs-body-soft {
           opacity: 1 !important;
           transform: none !important;
         }
-        .hero-content {
+        .hero-content, .fs-body {
           filter: none !important;
+        }
+        /* Hold the background art and the review marquee still. The marquee
+           keeps its overflow clip, so the cards past the first screenful stay
+           reachable by scrolling the strip rather than by waiting for it. */
+        .ph-glow, .ph-strip, .ph-ring {
+          animation: none !important;
+        }
+        .marquee-track {
+          animation: none !important;
+        }
+        .marquee {
+          overflow-x: auto;
         }
       }
     </style>
@@ -675,45 +822,29 @@
 
     <main class="min-h-screen pt-20">
         <!-- Hero Section -->
-        <section id="hero" class="relative overflow-clip px-6 pt-14 pb-36 sm:pt-20 sm:pb-44 bg-grey">
-          <!-- Decorative layer: sparkles, arcs, and abstract app-window cards.
-               Purely ornamental, so the whole layer is hidden from assistive
-               tech and dropped below lg where there is no room for it. -->
-          <div class="hero-decor hidden lg:block absolute inset-0 pointer-events-none" aria-hidden="true">
-            <span class="hero-sparkle" style="width:1.15rem;height:1.15rem;top:27%;left:29%;"></span>
-            <span class="hero-sparkle" style="width:0.8rem;height:0.8rem;top:23%;left:32%;opacity:0.75;"></span>
-            <span class="hero-arch" style="bottom:12%;left:13%;"></span>
-            <span class="hero-quarters" style="top:52%;right:9%;"><span></span><span></span></span>
+        <section id="hero" data-exit class="fs fs-first relative overflow-clip px-6 py-16 bg-grey">
+          <!-- Background art, built around what the product actually makes:
+               drifting photo strips, soft studio light pools, and shutter-like
+               rings. Ornamental, so the layer is hidden from assistive tech;
+               every animation stops under prefers-reduced-motion. -->
+          <div class="hero-decor absolute inset-0 pointer-events-none overflow-clip" aria-hidden="true">
+            <span class="ph-glow" style="width:30rem;height:30rem;top:-8rem;left:-6rem;background:rgba(12,102,228,0.16);"></span>
+            <span class="ph-glow" style="width:26rem;height:26rem;bottom:-8rem;right:-4rem;background:rgba(122,173,247,0.22);animation-delay:-7s;"></span>
+            <span class="ph-glow" style="width:20rem;height:20rem;top:34%;left:52%;background:rgba(247,213,74,0.14);animation-delay:-13s;"></span>
 
-            <div class="hero-float" style="top:14%;left:4%;">
-              <div class="hero-float-card">
-                <div class="hero-float-dots"><span></span><span></span><span></span></div>
-                <div class="hero-float-body">
-                  <div class="hero-float-rail"><i></i><i></i><i></i></div>
-                  <div class="hero-float-main"><i></i><i></i><i></i></div>
-                </div>
-              </div>
-              <span class="hero-badge-chip bg-brand" style="top:52%;left:52%;">Capture</span>
-              <span class="hero-cursor text-brand" style="top:74%;left:79%;"><i class="fa-solid fa-arrow-pointer"></i></span>
-            </div>
+            <span class="ph-ring" style="width:16rem;height:16rem;top:14%;left:12%;"></span>
+            <span class="ph-ring" style="width:22rem;height:22rem;bottom:8%;right:10%;animation-delay:-3.5s;"></span>
 
-            <div class="hero-float" style="bottom:14%;right:3%;">
-              <div class="hero-float-card">
-                <div class="hero-float-dots"><span></span><span></span><span></span></div>
-                <div class="hero-float-body">
-                  <div class="hero-float-rail"><i></i><i></i><i></i></div>
-                  <div class="hero-float-main"><i></i><i></i><i></i></div>
-                </div>
-              </div>
-              <span class="hero-badge-chip" style="background:#f4694f;top:64%;left:66%;">Printed</span>
-              <span class="hero-cursor" style="color:#f4694f;top:84%;left:92%;"><i class="fa-solid fa-arrow-pointer"></i></span>
-            </div>
+            <span class="ph-strip hidden sm:flex" style="top:16%;left:6%;--r:-11deg;"><span></span><span></span><span></span></span>
+            <span class="ph-strip hidden lg:flex" style="top:58%;left:13%;--r:7deg;animation-delay:-4s;"><span></span><span></span><span></span></span>
+            <span class="ph-strip hidden sm:flex" style="top:22%;right:8%;--r:9deg;animation-delay:-8s;"><span></span><span></span><span></span></span>
+            <span class="ph-strip hidden lg:flex" style="bottom:14%;right:15%;--r:-6deg;animation-delay:-11s;"><span></span><span></span><span></span></span>
           </div>
 
           <div class="hero-content relative max-w-5xl mx-auto text-center space-y-6">
             <p class="text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-muted">For photobooth operators, event hosts, and studio owners</p>
             <h1 class="h1-display text-[#111827] text-4xl sm:text-6xl md:text-7xl">
-              Everything your photobooth needs.<br class="hidden sm:block"> In one <span class="hero-toggle" aria-hidden="true"><span class="hero-toggle-knob">↗</span></span> powerful app.
+              Everything your photobooth needs.<br class="hidden sm:block"> In one powerful app.
             </h1>
             <p class="text-base sm:text-lg leading-relaxed text-body max-w-2xl mx-auto font-medium">
               Events, templates, guest sessions, printing, and QR delivery — all from one Windows app, on hardware you already own.
@@ -735,36 +866,73 @@
 
         <!-- Stats strip -- pulled up over the hero so it reads as sliding on
              top of it as the hero blurs back. -->
-        <section class="relative z-10 -mt-16 sm:-mt-24 rounded-t-[2.5rem] bg-white shadow-[0_-18px_50px_rgba(17,24,39,0.07)] pt-16 pb-12 px-6">
-          <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <p class="text-3xl sm:text-4xl font-black text-title">14 Days</p>
-              <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Free Trial</p>
+        <!-- What you get: the numbers, what's included, and the roadmap note,
+             gathered into one screen. -->
+        <section data-exit class="fs fs-lift bg-white px-6 py-20">
+          <div class="fs-body max-w-6xl mx-auto space-y-14">
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+              <h2 class="h2-display text-title">What you get</h2>
+              <p class="text-base text-body">One licence, one install, and everything needed to run a booth as a business — no add-ons to buy later.</p>
             </div>
-            <div>
-              <p class="text-3xl sm:text-4xl font-black text-title">1 App</p>
-              <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Complete Workflow</p>
-            </div>
-            <div>
-              <p class="text-3xl sm:text-4xl font-black text-title">0</p>
-              <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Coding Required</p>
-            </div>
-            <div>
-              <p class="text-3xl sm:text-4xl font-black text-title">Win 10/11</p>
-              <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Compatible</p>
-            </div>
-          </div>
-        </section>
 
-        <!-- Coming soon teaser -->
-        <section class="py-3 px-6 bg-white text-center">
-          <p class="text-xs sm:text-sm font-bold text-brand-700"><i class="fa-solid fa-bolt text-[10px] mr-1"></i> Coming soon: expanding to Android and iPad platforms</p>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <p class="text-3xl sm:text-4xl font-black text-title">14 Days</p>
+                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Free Trial</p>
+              </div>
+              <div>
+                <p class="text-3xl sm:text-4xl font-black text-title">1 App</p>
+                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Complete Workflow</p>
+              </div>
+              <div>
+                <p class="text-3xl sm:text-4xl font-black text-title">0</p>
+                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Coding Required</p>
+              </div>
+              <div>
+                <p class="text-3xl sm:text-4xl font-black text-title">Win 10/11</p>
+                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Compatible</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 0ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-camera"></i></div>
+                <div>
+                  <p class="text-sm font-bold text-title">Works with your DSLR</p>
+                  <p class="text-xs text-body mt-0.5">Connect the camera and dye-sub printer you already own.</p>
+                </div>
+              </div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 80ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-wifi"></i></div>
+                <div>
+                  <p class="text-sm font-bold text-title">Runs through the event</p>
+                  <p class="text-xs text-body mt-0.5">Sessions and printing keep going if the venue Wi-Fi drops.</p>
+                </div>
+              </div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 160ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-peso-sign"></i></div>
+                <div>
+                  <p class="text-sm font-bold text-title">Takes payments on site</p>
+                  <p class="text-xs text-body mt-0.5">Rental mode and a payment terminal built into the guest flow.</p>
+                </div>
+              </div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 240ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-chart-simple"></i></div>
+                <div>
+                  <p class="text-sm font-bold text-title">Reports as you go</p>
+                  <p class="text-xs text-body mt-0.5">Live session counts, revenue, and print totals per event.</p>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-center text-xs sm:text-sm font-bold text-brand-700"><i class="fa-solid fa-bolt text-[10px] mr-1"></i> Coming soon: expanding to Android and iPad platforms</p>
+          </div>
         </section>
 
         <!-- Value Proposition -- carries the full-bleed flood treatment: the
              panel's clipped top edge opens out as the section scrolls in. -->
-        <section class="flood-panel bg-brand py-24 sm:py-28 px-6 overflow-clip" id="statementPanel">
-          <div class="flood-copy">
+        <section data-exit class="flood-panel fs bg-brand py-24 px-6 overflow-clip" id="statementPanel">
+          <div class="flood-copy fs-body">
             <div class="max-w-5xl mx-auto text-center space-y-4">
               <h2 class="h2-display text-white">Why Studio Photuna</h2>
               <p class="text-base text-white/75 max-w-3xl mx-auto">Running a Korean-style photobooth business usually means stitching together a booking spreadsheet, a separate template design tool, and a clunky kiosk build. Studio Photuna replaces all of it with one photo booth business software you install on a Windows PC — so you spend less time managing tools and more time booked on events.</p>
@@ -790,8 +958,11 @@
         </section>
 
         <!-- Live Photobooth Interface Showcase Gallery -->
-        <section id="how-it-works" class="py-16 px-6 bg-white">
-          <div class="max-w-7xl mx-auto space-y-12">
+        <!-- fs-block, not fs: the booth flow inside relies on position:
+             sticky, which a flex parent can disturb. Its exit is the
+             opacity-only variant for the same reason. -->
+        <section id="how-it-works" data-exit class="fs-block fs-lift bg-white py-20 px-6">
+          <div class="fs-body-soft max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">How It Works</h2>
               <p class="text-base text-body">From a branded "Tap to Start" trigger to a printed strip and QR gallery hand-off — every guest screen is timed, on-brand, and built to reset itself for the next walk-up.</p>
@@ -941,7 +1112,8 @@
         <!-- The image and copy ride a shared scroll progress value rather than
              the one-shot .reveal observer, so the two halves stagger as the
              section travels up the viewport. -->
-        <section id="qr-delivery" class="scroll-scene py-24 px-6 bg-white overflow-clip">
+        <section id="qr-delivery" data-exit class="scroll-scene fs fs-lift py-20 px-6 bg-white overflow-clip">
+          <div class="fs-body space-y-12">
           <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div class="scene-media card-product relative order-2 lg:order-1">
               <img class="w-full h-auto object-cover" src="interact_image_7.webp" width="3200" height="2000" loading="lazy" alt="Now printing screen with scannable QR code for guest photo delivery" onerror="this.onerror=null; this.src='https://placehold.co/800x600/f4f5f8/5f6678?text=QR+Delivery+Preview'" />
@@ -968,10 +1140,8 @@
               </div>
             </div>
           </div>
-        </section>
 
-        <!-- Frictionless safeguards strip -->
-        <section class="py-16 px-6 bg-white">
+          <!-- Frictionless safeguards, folded into the same screen -->
           <div class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div class="feature-card flex items-center gap-4 rounded-2xl border border-line bg-grey px-6 py-5" style="transition-delay: 0ms;">
               <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-stopwatch"></i></div>
@@ -995,11 +1165,12 @@
               </div>
             </div>
           </div>
+          </div>
         </section>
 
         <!-- Dynamic Core Features Grid -->
-        <section id="features" class="py-24 px-6 bg-navy-950">
-          <div class="max-w-7xl mx-auto space-y-16">
+        <section id="features" data-exit class="fs fs-lift py-20 px-6 bg-navy-950">
+          <div class="fs-body max-w-7xl mx-auto space-y-16">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-white">Operator Workspace</h2>
               <p class="text-base text-white/60">Set up the business side, event flow, guest experience, and delivery workflow in one practical Windows app.</p>
@@ -1055,8 +1226,8 @@
         </section>
 
         <!-- Fixed Interactive Pro Plan pricing -->
-        <section id="pricing" class="py-24 px-6 bg-white border-t border-line">
-          <div class="max-w-7xl mx-auto space-y-12">
+        <section id="pricing" data-exit class="fs fs-lift py-20 px-6 bg-white">
+          <div class="fs-body max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">Pricing</h2>
               <p class="text-base text-body">Start with a free trial, then choose monthly flexibility or yearly savings on the plan built for full-time operators.</p>
@@ -1122,15 +1293,20 @@
         </section>
 
         <!-- Static reviews placeholder -->
-        <section class="py-24 px-6 bg-white">
-          <div class="max-w-7xl mx-auto space-y-16">
+        <section data-exit class="fs fs-lift py-20 px-6 bg-white">
+          <div class="fs-body max-w-7xl mx-auto space-y-14">
             <div class="reveal text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">Customer Proof</h2>
               <p class="text-base text-body">See what booth operators and their guests are saying about running their business on Studio Photuna.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto" id="googleReviewsList">
-              <!-- Rendered Dynamically via JS state -->
+            <!-- Single-line marquee. app.js renders each review twice into the
+                 track so the -50% loop meets itself; hovering or focusing
+                 inside pauses it. -->
+            <div class="marquee -mx-6">
+              <div class="marquee-track py-2" id="googleReviewsList">
+                <!-- Rendered Dynamically via JS state -->
+              </div>
             </div>
 
             <!-- Submit a Review (Collapsible) — visually distinct from the proof cards above -->
@@ -1188,8 +1364,8 @@
         </section>
 
         <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Studio Photuna?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna is a Windows application for photo booth operators. It runs your camera, printer, templates, guest sessions, and QR photo delivery from one workspace — so you can operate a professional photobooth without proprietary kiosk hardware."}},{"@type":"Question","name":"Do I need a physical kiosk enclosure to run the app?","acceptedAnswer":{"@type":"Answer","text":"No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation."}},{"@type":"Question","name":"What cameras are compatible with the software?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices."}},{"@type":"Question","name":"Does the app support physical printing?","acceptedAnswer":{"@type":"Answer","text":"Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings."}},{"@type":"Question","name":"Can guests retake their photos during a session?","acceptedAnswer":{"@type":"Answer","text":"Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed."}},{"@type":"Question","name":"What photo strip layouts are available?","acceptedAnswer":{"@type":"Answer","text":"The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor."}},{"@type":"Question","name":"How does QR cloud sharing work?","acceptedAnswer":{"@type":"Answer","text":"After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end."}},{"@type":"Question","name":"Is there a free trial available?","acceptedAnswer":{"@type":"Answer","text":"Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start. Photo exports are watermarked during the trial and become watermark-free once you upgrade."}},{"@type":"Question","name":"Can I use the app offline during events?","acceptedAnswer":{"@type":"Answer","text":"The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue."}},{"@type":"Question","name":"How do software updates work?","acceptedAnswer":{"@type":"Answer","text":"Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience."}},{"@type":"Question","name":"What happens to guest photos after the event?","acceptedAnswer":{"@type":"Answer","text":"Photos captured locally stay on your PC indefinitely. Cloud-uploaded photos (via QR sharing) are retained for 30 days after the event, then permanently deleted from our servers to protect guest privacy."}},{"@type":"Question","name":"Can I cancel my subscription?","acceptedAnswer":{"@type":"Answer","text":"Yes, anytime. Free trials carry no charges and can be cancelled with no financial obligation. Monthly plans can be cancelled to prevent the next billing cycle, and annual plans cancelled within 30 days receive a pro-rata refund for unused months — see our full Refund & Cancellation Policy for details."}},{"@type":"Question","name":"How do I download the app?","acceptedAnswer":{"@type":"Answer","text":"Head to the download page or use the download button on this page to get the Windows installer, then sign in with your account to start your 14-day free trial from inside the app."}}]}</script>
-        <section id="faq" class="py-24 px-6 bg-white">
-          <div class="max-w-7xl mx-auto space-y-12">
+        <section id="faq" data-exit class="fs fs-lift py-20 px-6 bg-white">
+          <div class="fs-body max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title" style="font-weight: 800;">FAQ</h2>
               <p class="text-base text-body">Everything aspiring and active operators ask before subscribing.</p>
@@ -1355,10 +1531,12 @@
           </div>
         </section>
 
-        <!-- Closing CTA banner -->
-        <section class="py-20 px-6 bg-white">
-          <div class="reveal max-w-5xl mx-auto rounded-3xl gradient-accent-bg px-8 py-16 sm:py-20 text-center space-y-6 relative overflow-hidden">
-            <div class="absolute -top-24 -right-24 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+        <!-- Closing CTA. Deliberately shorter than the full-screen sections
+             above it, and its colour runs edge to edge straight into the
+             footer rather than sitting as a card on white. -->
+        <section class="fs-lift relative overflow-hidden gradient-accent-bg px-6 pt-20 pb-24">
+          <div class="reveal max-w-4xl mx-auto text-center space-y-6 relative">
+            <div class="absolute -top-32 -right-32 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
             <h2 class="h2-display text-white" style="font-weight: 800;">What are you waiting for?</h2>
             <p class="text-base text-white/85 max-w-xl mx-auto">Start your 14-day free trial today — no credit card required, cancel anytime.</p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3">

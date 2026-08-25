@@ -1711,35 +1711,42 @@ function reviewCardHtml(r) {
     </div>`;
 }
 
+const REVIEW_FALLBACKS = [
+  { rating: 5, name: "Patricia Santos", review_text: "Studio Photuna completely transformed our wedding experience in Manila! The high-angle booth perspective felt super unique, and the instant prints matched our theme frames perfectly." },
+  { rating: 5, name: "Liam Mendoza", review_text: "Highly recommend the 14-day free trial app configurations. Calibrating connected DSLR camera variables worked smoothly, and local test sheets printed flawlessly." },
+  { rating: 5, name: "Sloane Perez", review_text: "Our guests loved the retro filters and quick QR-scans on their phone. Exceptional technical support during our corporate anniversary event setup!" },
+  { rating: 5, name: "Marco Villanueva", review_text: "Setup took minutes, not hours. Connected our DSLR and dye-sub printer, mapped a template, and we were running our first session the same afternoon." }
+];
+
 function renderReviews(payload) {
   if (!googleReviewsList) return; // only exists on the home page
-  const list = Array.isArray(payload.reviews) ? payload.reviews.filter(r => r.review_text).slice(0, 4) : [];
+  const real = Array.isArray(payload.reviews) ? payload.reviews.filter(r => r.review_text).slice(0, 8) : [];
+  const list = real.length ? real : REVIEW_FALLBACKS;
+
   googleReviewsList.innerHTML = "";
-  if (!list.length) {
-    const defaults = [
-      { rating: 5, name: "Patricia Santos", review_text: "Studio Photuna completely transformed our wedding experience in Manila! The high-angle booth perspective felt super unique, and the instant prints matched our theme frames perfectly." },
-      { rating: 5, name: "Liam Mendoza", review_text: "Highly recommend the 14-day free trial app configurations. Calibrating connected DSLR camera variables worked smoothly, and local test sheets printed flawlessly." },
-      { rating: 5, name: "Sloane Perez", review_text: "Our guests loved the retro filters and quick QR-scans on their phone. Exceptional technical support during our corporate anniversary event setup!" },
-      { rating: 5, name: "Marco Villanueva", review_text: "Setup took minutes, not hours. Connected our DSLR and dye-sub printer, mapped a template, and we were running our first session the same afternoon." }
-    ];
-    defaults.forEach(r => {
-      const card = document.createElement("article"); card.className = "review-card card-testimonial hover-lift";
+  // The track is rendered twice end to end: the marquee keyframe translates it
+  // by -50%, which lands exactly on the start of the second copy, so the loop
+  // has no visible seam. The duplicate is decorative, hence aria-hidden.
+  for (const pass of [0, 1]) {
+    list.forEach(r => {
+      const card = document.createElement("article");
+      // Width is set in CSS (.marquee-track .review-card), not a utility
+      // class -- Tailwind's scan cannot see classes added at runtime.
+      card.className = "review-card card-testimonial hover-lift";
+      if (pass === 1) card.setAttribute("aria-hidden", "true");
       card.innerHTML = reviewCardHtml(r);
       googleReviewsList.appendChild(card);
-    }); return;
+    });
   }
-  list.forEach(r => {
-    const card = document.createElement("article"); card.className = "review-card card-testimonial hover-lift";
-    card.innerHTML = reviewCardHtml(r);
-    googleReviewsList.appendChild(card);
-  });
+
   // Once a real approved review exists, the hero proof card upgrades from a
   // generic trial/pricing line to an actual quote instead of a fabricated one.
+  if (!real.length) return;
   const heroProofText = document.getElementById("heroProofText");
   const heroProofIcon = document.getElementById("heroProofIcon");
-  if (heroProofText && list[0]) {
-    heroProofText.textContent = `"${list[0].review_text}" — ${list[0].name}`;
-    if (heroProofIcon) heroProofIcon.innerHTML = '<span class="text-yellow-300 text-xs">' + starIcons(list[0].rating || 5) + '</span>';
+  if (heroProofText && real[0]) {
+    heroProofText.textContent = `"${real[0].review_text}" — ${real[0].name}`;
+    if (heroProofIcon) heroProofIcon.innerHTML = '<span class="text-yellow-300 text-xs">' + starIcons(real[0].rating || 5) + '</span>';
   }
 }
 
@@ -3015,12 +3022,14 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
   const targets = [];
-  // The hero measures its own scroll depth rather than a viewport crossing,
-  // since it starts already on screen: --exit reaches 1 about two thirds of
-  // the way through it, which is where the section below has fully ridden up
-  // over the blurred hero.
-  const hero = document.getElementById("hero");
-  if (hero) targets.push({ el: hero, prop: "--exit", mode: "depth", span: 0.66 });
+  // Every full-screen section publishes --exit: how far its own top edge has
+  // travelled above the viewport, as a fraction of its height. That drives the
+  // blur/fade it leaves with as the next section rides up over it. Measuring
+  // against the element's own top (rather than a viewport crossing) means the
+  // hero works on the same rule despite starting already on screen.
+  document.querySelectorAll("[data-exit]").forEach(el => {
+    targets.push({ el, prop: "--exit", mode: "exit", span: 0.66 });
+  });
   const panel = document.getElementById("statementPanel");
   // Fully open by the time the panel's top edge reaches mid-viewport.
   if (panel) targets.push({ el: panel, prop: "--flood", from: 1, to: 0.5 });
@@ -3038,9 +3047,9 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     const vh = window.innerHeight;
     for (const t of targets) {
       let progress;
-      if (t.mode === "depth") {
+      if (t.mode === "exit") {
         const travel = (t.el.offsetHeight || vh) * t.span;
-        progress = travel > 0 ? window.scrollY / travel : 0;
+        progress = travel > 0 ? -t.el.getBoundingClientRect().top / travel : 0;
       } else {
         const start = vh * t.from;
         const end = vh * t.to;
