@@ -541,8 +541,10 @@
         </section>
 
         <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Studio Photuna?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna is a Windows application for photo booth operators. It runs your camera, printer, templates, guest sessions, and QR photo delivery from one workspace — so you can operate a professional photobooth without proprietary kiosk hardware."}},{"@type":"Question","name":"Do I need a physical kiosk enclosure to run the app?","acceptedAnswer":{"@type":"Answer","text":"No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation."}},{"@type":"Question","name":"What cameras are compatible with the software?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices."}},{"@type":"Question","name":"Does the app support physical printing?","acceptedAnswer":{"@type":"Answer","text":"Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings."}},{"@type":"Question","name":"Can guests retake their photos during a session?","acceptedAnswer":{"@type":"Answer","text":"Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed."}},{"@type":"Question","name":"What photo strip layouts are available?","acceptedAnswer":{"@type":"Answer","text":"The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor."}},{"@type":"Question","name":"How does QR cloud sharing work?","acceptedAnswer":{"@type":"Answer","text":"After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end."}},{"@type":"Question","name":"Is there a free trial available?","acceptedAnswer":{"@type":"Answer","text":"Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start. Photo exports are watermarked during the trial and become watermark-free once you upgrade."}},{"@type":"Question","name":"Can I use the app offline during events?","acceptedAnswer":{"@type":"Answer","text":"The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue."}},{"@type":"Question","name":"How do software updates work?","acceptedAnswer":{"@type":"Answer","text":"Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience."}},{"@type":"Question","name":"What happens to guest photos after the event?","acceptedAnswer":{"@type":"Answer","text":"Photos captured locally stay on your PC indefinitely. Cloud-uploaded photos (via QR sharing) are retained for 30 days after the event, then permanently deleted from our servers to protect guest privacy."}},{"@type":"Question","name":"Can I cancel my subscription?","acceptedAnswer":{"@type":"Answer","text":"Yes, anytime. Free trials carry no charges and can be cancelled with no financial obligation. Monthly plans can be cancelled to prevent the next billing cycle, and annual plans cancelled within 30 days receive a pro-rata refund for unused months — see our full Refund & Cancellation Policy for details."}},{"@type":"Question","name":"How do I download the app?","acceptedAnswer":{"@type":"Answer","text":"Head to the download page or use the download button on this page to get the Windows installer, then sign in with your account to start your 14-day free trial from inside the app."}}]}</script>
+        <!-- Exits on opacity alone -- the long answer text is hard to read
+             through a blur as it leaves. -->
         <section id="faq" data-exit class="fs fs-lift py-20 px-6 bg-white">
-          <div class="fs-body max-w-7xl mx-auto space-y-12">
+          <div class="fs-body-soft max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title" style="font-weight: 800;">FAQ</h2>
               <p class="text-base text-body">Everything aspiring and active operators ask before subscribing.</p>
@@ -708,10 +710,11 @@
           </div>
         </section>
 
-        <!-- Closing CTA. Deliberately shorter than the full-screen sections
-             above it, and its colour runs edge to edge straight into the
-             footer rather than sitting as a card on white. -->
-        <section class="fs-lift relative overflow-hidden gradient-accent-bg px-6 pt-20 pb-24">
+        <!-- Closing CTA. Fills a screen like the sections above it, then the
+             panel scales down as it scrolls so it recedes toward the footer
+             rather than sliding away. -->
+        <section data-exit class="fs-block fs-lift bg-white min-h-[200svh]">
+          <div class="closing-panel sticky top-0 relative overflow-hidden gradient-accent-bg flex flex-col justify-center h-[100svh] px-6 py-20">
           <div class="reveal max-w-4xl mx-auto text-center space-y-6 relative">
             <div class="absolute -top-32 -right-32 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
             <h2 class="h2-display text-white" style="font-weight: 800;">What are you waiting for?</h2>
@@ -724,5 +727,6 @@
                 <i class="fa-solid fa-download"></i> Download the App
               </a>
             </div>
+          </div>
           </div>
         </section>

@@ -343,8 +343,28 @@
       /* ---- Full-screen section rhythm -------------------------------- */
 
       /* Each major section fills the viewport and the next one rides up over
-         it on a rounded top edge. svh keeps mobile browser chrome from
-         pushing the fold off-screen. */
+         it. svh keeps mobile browser chrome from pushing the fold off-screen.
+         Sections are snap points, so a scroll gesture settles on a section
+         rather than running past it; scroll-snap-stop stops a fast fling from
+         skipping one entirely. Sections taller than the viewport (How It
+         Works, FAQ) are handled by the spec's larger-than-snapport rule --
+         they only snap at their edges, so their interiors scroll freely. */
+      /* Scoped with :has so only pages that actually have full-screen
+         sections become snap containers -- this stylesheet is shared by
+         every page. */
+      html:has(.fs) {
+        scroll-snap-type: y mandatory;
+      }
+      .fs, .fs-block {
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+      /* The footer has to be a snap target too. Without it the last section's
+         bottom edge is the final snap position, and scroll-snap-stop pins the
+         page there -- leaving the footer permanently cut off. */
+      footer {
+        scroll-snap-align: end;
+      }
       .fs {
         position: relative;
         min-height: 100vh;
@@ -360,11 +380,14 @@
         min-height: 100vh;
         min-height: 100svh;
       }
-      /* The first section sits below main's 5rem top padding, so it subtracts
-         that to land exactly one screen tall. */
+      /* The hero runs up behind the floating header instead of starting below
+         it: the negative margin cancels main's 5rem top padding, and the
+         matching padding keeps the content itself clear of the bar. */
       .fs-first {
-        min-height: calc(100vh - 5rem);
-        min-height: calc(100svh - 5rem);
+        margin-top: -5rem;
+        padding-top: 5rem;
+        min-height: 100vh;
+        min-height: 100svh;
       }
       .fs > .fs-body, .fs > .fs-body-soft { width: 100%; }
 
@@ -381,12 +404,23 @@
         opacity: calc(1 - var(--exit) * 0.85);
       }
 
-      /* Pulls a section up over the one before it. */
+      /* Pulls a section up over the one before it. Square edges by design --
+         the rounded top is reserved for the footer alone. */
       .fs-lift {
         margin-top: -2.75rem;
-        border-top-left-radius: 2.5rem;
-        border-top-right-radius: 2.5rem;
         box-shadow: 0 -18px 50px rgba(17, 24, 39, 0.09);
+      }
+
+      /* Closing CTA: a sticky panel one screen tall inside a taller section,
+         so it stays pinned and scales down as the section scrolls past --
+         receding toward the footer rather than sliding away. The extra height
+         is what gives it somewhere to travel; a single-viewport section would
+         be pinned between two snap points with no room for the effect. */
+      .closing-panel {
+        transform: scale(calc(1 - var(--exit) * 0.28));
+        border-radius: calc(var(--exit) * 2.5rem);
+        opacity: calc(1 - var(--exit) * 0.3);
+        transform-origin: center center;
       }
 
       /* ---- Hero background ------------------------------------------- */
@@ -721,9 +755,12 @@
           clip-path: none !important;
         }
         .flood-copy, .scene-media, .scene-copy, .hero-content, .hero-decor,
-        .fs-body, .fs-body-soft {
+        .fs-body, .fs-body-soft, .closing-panel {
           opacity: 1 !important;
           transform: none !important;
+        }
+        .closing-panel {
+          border-radius: 0 !important;
         }
         .hero-content, .fs-body {
           filter: none !important;
