@@ -197,34 +197,6 @@
         animation: pulse-glow 3s ease-in-out infinite;
       }
 
-      /* Animated flow connector -- traveling pulse between hardware-flow steps */
-      .flow-connector {
-        position: relative;
-        width: 2rem;
-        height: 2px;
-        background: #dedfe6;
-        border-radius: 999px;
-        overflow: visible;
-      }
-      .flow-dot {
-        position: absolute;
-        top: 50%;
-        left: 0;
-        width: 8px;
-        height: 8px;
-        margin-top: -4px;
-        border-radius: 999px;
-        background: #0c66e4;
-        box-shadow: 0 0 8px rgba(12, 102, 228, 0.7);
-        animation: flow-travel 3.2s ease-in-out infinite;
-      }
-      @keyframes flow-travel {
-        0% { left: 0; opacity: 0; }
-        10% { opacity: 1; }
-        90% { opacity: 1; }
-        100% { left: calc(100% - 8px); opacity: 0; }
-      }
-
       /* Numbered step navigator for the scroll-driven How It Works flow */
       .flow-step-dot {
         width: 2rem;
@@ -250,19 +222,6 @@
         color: #fff;
         border-color: #0c66e4;
         transform: scale(1.15);
-      }
-
-      /* Hardware flow icon row -- highlights whichever step's full detail
-         panel is currently shown below it */
-      .flow-icon .w-14 {
-        transition: background-color 0.2s ease, color 0.2s ease;
-      }
-      .flow-icon.is-active .w-14 {
-        background: #0c66e4;
-        color: #fff;
-      }
-      .flow-icon p {
-        border-bottom: 1px dashed #dedfe6;
       }
 
       /* Radius convention (codifying existing usage, not a new rule):
@@ -400,6 +359,51 @@
         pointer-events: none;
       }
 
+      /* Scroll-linked scene: app.js publishes --enter (0..1) from the
+         section's travel through the viewport, and the two halves ride it
+         at different rates so the media leads and the copy follows. The
+         opacity ramps deliberately over- and undershoot 0..1 -- opacity
+         clamps on its own, which is what produces the lag without needing
+         per-child delays. */
+      .scroll-scene {
+        --enter: 0;
+      }
+      .scene-media {
+        opacity: calc(var(--enter) * 1.5 - 0.1);
+        transform: translateY(calc((1 - var(--enter)) * 56px)) scale(calc(0.94 + var(--enter) * 0.06));
+      }
+      .scene-copy {
+        opacity: calc(var(--enter) * 1.5 - 0.45);
+        transform: translateY(calc((1 - var(--enter)) * 30px));
+      }
+
+      /* Footer social buttons. Neutral on the dark panel by default, taking
+         each network's own colour on hover; Instagram carries its gradient
+         at rest since a flat swatch cannot stand in for it. */
+      .social-dot {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        font-size: 0.8125rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+      }
+      .social-dot:hover {
+        background: var(--brand);
+        transform: translateY(-2px);
+      }
+      .social-instagram {
+        background: linear-gradient(45deg, #f09433, #dc2743 45%, #bc1888 70%, #8134af);
+      }
+      .social-instagram:hover {
+        background: linear-gradient(45deg, #f09433, #dc2743 45%, #bc1888 70%, #8134af);
+        filter: brightness(1.15);
+      }
+
       /* Oversized ghosted wordmark behind the footer columns. Decorative
          only -- aria-hidden in the markup so it never reaches a screen
          reader as stray text. */
@@ -422,6 +426,15 @@
          rounded bar inside it. Solid white at rest; past the scroll
          threshold set in app.js (~10px) it turns into a translucent glass
          panel and lifts slightly. */
+      /* Slides the whole bar clear of the viewport while scrolling down.
+         The extra 1.5rem covers the pill's top offset and its shadow so
+         nothing peeks over the edge mid-transition. */
+      .site-header {
+        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .site-header.header-hidden {
+        transform: translateY(calc(-100% - 1.5rem));
+      }
       .site-header.scrolled .header-shell {
         background-color: rgba(255, 255, 255, 0.78);
         backdrop-filter: blur(16px);
@@ -431,12 +444,9 @@
 
       @media (prefers-reduced-motion: reduce) {
         .reveal, .feature-card, .hover-lift, .btn-animation,
-        .cta-glow, .btn-ghost, .card-product img, .flow-dot {
+        .cta-glow, .btn-ghost, .card-product img {
           transition: none !important;
           animation: none !important;
-        }
-        .flow-dot {
-          display: none !important;
         }
         .reveal, .feature-card {
           opacity: 1 !important;
@@ -445,12 +455,13 @@
         .card-product:hover img {
           transform: none !important;
         }
-        /* Land the statement panel in its finished state -- full-bleed
-           rectangle, copy fully visible -- rather than animating it. */
+        /* Land the scroll-driven pieces in their finished state -- full-bleed
+           rectangle, everything in place and visible -- rather than
+           animating them. */
         .flood-panel {
           clip-path: none !important;
         }
-        .flood-copy {
+        .flood-copy, .scene-media, .scene-copy {
           opacity: 1 !important;
           transform: none !important;
         }
@@ -495,8 +506,8 @@
           </div>
 
           <!-- Auth Actions (Signed Out State) -->
-          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
-          <button class="btn-animation inline-flex min-h-[46px] items-center justify-center rounded-full bg-title hover:bg-navy-950 text-white px-6 text-sm font-extrabold transition-colors hidden sm:inline-flex shadow-lg shadow-title/20" type="button" onclick="startFreeTrial()">Start Free Trial</button>
+          <button class="btn-animation inline-flex min-h-[44px] items-center justify-center rounded-full border border-line bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
+          <button class="btn-animation hidden sm:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-5 text-sm font-extrabold transition-colors shadow-lg shadow-brand/25" type="button" onclick="startFreeTrial()">Start Free Trial <i class="fa-solid fa-arrow-right text-xs"></i></button>
           <button class="hamburger lg:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
         </div>
@@ -614,20 +625,22 @@
 
     </main>
 
-    <footer class="py-16 px-6 bg-white">
-      <div class="max-w-7xl mx-auto">
-        <div class="relative overflow-hidden bg-navy-950 rounded-3xl p-8 md:p-14">
-          <span class="footer-watermark" aria-hidden="true">PHOTUNA</span>
-          <div class="relative grid grid-cols-1 md:grid-cols-4 gap-10">
+    <!-- Full-bleed panel with rounded top corners, flush to the bottom of the
+         page, with the copyright strip banded inside it rather than sitting
+         out on the white below. -->
+    <footer class="relative overflow-hidden bg-navy-950 rounded-t-[2.5rem]">
+      <span class="footer-watermark" aria-hidden="true">PHOTUNA</span>
+      <div class="relative max-w-7xl mx-auto px-6 md:px-12 pt-14 md:pt-16 pb-14">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
             <div class="space-y-4">
               <img src="/logo-light.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-10 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x40/ffffff/111827?text=Studio+Photuna'" />
               <p class="text-sm text-white/60 font-medium">Studio Photuna is photo booth business software that helps operators launch, run, and grow a Korean-style photobooth business — from event setup to guest delivery — on hardware they already own.</p>
 
               <!-- Only Facebook, Instagram, and TikTok -->
               <div class="socials flex gap-3">
-                <a href="https://www.facebook.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                <a href="https://www.instagram.com/studio.photuna/" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://www.tiktok.com/@studio.photuna" target="_blank" class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-xs text-title hover:text-brand transition-colors" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="https://www.facebook.com/studio.photuna/" target="_blank" class="social-dot" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/studio.photuna/" target="_blank" class="social-dot social-instagram" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/@studio.photuna" target="_blank" class="social-dot" aria-label="TikTok"><i class="fa-brands fa-tiktok"></i></a>
               </div>
             </div>
             <div>
@@ -659,13 +672,14 @@
                 <a href="/privacy-request" onclick="navigateTo('privacy-request'); return false;" class="hover:text-brand transition-colors">Privacy Request</a>
               </nav>
             </div>
-          </div>
         </div>
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-8 text-xs text-muted font-bold tracking-tight">
+      </div>
+      <div class="relative bg-white/[0.05] border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6 md:px-12 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/50 font-bold tracking-tight">
           <span>Copyright © 2026 Studio Photuna. All rights reserved.</span>
           <div class="flex items-center gap-5">
-            <a href="/privacy-framework" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-brand">Privacy Policy</a>
-            <a href="/operator-agreement" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-brand">Terms of Service</a>
+            <a href="/privacy-framework" onclick="navigateTo('privacy-framework'); return false;" class="hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/operator-agreement" onclick="navigateTo('operator-agreement'); return false;" class="hover:text-white transition-colors">Terms of Service</a>
           </div>
         </div>
       </div>

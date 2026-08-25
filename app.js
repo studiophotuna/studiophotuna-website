@@ -2024,17 +2024,6 @@ function toggleFaq(btn) {
   if (chevron) chevron.style.transform = isOpen ? "rotate(180deg)" : "";
 }
 
-// Hardware flow diagram: swap the shared detail panel's content based on
-// which step icon is hovered/focused, instead of a small per-icon popup.
-function showFlowStep(el, index, group) {
-  const scope = group || "hardware";
-  document.querySelectorAll('.flow-icon[data-flow-group="' + scope + '"]').forEach(icon => icon.classList.toggle("is-active", icon === el));
-  document.querySelectorAll('.flow-detail-step[data-flow-group="' + scope + '"]').forEach(step => {
-    step.classList.toggle("hidden", Number(step.dataset.flowDetail) !== index);
-  });
-}
-
-
 // ===================================================================
 // Init & Event Listeners
 // ===================================================================
@@ -2271,11 +2260,51 @@ function handleCheckoutRedirectResult() {
   window.history.replaceState({}, document.title, cleanUrl);
 }
 
-// The visible bar is .header-shell inside the transparent .site-header
-// shell, so the scrolled state is styled off `.scrolled .header-shell` in
-// head.html -- including its own shadow, which is why no shadow utility is
-// toggled on the header element itself any more.
-window.addEventListener("scroll", () => { const header = document.querySelector(".site-header"); if (header) { header.classList.toggle("scrolled", window.scrollY > 10); } });
+// Header state on scroll. Two things happen here:
+//   .scrolled     -- past ~10px; styled off `.scrolled .header-shell` in
+//                    head.html (glass + its own shadow), which is why no
+//                    shadow utility is toggled on the element itself.
+//   .header-hidden -- slides the bar out of view while scrolling down and
+//                    brings it straight back on any upward scroll.
+// Hiding is suppressed near the top of the page, while the mobile menu is
+// open (the menu is positioned independently and would be left stranded),
+// and entirely under prefers-reduced-motion, where a bar that jumps in and
+// out on every direction change is worse than one that simply stays put.
+(function initHeaderScrollState() {
+  const header = document.querySelector(".site-header");
+  if (!header) return;
+  const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const HIDE_BELOW = 140; // px -- keep the header put over the top of the page
+  const DELTA = 6;        // px -- ignore inertial jitter around a stationary scroll
+  let lastY = window.scrollY;
+  let ticking = false;
+
+  function update() {
+    ticking = false;
+    const y = window.scrollY;
+    header.classList.toggle("scrolled", y > 10);
+
+    const menu = document.getElementById("mobile-menu");
+    const menuOpen = menu && !menu.classList.contains("hidden");
+    if (motionQuery.matches || menuOpen) {
+      header.classList.remove("header-hidden");
+      lastY = y;
+      return;
+    }
+
+    const diff = y - lastY;
+    if (Math.abs(diff) < DELTA) return;
+    header.classList.toggle("header-hidden", diff > 0 && y > HIDE_BELOW);
+    lastY = y;
+  }
+
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  update();
+})();
 
 function toggleMobileMenu() { const menu = document.getElementById("mobile-menu"); menu.classList.toggle("hidden"); }
 if (hamburger) hamburger.onclick = toggleMobileMenu;
@@ -2975,29 +3004,38 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver.observe(el));
 
 // ===================================================================
-// Statement panel: drives --flood (0..1) from the section's position in
-// the viewport, so the panel's clipped top edge opens out to full-bleed
-// as it scrolls in. All the interpolation lives in the CSS (see
-// .flood-panel in head.html) -- this only publishes the progress value.
-// Skipped entirely when the visitor prefers reduced motion; the CSS
-// media query already paints the finished state in that case.
+// Scroll-linked progress values. Each registered element gets a custom
+// property set to how far it has travelled through the viewport (0..1),
+// measured between two viewport-height fractions; all of the actual
+// interpolation lives in CSS -- see .flood-panel and .scroll-scene in
+// head.html. Skipped entirely under prefers-reduced-motion, where the
+// stylesheet already paints the finished state.
 // ===================================================================
-(function initStatementPanelFlood() {
-  const panel = document.getElementById("statementPanel");
-  if (!panel) return;
+(function initScrollProgress() {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const targets = [];
+  const panel = document.getElementById("statementPanel");
+  // Fully open by the time the panel's top edge reaches mid-viewport.
+  if (panel) targets.push({ el: panel, prop: "--flood", from: 1, to: 0.5 });
+  // Scenes start a touch later and finish higher up, so the media is still
+  // settling as the section arrives at a comfortable reading position.
+  document.querySelectorAll(".scroll-scene").forEach(el => {
+    targets.push({ el, prop: "--enter", from: 0.95, to: 0.45 });
+  });
+  if (!targets.length) return;
 
   let ticking = false;
 
   function update() {
     ticking = false;
-    const rect = panel.getBoundingClientRect();
-    // Fully open by the time the panel's top edge reaches the middle of
-    // the viewport; untouched while it's still below the fold.
-    const start = window.innerHeight;
-    const end = window.innerHeight * 0.5;
-    const progress = (start - rect.top) / (start - end);
-    panel.style.setProperty("--flood", String(Math.min(1, Math.max(0, progress))));
+    const vh = window.innerHeight;
+    for (const t of targets) {
+      const start = vh * t.from;
+      const end = vh * t.to;
+      const progress = (start - t.el.getBoundingClientRect().top) / (start - end);
+      t.el.style.setProperty(t.prop, String(Math.min(1, Math.max(0, progress))));
+    }
   }
 
   function onScroll() {
