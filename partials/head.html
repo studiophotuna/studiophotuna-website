@@ -193,30 +193,35 @@
       }
 
       /* Numbered step navigator for the scroll-driven How It Works flow */
+      /* Plain dots, no numerals. The button itself is a 1.5rem hit target;
+         the visible mark is the pseudo-element, which stretches into a short
+         bar on the active step. */
       .flow-step-dot {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 999px;
-        border: 1px solid #dedfe6;
-        background: #fff;
-        color: #5f6678;
-        font-size: 0.75rem;
-        font-weight: 800;
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0;
+        border: 0;
+        background: transparent;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease;
         cursor: pointer;
       }
-      .flow-step-dot:hover {
-        border-color: #0c66e4;
-        color: #0c66e4;
+      .flow-step-dot::before {
+        content: '';
+        display: block;
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 999px;
+        background: #dedfe6;
+        transition: background-color 0.2s ease, width 0.2s ease;
       }
-      .flow-step-dot.active {
+      .flow-step-dot:hover::before {
+        background: #8b92a6;
+      }
+      .flow-step-dot.active::before {
         background: #0c66e4;
-        color: #fff;
-        border-color: #0c66e4;
-        transform: scale(1.15);
+        width: 1.15rem;
       }
 
       /* Radius convention (codifying existing usage, not a new rule):
@@ -452,24 +457,18 @@
         66%      { transform: translate(-34px, 24px) scale(0.92); }
       }
 
-      /* Photo strips drifting up and back, the product's own artefact. */
+      /* Real printed strips drifting up and back -- the product's own output.
+         The artwork already carries its white border and transparent
+         surround, so the element is just a positioned frame for it. */
       .ph-strip {
         position: absolute;
-        width: 3.6rem;
-        padding: 0.35rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-        background: #fff;
-        border-radius: 0.45rem;
-        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.13);
         animation: ph-strip-drift 15s ease-in-out infinite;
       }
-      .ph-strip span {
+      .ph-strip img {
         display: block;
-        height: 2rem;
-        border-radius: 0.22rem;
-        background: linear-gradient(160deg, #dbeafe, #bfdbfe);
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 18px 34px rgba(17, 24, 39, 0.16));
       }
       @keyframes ph-strip-drift {
         0%, 100% { transform: rotate(var(--r, 0deg)) translateY(0); }

@@ -212,30 +212,35 @@
       }
 
       /* Numbered step navigator for the scroll-driven How It Works flow */
+      /* Plain dots, no numerals. The button itself is a 1.5rem hit target;
+         the visible mark is the pseudo-element, which stretches into a short
+         bar on the active step. */
       .flow-step-dot {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 999px;
-        border: 1px solid #dedfe6;
-        background: #fff;
-        color: #5f6678;
-        font-size: 0.75rem;
-        font-weight: 800;
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0;
+        border: 0;
+        background: transparent;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease;
         cursor: pointer;
       }
-      .flow-step-dot:hover {
-        border-color: #0c66e4;
-        color: #0c66e4;
+      .flow-step-dot::before {
+        content: '';
+        display: block;
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 999px;
+        background: #dedfe6;
+        transition: background-color 0.2s ease, width 0.2s ease;
       }
-      .flow-step-dot.active {
+      .flow-step-dot:hover::before {
+        background: #8b92a6;
+      }
+      .flow-step-dot.active::before {
         background: #0c66e4;
-        color: #fff;
-        border-color: #0c66e4;
-        transform: scale(1.15);
+        width: 1.15rem;
       }
 
       /* Radius convention (codifying existing usage, not a new rule):
@@ -471,24 +476,18 @@
         66%      { transform: translate(-34px, 24px) scale(0.92); }
       }
 
-      /* Photo strips drifting up and back, the product's own artefact. */
+      /* Real printed strips drifting up and back -- the product's own output.
+         The artwork already carries its white border and transparent
+         surround, so the element is just a positioned frame for it. */
       .ph-strip {
         position: absolute;
-        width: 3.6rem;
-        padding: 0.35rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-        background: #fff;
-        border-radius: 0.45rem;
-        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.13);
         animation: ph-strip-drift 15s ease-in-out infinite;
       }
-      .ph-strip span {
+      .ph-strip img {
         display: block;
-        height: 2rem;
-        border-radius: 0.22rem;
-        background: linear-gradient(160deg, #dbeafe, #bfdbfe);
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 18px 34px rgba(17, 24, 39, 0.16));
       }
       @keyframes ph-strip-drift {
         0%, 100% { transform: rotate(var(--r, 0deg)) translateY(0); }
@@ -803,9 +802,9 @@
 
     <header class="site-header fixed top-0 left-0 w-full z-40 transition-all duration-300">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-2.5">
-        <div class="header-shell h-16 px-4 sm:px-6 rounded-full bg-white border border-[#dedfe6]/70 shadow-[0_6px_24px_rgba(17,24,39,0.07)] flex items-center justify-between gap-4 transition-all duration-300">
+        <div class="header-shell h-16 px-4 sm:px-6 rounded-2xl bg-white border border-[#dedfe6]/70 shadow-[0_6px_24px_rgba(17,24,39,0.07)] flex items-center justify-between gap-4 transition-all duration-300">
         <a class="logo flex items-center gap-3" href="/" onclick="navigateTo('home'); return false;" aria-label="Studio Photuna">
-          <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+          <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-9 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
         </a>
         
         <nav class="hidden lg:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
@@ -844,7 +843,7 @@
 
     <!-- Insets match the header pill's px-3 / sm:px-6 container so the two
          line up as one floating stack. -->
-    <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-3xl p-4 flex flex-col gap-2 shadow-luxe z-30">
+    <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-2xl p-4 flex flex-col gap-2 shadow-luxe z-30">
       <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
       <a href="/download" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download</a>

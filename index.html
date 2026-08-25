@@ -213,30 +213,35 @@
       }
 
       /* Numbered step navigator for the scroll-driven How It Works flow */
+      /* Plain dots, no numerals. The button itself is a 1.5rem hit target;
+         the visible mark is the pseudo-element, which stretches into a short
+         bar on the active step. */
       .flow-step-dot {
-        width: 2rem;
-        height: 2rem;
-        border-radius: 999px;
-        border: 1px solid #dedfe6;
-        background: #fff;
-        color: #5f6678;
-        font-size: 0.75rem;
-        font-weight: 800;
+        width: 1.5rem;
+        height: 1.5rem;
+        padding: 0;
+        border: 0;
+        background: transparent;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.2s ease;
         cursor: pointer;
       }
-      .flow-step-dot:hover {
-        border-color: #0c66e4;
-        color: #0c66e4;
+      .flow-step-dot::before {
+        content: '';
+        display: block;
+        width: 0.45rem;
+        height: 0.45rem;
+        border-radius: 999px;
+        background: #dedfe6;
+        transition: background-color 0.2s ease, width 0.2s ease;
       }
-      .flow-step-dot.active {
+      .flow-step-dot:hover::before {
+        background: #8b92a6;
+      }
+      .flow-step-dot.active::before {
         background: #0c66e4;
-        color: #fff;
-        border-color: #0c66e4;
-        transform: scale(1.15);
+        width: 1.15rem;
       }
 
       /* Radius convention (codifying existing usage, not a new rule):
@@ -472,24 +477,18 @@
         66%      { transform: translate(-34px, 24px) scale(0.92); }
       }
 
-      /* Photo strips drifting up and back, the product's own artefact. */
+      /* Real printed strips drifting up and back -- the product's own output.
+         The artwork already carries its white border and transparent
+         surround, so the element is just a positioned frame for it. */
       .ph-strip {
         position: absolute;
-        width: 3.6rem;
-        padding: 0.35rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.25rem;
-        background: #fff;
-        border-radius: 0.45rem;
-        box-shadow: 0 14px 34px rgba(17, 24, 39, 0.13);
         animation: ph-strip-drift 15s ease-in-out infinite;
       }
-      .ph-strip span {
+      .ph-strip img {
         display: block;
-        height: 2rem;
-        border-radius: 0.22rem;
-        background: linear-gradient(160deg, #dbeafe, #bfdbfe);
+        width: 100%;
+        height: auto;
+        filter: drop-shadow(0 18px 34px rgba(17, 24, 39, 0.16));
       }
       @keyframes ph-strip-drift {
         0%, 100% { transform: rotate(var(--r, 0deg)) translateY(0); }
@@ -804,9 +803,9 @@
 
     <header class="site-header fixed top-0 left-0 w-full z-40 transition-all duration-300">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 pt-2.5">
-        <div class="header-shell h-16 px-4 sm:px-6 rounded-full bg-white border border-[#dedfe6]/70 shadow-[0_6px_24px_rgba(17,24,39,0.07)] flex items-center justify-between gap-4 transition-all duration-300">
+        <div class="header-shell h-16 px-4 sm:px-6 rounded-2xl bg-white border border-[#dedfe6]/70 shadow-[0_6px_24px_rgba(17,24,39,0.07)] flex items-center justify-between gap-4 transition-all duration-300">
         <a class="logo flex items-center gap-3" href="/" onclick="navigateTo('home'); return false;" aria-label="Studio Photuna">
-          <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-11 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
+          <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-9 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
         </a>
         
         <nav class="hidden lg:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
@@ -845,7 +844,7 @@
 
     <!-- Insets match the header pill's px-3 / sm:px-6 container so the two
          line up as one floating stack. -->
-    <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-3xl p-4 flex flex-col gap-2 shadow-luxe z-30">
+    <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-2xl p-4 flex flex-col gap-2 shadow-luxe z-30">
       <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
       <a href="/download" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download</a>
@@ -869,10 +868,10 @@
             <span class="ph-ring" style="width:16rem;height:16rem;top:14%;left:12%;"></span>
             <span class="ph-ring" style="width:22rem;height:22rem;bottom:8%;right:10%;animation-delay:-3.5s;"></span>
 
-            <span class="ph-strip hidden sm:flex" style="top:16%;left:6%;--r:-11deg;"><span></span><span></span><span></span></span>
-            <span class="ph-strip hidden lg:flex" style="top:58%;left:13%;--r:7deg;animation-delay:-4s;"><span></span><span></span><span></span></span>
-            <span class="ph-strip hidden sm:flex" style="top:22%;right:8%;--r:9deg;animation-delay:-8s;"><span></span><span></span><span></span></span>
-            <span class="ph-strip hidden lg:flex" style="bottom:14%;right:15%;--r:-6deg;animation-delay:-11s;"><span></span><span></span><span></span></span>
+            <span class="ph-strip hidden sm:block" style="top:11%;left:4%;width:8rem;--r:-11deg;"><img src="strip-a.webp" width="360" height="640" alt="" /></span>
+            <span class="ph-strip hidden lg:block" style="bottom:9%;left:9%;width:9.5rem;--r:6deg;animation-delay:-4s;"><img src="strip-c.webp" width="420" height="632" alt="" /></span>
+            <span class="ph-strip hidden sm:block" style="top:14%;right:5%;width:8rem;--r:9deg;animation-delay:-8s;"><img src="strip-b.webp" width="360" height="640" alt="" /></span>
+            <span class="ph-strip hidden lg:block" style="bottom:12%;right:7%;width:13rem;--r:-5deg;animation-delay:-11s;"><img src="strip-d.webp" width="620" height="349" alt="" /></span>
           </div>
 
           <div class="hero-content relative max-w-5xl mx-auto text-center space-y-6">
@@ -1012,15 +1011,15 @@
                      when the scroll-driven flow activates -- so it stays hidden
                      wherever the panels fall back to a plain stacked list. -->
                 <div id="boothFlowNavWrap" class="hidden pb-8">
-                  <div class="flex items-center justify-center gap-2.5" role="tablist" aria-label="Booth flow steps">
-                    <button type="button" class="flow-step-dot" aria-label="Step 1: Branded Welcome Trigger" title="Branded Welcome Trigger">1</button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 2: Template Selection" title="Template Selection">2</button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 3: Retake Review" title="Retake Review">3</button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 4: Strip Assembly Preview" title="Strip Assembly Preview">4</button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 5: Tone and Frame Studio" title="Tone &amp; Frame Studio">5</button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 6: Gallery Generation" title="Gallery Generation">6</button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 7: Live Print and QR Hand-off" title="Live Print + QR Hand-off">7</button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 8: Auto-Reset for Next Guest" title="Auto-Reset for Next Guest">8</button>
+                  <div class="flex items-center justify-end gap-2" role="tablist" aria-label="Booth flow steps">
+                    <button type="button" class="flow-step-dot" aria-label="Step 1: Branded Welcome Trigger" title="Branded Welcome Trigger"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 2: Template Selection" title="Template Selection"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 3: Retake Review" title="Retake Review"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 4: Strip Assembly Preview" title="Strip Assembly Preview"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 5: Tone and Frame Studio" title="Tone &amp; Frame Studio"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 6: Gallery Generation" title="Gallery Generation"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 7: Live Print and QR Hand-off" title="Live Print + QR Hand-off"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 8: Auto-Reset for Next Guest" title="Auto-Reset for Next Guest"></button>
                   </div>
                 </div>
                 <div id="boothFlowPanels" class="relative">
