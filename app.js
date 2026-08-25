@@ -2971,6 +2971,41 @@ const revealObserver = new IntersectionObserver((entries) => {
 document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver.observe(el));
 
 // ===================================================================
+// Statement panel: drives --flood (0..1) from the section's position in
+// the viewport, so the panel's clipped top edge opens out to full-bleed
+// as it scrolls in. All the interpolation lives in the CSS (see
+// .flood-panel in head.html) -- this only publishes the progress value.
+// Skipped entirely when the visitor prefers reduced motion; the CSS
+// media query already paints the finished state in that case.
+// ===================================================================
+(function initStatementPanelFlood() {
+  const panel = document.getElementById("statementPanel");
+  if (!panel) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  let ticking = false;
+
+  function update() {
+    ticking = false;
+    const rect = panel.getBoundingClientRect();
+    // Fully open by the time the panel's top edge reaches the middle of
+    // the viewport; untouched while it's still below the fold.
+    const start = window.innerHeight;
+    const end = window.innerHeight * 0.5;
+    const progress = (start - rect.top) / (start - end);
+    panel.style.setProperty("--flood", String(Math.min(1, Math.max(0, progress))));
+  }
+
+  function onScroll() {
+    if (!ticking) { ticking = true; requestAnimationFrame(update); }
+  }
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll, { passive: true });
+  update();
+})();
+
+// ===================================================================
 // Booth Flow: full-page numbered steps, scroll-driven crossfade (desktop +
 // motion-ok only). Falls back to the panels' natural stacked document flow
 // everywhere else -- no JS required for that state, it's the default markup.

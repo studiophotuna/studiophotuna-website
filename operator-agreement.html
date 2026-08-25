@@ -348,6 +348,48 @@
         box-shadow: 0 8px 24px rgba(12, 102, 228, 0.1);
       }
 
+      /* Full-bleed statement panel that "floods" open on scroll. The top
+         edge starts as a shallow trapezoid -- angled shoulders at both
+         corners -- and squares off into a full rectangle as the section
+         crosses the viewport. app.js drives --flood from 0 to 1; the
+         polygon below derives both the shoulder height and the corner
+         inset from that single value, so there's one source of truth for
+         the animation and CSS does the interpolation. */
+      .flood-panel {
+        --flood: 0;
+        clip-path: polygon(
+          0% calc((1 - var(--flood)) * 80px),
+          calc((1 - var(--flood)) * 4%) 0%,
+          calc(100% - (1 - var(--flood)) * 4%) 0%,
+          100% calc((1 - var(--flood)) * 80px),
+          100% 100%,
+          0% 100%
+        );
+      }
+      /* The headline tracks the same progress a beat behind the panel, so
+         the copy lands after the colour has actually arrived under it. */
+      .flood-copy {
+        opacity: calc(var(--flood) * 1.6 - 0.3);
+        transform: translateY(calc((1 - var(--flood)) * 24px));
+      }
+
+      /* Oversized ghosted wordmark behind the footer columns. Decorative
+         only -- aria-hidden in the markup so it never reaches a screen
+         reader as stray text. */
+      .footer-watermark {
+        position: absolute;
+        left: 0;
+        bottom: -0.3em;
+        font-size: clamp(5rem, 17vw, 13rem);
+        font-weight: 800;
+        letter-spacing: -0.045em;
+        line-height: 0.78;
+        color: rgba(255, 255, 255, 0.028);
+        pointer-events: none;
+        user-select: none;
+        white-space: nowrap;
+      }
+
       /* Header is solid white at rest; past the scroll threshold set in
          app.js (~10px) it turns into a translucent glass panel. */
       .site-header.scrolled {
@@ -370,6 +412,15 @@
           transform: none !important;
         }
         .card-product:hover img {
+          transform: none !important;
+        }
+        /* Land the statement panel in its finished state -- full-bleed
+           rectangle, copy fully visible -- rather than animating it. */
+        .flood-panel {
+          clip-path: none !important;
+        }
+        .flood-copy {
+          opacity: 1 !important;
           transform: none !important;
         }
       }
@@ -596,8 +647,9 @@
 
     <footer class="py-16 px-6 bg-white">
       <div class="max-w-7xl mx-auto">
-        <div class="bg-navy-950 rounded-3xl p-8 md:p-14">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div class="relative overflow-hidden bg-navy-950 rounded-3xl p-8 md:p-14">
+          <span class="footer-watermark" aria-hidden="true">PHOTUNA</span>
+          <div class="relative grid grid-cols-1 md:grid-cols-4 gap-10">
             <div class="space-y-4">
               <img src="/logo-light.png" width="1800" height="550" loading="lazy" alt="Studio Photuna" class="h-10 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x40/ffffff/111827?text=Studio+Photuna'" />
               <p class="text-sm text-white/60 font-medium">Studio Photuna is photo booth business software that helps operators launch, run, and grow a Korean-style photobooth business — from event setup to guest delivery — on hardware they already own.</p>
