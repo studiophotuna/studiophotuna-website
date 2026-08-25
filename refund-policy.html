@@ -373,6 +373,33 @@
         transform: translateY(calc((1 - var(--flood)) * 24px));
       }
 
+      /* Feature cards on a filled surface get an oversized soft circle
+         bleeding out of the top-right corner -- decorative depth only,
+         clipped by the card's own overflow. Children are lifted above it
+         so the shape never sits over the text. */
+      .card-accent {
+        position: relative;
+        overflow: hidden;
+        /* Defined after .card-feature so this drops the shared light hairline
+           border, which would read as a seam on a filled card. */
+        border-color: transparent;
+      }
+      .card-accent > * {
+        position: relative;
+        z-index: 1;
+      }
+      .card-accent::after {
+        content: '';
+        position: absolute;
+        right: -28%;
+        top: -38%;
+        width: 76%;
+        aspect-ratio: 1;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.07);
+        pointer-events: none;
+      }
+
       /* Oversized ghosted wordmark behind the footer columns. Decorative
          only -- aria-hidden in the markup so it never reaches a screen
          reader as stray text. */

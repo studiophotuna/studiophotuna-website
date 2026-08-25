@@ -374,6 +374,33 @@
         transform: translateY(calc((1 - var(--flood)) * 24px));
       }
 
+      /* Feature cards on a filled surface get an oversized soft circle
+         bleeding out of the top-right corner -- decorative depth only,
+         clipped by the card's own overflow. Children are lifted above it
+         so the shape never sits over the text. */
+      .card-accent {
+        position: relative;
+        overflow: hidden;
+        /* Defined after .card-feature so this drops the shared light hairline
+           border, which would read as a seam on a filled card. */
+        border-color: transparent;
+      }
+      .card-accent > * {
+        position: relative;
+        z-index: 1;
+      }
+      .card-accent::after {
+        content: '';
+        position: absolute;
+        right: -28%;
+        top: -38%;
+        width: 76%;
+        aspect-ratio: 1;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.07);
+        pointer-events: none;
+      }
+
       /* Oversized ghosted wordmark behind the footer columns. Decorative
          only -- aria-hidden in the markup so it never reaches a screen
          reader as stray text. */
@@ -752,7 +779,7 @@
               <img class="w-full h-auto object-cover" src="interact_image_7.webp" width="3200" height="2000" loading="lazy" alt="Now printing screen with scannable QR code for guest photo delivery" onerror="this.onerror=null; this.src='https://placehold.co/800x600/f4f5f8/5f6678?text=QR+Delivery+Preview'" />
             </div>
             <div class="space-y-6 order-1 lg:order-2">
-              <h2 class="h2-display text-title">Physical memories. Digital delivery.</h2>
+              <h2 class="h2-display text-title">Physical memories. <em>Digital delivery.</em></h2>
               <p class="text-lg text-body">A printed strip in hand, and the same photos and GIFs on their phone before they've even left the booth. No app to install, no waiting for an email.</p>
               <div class="grid grid-cols-3 gap-4 pt-2">
                 <div class="feature-card text-center space-y-2" style="transition-delay: 0ms;">
@@ -810,37 +837,51 @@
               <p class="text-base text-body">Set up the business side, event flow, guest experience, and delivery workflow in one practical Windows app.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <article class="feature-card card-feature bg-white hover-lift" style="transition-delay: 0ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-calendar-days"></i></div>
-                <h3 class="text-xl font-bold text-title">Event workspace</h3>
-                <p class="text-sm text-body leading-relaxed mt-2">Create a profile for every client event, map your layout, and organize booking details — no more juggling spreadsheets between gigs.</p>
+            <!-- Four across, then two offset into the middle columns with a
+                 CTA in each outer gap. The offset row is lg-only; below that
+                 the cards fall back to a plain stacked/two-up grid and the
+                 CTAs drop out, since the page carries both actions in its
+                 hero and closing banner already. -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <article class="feature-card card-feature card-accent bg-brand hover-lift" style="transition-delay: 0ms;">
+                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mb-4"><i class="fa-solid fa-calendar-days"></i></div>
+                <h3 class="text-xl font-bold text-white">Event workspace</h3>
+                <p class="text-sm text-white/75 leading-relaxed mt-2">Create a profile for every client event, map your layout, and organize booking details — no more juggling spreadsheets between gigs.</p>
               </article>
-              <article class="feature-card card-feature bg-white hover-lift" style="transition-delay: 80ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-palette"></i></div>
-                <h3 class="text-xl font-bold text-title">Template editor</h3>
-                <p class="text-sm text-body leading-relaxed mt-2">Design custom photo strip layouts in 4x6, 6x4, 2x6, and 6x2 formats with a drag-and-drop camera placeholder editor.</p>
+              <article class="feature-card card-feature card-accent bg-navy-950 hover-lift" style="transition-delay: 80ms;">
+                <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white text-lg mb-4"><i class="fa-solid fa-palette"></i></div>
+                <h3 class="text-xl font-bold text-white">Template editor</h3>
+                <p class="text-sm text-white/70 leading-relaxed mt-2">Design custom photo strip layouts in 4x6, 6x4, 2x6, and 6x2 formats with a drag-and-drop camera placeholder editor.</p>
               </article>
-              <article class="feature-card card-feature bg-white hover-lift" style="transition-delay: 160ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                <h3 class="text-xl font-bold text-title">Brand controls</h3>
-                <p class="text-sm text-body leading-relaxed mt-2">Style welcome screens, logos, frames, and overlay borders so every event looks like it was custom-built for that client.</p>
+              <article class="feature-card card-feature card-accent bg-brand hover-lift" style="transition-delay: 160ms;">
+                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mb-4"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <h3 class="text-xl font-bold text-white">Brand controls</h3>
+                <p class="text-sm text-white/75 leading-relaxed mt-2">Style welcome screens, logos, frames, and overlay borders so every event looks like it was custom-built for that client.</p>
               </article>
-              <article class="feature-card card-feature bg-white hover-lift" style="transition-delay: 240ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-display"></i></div>
-                <h3 class="text-xl font-bold text-title">Guest flow console</h3>
-                <p class="text-sm text-body leading-relaxed mt-2">Run the welcome lobby, template picker, payment terminal, capture counter, retake screen, and QR download — guests self-serve from tap to print.</p>
+              <article class="feature-card card-feature card-accent bg-navy-950 hover-lift" style="transition-delay: 240ms;">
+                <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white text-lg mb-4"><i class="fa-solid fa-display"></i></div>
+                <h3 class="text-xl font-bold text-white">Guest flow console</h3>
+                <p class="text-sm text-white/70 leading-relaxed mt-2">Run the welcome lobby, template picker, payment terminal, capture counter, retake screen, and QR download — guests self-serve from tap to print.</p>
               </article>
-              <article class="feature-card card-feature bg-white hover-lift" style="transition-delay: 320ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-print"></i></div>
-                <h3 class="text-xl font-bold text-title">Printer & outputs</h3>
-                <p class="text-sm text-body leading-relaxed mt-2">Connect your DSLR and dye-sub printer once, then control margins, orientation, and copies per session.</p>
+
+              <div class="hidden lg:flex items-center justify-end gap-4">
+                <span class="text-sm font-extrabold text-title text-right leading-tight">Start free<br />trial</span>
+                <button type="button" onclick="startFreeTrial()" class="btn-animation w-12 h-12 shrink-0 rounded-full bg-brand hover:bg-brand-600 text-white flex items-center justify-center transition-colors" aria-label="Start free trial"><i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+              <article class="feature-card card-feature card-accent bg-brand hover-lift" style="transition-delay: 320ms;">
+                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mb-4"><i class="fa-solid fa-print"></i></div>
+                <h3 class="text-xl font-bold text-white">Printer & outputs</h3>
+                <p class="text-sm text-white/75 leading-relaxed mt-2">Connect your DSLR and dye-sub printer once, then control margins, orientation, and copies per session.</p>
               </article>
-              <article class="feature-card card-feature bg-white hover-lift" style="transition-delay: 400ms;">
-                <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mb-4"><i class="fa-solid fa-chart-line"></i></div>
-                <h3 class="text-xl font-bold text-title">Active analytics</h3>
-                <p class="text-sm text-body leading-relaxed mt-2">Track session counts, live revenue, print sheets, and your most-booked templates in real time.</p>
+              <article class="feature-card card-feature card-accent bg-navy-950 hover-lift" style="transition-delay: 400ms;">
+                <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white text-lg mb-4"><i class="fa-solid fa-chart-line"></i></div>
+                <h3 class="text-xl font-bold text-white">Active analytics</h3>
+                <p class="text-sm text-white/70 leading-relaxed mt-2">Track session counts, live revenue, print sheets, and your most-booked templates in real time.</p>
               </article>
+              <div class="hidden lg:flex items-center gap-4">
+                <button type="button" onclick="navigateTo('download')" class="btn-animation w-12 h-12 shrink-0 rounded-full bg-title hover:bg-navy-950 text-white flex items-center justify-center transition-colors" aria-label="Download the app"><i class="fa-solid fa-arrow-right"></i></button>
+                <span class="text-sm font-extrabold text-title leading-tight">Download<br />the app</span>
+              </div>
             </div>
           </div>
         </section>
