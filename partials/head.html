@@ -178,6 +178,20 @@
         animation: pulse-glow 3s ease-in-out infinite;
       }
 
+      /* One invisible snap anchor per booth-flow step. Steps are only ~160px
+         of scroll apart, so without these a single wheel gesture travels
+         several steps at once; scroll-snap-stop: always makes each gesture
+         come to rest on the next step instead. Positioned by app.js. */
+      .flow-snap-anchor {
+        position: absolute;
+        left: 0;
+        width: 1px;
+        height: 1px;
+        pointer-events: none;
+        scroll-snap-align: start;
+        scroll-snap-stop: always;
+      }
+
       /* Numbered step navigator for the scroll-driven How It Works flow */
       .flow-step-dot {
         width: 2rem;

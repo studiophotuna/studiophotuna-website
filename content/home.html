@@ -138,8 +138,10 @@
         <!-- fs-block, not fs: the booth flow inside relies on position:
              sticky, which a flex parent can disturb. Its exit is the
              opacity-only variant for the same reason. -->
-        <section id="how-it-works" data-exit class="fs-block fs-lift bg-white py-20 px-6">
-          <div class="fs-body-soft max-w-7xl mx-auto space-y-12">
+        <!-- No exit treatment at all: this section is walked a step at a time,
+             so dimming it on the way out fights the thing it is for. -->
+        <section id="how-it-works" class="fs-block fs-lift bg-white py-20 px-6">
+          <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">How It Works</h2>
               <p class="text-base text-body">From a branded "Tap to Start" trigger to a printed strip and QR gallery hand-off — every guest screen is timed, on-brand, and built to reset itself for the next walk-up.</p>

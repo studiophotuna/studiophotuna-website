@@ -3111,6 +3111,10 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     if (!ticking) { ticking = true; requestAnimationFrame(updatePosition); }
   }
 
+  function removeSnapAnchors() {
+    track.querySelectorAll(".flow-snap-anchor").forEach(a => a.remove());
+  }
+
   function activate() {
     // Always start measuring from a clean, normal-flow state so resizes
     // re-measure real content height instead of an already-stretched box.
@@ -3121,13 +3125,29 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     panelsWrap.style.height = panelHeight + "px";
     panels.forEach(p => { p.style.position = "absolute"; p.style.inset = "0"; p.style.transition = "opacity 0.35s ease"; });
 
-    // Fixed, viewport-independent distance -- scaling this off viewport
-    // height made the whole journey noticeably longer on larger/taller
-    // screens, which is exactly where this feature is most likely seen.
-    perStepDistance = 160;
+    // A step has to be at least one scroll gesture long, or a single flick
+    // crosses several and the reader lands on step 5 from step 1. Snap
+    // anchors alone do not prevent that: scroll-snap-stop is not honoured
+    // reliably for closely spaced targets, so the spacing itself has to do
+    // the work -- the same reason section-to-section snapping behaves.
+    perStepDistance = Math.max(360, Math.round(window.innerHeight * 0.9));
     maxScroll = perStepDistance * (numSteps - 1);
     if (navWrap) navWrap.classList.remove("hidden");
     track.style.height = (sticky.offsetHeight + STICKY_TOP + maxScroll) + "px";
+
+    // Drop a snap anchor at each step's scroll offset -- the same positions
+    // updatePosition() and the dot handler use. Steps sit only
+    // perStepDistance apart, so one flick would otherwise carry the reader
+    // through several at once; scroll-snap-stop on these lands each gesture
+    // on the next step.
+    removeSnapAnchors();
+    for (let i = 0; i < numSteps; i++) {
+      const anchor = document.createElement("div");
+      anchor.className = "flow-snap-anchor";
+      anchor.setAttribute("aria-hidden", "true");
+      anchor.style.top = (STICKY_TOP + i * perStepDistance) + "px";
+      track.appendChild(anchor);
+    }
 
     active = true;
     updatePosition();
@@ -3137,6 +3157,7 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
   function deactivate() {
     if (!active) return;
     active = false;
+    removeSnapAnchors();
     track.style.height = "";
     panelsWrap.style.height = "";
     panels.forEach(p => { p.style.position = ""; p.style.inset = ""; p.style.opacity = ""; p.style.pointerEvents = ""; p.style.transition = ""; });
