@@ -1,53 +1,65 @@
         <!-- Hero Section -->
-        <section class="relative overflow-clip py-20 sm:py-28 px-6 bg-white" style="background-image: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(12,102,228,0.06) 0%, transparent 70%);">
-          <!-- Subtle decorative blobs -->
-          <div class="absolute top-20 left-10 w-72 h-72 bg-brand/5 rounded-full blur-3xl pointer-events-none"></div>
-          <div class="absolute bottom-10 right-10 w-96 h-96 bg-brand/3 rounded-full blur-3xl pointer-events-none"></div>
+        <section id="hero" class="relative overflow-clip px-6 pt-14 pb-36 sm:pt-20 sm:pb-44 bg-grey">
+          <!-- Decorative layer: sparkles, arcs, and abstract app-window cards.
+               Purely ornamental, so the whole layer is hidden from assistive
+               tech and dropped below lg where there is no room for it. -->
+          <div class="hero-decor hidden lg:block absolute inset-0 pointer-events-none" aria-hidden="true">
+            <span class="hero-sparkle" style="width:1.15rem;height:1.15rem;top:27%;left:29%;"></span>
+            <span class="hero-sparkle" style="width:0.8rem;height:0.8rem;top:23%;left:32%;opacity:0.75;"></span>
+            <span class="hero-arch" style="bottom:12%;left:13%;"></span>
+            <span class="hero-quarters" style="top:52%;right:9%;"><span></span><span></span></span>
 
-          <div class="max-w-7xl mx-auto">
-            <div class="text-center max-w-7xl mx-auto space-y-8">
-              <h1 class="h1-display text-[#111827] text-4xl sm:text-6xl md:text-7xl lg:text-8xl">
-                Everything your <em>photobooth</em><br class="hidden sm:block"> needs. In one powerful app.
-              </h1>
-              <p class="text-lg sm:text-xl leading-relaxed text-body max-w-3xl mx-auto font-medium">
-                Studio Photuna gives photo booth operators complete control over events, templates, guest sessions, printing, QR delivery, and digital photos — all from one Windows application you run on hardware you already own.
-              </p>
-              <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-                <button onclick="startFreeTrial()" class="btn-animation btn-primary">
-                  <i class="fa-solid fa-rocket"></i> Start Your 14-Day Free Trial
-                </button>
-                <a href="#how-it-works" onclick="goToSection('how-it-works'); return false;" class="btn-animation btn-ghost">
-                  <span class="w-6 h-6 rounded-full border border-line flex items-center justify-center"><i class="fa-solid fa-play text-[10px]"></i></span> See How It Works
-                </a>
-              </div>
-              <div id="heroProofCard" class="inline-flex items-center gap-3 bg-brand text-white rounded-2xl px-5 py-3 shadow-lg shadow-brand/20 max-w-xl mx-auto">
-                <span class="text-sm shrink-0" id="heroProofIcon" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span>
-                <p class="text-sm font-semibold text-left" id="heroProofText">Try Studio Photuna free for 14 days · No credit card required · Cancel anytime</p>
-              </div>
-            </div>
-
-            <!-- Hero product visual: real screenshot in a premium frame -->
-            <div class="mt-16 max-w-4xl mx-auto reveal">
-              <div class="relative">
-                <div class="absolute -inset-4 gradient-accent-bg opacity-10 blur-2xl rounded-[2rem] pointer-events-none" aria-hidden="true"></div>
-                <div class="relative bg-white rounded-2xl border border-line p-2 sm:p-3 shadow-luxe hover-lift">
-                  <div class="flex items-center gap-1.5 px-2 pb-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-red-400"></span>
-                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-400"></span>
-                    <span class="w-2.5 h-2.5 rounded-full bg-green-400"></span>
-                  </div>
-                  <div class="rounded-xl overflow-hidden bg-white border border-line">
-                    <img src="app_image_3.webp" width="1918" height="1080" fetchpriority="high" alt="Studio Photuna tone and frame picker with a live printed strip preview" class="w-full h-auto block" onerror="this.onerror=null; this.src='https://placehold.co/1600x1000/f4f5f8/5f6678?text=Studio+Photuna'" />
-                  </div>
+            <div class="hero-float" style="top:14%;left:4%;">
+              <div class="hero-float-card">
+                <div class="hero-float-dots"><span></span><span></span><span></span></div>
+                <div class="hero-float-body">
+                  <div class="hero-float-rail"><i></i><i></i><i></i></div>
+                  <div class="hero-float-main"><i></i><i></i><i></i></div>
                 </div>
               </div>
-              <p class="text-center text-xs text-muted font-bold mt-4">Real Studio Photuna software — tone, frame, and print, all from one screen.</p>
+              <span class="hero-badge-chip bg-brand" style="top:52%;left:52%;">Capture</span>
+              <span class="hero-cursor text-brand" style="top:74%;left:79%;"><i class="fa-solid fa-arrow-pointer"></i></span>
+            </div>
+
+            <div class="hero-float" style="bottom:14%;right:3%;">
+              <div class="hero-float-card">
+                <div class="hero-float-dots"><span></span><span></span><span></span></div>
+                <div class="hero-float-body">
+                  <div class="hero-float-rail"><i></i><i></i><i></i></div>
+                  <div class="hero-float-main"><i></i><i></i><i></i></div>
+                </div>
+              </div>
+              <span class="hero-badge-chip" style="background:#f4694f;top:64%;left:66%;">Printed</span>
+              <span class="hero-cursor" style="color:#f4694f;top:84%;left:92%;"><i class="fa-solid fa-arrow-pointer"></i></span>
+            </div>
+          </div>
+
+          <div class="hero-content relative max-w-5xl mx-auto text-center space-y-6">
+            <p class="text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-muted">For photobooth operators, event hosts, and studio owners</p>
+            <h1 class="h1-display text-[#111827] text-4xl sm:text-6xl md:text-7xl">
+              Everything your photobooth needs.<br class="hidden sm:block"> In one <span class="hero-toggle" aria-hidden="true"><span class="hero-toggle-knob">↗</span></span> powerful app.
+            </h1>
+            <p class="text-base sm:text-lg leading-relaxed text-body max-w-2xl mx-auto font-medium">
+              Events, templates, guest sessions, printing, and QR delivery — all from one Windows app, on hardware you already own.
+            </p>
+            <div class="pt-2">
+              <div class="inline-flex items-center gap-2 rounded-full bg-white border border-line p-1.5 shadow-[0_10px_30px_rgba(17,24,39,0.07)]">
+                <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-6 py-3 text-sm font-extrabold transition-colors">
+                  Start Free Trial <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+                <a href="#how-it-works" onclick="goToSection('how-it-works'); return false;" class="px-4 sm:px-5 py-3 text-sm font-extrabold text-title hover:text-brand transition-colors">See How It Works</a>
+              </div>
+            </div>
+            <div id="heroProofCard" class="inline-flex items-center gap-2.5 bg-white border border-line rounded-full px-4 py-2 max-w-xl mx-auto">
+              <span class="text-xs shrink-0 text-brand" id="heroProofIcon" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span>
+              <p class="text-xs font-semibold text-left text-body" id="heroProofText">Try Studio Photuna free for 14 days · No credit card required · Cancel anytime</p>
             </div>
           </div>
         </section>
 
-        <!-- Stats strip -->
-        <section class="py-12 px-6 bg-white">
+        <!-- Stats strip -- pulled up over the hero so it reads as sliding on
+             top of it as the hero blurs back. -->
+        <section class="relative z-10 -mt-16 sm:-mt-24 rounded-t-[2.5rem] bg-white shadow-[0_-18px_50px_rgba(17,24,39,0.07)] pt-16 pb-12 px-6">
           <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
               <p class="text-3xl sm:text-4xl font-black text-title">14 Days</p>
@@ -73,36 +85,31 @@
           <p class="text-xs sm:text-sm font-bold text-brand-700"><i class="fa-solid fa-bolt text-[10px] mr-1"></i> Coming soon: expanding to Android and iPad platforms</p>
         </section>
 
-        <!-- Value Proposition -->
-        <section class="py-20 px-6 bg-white">
-          <div class="max-w-5xl mx-auto text-center space-y-4">
-            <h2 class="h2-display text-title">Why Studio Photuna</h2>
-            <p class="text-base text-body max-w-3xl mx-auto">Running a Korean-style photobooth business usually means stitching together a booking spreadsheet, a separate template design tool, and a clunky kiosk build. Studio Photuna replaces all of it with one photo booth business software you install on a Windows PC — so you spend less time managing tools and more time booked on events.</p>
-          </div>
-          <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-            <div class="feature-card card-feature hover-lift bg-white text-center space-y-3" style="transition-delay: 0ms;">
-              <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto"><i class="fa-solid fa-plug"></i></div>
-              <h3 class="text-lg font-bold text-title">Built for operators, not developers</h3>
-              <p class="text-sm text-body">No coding, no custom kiosk hardware. Plug in a DSLR and a dye-sub printer, and you're ready to run your first session.</p>
+        <!-- Value Proposition -- carries the full-bleed flood treatment: the
+             panel's clipped top edge opens out as the section scrolls in. -->
+        <section class="flood-panel bg-brand py-24 sm:py-28 px-6 overflow-clip" id="statementPanel">
+          <div class="flood-copy">
+            <div class="max-w-5xl mx-auto text-center space-y-4">
+              <h2 class="h2-display text-white">Why Studio Photuna</h2>
+              <p class="text-base text-white/75 max-w-3xl mx-auto">Running a Korean-style photobooth business usually means stitching together a booking spreadsheet, a separate template design tool, and a clunky kiosk build. Studio Photuna replaces all of it with one photo booth business software you install on a Windows PC — so you spend less time managing tools and more time booked on events.</p>
             </div>
-            <div class="feature-card card-feature hover-lift bg-white text-center space-y-3" style="transition-delay: 100ms;">
-              <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto"><i class="fa-solid fa-layer-group"></i></div>
-              <h3 class="text-lg font-bold text-title">One subscription, the whole workflow</h3>
-              <p class="text-sm text-body">Event setup, template design, guest flow, printing, and reporting all live inside a single Pro plan.</p>
+            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+              <div class="feature-card card-feature card-accent bg-white/10 text-center space-y-3" style="transition-delay: 0ms;">
+                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mx-auto"><i class="fa-solid fa-plug"></i></div>
+                <h3 class="text-lg font-bold text-white">Built for operators, not developers</h3>
+                <p class="text-sm text-white/75">No coding, no custom kiosk hardware. Plug in a DSLR and a dye-sub printer, and you're ready to run your first session.</p>
+              </div>
+              <div class="feature-card card-feature card-accent bg-white/10 text-center space-y-3" style="transition-delay: 100ms;">
+                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mx-auto"><i class="fa-solid fa-layer-group"></i></div>
+                <h3 class="text-lg font-bold text-white">One subscription, the whole workflow</h3>
+                <p class="text-sm text-white/75">Event setup, template design, guest flow, printing, and reporting all live inside a single Pro plan.</p>
+              </div>
+              <div class="feature-card card-feature card-accent bg-white/10 text-center space-y-3" style="transition-delay: 200ms;">
+                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mx-auto"><i class="fa-solid fa-share-nodes"></i></div>
+                <h3 class="text-lg font-bold text-white">A guest experience worth reposting</h3>
+                <p class="text-sm text-white/75">Branded welcome screens, tone presets, and instant QR delivery make every strip feel premium.</p>
+              </div>
             </div>
-            <div class="feature-card card-feature hover-lift bg-white text-center space-y-3" style="transition-delay: 200ms;">
-              <div class="w-12 h-12 rounded-full bg-brand/10 flex items-center justify-center text-brand text-lg mx-auto"><i class="fa-solid fa-share-nodes"></i></div>
-              <h3 class="text-lg font-bold text-title">A guest experience worth reposting</h3>
-              <p class="text-sm text-body">Branded welcome screens, tone presets, and instant QR delivery make every strip feel premium.</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- Statement beat -- full-bleed panel that floods open on scroll -->
-        <section class="flood-panel bg-brand px-6 py-28 sm:py-36 overflow-clip" id="statementPanel">
-          <div class="flood-copy max-w-4xl mx-auto text-center space-y-5">
-            <h2 class="h2-display text-white">No spreadsheets. No kiosk build. No second app.</h2>
-            <p class="text-base sm:text-lg text-white/80 max-w-2xl mx-auto">Everything your booth business runs on, in one install.</p>
           </div>
         </section>
 

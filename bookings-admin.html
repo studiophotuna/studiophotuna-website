@@ -359,6 +359,150 @@
         pointer-events: none;
       }
 
+      /* ---- Hero ----------------------------------------------------- */
+
+      /* The hero blurs back and fades as the page scrolls, so the section
+         below (which is pulled up over it) reads as sliding on top.
+         --exit is published by app.js from scroll depth over the hero. */
+      .hero-content {
+        filter: blur(calc(var(--exit) * 14px));
+        opacity: calc(1 - var(--exit) * 0.85);
+        transform: scale(calc(1 - var(--exit) * 0.05));
+      }
+      .hero-decor {
+        opacity: calc(1 - var(--exit) * 1.2);
+      }
+
+      /* Toggle-switch flourish set inline in the headline. Sized entirely
+         in em so it tracks the heading's responsive font size. */
+      .hero-toggle {
+        display: inline-flex;
+        align-items: center;
+        vertical-align: -0.06em;
+        width: 1.85em;
+        height: 0.95em;
+        padding: 0.1em;
+        margin: 0 0.14em;
+        border-radius: 999px;
+        background: linear-gradient(115deg, #1d4ed8 0%, #0b1220 88%);
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.35);
+      }
+      .hero-toggle-knob {
+        /* font-size first: the width/height em values resolve against it,
+           so 0.5 x 1.5 lands the knob at 0.75em of the heading. */
+        font-size: 0.5em;
+        width: 1.5em;
+        height: 1.5em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        background: #fff;
+        color: #111827;
+        font-family: system-ui, sans-serif;
+        font-weight: 400;
+        line-height: 1;
+      }
+
+      /* Four-point sparkles scattered around the headline. */
+      .hero-sparkle {
+        position: absolute;
+        background: #3d89ef;
+        clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+        pointer-events: none;
+      }
+
+      /* Blue arch (left) and the pair of quarter-rounds (right). */
+      .hero-arch {
+        position: absolute;
+        width: 9rem;
+        height: 4.5rem;
+        border: 2.2rem solid #0c66e4;
+        border-bottom: none;
+        border-radius: 9rem 9rem 0 0;
+        pointer-events: none;
+      }
+      .hero-quarters {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        gap: 0.4rem;
+        pointer-events: none;
+      }
+      .hero-quarters span {
+        width: 3.4rem;
+        height: 3.4rem;
+        background: #a8c9fb;
+      }
+      .hero-quarters span:first-child { border-radius: 3.4rem 3.4rem 0 3.4rem; }
+      .hero-quarters span:last-child  { border-radius: 0 3.4rem 3.4rem 3.4rem; }
+
+      /* Floating abstract app-window cards with a badge and a cursor. */
+      .hero-float {
+        position: absolute;
+        pointer-events: none;
+      }
+      .hero-float-card {
+        width: 15rem;
+        border-radius: 0.85rem;
+        background: #fff;
+        border: 1px solid var(--line);
+        box-shadow: 0 18px 50px rgba(17, 24, 39, 0.1);
+        padding: 0.65rem;
+      }
+      .hero-float-dots {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 0.6rem;
+      }
+      .hero-float-dots span {
+        width: 0.4rem;
+        height: 0.4rem;
+        border-radius: 999px;
+      }
+      .hero-float-dots span:nth-child(1) { background: #f87171; }
+      .hero-float-dots span:nth-child(2) { background: #fbbf24; }
+      .hero-float-dots span:nth-child(3) { background: #34d399; }
+      .hero-float-body {
+        display: flex;
+        gap: 0.5rem;
+      }
+      .hero-float-body i {
+        display: block;
+        background: var(--grey);
+        border-radius: 0.3rem;
+      }
+      .hero-float-rail {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        width: 3.2rem;
+        flex-shrink: 0;
+      }
+      .hero-float-rail i { height: 0.5rem; }
+      .hero-float-main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.35rem;
+        flex: 1;
+      }
+      .hero-float-main i:first-child { height: 2rem; }
+      .hero-float-main i:nth-child(2) { height: 2rem; }
+      .hero-float-main i:last-child { height: 1.6rem; grid-column: 1 / -1; }
+      .hero-badge-chip {
+        position: absolute;
+        border-radius: 999px;
+        color: #fff;
+        font-size: 0.72rem;
+        font-weight: 800;
+        padding: 0.3rem 0.75rem;
+        box-shadow: 0 6px 18px rgba(17, 24, 39, 0.18);
+      }
+      .hero-cursor {
+        position: absolute;
+        font-size: 0.9rem;
+      }
+
       /* Scroll-linked scene: app.js publishes --enter (0..1) from the
          section's travel through the viewport, and the two halves ride it
          at different rates so the media leads and the copy follows. The
@@ -461,9 +605,12 @@
         .flood-panel {
           clip-path: none !important;
         }
-        .flood-copy, .scene-media, .scene-copy {
+        .flood-copy, .scene-media, .scene-copy, .hero-content, .hero-decor {
           opacity: 1 !important;
           transform: none !important;
+        }
+        .hero-content {
+          filter: none !important;
         }
       }
     </style>

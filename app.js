@@ -3015,6 +3015,12 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
   const targets = [];
+  // The hero measures its own scroll depth rather than a viewport crossing,
+  // since it starts already on screen: --exit reaches 1 about two thirds of
+  // the way through it, which is where the section below has fully ridden up
+  // over the blurred hero.
+  const hero = document.getElementById("hero");
+  if (hero) targets.push({ el: hero, prop: "--exit", mode: "depth", span: 0.66 });
   const panel = document.getElementById("statementPanel");
   // Fully open by the time the panel's top edge reaches mid-viewport.
   if (panel) targets.push({ el: panel, prop: "--flood", from: 1, to: 0.5 });
@@ -3031,9 +3037,15 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     ticking = false;
     const vh = window.innerHeight;
     for (const t of targets) {
-      const start = vh * t.from;
-      const end = vh * t.to;
-      const progress = (start - t.el.getBoundingClientRect().top) / (start - end);
+      let progress;
+      if (t.mode === "depth") {
+        const travel = (t.el.offsetHeight || vh) * t.span;
+        progress = travel > 0 ? window.scrollY / travel : 0;
+      } else {
+        const start = vh * t.from;
+        const end = vh * t.to;
+        progress = (start - t.el.getBoundingClientRect().top) / (start - end);
+      }
       t.el.style.setProperty(t.prop, String(Math.min(1, Math.max(0, progress))));
     }
   }
