@@ -150,6 +150,22 @@
             <!-- Step Flow: full-page numbered steps (scroll-driven, one step at a time, on desktop; stacked list on mobile/no-JS) -->
             <div id="boothFlowTrack" class="relative">
               <div id="boothFlowSticky" class="sticky top-24">
+                <!-- Step identifier. app.js already wires .flow-step-dot for the
+                     active state and click-to-jump, and unhides this wrapper
+                     when the scroll-driven flow activates -- so it stays hidden
+                     wherever the panels fall back to a plain stacked list. -->
+                <div id="boothFlowNavWrap" class="hidden pb-8">
+                  <div class="flex items-center justify-center gap-2.5" role="tablist" aria-label="Booth flow steps">
+                    <button type="button" class="flow-step-dot" aria-label="Step 1: Branded Welcome Trigger" title="Branded Welcome Trigger">1</button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 2: Template Selection" title="Template Selection">2</button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 3: Retake Review" title="Retake Review">3</button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 4: Strip Assembly Preview" title="Strip Assembly Preview">4</button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 5: Tone and Frame Studio" title="Tone &amp; Frame Studio">5</button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 6: Gallery Generation" title="Gallery Generation">6</button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 7: Live Print and QR Hand-off" title="Live Print + QR Hand-off">7</button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 8: Auto-Reset for Next Guest" title="Auto-Reset for Next Guest">8</button>
+                  </div>
+                </div>
                 <div id="boothFlowPanels" class="relative">
 
                   <!-- Step 1 -->
@@ -281,6 +297,7 @@
                   </div>
 
                 </div>
+
 
               </div>
             </div>

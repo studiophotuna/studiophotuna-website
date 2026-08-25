@@ -730,23 +730,6 @@
         filter: brightness(1.15);
       }
 
-      /* Oversized ghosted wordmark behind the footer columns. Decorative
-         only -- aria-hidden in the markup so it never reaches a screen
-         reader as stray text. */
-      .footer-watermark {
-        position: absolute;
-        left: 0;
-        bottom: -0.3em;
-        font-size: clamp(5rem, 17vw, 13rem);
-        font-weight: 800;
-        letter-spacing: -0.045em;
-        line-height: 0.78;
-        color: rgba(255, 255, 255, 0.028);
-        pointer-events: none;
-        user-select: none;
-        white-space: nowrap;
-      }
-
       /* The header is a floating pill: the header element itself is a
          transparent full-width positioning shell, .header-shell is the visible
          rounded bar inside it. Solid white at rest; past the scroll
