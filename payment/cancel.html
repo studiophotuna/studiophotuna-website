@@ -212,6 +212,16 @@
       }
 
       /* Numbered step navigator for the scroll-driven How It Works flow */
+      /* Booth flow leaves on a blur like the other sections, but only over its
+         final screenful -- see the exit-late mode in app.js. The filter sits
+         on the sticky element itself rather than a wrapper: on an ancestor it
+         would create a containing block and break position: sticky, whereas
+         on the sticky element it is harmless. */
+      #boothFlowSticky {
+        filter: blur(calc(var(--exit, 0) * 14px));
+        opacity: calc(1 - var(--exit, 0) * 0.85);
+      }
+
       /* Plain dots, no numerals. The button itself is a 1.5rem hit target;
          the visible mark is the pseudo-element, which stretches into a short
          bar on the active step. */
@@ -442,11 +452,10 @@
         opacity: calc(1 - var(--exit) * 0.85);
       }
 
-      /* Pulls a section up over the one before it. Square edges by design --
-         the rounded top is reserved for the footer alone. */
+      /* Pulls a section up over the one before it. Square edges and no
+         shadow by design -- the rounded top is reserved for the footer. */
       .fs-lift {
         margin-top: -2.75rem;
-        box-shadow: 0 -18px 50px rgba(17, 24, 39, 0.09);
       }
 
       /* Closing CTA: a sticky panel one screen tall inside a taller section,
@@ -777,8 +786,11 @@
         .closing-panel {
           border-radius: 0 !important;
         }
-        .hero-content, .fs-body {
+        .hero-content, .fs-body, #boothFlowSticky {
           filter: none !important;
+        }
+        #boothFlowSticky {
+          opacity: 1 !important;
         }
         /* Hold the background art and the review marquee still. The marquee
            keeps its overflow clip, so the cards past the first screenful stay

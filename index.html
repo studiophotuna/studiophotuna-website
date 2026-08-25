@@ -213,6 +213,16 @@
       }
 
       /* Numbered step navigator for the scroll-driven How It Works flow */
+      /* Booth flow leaves on a blur like the other sections, but only over its
+         final screenful -- see the exit-late mode in app.js. The filter sits
+         on the sticky element itself rather than a wrapper: on an ancestor it
+         would create a containing block and break position: sticky, whereas
+         on the sticky element it is harmless. */
+      #boothFlowSticky {
+        filter: blur(calc(var(--exit, 0) * 14px));
+        opacity: calc(1 - var(--exit, 0) * 0.85);
+      }
+
       /* Plain dots, no numerals. The button itself is a 1.5rem hit target;
          the visible mark is the pseudo-element, which stretches into a short
          bar on the active step. */
@@ -443,11 +453,10 @@
         opacity: calc(1 - var(--exit) * 0.85);
       }
 
-      /* Pulls a section up over the one before it. Square edges by design --
-         the rounded top is reserved for the footer alone. */
+      /* Pulls a section up over the one before it. Square edges and no
+         shadow by design -- the rounded top is reserved for the footer. */
       .fs-lift {
         margin-top: -2.75rem;
-        box-shadow: 0 -18px 50px rgba(17, 24, 39, 0.09);
       }
 
       /* Closing CTA: a sticky panel one screen tall inside a taller section,
@@ -778,8 +787,11 @@
         .closing-panel {
           border-radius: 0 !important;
         }
-        .hero-content, .fs-body {
+        .hero-content, .fs-body, #boothFlowSticky {
           filter: none !important;
+        }
+        #boothFlowSticky {
+          opacity: 1 !important;
         }
         /* Hold the background art and the review marquee still. The marquee
            keeps its overflow clip, so the cards past the first screenful stay
@@ -996,7 +1008,7 @@
              opacity-only variant for the same reason. -->
         <!-- No exit treatment at all: this section is walked a step at a time,
              so dimming it on the way out fights the thing it is for. -->
-        <section id="how-it-works" class="fs-block fs-lift bg-white py-20 px-6">
+        <section id="how-it-works" data-exit-late class="fs-block fs-lift bg-white py-20 px-6">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">How It Works</h2>
@@ -1006,27 +1018,11 @@
             <!-- Step Flow: full-page numbered steps (scroll-driven, one step at a time, on desktop; stacked list on mobile/no-JS) -->
             <div id="boothFlowTrack" class="relative">
               <div id="boothFlowSticky" class="sticky top-24">
-                <!-- Step identifier. app.js already wires .flow-step-dot for the
-                     active state and click-to-jump, and unhides this wrapper
-                     when the scroll-driven flow activates -- so it stays hidden
-                     wherever the panels fall back to a plain stacked list. -->
-                <div id="boothFlowNavWrap" class="hidden pb-8">
-                  <div class="flex items-center justify-end gap-2" role="tablist" aria-label="Booth flow steps">
-                    <button type="button" class="flow-step-dot" aria-label="Step 1: Branded Welcome Trigger" title="Branded Welcome Trigger"></button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 2: Template Selection" title="Template Selection"></button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 3: Retake Review" title="Retake Review"></button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 4: Strip Assembly Preview" title="Strip Assembly Preview"></button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 5: Tone and Frame Studio" title="Tone &amp; Frame Studio"></button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 6: Gallery Generation" title="Gallery Generation"></button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 7: Live Print and QR Hand-off" title="Live Print + QR Hand-off"></button>
-                    <button type="button" class="flow-step-dot" aria-label="Step 8: Auto-Reset for Next Guest" title="Auto-Reset for Next Guest"></button>
-                  </div>
-                </div>
                 <div id="boothFlowPanels" class="relative">
 
                   <!-- Step 1 -->
                   <div class="flow-step-panel py-10" data-step-index="0">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">01</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Branded Welcome Trigger</h3>
@@ -1042,7 +1038,7 @@
 
                   <!-- Step 2 -->
                   <div class="flow-step-panel py-10" data-step-index="1">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">02</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Template Selection</h3>
@@ -1058,7 +1054,7 @@
 
                   <!-- Step 3 -->
                   <div class="flow-step-panel py-10" data-step-index="2">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">03</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Retake Review</h3>
@@ -1074,7 +1070,7 @@
 
                   <!-- Step 4 -->
                   <div class="flow-step-panel py-10" data-step-index="3">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">04</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Strip Assembly Preview</h3>
@@ -1090,7 +1086,7 @@
 
                   <!-- Step 5 -->
                   <div class="flow-step-panel py-10" data-step-index="4">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">05</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Tone & Frame Studio</h3>
@@ -1106,7 +1102,7 @@
 
                   <!-- Step 6 -->
                   <div class="flow-step-panel py-10" data-step-index="5">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">06</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Gallery Generation</h3>
@@ -1122,7 +1118,7 @@
 
                   <!-- Step 7 -->
                   <div class="flow-step-panel py-10" data-step-index="6">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">07</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Live Print + QR Hand-off</h3>
@@ -1138,7 +1134,7 @@
 
                   <!-- Step 8 -->
                   <div class="flow-step-panel py-10" data-step-index="7">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[78vh]">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
                         <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">08</span>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Auto-Reset for Next Guest</h3>
@@ -1155,6 +1151,22 @@
                 </div>
 
 
+                <!-- Step identifier. app.js already wires .flow-step-dot for the
+                     active state and click-to-jump, and unhides this wrapper
+                     when the scroll-driven flow activates -- so it stays hidden
+                     wherever the panels fall back to a plain stacked list. -->
+                <div id="boothFlowNavWrap" class="hidden pt-6">
+                  <div class="flex items-center justify-center gap-2" role="tablist" aria-label="Booth flow steps">
+                    <button type="button" class="flow-step-dot" aria-label="Step 1: Branded Welcome Trigger" title="Branded Welcome Trigger"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 2: Template Selection" title="Template Selection"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 3: Retake Review" title="Retake Review"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 4: Strip Assembly Preview" title="Strip Assembly Preview"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 5: Tone and Frame Studio" title="Tone &amp; Frame Studio"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 6: Gallery Generation" title="Gallery Generation"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 7: Live Print and QR Hand-off" title="Live Print + QR Hand-off"></button>
+                    <button type="button" class="flow-step-dot" aria-label="Step 8: Auto-Reset for Next Guest" title="Auto-Reset for Next Guest"></button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
