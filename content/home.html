@@ -52,51 +52,63 @@
               <p class="text-base text-body">One licence, one install, and everything needed to run a booth as a business — no add-ons to buy later.</p>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">14 Days</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Free Trial</p>
-              </div>
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">1 App</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Complete Workflow</p>
-              </div>
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">0</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Coding Required</p>
-              </div>
-              <div>
-                <p class="text-3xl sm:text-4xl font-black text-title">Win 10/11</p>
-                <p class="text-xs sm:text-sm font-bold text-muted uppercase tracking-wide mt-1">Compatible</p>
+            <!-- Bento: the licence claim carries the weight, with the trial and
+                 hardware answers beside it and the day-to-day specifics under. -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <article class="feature-card card-accent lg:col-span-2 rounded-2xl bg-navy-950 p-7 sm:p-8 flex flex-col justify-between gap-6" style="transition-delay: 0ms;">
+                <div class="space-y-3">
+                  <span class="badge bg-white/10 text-white/80">One licence</span>
+                  <h3 class="text-2xl sm:text-3xl font-bold text-white leading-tight">Every part of the job, in one install</h3>
+                  <p class="text-sm text-white/70 max-w-md">Event setup, template design, the guest flow, printing, QR delivery, and reporting — all in the same app. Nothing here is a paid module.</p>
+                </div>
+                <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-white/85">
+                  <li><i class="fa-solid fa-check text-brand-300 mr-1.5"></i>No per-event fees</li>
+                  <li><i class="fa-solid fa-check text-brand-300 mr-1.5"></i>No add-on modules</li>
+                  <li><i class="fa-solid fa-check text-brand-300 mr-1.5"></i>Updates included</li>
+                </ul>
+              </article>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                <article class="feature-card card-accent rounded-2xl bg-brand p-6 flex flex-col justify-center" style="transition-delay: 80ms;">
+                  <p class="text-4xl font-black text-white leading-none">14 days</p>
+                  <p class="text-sm font-bold text-white/85 mt-1">Free trial, no card required</p>
+                  <button onclick="startFreeTrial()" class="btn-animation mt-4 self-start inline-flex items-center gap-2 rounded-full bg-white text-title px-4 py-2 text-xs font-extrabold transition-colors hover:bg-grey">
+                    Start free trial <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                  </button>
+                </article>
+                <article class="feature-card rounded-2xl border border-line bg-grey p-6 flex flex-col justify-center" style="transition-delay: 160ms;">
+                  <p class="text-2xl font-black text-title leading-none">Windows 10 / 11</p>
+                  <p class="text-sm text-body mt-1.5">Runs on the PC you already have — no proprietary kiosk to buy.</p>
+                </article>
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 0ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-camera"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 0ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-camera"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Works with your DSLR</p>
-                  <p class="text-xs text-body mt-0.5">Connect the camera and dye-sub printer you already own.</p>
+                  <p class="text-sm font-bold text-title">Your own DSLR</p>
+                  <p class="text-xs text-body mt-0.5">Pair the camera and dye-sub printer you already own.</p>
                 </div>
               </div>
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 80ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-wifi"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 80ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-wifi"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Runs through the event</p>
-                  <p class="text-xs text-body mt-0.5">Sessions and printing keep going if the venue Wi-Fi drops.</p>
+                  <p class="text-sm font-bold text-title">Survives bad venue Wi-Fi</p>
+                  <p class="text-xs text-body mt-0.5">Sessions and printing keep running if the connection drops.</p>
                 </div>
               </div>
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 160ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-peso-sign"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 160ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-peso-sign"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Takes payments on site</p>
-                  <p class="text-xs text-body mt-0.5">Rental mode and a payment terminal built into the guest flow.</p>
+                  <p class="text-sm font-bold text-title">Takes payment at the booth</p>
+                  <p class="text-xs text-body mt-0.5">Rental mode and a payment terminal inside the guest flow.</p>
                 </div>
               </div>
-              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-grey px-5 py-4" style="transition-delay: 240ms;">
-                <div class="w-9 h-9 shrink-0 rounded-full bg-white border border-line flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-chart-simple"></i></div>
+              <div class="feature-card flex items-start gap-3 rounded-2xl border border-line bg-white px-5 py-4" style="transition-delay: 240ms;">
+                <div class="w-9 h-9 shrink-0 rounded-full bg-brand/10 flex items-center justify-center text-brand text-sm"><i class="fa-solid fa-chart-simple"></i></div>
                 <div>
-                  <p class="text-sm font-bold text-title">Reports as you go</p>
+                  <p class="text-sm font-bold text-title">Knows what each event made</p>
                   <p class="text-xs text-body mt-0.5">Live session counts, revenue, and print totals per event.</p>
                 </div>
               </div>

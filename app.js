@@ -2008,7 +2008,17 @@ function toggleReviewForm() {
   const chevron = document.getElementById("reviewFormChevron");
   if (!body) return;
   body.classList.toggle("hidden");
-  if (chevron) chevron.style.transform = body.classList.contains("hidden") ? "" : "rotate(180deg)";
+  const open = !body.classList.contains("hidden");
+  if (chevron) chevron.style.transform = open ? "rotate(180deg)" : "";
+
+  // Opening the form pushes its fields below the fold, and scrolling down to
+  // reach them would otherwise drive this section's exit blur -- leaving the
+  // visitor typing into blurred inputs. Pin the effect off while it is open.
+  const section = body.closest("[data-exit]");
+  if (section) {
+    section.classList.toggle("exit-locked", open);
+    if (open) section.style.setProperty("--exit", "0");
+  }
 }
 
 function toggleFaq(btn) {
@@ -3049,6 +3059,9 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
     ticking = false;
     const vh = window.innerHeight;
     for (const t of targets) {
+      // A section can pin its exit effect off while something inside it needs
+      // to stay legible -- see toggleReviewForm().
+      if (t.el.classList.contains("exit-locked")) continue;
       let progress;
       if (t.mode === "exit") {
         const rect = t.el.getBoundingClientRect();
