@@ -2271,7 +2271,11 @@ function handleCheckoutRedirectResult() {
   window.history.replaceState({}, document.title, cleanUrl);
 }
 
-window.addEventListener("scroll", () => { const header = document.querySelector(".site-header"); if (header) { const scrolled = window.scrollY > 10; header.classList.toggle("shadow-md", scrolled); header.classList.toggle("scrolled", scrolled); } });
+// The visible bar is .header-shell inside the transparent .site-header
+// shell, so the scrolled state is styled off `.scrolled .header-shell` in
+// head.html -- including its own shadow, which is why no shadow utility is
+// toggled on the header element itself any more.
+window.addEventListener("scroll", () => { const header = document.querySelector(".site-header"); if (header) { header.classList.toggle("scrolled", window.scrollY > 10); } });
 
 function toggleMobileMenu() { const menu = document.getElementById("mobile-menu"); menu.classList.toggle("hidden"); }
 if (hamburger) hamburger.onclick = toggleMobileMenu;

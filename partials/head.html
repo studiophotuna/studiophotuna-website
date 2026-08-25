@@ -371,12 +371,16 @@
         white-space: nowrap;
       }
 
-      /* Header is solid white at rest; past the scroll threshold set in
-         app.js (~10px) it turns into a translucent glass panel. */
-      .site-header.scrolled {
-        background-color: rgba(255, 255, 255, 0.75);
+      /* The header is a floating pill: the header element itself is a
+         transparent full-width positioning shell, .header-shell is the visible
+         rounded bar inside it. Solid white at rest; past the scroll
+         threshold set in app.js (~10px) it turns into a translucent glass
+         panel and lifts slightly. */
+      .site-header.scrolled .header-shell {
+        background-color: rgba(255, 255, 255, 0.78);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 10px 34px rgba(17, 24, 39, 0.12);
       }
 
       @media (prefers-reduced-motion: reduce) {
