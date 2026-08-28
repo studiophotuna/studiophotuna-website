@@ -990,25 +990,61 @@
              panel's clipped top edge opens out as the section scrolls in. -->
         <section data-exit class="flood-panel fs bg-brand py-24 px-6 overflow-clip" id="statementPanel">
           <div class="flood-copy fs-body">
-            <div class="max-w-5xl mx-auto text-center space-y-4">
+            <div class="max-w-3xl mx-auto text-center space-y-4">
               <h2 class="h2-display text-white">Why Studio Photuna</h2>
-              <p class="text-base text-white/75 max-w-3xl mx-auto">Running a Korean-style photobooth business usually means stitching together a booking spreadsheet, a separate template design tool, and a clunky kiosk build. Studio Photuna replaces all of it with one photo booth business software you install on a Windows PC — so you spend less time managing tools and more time booked on events.</p>
+              <p class="text-base sm:text-lg text-white/75">Most Korean-style booths run on three tools that were never meant to work together. This replaces all of them.</p>
             </div>
-            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-              <div class="feature-card card-feature card-accent bg-white/10 text-center space-y-3" style="transition-delay: 0ms;">
-                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mx-auto"><i class="fa-solid fa-plug"></i></div>
-                <h3 class="text-lg font-bold text-white">Built for operators, not developers</h3>
-                <p class="text-sm text-white/75">No coding, no custom kiosk hardware. Plug in a DSLR and a dye-sub printer, and you're ready to run your first session.</p>
+
+            <!-- The section's own argument is a before/after, so it is drawn as
+                 one: the stack operators actually juggle, against the single
+                 install that replaces it. -->
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-5 md:gap-4 items-center mt-10">
+              <div class="feature-card rounded-2xl border border-white/15 bg-white/[0.07] p-6 space-y-3" style="transition-delay: 0ms;">
+                <p class="text-xs font-black uppercase tracking-[0.12em] text-white/50">The usual setup</p>
+                <ul class="space-y-2.5 text-sm text-white/60">
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-xmark text-white/35 mt-0.5"></i><span>A booking spreadsheet</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-xmark text-white/35 mt-0.5"></i><span>A separate template design tool</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-xmark text-white/35 mt-0.5"></i><span>A clunky kiosk build</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-xmark text-white/35 mt-0.5"></i><span>Totals worked out after the event</span></li>
+                </ul>
               </div>
-              <div class="feature-card card-feature card-accent bg-white/10 text-center space-y-3" style="transition-delay: 100ms;">
-                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mx-auto"><i class="fa-solid fa-layer-group"></i></div>
-                <h3 class="text-lg font-bold text-white">One subscription, the whole workflow</h3>
-                <p class="text-sm text-white/75">Event setup, template design, guest flow, printing, and reporting all live inside a single Pro plan.</p>
+
+              <div class="hidden md:flex w-11 h-11 rounded-full bg-white text-brand items-center justify-center shrink-0 shadow-lg" aria-hidden="true">
+                <i class="fa-solid fa-arrow-right"></i>
               </div>
-              <div class="feature-card card-feature card-accent bg-white/10 text-center space-y-3" style="transition-delay: 200ms;">
-                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mx-auto"><i class="fa-solid fa-share-nodes"></i></div>
-                <h3 class="text-lg font-bold text-white">A guest experience worth reposting</h3>
-                <p class="text-sm text-white/75">Branded welcome screens, tone presets, and instant QR delivery make every strip feel premium.</p>
+
+              <div class="feature-card rounded-2xl bg-white p-6 space-y-3 shadow-luxe" style="transition-delay: 120ms;">
+                <p class="text-xs font-black uppercase tracking-[0.12em] text-brand">One Windows app</p>
+                <ul class="space-y-2.5 text-sm font-medium text-title">
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand mt-0.5"></i><span>Events and bookings in one place</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand mt-0.5"></i><span>Template editor built in</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand mt-0.5"></i><span>Runs on the PC and camera you own</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand mt-0.5"></i><span>Revenue and print totals as you go</span></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+              <div class="feature-card flex items-start gap-3 text-left" style="transition-delay: 0ms;">
+                <i class="fa-solid fa-plug text-white/70 mt-1"></i>
+                <div>
+                  <p class="text-sm font-bold text-white">Built for operators</p>
+                  <p class="text-xs text-white/60 mt-0.5">No coding, no custom kiosk hardware.</p>
+                </div>
+              </div>
+              <div class="feature-card flex items-start gap-3 text-left" style="transition-delay: 100ms;">
+                <i class="fa-solid fa-layer-group text-white/70 mt-1"></i>
+                <div>
+                  <p class="text-sm font-bold text-white">One subscription</p>
+                  <p class="text-xs text-white/60 mt-0.5">The whole workflow, no paid modules.</p>
+                </div>
+              </div>
+              <div class="feature-card flex items-start gap-3 text-left" style="transition-delay: 200ms;">
+                <i class="fa-solid fa-share-nodes text-white/70 mt-1"></i>
+                <div>
+                  <p class="text-sm font-bold text-white">Worth reposting</p>
+                  <p class="text-xs text-white/60 mt-0.5">Branded screens, tone presets, instant QR.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -1024,7 +1060,7 @@
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">How It Works</h2>
-              <p class="text-base text-body">From a branded "Tap to Start" trigger to a printed strip and QR gallery hand-off — every guest screen is timed, on-brand, and built to reset itself for the next walk-up.</p>
+              <p class="text-base text-body">Eight screens, from "Tap to Start" to a printed strip and a QR hand-off. Every one is timed and resets itself for the next guest — no staff in the loop.</p>
             </div>
 
             <!-- Step Flow: full-page numbered steps (scroll-driven, one step at a time, on desktop; stacked list on mobile/no-JS) -->
@@ -1036,7 +1072,10 @@
                   <div class="flow-step-panel py-10" data-step-index="0">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">01</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">01</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Branded Welcome Trigger</h3>
                         <p class="text-lg text-body max-w-lg">A full-bleed, on-brand "Tap to Start" lobby screen invites guests to launch a session with zero staff intervention.</p>
                       </div>
@@ -1052,7 +1091,10 @@
                   <div class="flow-step-panel py-10" data-step-index="1">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">02</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">02</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Template Selection</h3>
                         <p class="text-lg text-body max-w-lg">Guests pick a layout depending on the operator's setup under a live countdown so the queue keeps moving.</p>
                       </div>
@@ -1068,7 +1110,10 @@
                   <div class="flow-step-panel py-10" data-step-index="2">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">03</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">03</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Retake Review</h3>
                         <p class="text-lg text-body max-w-lg">Captured shots load instantly with a configurable retake allowance, so guests only redo the frames they want.</p>
                       </div>
@@ -1084,7 +1129,10 @@
                   <div class="flow-step-panel py-10" data-step-index="3">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">04</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">04</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Strip Assembly Preview</h3>
                         <p class="text-lg text-body max-w-lg">Approved photos are arranged live into the final strip layout side-by-side, exactly as it will print.</p>
                       </div>
@@ -1100,7 +1148,10 @@
                   <div class="flow-step-panel py-10" data-step-index="4">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">05</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">05</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Tone & Frame Studio</h3>
                         <p class="text-lg text-body max-w-lg">One-tap tone presets — Normal, B&W, Sepia, Vintage, Warm, Cool — plus frame styles update the live strip preview.</p>
                       </div>
@@ -1116,7 +1167,10 @@
                   <div class="flow-step-panel py-10" data-step-index="5">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">06</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">06</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Gallery Generation</h3>
                         <p class="text-lg text-body max-w-lg">While the strip prints, the system quietly generates the QR code and online gallery in the background.</p>
                       </div>
@@ -1132,7 +1186,10 @@
                   <div class="flow-step-panel py-10" data-step-index="6">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">07</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">07</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Live Print + QR Hand-off</h3>
                         <p class="text-lg text-body max-w-lg">A scannable QR code appears immediately so guests can download photos and GIFs while the print finishes.</p>
                       </div>
@@ -1148,7 +1205,10 @@
                   <div class="flow-step-panel py-10" data-step-index="7">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">08</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">08</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Auto-Reset for Next Guest</h3>
                         <p class="text-lg text-body max-w-lg">A thank-you screen confirms the print is ready, then the kiosk resets itself for the next walk-up — no admin needed.</p>
                       </div>
