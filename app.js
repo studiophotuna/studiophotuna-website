@@ -28,6 +28,7 @@ const logoutAction = document.getElementById("logoutAction");
 const hamburger = document.querySelector(".hamburger");
 const proPlanBadge = document.getElementById("proPlanBadge");
 const proPlanPrice = document.getElementById("proPlanPrice");
+const proPlanAnchor = document.getElementById("proPlanAnchor");
 const proPlanNote = document.getElementById("proPlanNote");
 const proPlanDetails = document.getElementById("proPlanDetails");
 const proPlanCta = document.getElementById("proPlanCta");
@@ -131,9 +132,28 @@ async function loadPackagesFromSupabase() {
   }
 }
 
+// Feature lines mirror what licences actually grant -- the database trigger
+// lock_expires_at_to_period_end() sets 20 events / 30 templates for monthly
+// and 50 / 100 with priority support for yearly, so the page states the real
+// entitlements rather than marketing lines. Keep these in step if that
+// trigger changes.
 const billingPlans = {
-  monthly: { badge: "Flexible Plan", price: "₱1,800<small class='text-sm text-white/70'>/mo</small>", note: "Billed monthly. Ideal for pop-up event testing, seasonal hubs, and flexible slots.", details: ["Billed monthly", "Standard support ticket guidelines", "Unlimited image capture parameters", "Dynamic custom template coordinates"], cta: "Choose Monthly Plan" },
-  yearly: { badge: "Best Value", price: "₱950<small class='text-sm text-white/70'>/mo</small>", note: "₱11,400 billed annually. Enjoy a 47% savings compared with monthly cycles.", details: ["Best value choice", "Continuous software feature releases", "Priority developer support queue", "Advanced custom branding frames"], cta: "Choose Yearly Plan" }
+  monthly: {
+    badge: "Flexible",
+    price: "₱1,800<small class='text-base font-semibold text-white/60'>/mo</small>",
+    anchor: "",
+    note: "Billed monthly. Cancel any time.",
+    details: ["20 events per billing cycle", "30 custom templates", "No watermark on prints or downloads", "Standard support"],
+    cta: "Choose Monthly",
+  },
+  yearly: {
+    badge: "Best Value",
+    price: "₱950<small class='text-base font-semibold text-white/60'>/mo</small>",
+    anchor: "₱1,800",
+    note: "₱11,400 billed yearly — ₱10,200 less than paying month to month.",
+    details: ["50 events per billing cycle", "100 custom templates", "No watermark on prints or downloads", "Priority support"],
+    cta: "Choose Yearly",
+  }
 };
 
 const PHP_AMOUNTS = { monthly: 1800, yearly: 11400 };
@@ -474,7 +494,13 @@ function setBillingPlan(plan) {
   if (proPlanBadge) proPlanBadge.textContent = selected.badge;
   if (proPlanPrice) proPlanPrice.innerHTML = selected.price;
   if (proPlanNote) proPlanNote.textContent = selected.note;
-  if (proPlanDetails) { proPlanDetails.innerHTML = selected.details.map(d => `<li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-purple"></i> ${d}</li>`).join(""); }
+  // Struck-through monthly rate beside the yearly price, so the saving is
+  // visible rather than something the reader has to work out.
+  if (proPlanAnchor) {
+    proPlanAnchor.textContent = selected.anchor || "";
+    proPlanAnchor.classList.toggle("hidden", !selected.anchor);
+  }
+  if (proPlanDetails) { proPlanDetails.innerHTML = selected.details.map(d => `<li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>${d}</span></li>`).join(""); }
   if (proPlanCta) {
     proPlanCta.dataset.plan = selectedBilling;
     const blocker = getSubscriptionBlocker(currentLicense, selectedBilling);
@@ -1711,6 +1737,21 @@ function reviewCardHtml(r) {
     </div>`;
 }
 
+// Average rating and count, from approved reviews only. Stays hidden until
+// there are real ones, so the page never shows a score it did not earn.
+function renderReviewsSummary(list) {
+  const el = document.getElementById("reviewsSummary");
+  if (!el) return;
+  if (!list.length) { el.classList.add("hidden"); el.classList.remove("flex"); return; }
+  const avg = list.reduce((sum, r) => sum + (Number(r.rating) || 5), 0) / list.length;
+  el.innerHTML =
+    '<span class="text-yellow-400 text-base">' + starIcons(Math.round(avg)) + '</span>' +
+    '<span class="font-black text-title">' + avg.toFixed(1) + '</span>' +
+    '<span class="text-body">from ' + list.length + ' ' + (list.length === 1 ? "review" : "reviews") + '</span>';
+  el.classList.remove("hidden");
+  el.classList.add("flex");
+}
+
 const REVIEW_FALLBACKS = [
   { rating: 5, name: "Patricia Santos", review_text: "Studio Photuna completely transformed our wedding experience in Manila! The high-angle booth perspective felt super unique, and the instant prints matched our theme frames perfectly." },
   { rating: 5, name: "Liam Mendoza", review_text: "Highly recommend the 14-day free trial app configurations. Calibrating connected DSLR camera variables worked smoothly, and local test sheets printed flawlessly." },
@@ -1738,6 +1779,10 @@ function renderReviews(payload) {
       googleReviewsList.appendChild(card);
     });
   }
+
+  // The aggregate is only shown once real approved reviews exist -- averaging
+  // the placeholder copy would be inventing a rating.
+  renderReviewsSummary(real);
 
   // Once a real approved review exists, the hero proof card upgrades from a
   // generic trial/pricing line to an actual quote instead of a fabricated one.

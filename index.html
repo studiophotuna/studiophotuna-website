@@ -990,25 +990,61 @@
              panel's clipped top edge opens out as the section scrolls in. -->
         <section data-exit class="flood-panel fs bg-brand py-24 px-6 overflow-clip" id="statementPanel">
           <div class="flood-copy fs-body">
-            <div class="max-w-5xl mx-auto text-center space-y-4">
+            <div class="max-w-3xl mx-auto text-center space-y-4">
               <h2 class="h2-display text-white">Why Studio Photuna</h2>
-              <p class="text-base text-white/75 max-w-3xl mx-auto">Running a Korean-style photobooth business usually means stitching together a booking spreadsheet, a separate template design tool, and a clunky kiosk build. Studio Photuna replaces all of it with one photo booth business software you install on a Windows PC — so you spend less time managing tools and more time booked on events.</p>
+              <p class="text-base sm:text-lg text-white/75">Most Korean-style booths run on three tools that were never meant to work together. This replaces all of them.</p>
             </div>
-            <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-              <div class="feature-card card-feature card-accent bg-white/10 text-center space-y-3" style="transition-delay: 0ms;">
-                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mx-auto"><i class="fa-solid fa-plug"></i></div>
-                <h3 class="text-lg font-bold text-white">Built for operators, not developers</h3>
-                <p class="text-sm text-white/75">No coding, no custom kiosk hardware. Plug in a DSLR and a dye-sub printer, and you're ready to run your first session.</p>
+
+            <!-- The section's own argument is a before/after, so it is drawn as
+                 one: the stack operators actually juggle, against the single
+                 install that replaces it. -->
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-5 md:gap-4 items-center mt-10">
+              <div class="feature-card rounded-2xl border border-white/15 bg-white/[0.07] p-6 space-y-3" style="transition-delay: 0ms;">
+                <p class="text-xs font-black uppercase tracking-[0.12em] text-white/50">The usual setup</p>
+                <ul class="space-y-2.5 text-sm text-white/60">
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-xmark text-white/35 mt-0.5"></i><span>A booking spreadsheet</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-xmark text-white/35 mt-0.5"></i><span>A separate template design tool</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-xmark text-white/35 mt-0.5"></i><span>A clunky kiosk build</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-xmark text-white/35 mt-0.5"></i><span>Totals worked out after the event</span></li>
+                </ul>
               </div>
-              <div class="feature-card card-feature card-accent bg-white/10 text-center space-y-3" style="transition-delay: 100ms;">
-                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mx-auto"><i class="fa-solid fa-layer-group"></i></div>
-                <h3 class="text-lg font-bold text-white">One subscription, the whole workflow</h3>
-                <p class="text-sm text-white/75">Event setup, template design, guest flow, printing, and reporting all live inside a single Pro plan.</p>
+
+              <div class="hidden md:flex w-11 h-11 rounded-full bg-white text-brand items-center justify-center shrink-0 shadow-lg" aria-hidden="true">
+                <i class="fa-solid fa-arrow-right"></i>
               </div>
-              <div class="feature-card card-feature card-accent bg-white/10 text-center space-y-3" style="transition-delay: 200ms;">
-                <div class="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center text-white text-lg mx-auto"><i class="fa-solid fa-share-nodes"></i></div>
-                <h3 class="text-lg font-bold text-white">A guest experience worth reposting</h3>
-                <p class="text-sm text-white/75">Branded welcome screens, tone presets, and instant QR delivery make every strip feel premium.</p>
+
+              <div class="feature-card rounded-2xl bg-white p-6 space-y-3 shadow-luxe" style="transition-delay: 120ms;">
+                <p class="text-xs font-black uppercase tracking-[0.12em] text-brand">One Windows app</p>
+                <ul class="space-y-2.5 text-sm font-medium text-title">
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand mt-0.5"></i><span>Events and bookings in one place</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand mt-0.5"></i><span>Template editor built in</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand mt-0.5"></i><span>Runs on the PC and camera you own</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand mt-0.5"></i><span>Revenue and print totals as you go</span></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
+              <div class="feature-card flex items-start gap-3 text-left" style="transition-delay: 0ms;">
+                <i class="fa-solid fa-plug text-white/70 mt-1"></i>
+                <div>
+                  <p class="text-sm font-bold text-white">Built for operators</p>
+                  <p class="text-xs text-white/60 mt-0.5">No coding, no custom kiosk hardware.</p>
+                </div>
+              </div>
+              <div class="feature-card flex items-start gap-3 text-left" style="transition-delay: 100ms;">
+                <i class="fa-solid fa-layer-group text-white/70 mt-1"></i>
+                <div>
+                  <p class="text-sm font-bold text-white">One subscription</p>
+                  <p class="text-xs text-white/60 mt-0.5">The whole workflow, no paid modules.</p>
+                </div>
+              </div>
+              <div class="feature-card flex items-start gap-3 text-left" style="transition-delay: 200ms;">
+                <i class="fa-solid fa-share-nodes text-white/70 mt-1"></i>
+                <div>
+                  <p class="text-sm font-bold text-white">Worth reposting</p>
+                  <p class="text-xs text-white/60 mt-0.5">Branded screens, tone presets, instant QR.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -1024,7 +1060,7 @@
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">How It Works</h2>
-              <p class="text-base text-body">From a branded "Tap to Start" trigger to a printed strip and QR gallery hand-off — every guest screen is timed, on-brand, and built to reset itself for the next walk-up.</p>
+              <p class="text-base text-body">Eight screens, from "Tap to Start" to a printed strip and a QR hand-off. Every one is timed and resets itself for the next guest — no staff in the loop.</p>
             </div>
 
             <!-- Step Flow: full-page numbered steps (scroll-driven, one step at a time, on desktop; stacked list on mobile/no-JS) -->
@@ -1036,7 +1072,10 @@
                   <div class="flow-step-panel py-10" data-step-index="0">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">01</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">01</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Branded Welcome Trigger</h3>
                         <p class="text-lg text-body max-w-lg">A full-bleed, on-brand "Tap to Start" lobby screen invites guests to launch a session with zero staff intervention.</p>
                       </div>
@@ -1052,7 +1091,10 @@
                   <div class="flow-step-panel py-10" data-step-index="1">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">02</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">02</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Template Selection</h3>
                         <p class="text-lg text-body max-w-lg">Guests pick a layout depending on the operator's setup under a live countdown so the queue keeps moving.</p>
                       </div>
@@ -1068,7 +1110,10 @@
                   <div class="flow-step-panel py-10" data-step-index="2">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">03</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">03</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Retake Review</h3>
                         <p class="text-lg text-body max-w-lg">Captured shots load instantly with a configurable retake allowance, so guests only redo the frames they want.</p>
                       </div>
@@ -1084,7 +1129,10 @@
                   <div class="flow-step-panel py-10" data-step-index="3">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">04</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">04</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Strip Assembly Preview</h3>
                         <p class="text-lg text-body max-w-lg">Approved photos are arranged live into the final strip layout side-by-side, exactly as it will print.</p>
                       </div>
@@ -1100,7 +1148,10 @@
                   <div class="flow-step-panel py-10" data-step-index="4">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">05</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">05</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Tone & Frame Studio</h3>
                         <p class="text-lg text-body max-w-lg">One-tap tone presets — Normal, B&W, Sepia, Vintage, Warm, Cool — plus frame styles update the live strip preview.</p>
                       </div>
@@ -1116,7 +1167,10 @@
                   <div class="flow-step-panel py-10" data-step-index="5">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">06</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">06</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Gallery Generation</h3>
                         <p class="text-lg text-body max-w-lg">While the strip prints, the system quietly generates the QR code and online gallery in the background.</p>
                       </div>
@@ -1132,7 +1186,10 @@
                   <div class="flow-step-panel py-10" data-step-index="6">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">07</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">07</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Live Print + QR Hand-off</h3>
                         <p class="text-lg text-body max-w-lg">A scannable QR code appears immediately so guests can download photos and GIFs while the print finishes.</p>
                       </div>
@@ -1148,7 +1205,10 @@
                   <div class="flow-step-panel py-10" data-step-index="7">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20 items-center min-h-[62vh]">
                       <div class="order-2 lg:order-1 space-y-3 relative z-10 lg:-mr-20">
-                        <span class="block text-7xl sm:text-8xl lg:text-9xl font-black text-brand/15 leading-none">08</span>
+                        <div class="flex items-baseline gap-2.5">
+                          <span class="text-5xl sm:text-6xl font-black text-brand leading-none">08</span>
+                          <span class="text-sm font-bold text-muted">of 08</span>
+                        </div>
                         <h3 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-title">Auto-Reset for Next Guest</h3>
                         <p class="text-lg text-body max-w-lg">A thank-you screen confirms the print is ready, then the kiosk resets itself for the next walk-up — no admin needed.</p>
                       </div>
@@ -1302,69 +1362,89 @@
         </section>
 
         <!-- Fixed Interactive Pro Plan pricing -->
-        <section id="pricing" data-exit class="fs fs-lift py-20 px-6 bg-white">
-          <div class="fs-body max-w-7xl mx-auto space-y-12">
+        <section id="pricing" data-exit class="fs fs-lift py-14 px-6 bg-white">
+          <div class="fs-body max-w-7xl mx-auto space-y-8">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">Pricing</h2>
-              <p class="text-base text-body">Start with a free trial, then choose monthly flexibility or yearly savings on the plan built for full-time operators.</p>
+              <p class="text-base text-body">Try it free for 14 days, then pick the billing cycle that suits how often you shoot. One plan, no add-on modules.</p>
             </div>
 
-            <div class="reveal grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-              <!-- Trial Card -->
-              <div class="bg-white border border-line rounded-3xl p-8 flex flex-col justify-between hover-lift">
-                <div class="space-y-4">
-                  <span class="badge bg-brand/10 text-brand">Trial</span>
-                  <h3 class="text-2xl font-bold text-title">14-Day Free Trial</h3>
-                  <div class="text-5xl font-black text-title">₱0</div>
-                  <p class="text-sm text-body">Test every operator workspace feature before committing to plans.</p>
-                  <ul class="space-y-2.5 pt-4 text-sm text-title/90 font-medium">
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand"></i> Custom template mapping</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand"></i> Local printer integration</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-check text-brand"></i> Event dashboard configuration</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-info text-muted"></i> Photo exports are watermarked during trial</li>
-                  </ul>
-                </div>
-                <button onclick="openTrialInfoModal()" class="btn-animation mt-8 w-full border border-line hover:bg-grey py-3.5 rounded-full font-extrabold text-sm text-title transition-colors">
-                  Start Free Trial
-                </button>
-              </div>
-
-              <!-- Pro Card with fully functioning toggles -->
-              <div class="bg-navy-950 border-2 border-brand rounded-3xl p-8 flex flex-col justify-between shadow-luxe text-white transform md:scale-105 relative hover-lift">
-                <span class="absolute -top-3.5 left-1/2 -translate-x-1/2 gradient-accent-bg text-white text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg" id="proPlanBadge">
-                  Best Value
-                </span>
-                <div class="space-y-4">
-                  <h3 class="text-2xl font-bold mt-4 text-white">Studio Photuna Pro</h3>
-                  
-                  <!-- Billing Cycle Toggle Buttons -->
-                  <div class="billing-toggle grid grid-cols-2 gap-2 bg-white/10 border border-white/20 p-1.5 rounded-full" aria-label="Billing cycle">
-                    <button type="button" data-billing="monthly" class="py-2 rounded-full text-xs font-extrabold transition-all duration-200">Monthly</button>
-                    <button type="button" data-billing="yearly" class="active py-2 rounded-full text-xs font-extrabold transition-all duration-200 bg-white text-title shadow-sm">Yearly</button>
-                  </div>
-
-                  <div class="text-5xl font-black text-white" id="proPlanPrice">₱950<small class="text-sm font-semibold text-white/70">/mo</small></div>
-                  <p class="text-sm text-white/80" id="proPlanNote">₱11,400 billed annually. Enjoy a 47% savings compared with monthly cycles.</p>
-                  
-                  <ul class="space-y-2.5 pt-4 text-sm font-semibold" id="proPlanDetails">
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-star text-yellow"></i> Best value choice</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-brand"></i> Every new feature, the moment it ships</li>
-                    <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-brand"></i> Priority support — real answers, not a ticket queue</li>
-                  </ul>
-                </div>
-                <button type="button" onclick="document.getElementById('discountCodeWrap').classList.toggle('hidden')" class="text-xs font-bold text-white/70 hover:text-white underline underline-offset-2 mt-6 text-left">Have a discount code?</button>
-                <div class="hidden mt-2 space-y-2" id="discountCodeWrap">
-                  <div class="flex gap-2">
-                    <input type="text" id="discountCodeField" placeholder="Discount code" autocapitalize="characters" oninput="clearAppliedDiscount()" class="flex-1 min-w-0 border border-white/20 bg-white/10 text-white placeholder-white/50 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-white/40" />
-                    <button type="button" onclick="applyDiscountCode()" id="discountApplyBtn" class="shrink-0 border border-white/30 hover:bg-white/10 text-white font-bold px-4 py-2.5 rounded-xl text-xs uppercase transition-colors">Apply</button>
-                  </div>
-                  <p class="text-xs font-bold hidden" id="discountCodeMessage"></p>
-                </div>
-                <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation mt-4 w-full bg-white hover:bg-grey text-title py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
-                  Upgrade to Pro
+            <!-- Billing cycle governs the whole section, so it sits above the
+                 cards rather than buried inside the Pro one. -->
+            <div class="flex justify-center">
+              <div class="billing-toggle inline-flex items-center gap-1 bg-grey border border-line p-1.5 rounded-full" role="group" aria-label="Billing cycle">
+                <button type="button" data-billing="monthly" class="px-6 py-2.5 rounded-full text-sm font-extrabold text-body transition-all duration-200">Monthly</button>
+                <button type="button" data-billing="yearly" class="active px-6 py-2.5 rounded-full text-sm font-extrabold transition-all duration-200 bg-white text-title shadow-sm">
+                  Yearly <span class="ml-1 text-[11px] font-black text-brand">Save 47%</span>
                 </button>
               </div>
             </div>
+
+            <div class="reveal grid grid-cols-1 md:grid-cols-5 gap-6 max-w-5xl mx-auto items-stretch">
+              <!-- Trial: a way in, not a competing plan -- hence the narrower column. -->
+              <div class="md:col-span-2 bg-white border border-line rounded-3xl p-7 flex flex-col justify-between hover-lift">
+                <div class="space-y-4">
+                  <span class="badge bg-grey text-body">Start here</span>
+                  <h3 class="text-xl font-bold text-title">14-day free trial</h3>
+                  <div class="flex items-baseline gap-1.5">
+                    <span class="text-4xl font-black text-title">₱0</span>
+                    <span class="text-sm font-semibold text-muted">no card required</span>
+                  </div>
+                  <p class="text-sm text-body">Run real events on your own hardware before you pay anything.</p>
+                  <ul class="space-y-2.5 pt-2 text-sm text-body">
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand mt-0.5"></i><span>3 events and 5 templates</span></li>
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand mt-0.5"></i><span>Full operator workspace, nothing locked</span></li>
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand mt-0.5"></i><span>Your DSLR and printer, connected</span></li>
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-info text-muted mt-0.5"></i><span class="text-muted">Prints and downloads carry a watermark</span></li>
+                  </ul>
+                </div>
+                <button onclick="openTrialInfoModal()" class="btn-animation mt-7 w-full border border-line hover:bg-grey py-3.5 rounded-full font-extrabold text-sm text-title transition-colors">
+                  Start free trial
+                </button>
+              </div>
+
+              <!-- Pro: the plan the section is selling, given the wider column. -->
+              <div class="md:col-span-3 bg-navy-950 rounded-3xl p-7 sm:p-8 flex flex-col text-white shadow-luxe relative hover-lift overflow-hidden">
+                <span class="absolute -top-px right-7 gradient-accent-bg text-white text-[11px] font-black uppercase tracking-widest px-4 py-1.5 rounded-b-xl" id="proPlanBadge">Best Value</span>
+
+                <div class="space-y-4">
+                  <h3 class="text-xl font-bold text-white">Studio Photuna Pro</h3>
+
+                  <div class="flex items-baseline gap-3 flex-wrap">
+                    <span class="text-5xl font-black text-white" id="proPlanPrice">₱950<small class="text-base font-semibold text-white/60">/mo</small></span>
+                    <span class="text-xl font-bold text-white/35 line-through" id="proPlanAnchor">₱1,800</span>
+                  </div>
+                  <p class="text-sm text-white/70" id="proPlanNote">₱11,400 billed yearly — ₱10,200 less than paying month to month.</p>
+
+                  <ul class="space-y-2.5 pt-3 text-sm font-medium text-white/90" id="proPlanDetails">
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>50 events per billing cycle</span></li>
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>100 custom templates</span></li>
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>No watermark on prints or downloads</span></li>
+                    <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>Priority support</span></li>
+                  </ul>
+                </div>
+
+                <div class="mt-auto pt-7">
+                  <button onclick="handleSubscribePlan('proPlanCta')" id="proPlanCta" class="btn-animation w-full bg-white hover:bg-grey text-title py-3.5 rounded-full font-extrabold text-sm transition-colors shadow-sm">
+                    Choose Yearly
+                  </button>
+                  <div class="flex items-center justify-center gap-x-4 gap-y-1 flex-wrap mt-3 text-[11px] font-bold text-white/50">
+                    <span><i class="fa-solid fa-rotate-left mr-1"></i>Cancel any time</span>
+                    <span><i class="fa-solid fa-lock mr-1"></i>Secure checkout</span>
+                  </div>
+                  <button type="button" onclick="document.getElementById('discountCodeWrap').classList.toggle('hidden')" class="block mx-auto mt-3 text-xs font-bold text-white/55 hover:text-white underline underline-offset-2">Have a discount code?</button>
+                  <div class="hidden mt-3 space-y-2" id="discountCodeWrap">
+                    <div class="flex gap-2">
+                      <input type="text" id="discountCodeField" placeholder="Discount code" autocapitalize="characters" oninput="clearAppliedDiscount()" class="flex-1 min-w-0 border border-white/20 bg-white/10 text-white placeholder-white/40 rounded-xl px-4 py-2.5 text-sm outline-none focus:border-white/40" />
+                      <button type="button" onclick="applyDiscountCode()" id="discountApplyBtn" class="shrink-0 border border-white/30 hover:bg-white/10 text-white font-bold px-4 py-2.5 rounded-xl text-xs uppercase transition-colors">Apply</button>
+                    </div>
+                    <p class="text-xs font-bold hidden" id="discountCodeMessage"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p class="text-center text-xs text-muted">Prices in PHP. Paying starts a fresh billing period — any time left on your trial or current cycle isn't carried over.</p>
           </div>
         </section>
 
@@ -1374,6 +1454,9 @@
             <div class="reveal text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">Customer Proof</h2>
               <p class="text-base text-body">See what booth operators and their guests are saying about running their business on Studio Photuna.</p>
+              <!-- Filled by app.js from approved reviews only; stays hidden
+                   until there are real ones to average. -->
+              <div class="hidden items-center justify-center gap-2 text-sm font-bold pt-1" id="reviewsSummary"></div>
             </div>
 
             <!-- Single-line marquee. app.js renders each review twice into the
@@ -1386,13 +1469,14 @@
             </div>
 
             <!-- Submit a Review (Collapsible) — visually distinct from the proof cards above -->
-            <div class="max-w-xl mx-auto bg-grey border border-line rounded-2xl overflow-hidden" id="reviewFormSection">
-              <button type="button" onclick="toggleReviewForm()" class="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-grey-2 transition-colors">
-                <div class="space-y-0.5">
-                  <h3 class="text-base font-black text-title">Share your experience</h3>
-                  <p class="text-xs text-body">Had a great time with Studio Photuna? Leave a review and let others know!</p>
+            <div class="max-w-xl mx-auto bg-white border border-line rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(17,24,39,0.05)]" id="reviewFormSection">
+              <button type="button" onclick="toggleReviewForm()" class="w-full flex items-center gap-4 px-6 py-5 text-left hover:bg-grey transition-colors">
+                <span class="w-10 h-10 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center" aria-hidden="true"><i class="fa-solid fa-pen-to-square"></i></span>
+                <div class="flex-1 space-y-0.5">
+                  <h3 class="text-base font-black text-title">Run a booth on Studio Photuna?</h3>
+                  <p class="text-xs text-body">Add your review — it appears here once our team has checked it.</p>
                 </div>
-                <i class="fa-solid fa-chevron-down text-muted transition-transform duration-300" id="reviewFormChevron"></i>
+                <i class="fa-solid fa-chevron-down text-muted transition-transform duration-300 shrink-0" id="reviewFormChevron"></i>
               </button>
               <div id="reviewFormBody" class="hidden px-6 pb-6 space-y-5 bg-white">
               <form id="publicReviewForm" class="space-y-4">
@@ -1614,19 +1698,35 @@
              rather than sliding away. -->
         <section data-exit class="fs-block fs-lift bg-white min-h-[200svh]">
           <div class="closing-panel sticky top-0 relative overflow-hidden gradient-accent-bg flex flex-col justify-center h-[100svh] px-6 py-20">
-          <div class="reveal max-w-4xl mx-auto text-center space-y-6 relative">
-            <div class="absolute -top-32 -right-32 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
-            <h2 class="h2-display text-white" style="font-weight: 800;">What are you waiting for?</h2>
-            <p class="text-base text-white/85 max-w-xl mx-auto">Start your 14-day free trial today — no credit card required, cancel anytime.</p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 bg-white hover:bg-grey text-title px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors shadow-lg">
-                <i class="fa-solid fa-rocket"></i> Start Free Trial
-              </button>
-              <a href="/download" onclick="navigateTo('download'); return false;" class="btn-animation inline-flex items-center gap-2 border-2 border-white/40 hover:bg-white/10 text-white px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors">
-                <i class="fa-solid fa-download"></i> Download the App
-              </a>
+            <!-- Light pools and drifting strips echo the hero, so the page opens
+                 and closes on the same motif. Ornamental only. -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+              <span class="ph-glow" style="width:34rem;height:34rem;top:-12rem;right:-10rem;background:rgba(255,255,255,0.16);"></span>
+              <span class="ph-glow" style="width:26rem;height:26rem;bottom:-10rem;left:-8rem;background:rgba(255,255,255,0.12);animation-delay:-9s;"></span>
+              <span class="ph-strip hidden lg:block" style="top:12%;left:6%;width:7.5rem;--r:-12deg;opacity:0.95;"><img src="strip-a.webp" width="360" height="640" alt="" /></span>
+              <span class="ph-strip hidden lg:block" style="bottom:10%;right:6%;width:11rem;--r:7deg;animation-delay:-6s;opacity:0.95;"><img src="strip-d.webp" width="620" height="349" alt="" /></span>
             </div>
-          </div>
+
+            <div class="reveal max-w-3xl mx-auto text-center space-y-6 relative">
+              <p class="text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-white/70">Your next event could run on it</p>
+              <h2 class="h2-display text-white" style="font-weight: 800;">What are you waiting for?</h2>
+              <p class="text-base sm:text-lg text-white/85 max-w-xl mx-auto">Install it on the PC you already have, connect your camera and printer, and run a real event before you pay anything.</p>
+
+              <div class="pt-2">
+                <div class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 p-1.5">
+                  <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-white hover:bg-grey text-title px-5 sm:px-7 py-3 text-sm font-extrabold transition-colors">
+                    Start free trial <i class="fa-solid fa-arrow-right text-xs"></i>
+                  </button>
+                  <a href="/download" onclick="navigateTo('download'); return false;" class="whitespace-nowrap px-4 sm:px-5 py-3 text-sm font-extrabold text-white hover:text-white/80 transition-colors">Download the app</a>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-center gap-x-5 gap-y-2 flex-wrap text-xs font-bold text-white/70">
+                <span><i class="fa-solid fa-clock mr-1.5"></i>14 days free</span>
+                <span><i class="fa-solid fa-credit-card mr-1.5"></i>No card required</span>
+                <span><i class="fa-solid fa-rotate-left mr-1.5"></i>Cancel any time</span>
+              </div>
+            </div>
           </div>
         </section>
 
