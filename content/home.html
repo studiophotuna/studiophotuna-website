@@ -526,6 +526,9 @@
             <div class="reveal text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">Customer Proof</h2>
               <p class="text-base text-body">See what booth operators and their guests are saying about running their business on Studio Photuna.</p>
+              <!-- Filled by app.js from approved reviews only; stays hidden
+                   until there are real ones to average. -->
+              <div class="hidden items-center justify-center gap-2 text-sm font-bold pt-1" id="reviewsSummary"></div>
             </div>
 
             <!-- Single-line marquee. app.js renders each review twice into the
@@ -538,13 +541,14 @@
             </div>
 
             <!-- Submit a Review (Collapsible) — visually distinct from the proof cards above -->
-            <div class="max-w-xl mx-auto bg-grey border border-line rounded-2xl overflow-hidden" id="reviewFormSection">
-              <button type="button" onclick="toggleReviewForm()" class="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-grey-2 transition-colors">
-                <div class="space-y-0.5">
-                  <h3 class="text-base font-black text-title">Share your experience</h3>
-                  <p class="text-xs text-body">Had a great time with Studio Photuna? Leave a review and let others know!</p>
+            <div class="max-w-xl mx-auto bg-white border border-line rounded-2xl overflow-hidden shadow-[0_10px_30px_rgba(17,24,39,0.05)]" id="reviewFormSection">
+              <button type="button" onclick="toggleReviewForm()" class="w-full flex items-center gap-4 px-6 py-5 text-left hover:bg-grey transition-colors">
+                <span class="w-10 h-10 shrink-0 rounded-full bg-brand/10 text-brand flex items-center justify-center" aria-hidden="true"><i class="fa-solid fa-pen-to-square"></i></span>
+                <div class="flex-1 space-y-0.5">
+                  <h3 class="text-base font-black text-title">Run a booth on Studio Photuna?</h3>
+                  <p class="text-xs text-body">Add your review — it appears here once our team has checked it.</p>
                 </div>
-                <i class="fa-solid fa-chevron-down text-muted transition-transform duration-300" id="reviewFormChevron"></i>
+                <i class="fa-solid fa-chevron-down text-muted transition-transform duration-300 shrink-0" id="reviewFormChevron"></i>
               </button>
               <div id="reviewFormBody" class="hidden px-6 pb-6 space-y-5 bg-white">
               <form id="publicReviewForm" class="space-y-4">
@@ -766,18 +770,34 @@
              rather than sliding away. -->
         <section data-exit class="fs-block fs-lift bg-white min-h-[200svh]">
           <div class="closing-panel sticky top-0 relative overflow-hidden gradient-accent-bg flex flex-col justify-center h-[100svh] px-6 py-20">
-          <div class="reveal max-w-4xl mx-auto text-center space-y-6 relative">
-            <div class="absolute -top-32 -right-32 w-72 h-72 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
-            <h2 class="h2-display text-white" style="font-weight: 800;">What are you waiting for?</h2>
-            <p class="text-base text-white/85 max-w-xl mx-auto">Start your 14-day free trial today — no credit card required, cancel anytime.</p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 bg-white hover:bg-grey text-title px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors shadow-lg">
-                <i class="fa-solid fa-rocket"></i> Start Free Trial
-              </button>
-              <a href="/download" onclick="navigateTo('download'); return false;" class="btn-animation inline-flex items-center gap-2 border-2 border-white/40 hover:bg-white/10 text-white px-8 py-4 rounded-full font-extrabold text-sm uppercase tracking-wider transition-colors">
-                <i class="fa-solid fa-download"></i> Download the App
-              </a>
+            <!-- Light pools and drifting strips echo the hero, so the page opens
+                 and closes on the same motif. Ornamental only. -->
+            <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+              <span class="ph-glow" style="width:34rem;height:34rem;top:-12rem;right:-10rem;background:rgba(255,255,255,0.16);"></span>
+              <span class="ph-glow" style="width:26rem;height:26rem;bottom:-10rem;left:-8rem;background:rgba(255,255,255,0.12);animation-delay:-9s;"></span>
+              <span class="ph-strip hidden lg:block" style="top:12%;left:6%;width:7.5rem;--r:-12deg;opacity:0.95;"><img src="strip-a.webp" width="360" height="640" alt="" /></span>
+              <span class="ph-strip hidden lg:block" style="bottom:10%;right:6%;width:11rem;--r:7deg;animation-delay:-6s;opacity:0.95;"><img src="strip-d.webp" width="620" height="349" alt="" /></span>
             </div>
-          </div>
+
+            <div class="reveal max-w-3xl mx-auto text-center space-y-6 relative">
+              <p class="text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-white/70">Your next event could run on it</p>
+              <h2 class="h2-display text-white" style="font-weight: 800;">What are you waiting for?</h2>
+              <p class="text-base sm:text-lg text-white/85 max-w-xl mx-auto">Install it on the PC you already have, connect your camera and printer, and run a real event before you pay anything.</p>
+
+              <div class="pt-2">
+                <div class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 p-1.5">
+                  <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-white hover:bg-grey text-title px-5 sm:px-7 py-3 text-sm font-extrabold transition-colors">
+                    Start free trial <i class="fa-solid fa-arrow-right text-xs"></i>
+                  </button>
+                  <a href="/download" onclick="navigateTo('download'); return false;" class="whitespace-nowrap px-4 sm:px-5 py-3 text-sm font-extrabold text-white hover:text-white/80 transition-colors">Download the app</a>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-center gap-x-5 gap-y-2 flex-wrap text-xs font-bold text-white/70">
+                <span><i class="fa-solid fa-clock mr-1.5"></i>14 days free</span>
+                <span><i class="fa-solid fa-credit-card mr-1.5"></i>No card required</span>
+                <span><i class="fa-solid fa-rotate-left mr-1.5"></i>Cancel any time</span>
+              </div>
+            </div>
           </div>
         </section>

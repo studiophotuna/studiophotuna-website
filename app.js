@@ -1737,6 +1737,21 @@ function reviewCardHtml(r) {
     </div>`;
 }
 
+// Average rating and count, from approved reviews only. Stays hidden until
+// there are real ones, so the page never shows a score it did not earn.
+function renderReviewsSummary(list) {
+  const el = document.getElementById("reviewsSummary");
+  if (!el) return;
+  if (!list.length) { el.classList.add("hidden"); el.classList.remove("flex"); return; }
+  const avg = list.reduce((sum, r) => sum + (Number(r.rating) || 5), 0) / list.length;
+  el.innerHTML =
+    '<span class="text-yellow-400 text-base">' + starIcons(Math.round(avg)) + '</span>' +
+    '<span class="font-black text-title">' + avg.toFixed(1) + '</span>' +
+    '<span class="text-body">from ' + list.length + ' ' + (list.length === 1 ? "review" : "reviews") + '</span>';
+  el.classList.remove("hidden");
+  el.classList.add("flex");
+}
+
 const REVIEW_FALLBACKS = [
   { rating: 5, name: "Patricia Santos", review_text: "Studio Photuna completely transformed our wedding experience in Manila! The high-angle booth perspective felt super unique, and the instant prints matched our theme frames perfectly." },
   { rating: 5, name: "Liam Mendoza", review_text: "Highly recommend the 14-day free trial app configurations. Calibrating connected DSLR camera variables worked smoothly, and local test sheets printed flawlessly." },
@@ -1764,6 +1779,10 @@ function renderReviews(payload) {
       googleReviewsList.appendChild(card);
     });
   }
+
+  // The aggregate is only shown once real approved reviews exist -- averaging
+  // the placeholder copy would be inventing a rating.
+  renderReviewsSummary(real);
 
   // Once a real approved review exists, the hero proof card upgrades from a
   // generic trial/pricing line to an actual quote instead of a fabricated one.
