@@ -137,6 +137,62 @@ async function loadPackagesFromSupabase() {
 // and 50 / 100 with priority support for yearly, so the page states the real
 // entitlements rather than marketing lines. Keep these in step if that
 // trigger changes.
+// ===================================================================
+// Product tour
+// ===================================================================
+// Tabs swap which screenshot panel is shown. Panels stay in the DOM and are
+// toggled with the hidden attribute so the browser keeps their decoded
+// images, and so the markup still reads as a tablist to assistive tech.
+function selectTourTab(key) {
+  const tabs = document.querySelectorAll(".tour-tab");
+  if (!tabs.length) return;
+  tabs.forEach(tab => {
+    const active = tab.id === "tourtab-" + key;
+    tab.setAttribute("aria-selected", active ? "true" : "false");
+    tab.classList.toggle("text-title", active);
+    tab.classList.toggle("text-body", !active);
+  });
+  document.querySelectorAll(".tour-panel").forEach(panel => {
+    panel.hidden = panel.id !== "tour-" + key;
+  });
+}
+
+// Left/right arrows move between tour tabs, as a tablist is expected to.
+(function initTourKeyboardNav() {
+  const tabs = Array.from(document.querySelectorAll(".tour-tab"));
+  if (!tabs.length) return;
+  tabs.forEach((tab, i) => {
+    tab.addEventListener("keydown", e => {
+      const step = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1
+                 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      const next = tabs[(i + step + tabs.length) % tabs.length];
+      next.focus();
+      next.click();
+    });
+  });
+})();
+
+// ===================================================================
+// Demo booking
+// ===================================================================
+// No scheduling provider is connected yet. Put the booking link here when
+// one exists (Calendly, Cal.com, Google Calendar appointment page, or an
+// internal page) and the "Book a Free Demo" button switches to it
+// automatically. Leave it empty and the button keeps its mailto fallback,
+// so it is never a dead link.
+const DEMO_BOOKING_URL = "";
+
+(function applyDemoBookingUrl() {
+  if (!DEMO_BOOKING_URL) return;
+  const cta = document.getElementById("bookDemoCta");
+  if (!cta) return;
+  cta.href = DEMO_BOOKING_URL;
+  cta.target = "_blank";
+  cta.rel = "noopener";
+})();
+
 const billingPlans = {
   monthly: {
     badge: "Flexible",
@@ -1752,18 +1808,27 @@ function renderReviewsSummary(list) {
   el.classList.add("flex");
 }
 
-const REVIEW_FALLBACKS = [
-  { rating: 5, name: "Patricia Santos", review_text: "Studio Photuna completely transformed our wedding experience in Manila! The high-angle booth perspective felt super unique, and the instant prints matched our theme frames perfectly." },
-  { rating: 5, name: "Liam Mendoza", review_text: "Highly recommend the 14-day free trial app configurations. Calibrating connected DSLR camera variables worked smoothly, and local test sheets printed flawlessly." },
-  { rating: 5, name: "Sloane Perez", review_text: "Our guests loved the retro filters and quick QR-scans on their phone. Exceptional technical support during our corporate anniversary event setup!" },
-  { rating: 5, name: "Marco Villanueva", review_text: "Setup took minutes, not hours. Connected our DSLR and dye-sub printer, mapped a template, and we were running our first session the same afternoon." }
-];
-
 function renderReviews(payload) {
   if (!googleReviewsList) return; // only exists on the home page
   const real = Array.isArray(payload.reviews) ? payload.reviews.filter(r => r.review_text).slice(0, 8) : [];
-  const list = real.length ? real : REVIEW_FALLBACKS;
 
+  const marquee = document.getElementById("reviewsMarquee");
+  const emptyState = document.getElementById("reviewsEmpty");
+
+  // With no approved reviews the section says so plainly. It used to fill the
+  // marquee with four invented operators and quotes, which is not something an
+  // early-stage product should be putting in front of visitors.
+  if (!real.length) {
+    googleReviewsList.innerHTML = "";
+    if (marquee) marquee.classList.add("hidden");
+    if (emptyState) emptyState.classList.remove("hidden");
+    renderReviewsSummary([]);
+    return;
+  }
+  if (marquee) marquee.classList.remove("hidden");
+  if (emptyState) emptyState.classList.add("hidden");
+
+  const list = real;
   googleReviewsList.innerHTML = "";
   // The track is rendered twice end to end: the marquee keyframe translates it
   // by -50%, which lands exactly on the start of the second copy, so the loop

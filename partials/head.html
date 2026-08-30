@@ -293,6 +293,18 @@
         border: 1px solid #dedfe6;
       }
       .card-feature { padding: 2rem; }
+
+      /* Phones: the same cards, dialled down so a section still reads as one
+         page. Two-up grids leave each card ~170px wide, where 2rem of padding
+         and 20px headings push a six-card grid past two screens. */
+      @media (max-width: 639px) {
+        .card-feature { padding: 1rem; border-radius: 1.25rem; }
+        .card-feature h3 { font-size: 0.9375rem; line-height: 1.3; }
+        .card-feature p { font-size: 0.75rem; line-height: 1.45; }
+        .card-feature > div:first-child {
+          width: 2.25rem; height: 2.25rem; margin-bottom: 0.625rem; font-size: 0.875rem;
+        }
+      }
       .card-product {
         overflow: hidden;
         box-shadow: 0 20px 60px rgba(17, 24, 39, 0.08);
@@ -387,6 +399,28 @@
       .fs, .fs-block {
         scroll-snap-align: start;
         scroll-snap-stop: always;
+      }
+
+      /* Product tour: only the selected panel is shown. Panels stay in the DOM
+         so their screenshots are already decoded when a tab is picked. */
+      .tour-panel[hidden] { display: none; }
+      .tour-tab {
+        border-left: 2px solid var(--line);
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+      }
+      .tour-tab[aria-selected="true"] {
+        border-left-color: #0c66e4;
+        background: var(--grey);
+      }
+      @media (max-width: 1023px) {
+        .tour-tab {
+          border-left: 0;
+          border-bottom: 2px solid var(--line);
+        }
+        .tour-tab[aria-selected="true"] {
+          border-left: 0;
+          border-bottom-color: #0c66e4;
+        }
       }
       /* The footer has to be a snap target too. Without it the last section's
          bottom edge is the final snap position, and scroll-snap-stop pins the
