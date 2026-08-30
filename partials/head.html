@@ -384,9 +384,37 @@
       html:has(.fs) {
         scroll-snap-type: y mandatory;
       }
-      .fs, .fs-block {
+      .fs, .fs-block, .fs-compact {
         scroll-snap-align: start;
         scroll-snap-stop: always;
+      }
+      /* Snap target sized to its own content rather than forced to a full
+         viewport -- lets shorter sections join the sequence without adding a
+         whole screen of scrolling each. */
+      .fs-compact {
+        position: relative;
+      }
+
+      /* Product tour: only the selected panel is shown. Panels stay in the DOM
+         so their screenshots are already decoded when a tab is picked. */
+      .tour-panel[hidden] { display: none; }
+      .tour-tab {
+        border-left: 2px solid var(--line);
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+      }
+      .tour-tab[aria-selected="true"] {
+        border-left-color: #0c66e4;
+        background: var(--grey);
+      }
+      @media (max-width: 1023px) {
+        .tour-tab {
+          border-left: 0;
+          border-bottom: 2px solid var(--line);
+        }
+        .tour-tab[aria-selected="true"] {
+          border-left: 0;
+          border-bottom-color: #0c66e4;
+        }
       }
       /* The footer has to be a snap target too. Without it the last section's
          bottom edge is the final snap position, and scroll-snap-stop pins the

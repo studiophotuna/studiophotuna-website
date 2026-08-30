@@ -404,9 +404,37 @@
       html:has(.fs) {
         scroll-snap-type: y mandatory;
       }
-      .fs, .fs-block {
+      .fs, .fs-block, .fs-compact {
         scroll-snap-align: start;
         scroll-snap-stop: always;
+      }
+      /* Snap target sized to its own content rather than forced to a full
+         viewport -- lets shorter sections join the sequence without adding a
+         whole screen of scrolling each. */
+      .fs-compact {
+        position: relative;
+      }
+
+      /* Product tour: only the selected panel is shown. Panels stay in the DOM
+         so their screenshots are already decoded when a tab is picked. */
+      .tour-panel[hidden] { display: none; }
+      .tour-tab {
+        border-left: 2px solid var(--line);
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+      }
+      .tour-tab[aria-selected="true"] {
+        border-left-color: #0c66e4;
+        background: var(--grey);
+      }
+      @media (max-width: 1023px) {
+        .tour-tab {
+          border-left: 0;
+          border-bottom: 2px solid var(--line);
+        }
+        .tour-tab[aria-selected="true"] {
+          border-left: 0;
+          border-bottom-color: #0c66e4;
+        }
       }
       /* The footer has to be a snap target too. Without it the last section's
          bottom edge is the final snap position, and scroll-snap-stop pins the
@@ -820,12 +848,15 @@
           <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-9 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
         </a>
         
-        <nav class="hidden lg:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="/" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Home</a>
+        <!-- Anchors target homepage sections; goToSection routes home first
+             when the visitor is on another page. Download, Help & Support and
+             Changelog remain reachable from the footer. -->
+        <nav class="hidden lg:flex items-center gap-7 text-[15px] font-bold text-title" aria-label="Primary navigation">
+          <a href="/#product" onclick="goToSection('product'); return false;" class="hover:text-brand transition-colors">Product</a>
+          <a href="/#how-it-works" onclick="goToSection('how-it-works'); return false;" class="hover:text-brand transition-colors">How It Works</a>
+          <a href="/#hardware" onclick="goToSection('hardware'); return false;" class="hover:text-brand transition-colors">Hardware</a>
           <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
-          <a href="/download" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-brand transition-colors">Download</a>
-          <a href="/help-support" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Help &amp; Support</a>
-          <a href="/changelog" data-nav="changelog" onclick="navigateTo('changelog'); return false;" class="hover:text-brand transition-colors">Changelog</a>
+          <a href="/#faq" onclick="goToSection('faq'); return false;" class="hover:text-brand transition-colors">FAQ</a>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
@@ -846,7 +877,8 @@
           </div>
 
           <!-- Auth Actions (Signed Out State) -->
-          <button class="btn-animation inline-flex min-h-[44px] items-center justify-center rounded-full border border-line bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
+          <button class="btn-animation inline-flex min-h-[44px] items-center justify-center rounded-full border border-line bg-white hover:bg-grey px-4 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
+          <a href="/#book-demo" onclick="goToSection('book-demo'); return false;" class="btn-animation hidden xl:inline-flex min-h-[44px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand transition-colors">Book a Demo</a>
           <button class="btn-animation hidden sm:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-5 text-sm font-extrabold transition-colors shadow-lg shadow-brand/25" type="button" onclick="startFreeTrial()">Start Free Trial <i class="fa-solid fa-arrow-right text-xs"></i></button>
           <button class="hamburger lg:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
@@ -857,11 +889,15 @@
     <!-- Insets match the header pill's px-3 / sm:px-6 container so the two
          line up as one floating stack. -->
     <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-2xl p-4 flex flex-col gap-2 shadow-luxe z-30">
-      <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
+      <a href="/#product" onclick="goToSection('product'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Product</a>
+      <a href="/#how-it-works" onclick="goToSection('how-it-works'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">How It Works</a>
+      <a href="/#hardware" onclick="goToSection('hardware'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Hardware</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
+      <a href="/#faq" onclick="goToSection('faq'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">FAQ</a>
+      <div class="h-px my-1 bg-line"></div>
+      <a href="/#book-demo" onclick="goToSection('book-demo'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Book a Demo</a>
       <a href="/download" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download</a>
       <a href="/help-support" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help &amp; Support</a>
-      <a href="/changelog" data-nav="changelog" onclick="navigateTo('changelog'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Changelog</a>
       <a href="/account" data-nav="account" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
     </div>
 
@@ -1092,6 +1128,123 @@
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        <!-- What Studio Photuna does: the six areas of the application. -->
+        <section id="product" data-exit class="fs-compact fs-lift bg-white px-6 py-20">
+          <div class="fs-body max-w-6xl mx-auto space-y-12">
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+              <h2 class="h2-display text-title">Everything you need to run the booth.</h2>
+              <p class="text-base text-body">Six areas of the application, covering the workflow from planning an event to handing guests their photos.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              <article class="feature-card rounded-2xl border border-line bg-white p-6 space-y-2.5" style="transition-delay: 0ms;">
+                <span class="text-xs font-black text-brand">01</span>
+                <h3 class="text-lg font-bold text-title flex items-center gap-2"><i class="fa-solid fa-calendar-days text-brand text-base"></i> Events</h3>
+                <p class="text-sm text-body">Create and organize your events in one workspace.</p>
+              </article>
+              <article class="feature-card rounded-2xl border border-line bg-white p-6 space-y-2.5" style="transition-delay: 60ms;">
+                <span class="text-xs font-black text-brand">02</span>
+                <h3 class="text-lg font-bold text-title flex items-center gap-2"><i class="fa-solid fa-palette text-brand text-base"></i> Templates</h3>
+                <p class="text-sm text-body">Create custom layouts and branding for your events.</p>
+              </article>
+              <article class="feature-card rounded-2xl border border-line bg-white p-6 space-y-2.5" style="transition-delay: 120ms;">
+                <span class="text-xs font-black text-brand">03</span>
+                <h3 class="text-lg font-bold text-title flex items-center gap-2"><i class="fa-solid fa-users text-brand text-base"></i> Guest Sessions</h3>
+                <p class="text-sm text-body">Let guests control their own photo session.</p>
+              </article>
+              <article class="feature-card rounded-2xl border border-line bg-white p-6 space-y-2.5" style="transition-delay: 180ms;">
+                <span class="text-xs font-black text-brand">04</span>
+                <h3 class="text-lg font-bold text-title flex items-center gap-2"><i class="fa-solid fa-print text-brand text-base"></i> Printing</h3>
+                <p class="text-sm text-body">Connect your supported printer and print photos directly from the workflow.</p>
+              </article>
+              <article class="feature-card rounded-2xl border border-line bg-white p-6 space-y-2.5" style="transition-delay: 240ms;">
+                <span class="text-xs font-black text-brand">05</span>
+                <h3 class="text-lg font-bold text-title flex items-center gap-2"><i class="fa-solid fa-qrcode text-brand text-base"></i> QR Delivery</h3>
+                <p class="text-sm text-body">Give guests digital access to their photos through QR delivery.</p>
+              </article>
+              <article class="feature-card rounded-2xl border border-line bg-white p-6 space-y-2.5" style="transition-delay: 300ms;">
+                <span class="text-xs font-black text-brand">06</span>
+                <h3 class="text-lg font-bold text-title flex items-center gap-2"><i class="fa-solid fa-chart-simple text-brand text-base"></i> Event Records</h3>
+                <p class="text-sm text-body">Keep track of your event activity and usage.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Product tour: tabs swap a real application screenshot. Screenshots
+             are the ones already in the project; no UI is mocked up. -->
+        <section id="product-tour" data-exit class="fs-compact fs-lift bg-grey px-6 py-20">
+          <div class="fs-body max-w-6xl mx-auto space-y-10">
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+              <h2 class="h2-display text-title">Explore Studio Photuna</h2>
+              <p class="text-base text-body">Get a closer look at the tools you'll use to prepare, run, and manage your events.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6 lg:gap-10 items-start">
+              <div class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible -mx-6 px-6 lg:mx-0 lg:px-0" role="tablist" aria-label="Product tour">
+                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-title whitespace-nowrap" role="tab" aria-selected="true" aria-controls="tour-dashboard" id="tourtab-dashboard" onclick="selectTourTab('dashboard')">Dashboard</button>
+                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-body whitespace-nowrap" role="tab" aria-selected="false" aria-controls="tour-events" id="tourtab-events" onclick="selectTourTab('events')">Events</button>
+                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-body whitespace-nowrap" role="tab" aria-selected="false" aria-controls="tour-templates" id="tourtab-templates" onclick="selectTourTab('templates')">Templates</button>
+                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-body whitespace-nowrap" role="tab" aria-selected="false" aria-controls="tour-guest" id="tourtab-guest" onclick="selectTourTab('guest')">Guest Flow</button>
+                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-body whitespace-nowrap" role="tab" aria-selected="false" aria-controls="tour-printing" id="tourtab-printing" onclick="selectTourTab('printing')">Printing</button>
+                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-body whitespace-nowrap" role="tab" aria-selected="false" aria-controls="tour-gallery" id="tourtab-gallery" onclick="selectTourTab('gallery')">Gallery</button>
+              </div>
+
+              <div>
+                <div class="tour-panel" id="tour-dashboard" role="tabpanel" aria-labelledby="tourtab-dashboard">
+                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="app_image_3.webp" width="1918" height="1080" loading="lazy" alt="Studio Photuna dashboard" class="w-full h-auto block" /></div>
+                  <h3 class="text-lg font-bold text-title mt-5">Dashboard</h3>
+                  <p class="text-sm text-body mt-1">Manage your events and get an overview of your activity.</p>
+                </div>
+                <div class="tour-panel" id="tour-events" role="tabpanel" aria-labelledby="tourtab-events" hidden>
+                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="app_image_2.webp" width="1916" height="1080" loading="lazy" alt="Studio Photuna event setup" class="w-full h-auto block" /></div>
+                  <h3 class="text-lg font-bold text-title mt-5">Events</h3>
+                  <p class="text-sm text-body mt-1">Create and manage the events you prepare for your clients.</p>
+                </div>
+                <div class="tour-panel" id="tour-templates" role="tabpanel" aria-labelledby="tourtab-templates" hidden>
+                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="interact_image_2.webp" width="3200" height="2000" loading="lazy" alt="Studio Photuna template selection" class="w-full h-auto block" /></div>
+                  <h3 class="text-lg font-bold text-title mt-5">Templates</h3>
+                  <p class="text-sm text-body mt-1">Prepare branded layouts for your photo sessions.</p>
+                </div>
+                <div class="tour-panel" id="tour-guest" role="tabpanel" aria-labelledby="tourtab-guest" hidden>
+                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="interact_image_1.webp" width="3200" height="2000" loading="lazy" alt="Studio Photuna guest welcome screen" class="w-full h-auto block" /></div>
+                  <h3 class="text-lg font-bold text-title mt-5">Guest Flow</h3>
+                  <p class="text-sm text-body mt-1">Guide guests through the photo experience from start to finish.</p>
+                </div>
+                <div class="tour-panel" id="tour-printing" role="tabpanel" aria-labelledby="tourtab-printing" hidden>
+                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="interact_image_6.webp" width="3200" height="2000" loading="lazy" alt="Studio Photuna printing screen" class="w-full h-auto block" /></div>
+                  <h3 class="text-lg font-bold text-title mt-5">Printing</h3>
+                  <p class="text-sm text-body mt-1">Send completed photo sessions to your connected printer.</p>
+                </div>
+                <div class="tour-panel" id="tour-gallery" role="tabpanel" aria-labelledby="tourtab-gallery" hidden>
+                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="interact_image_7.webp" width="3200" height="2000" loading="lazy" alt="Studio Photuna QR gallery hand-off" class="w-full h-auto block" /></div>
+                  <h3 class="text-lg font-bold text-title mt-5">Gallery</h3>
+                  <p class="text-sm text-body mt-1">Provide guests with digital access to their photos.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Guest experience: the short overview. The detailed walkthrough is
+             the How It Works section immediately below. -->
+        <section id="guest-experience" data-exit class="fs-compact fs-lift bg-white px-6 py-20">
+          <div class="fs-body max-w-6xl mx-auto space-y-10">
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+              <h2 class="h2-display text-title">What your guests experience</h2>
+              <p class="text-base text-body">From the first tap to the final photo, Studio Photuna is designed to keep the guest experience simple and engaging.</p>
+            </div>
+            <ol class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+              <li class="feature-card rounded-2xl border border-line bg-grey px-4 py-5 text-center space-y-1.5" style="transition-delay: 0ms;"><span class="block text-xs font-black text-brand">01</span><span class="block text-sm font-bold text-title">Tap to Start</span></li>
+              <li class="feature-card rounded-2xl border border-line bg-grey px-4 py-5 text-center space-y-1.5" style="transition-delay: 50ms;"><span class="block text-xs font-black text-brand">02</span><span class="block text-sm font-bold text-title">Choose</span></li>
+              <li class="feature-card rounded-2xl border border-line bg-grey px-4 py-5 text-center space-y-1.5" style="transition-delay: 100ms;"><span class="block text-xs font-black text-brand">03</span><span class="block text-sm font-bold text-title">Capture</span></li>
+              <li class="feature-card rounded-2xl border border-line bg-grey px-4 py-5 text-center space-y-1.5" style="transition-delay: 150ms;"><span class="block text-xs font-black text-brand">04</span><span class="block text-sm font-bold text-title">Review</span></li>
+              <li class="feature-card rounded-2xl border border-line bg-grey px-4 py-5 text-center space-y-1.5" style="transition-delay: 200ms;"><span class="block text-xs font-black text-brand">05</span><span class="block text-sm font-bold text-title">Print</span></li>
+              <li class="feature-card rounded-2xl border border-line bg-grey px-4 py-5 text-center space-y-1.5" style="transition-delay: 250ms;"><span class="block text-xs font-black text-brand">06</span><span class="block text-sm font-bold text-title">Scan</span></li>
+              <li class="feature-card rounded-2xl border border-line bg-grey px-4 py-5 text-center space-y-1.5" style="transition-delay: 300ms;"><span class="block text-xs font-black text-brand">07</span><span class="block text-sm font-bold text-title">Share</span></li>
+            </ol>
+            <p class="text-center text-xs text-muted">Which steps appear depends on how you configure the event.</p>
           </div>
         </section>
 
@@ -1407,6 +1560,114 @@
         </section>
 
         <!-- Fixed Interactive Pro Plan pricing -->
+        <!-- Hardware. Deliberately non-specific about models: the site does not
+             publish a compatibility list, so none is implied here. -->
+        <section id="hardware" data-exit class="fs-compact fs-lift bg-white px-6 py-20">
+          <div class="fs-body max-w-6xl mx-auto space-y-10">
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+              <h2 class="h2-display text-title">Use the equipment you already have.</h2>
+              <p class="text-base text-body">Studio Photuna is designed to work with a practical photo booth setup built around your computer, camera, printer, and internet connection.</p>
+            </div>
+
+            <div class="max-w-3xl mx-auto space-y-4">
+              <div class="flex flex-wrap items-center justify-center gap-3 text-sm font-bold text-title">
+                <span class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5"><i class="fa-solid fa-camera text-brand"></i> Camera</span>
+                <i class="fa-solid fa-arrow-right text-muted text-xs" aria-hidden="true"></i>
+                <span class="inline-flex items-center gap-2 rounded-full bg-brand text-white px-4 py-2.5"><i class="fa-solid fa-display"></i> Studio Photuna</span>
+                <i class="fa-solid fa-arrow-right text-muted text-xs" aria-hidden="true"></i>
+                <span class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5"><i class="fa-solid fa-print text-brand"></i> Printer</span>
+              </div>
+              <div class="flex flex-wrap items-center justify-center gap-3 text-sm font-bold text-title">
+                <span class="inline-flex items-center gap-2 rounded-full bg-brand text-white px-4 py-2.5"><i class="fa-solid fa-display"></i> Studio Photuna</span>
+                <i class="fa-solid fa-arrow-right text-muted text-xs" aria-hidden="true"></i>
+                <span class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5"><i class="fa-solid fa-qrcode text-brand"></i> QR</span>
+                <i class="fa-solid fa-arrow-right text-muted text-xs" aria-hidden="true"></i>
+                <span class="inline-flex items-center gap-2 rounded-full border border-line bg-white px-4 py-2.5"><i class="fa-solid fa-mobile-screen-button text-brand"></i> Guest phone</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="feature-card rounded-2xl border border-line bg-grey p-5 space-y-2" style="transition-delay: 0ms;">
+                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-desktop"></i></div>
+                <h3 class="text-sm font-bold text-title">Windows PC</h3>
+                <p class="text-xs text-body">Runs the Studio Photuna application.</p>
+              </div>
+              <div class="feature-card rounded-2xl border border-line bg-grey p-5 space-y-2" style="transition-delay: 80ms;">
+                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-camera"></i></div>
+                <h3 class="text-sm font-bold text-title">Camera</h3>
+                <p class="text-xs text-body">Use a compatible DSLR or mirrorless camera connected to your computer.</p>
+              </div>
+              <div class="feature-card rounded-2xl border border-line bg-grey p-5 space-y-2" style="transition-delay: 160ms;">
+                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-print"></i></div>
+                <h3 class="text-sm font-bold text-title">Printer</h3>
+                <p class="text-xs text-body">Use a compatible photo printer for physical photo output.</p>
+              </div>
+              <div class="feature-card rounded-2xl border border-line bg-grey p-5 space-y-2" style="transition-delay: 240ms;">
+                <div class="w-10 h-10 rounded-full bg-white border border-line flex items-center justify-center text-brand"><i class="fa-solid fa-wifi"></i></div>
+                <h3 class="text-sm font-bold text-title">Internet</h3>
+                <p class="text-xs text-body">Internet connectivity is used for applicable cloud and digital delivery features.</p>
+              </div>
+            </div>
+            <p class="text-center text-xs text-muted">Check the <a href="/help-support" onclick="navigateTo('help-support'); return false;" class="font-bold text-brand hover:underline">Help &amp; Support</a> page or the FAQ below for what's supported.</p>
+          </div>
+        </section>
+
+        <!-- Who it's for. -->
+        <section id="who-its-for" data-exit class="fs-compact fs-lift bg-grey px-6 py-20">
+          <div class="fs-body max-w-6xl mx-auto space-y-10">
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+              <h2 class="h2-display text-title">Built for people who run photobooths.</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+              <article class="feature-card rounded-2xl border border-line bg-white p-6 flex flex-col justify-between gap-5" style="transition-delay: 0ms;">
+                <div class="space-y-2.5">
+                  <div class="w-11 h-11 rounded-full bg-brand/10 text-brand flex items-center justify-center"><i class="fa-solid fa-camera-retro"></i></div>
+                  <h3 class="text-lg font-bold text-title">Already running a photobooth?</h3>
+                  <p class="text-sm text-body">Bring your existing camera, printer, and computer setup and see how Studio Photuna fits into your workflow.</p>
+                </div>
+                <button onclick="startFreeTrial()" class="btn-animation w-full rounded-full bg-brand hover:bg-brand-600 text-white py-3 text-sm font-extrabold transition-colors">Start Free Trial</button>
+              </article>
+              <article class="feature-card rounded-2xl border border-line bg-white p-6 flex flex-col justify-between gap-5" style="transition-delay: 100ms;">
+                <div class="space-y-2.5">
+                  <div class="w-11 h-11 rounded-full bg-brand/10 text-brand flex items-center justify-center"><i class="fa-solid fa-seedling"></i></div>
+                  <h3 class="text-lg font-bold text-title">Starting your first photobooth?</h3>
+                  <p class="text-sm text-body">Explore how Studio Photuna can fit into your setup before your first event.</p>
+                </div>
+                <a href="#hardware" onclick="goToSection('hardware'); return false;" class="btn-animation w-full text-center rounded-full border border-line hover:bg-grey text-title py-3 text-sm font-extrabold transition-colors">See What You Need</a>
+              </article>
+              <article class="feature-card rounded-2xl border border-line bg-white p-6 flex flex-col justify-between gap-5" style="transition-delay: 200ms;">
+                <div class="space-y-2.5">
+                  <div class="w-11 h-11 rounded-full bg-brand/10 text-brand flex items-center justify-center"><i class="fa-solid fa-comments"></i></div>
+                  <h3 class="text-lg font-bold text-title">Planning a photobooth business?</h3>
+                  <p class="text-sm text-body">Not sure what setup or workflow is right for you? Talk to us and we'll walk you through Studio Photuna.</p>
+                </div>
+                <a href="#book-demo" onclick="goToSection('book-demo'); return false;" class="btn-animation w-full text-center rounded-full border border-line hover:bg-grey text-title py-3 text-sm font-extrabold transition-colors">Book a Free Demo</a>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- Getting started: sign-up through first event. -->
+        <section id="getting-started" data-exit class="fs-compact fs-lift bg-white px-6 py-20">
+          <div class="fs-body max-w-6xl mx-auto space-y-10">
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+              <h2 class="h2-display text-title">From sign-up to your first event.</h2>
+              <p class="text-base text-body">You don't have to imagine how it works. Try it on your own equipment.</p>
+            </div>
+            <ol class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <li class="feature-card rounded-2xl border border-line bg-grey p-5 space-y-1.5" style="transition-delay: 0ms;"><span class="text-xs font-black text-brand">01</span><h3 class="text-sm font-bold text-title">Create your account</h3><p class="text-xs text-body">Start your 14-day trial.</p></li>
+              <li class="feature-card rounded-2xl border border-line bg-grey p-5 space-y-1.5" style="transition-delay: 60ms;"><span class="text-xs font-black text-brand">02</span><h3 class="text-sm font-bold text-title">Download Studio Photuna</h3><p class="text-xs text-body">Install the Windows application.</p></li>
+              <li class="feature-card rounded-2xl border border-line bg-grey p-5 space-y-1.5" style="transition-delay: 120ms;"><span class="text-xs font-black text-brand">03</span><h3 class="text-sm font-bold text-title">Connect your equipment</h3><p class="text-xs text-body">Connect your camera and printer.</p></li>
+              <li class="feature-card rounded-2xl border border-line bg-grey p-5 space-y-1.5" style="transition-delay: 180ms;"><span class="text-xs font-black text-brand">04</span><h3 class="text-sm font-bold text-title">Create your event</h3><p class="text-xs text-body">Configure your event and templates.</p></li>
+              <li class="feature-card rounded-2xl border border-line bg-grey p-5 space-y-1.5" style="transition-delay: 240ms;"><span class="text-xs font-black text-brand">05</span><h3 class="text-sm font-bold text-title">Test the workflow</h3><p class="text-xs text-body">Run a complete guest session before your event.</p></li>
+              <li class="feature-card rounded-2xl border border-line bg-grey p-5 space-y-1.5" style="transition-delay: 300ms;"><span class="text-xs font-black text-brand">06</span><h3 class="text-sm font-bold text-title">Run your event</h3><p class="text-xs text-body">You're ready to put Studio Photuna to work.</p></li>
+            </ol>
+            <div class="text-center">
+              <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-7 py-3.5 text-sm font-extrabold transition-colors">Start 14-Day Free Trial <i class="fa-solid fa-arrow-right text-xs"></i></button>
+            </div>
+          </div>
+        </section>
+
         <section id="pricing" data-exit class="fs fs-lift py-14 px-6 bg-white">
           <div class="fs-body max-w-7xl mx-auto space-y-8">
             <div class="text-center max-w-2xl mx-auto space-y-4">
@@ -1582,6 +1843,19 @@
         </section>
 
         <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Studio Photuna?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna is a Windows application for photo booth operators. It runs your camera, printer, templates, guest sessions, and QR photo delivery from one workspace — so you can operate a professional photobooth without proprietary kiosk hardware."}},{"@type":"Question","name":"Do I need a physical kiosk enclosure to run the app?","acceptedAnswer":{"@type":"Answer","text":"No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation."}},{"@type":"Question","name":"What cameras are compatible with the software?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices."}},{"@type":"Question","name":"Does the app support physical printing?","acceptedAnswer":{"@type":"Answer","text":"Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings."}},{"@type":"Question","name":"Can guests retake their photos during a session?","acceptedAnswer":{"@type":"Answer","text":"Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed."}},{"@type":"Question","name":"What photo strip layouts are available?","acceptedAnswer":{"@type":"Answer","text":"The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor."}},{"@type":"Question","name":"How does QR cloud sharing work?","acceptedAnswer":{"@type":"Answer","text":"After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end."}},{"@type":"Question","name":"Is there a free trial available?","acceptedAnswer":{"@type":"Answer","text":"Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start. Photo exports are watermarked during the trial and become watermark-free once you upgrade."}},{"@type":"Question","name":"Can I use the app offline during events?","acceptedAnswer":{"@type":"Answer","text":"The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue."}},{"@type":"Question","name":"How do software updates work?","acceptedAnswer":{"@type":"Answer","text":"Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience."}},{"@type":"Question","name":"What happens to guest photos after the event?","acceptedAnswer":{"@type":"Answer","text":"Photos captured locally stay on your PC indefinitely. Cloud-uploaded photos (via QR sharing) are retained for 30 days after the event, then permanently deleted from our servers to protect guest privacy."}},{"@type":"Question","name":"Can I cancel my subscription?","acceptedAnswer":{"@type":"Answer","text":"Yes, anytime. Free trials carry no charges and can be cancelled with no financial obligation. Monthly plans can be cancelled to prevent the next billing cycle, and annual plans cancelled within 30 days receive a pro-rata refund for unused months — see our full Refund & Cancellation Policy for details."}},{"@type":"Question","name":"How do I download the app?","acceptedAnswer":{"@type":"Answer","text":"Head to the download page or use the download button on this page to get the Windows installer, then sign in with your account to start your 14-day free trial from inside the app."}}]}</script>
+        <!-- Early-stage positioning. Stated plainly rather than dressed up. -->
+        <section id="feedback" data-exit class="fs-compact fs-lift bg-grey px-6 py-20">
+          <div class="fs-body max-w-3xl mx-auto text-center space-y-5">
+            <div class="w-12 h-12 mx-auto rounded-full bg-brand/10 text-brand flex items-center justify-center" aria-hidden="true"><i class="fa-solid fa-comment-dots"></i></div>
+            <h2 class="h2-display text-title">Built with feedback from photobooth operators.</h2>
+            <p class="text-base text-body">Studio Photuna is still growing, and we're actively improving the platform based on feedback from real operators.</p>
+            <p class="text-base text-body">If you find a bug, have an idea, or think something could work better, we'd genuinely like to hear from you.</p>
+            <div class="pt-1">
+              <a href="mailto:support@studiophotuna.com?subject=Studio%20Photuna%20feedback" class="btn-animation inline-flex items-center gap-2 rounded-full border border-line bg-white hover:bg-grey text-title px-6 py-3 text-sm font-extrabold transition-colors">Send Feedback <i class="fa-solid fa-arrow-right text-xs"></i></a>
+            </div>
+          </div>
+        </section>
+
         <!-- ============================================================
              BOOK A DEMO
 

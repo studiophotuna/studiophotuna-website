@@ -138,6 +138,43 @@ async function loadPackagesFromSupabase() {
 // entitlements rather than marketing lines. Keep these in step if that
 // trigger changes.
 // ===================================================================
+// Product tour
+// ===================================================================
+// Tabs swap which screenshot panel is shown. Panels stay in the DOM and are
+// toggled with the hidden attribute so the browser keeps their decoded
+// images, and so the markup still reads as a tablist to assistive tech.
+function selectTourTab(key) {
+  const tabs = document.querySelectorAll(".tour-tab");
+  if (!tabs.length) return;
+  tabs.forEach(tab => {
+    const active = tab.id === "tourtab-" + key;
+    tab.setAttribute("aria-selected", active ? "true" : "false");
+    tab.classList.toggle("text-title", active);
+    tab.classList.toggle("text-body", !active);
+  });
+  document.querySelectorAll(".tour-panel").forEach(panel => {
+    panel.hidden = panel.id !== "tour-" + key;
+  });
+}
+
+// Left/right arrows move between tour tabs, as a tablist is expected to.
+(function initTourKeyboardNav() {
+  const tabs = Array.from(document.querySelectorAll(".tour-tab"));
+  if (!tabs.length) return;
+  tabs.forEach((tab, i) => {
+    tab.addEventListener("keydown", e => {
+      const step = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1
+                 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      const next = tabs[(i + step + tabs.length) % tabs.length];
+      next.focus();
+      next.click();
+    });
+  });
+})();
+
+// ===================================================================
 // Demo booking
 // ===================================================================
 // No scheduling provider is connected yet. Put the booking link here when

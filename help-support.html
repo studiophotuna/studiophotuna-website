@@ -403,9 +403,37 @@
       html:has(.fs) {
         scroll-snap-type: y mandatory;
       }
-      .fs, .fs-block {
+      .fs, .fs-block, .fs-compact {
         scroll-snap-align: start;
         scroll-snap-stop: always;
+      }
+      /* Snap target sized to its own content rather than forced to a full
+         viewport -- lets shorter sections join the sequence without adding a
+         whole screen of scrolling each. */
+      .fs-compact {
+        position: relative;
+      }
+
+      /* Product tour: only the selected panel is shown. Panels stay in the DOM
+         so their screenshots are already decoded when a tab is picked. */
+      .tour-panel[hidden] { display: none; }
+      .tour-tab {
+        border-left: 2px solid var(--line);
+        transition: border-color 0.2s ease, background-color 0.2s ease;
+      }
+      .tour-tab[aria-selected="true"] {
+        border-left-color: #0c66e4;
+        background: var(--grey);
+      }
+      @media (max-width: 1023px) {
+        .tour-tab {
+          border-left: 0;
+          border-bottom: 2px solid var(--line);
+        }
+        .tour-tab[aria-selected="true"] {
+          border-left: 0;
+          border-bottom-color: #0c66e4;
+        }
       }
       /* The footer has to be a snap target too. Without it the last section's
          bottom edge is the final snap position, and scroll-snap-stop pins the
@@ -819,12 +847,15 @@
           <img src="/logo-dark.png" width="1800" height="550" alt="Studio Photuna" class="h-9 w-auto" onerror="this.onerror=null; this.src='/logo.png'; this.src='https://placehold.co/180x50/111827/ffffff?text=Studio+Photuna'" />
         </a>
         
-        <nav class="hidden lg:flex items-center gap-8 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="/" data-nav="home" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Home</a>
+        <!-- Anchors target homepage sections; goToSection routes home first
+             when the visitor is on another page. Download, Help & Support and
+             Changelog remain reachable from the footer. -->
+        <nav class="hidden lg:flex items-center gap-7 text-[15px] font-bold text-title" aria-label="Primary navigation">
+          <a href="/#product" onclick="goToSection('product'); return false;" class="hover:text-brand transition-colors">Product</a>
+          <a href="/#how-it-works" onclick="goToSection('how-it-works'); return false;" class="hover:text-brand transition-colors">How It Works</a>
+          <a href="/#hardware" onclick="goToSection('hardware'); return false;" class="hover:text-brand transition-colors">Hardware</a>
           <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
-          <a href="/download" data-nav="download" onclick="navigateTo('download'); return false;" class="hover:text-brand transition-colors">Download</a>
-          <a href="/help-support" data-nav="help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Help &amp; Support</a>
-          <a href="/changelog" data-nav="changelog" onclick="navigateTo('changelog'); return false;" class="hover:text-brand transition-colors">Changelog</a>
+          <a href="/#faq" onclick="goToSection('faq'); return false;" class="hover:text-brand transition-colors">FAQ</a>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
@@ -845,7 +876,8 @@
           </div>
 
           <!-- Auth Actions (Signed Out State) -->
-          <button class="btn-animation inline-flex min-h-[44px] items-center justify-center rounded-full border border-line bg-white hover:bg-grey px-5 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
+          <button class="btn-animation inline-flex min-h-[44px] items-center justify-center rounded-full border border-line bg-white hover:bg-grey px-4 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
+          <a href="/#book-demo" onclick="goToSection('book-demo'); return false;" class="btn-animation hidden xl:inline-flex min-h-[44px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand transition-colors">Book a Demo</a>
           <button class="btn-animation hidden sm:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-5 text-sm font-extrabold transition-colors shadow-lg shadow-brand/25" type="button" onclick="startFreeTrial()">Start Free Trial <i class="fa-solid fa-arrow-right text-xs"></i></button>
           <button class="hamburger lg:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
@@ -856,11 +888,15 @@
     <!-- Insets match the header pill's px-3 / sm:px-6 container so the two
          line up as one floating stack. -->
     <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-2xl p-4 flex flex-col gap-2 shadow-luxe z-30">
-      <a href="/" data-nav="home" onclick="navigateTo('home'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Home</a>
+      <a href="/#product" onclick="goToSection('product'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Product</a>
+      <a href="/#how-it-works" onclick="goToSection('how-it-works'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">How It Works</a>
+      <a href="/#hardware" onclick="goToSection('hardware'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Hardware</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
+      <a href="/#faq" onclick="goToSection('faq'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">FAQ</a>
+      <div class="h-px my-1 bg-line"></div>
+      <a href="/#book-demo" onclick="goToSection('book-demo'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Book a Demo</a>
       <a href="/download" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download</a>
       <a href="/help-support" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help &amp; Support</a>
-      <a href="/changelog" data-nav="changelog" onclick="navigateTo('changelog'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Changelog</a>
       <a href="/account" data-nav="account" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
     </div>
 
