@@ -19,24 +19,69 @@
           </div>
 
           <div class="hero-content relative max-w-5xl mx-auto text-center space-y-6">
-            <p class="text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-muted">For photobooth operators, event hosts, and studio owners</p>
+            <p class="text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-muted">For photobooth owners and operators</p>
             <h1 class="h1-display text-[#111827] text-4xl sm:text-6xl md:text-7xl">
-              Everything your photobooth needs.<br class="hidden sm:block"> In one powerful app.
+              Run your photobooth<br class="hidden sm:block"> with one powerful app.
             </h1>
             <p class="text-base sm:text-lg leading-relaxed text-body max-w-2xl mx-auto font-medium">
-              Events, templates, guest sessions, printing, and QR delivery — all from one Windows app, on hardware you already own.
+              Studio Photuna brings event management, guest sessions, templates, printing, and digital delivery together in one Windows application.
+            </p>
+            <p class="text-sm text-muted max-w-xl mx-auto font-semibold">
+              Use the camera and printer you already own. No proprietary kiosk required.
             </p>
             <div class="pt-2">
               <div class="inline-flex items-center gap-2 rounded-full bg-white border border-line p-1.5 shadow-[0_10px_30px_rgba(17,24,39,0.07)]">
                 <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-brand hover:bg-brand-600 text-white px-4 sm:px-6 py-3 text-sm font-extrabold transition-colors">
-                  Start Free Trial <i class="fa-solid fa-arrow-right text-xs"></i>
+                  Start 14-Day Free Trial <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
-                <a href="#how-it-works" onclick="goToSection('how-it-works'); return false;" class="whitespace-nowrap px-3 sm:px-5 py-3 text-sm font-extrabold text-title hover:text-brand transition-colors">See How It Works</a>
+                <a href="#demo-video" onclick="goToSection('demo-video'); return false;" class="whitespace-nowrap px-3 sm:px-5 py-3 text-sm font-extrabold text-title hover:text-brand transition-colors">See Studio Photuna in Action</a>
               </div>
             </div>
+            <p class="text-xs font-bold text-muted">14 days free · No credit card required · Cancel anytime</p>
             <div id="heroProofCard" class="inline-flex items-center gap-2.5 bg-white border border-line rounded-full px-4 py-2 max-w-xl mx-auto">
               <span class="text-xs shrink-0 text-brand" id="heroProofIcon" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span>
               <p class="text-xs font-semibold text-left text-body" id="heroProofText">Try Studio Photuna free for 14 days · No credit card required · Cancel anytime</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             PRODUCT DEMO PLACEHOLDER
+
+             There is no demo video yet, so this is a deliberate placeholder
+             rather than a player with nothing behind it.
+
+             TO ADD THE REAL VIDEO LATER: replace the whole
+             <div id="demoVideoPlaceholder"> block below with the embed,
+             keeping the parent .aspect-video wrapper so the 16:9 framing and
+             responsive behaviour stay intact. For example:
+
+               <video controls playsinline preload="none"
+                      poster="app_image_3.webp" class="w-full h-full object-cover">
+                 <source src="/studio-photuna-demo.mp4" type="video/mp4" />
+               </video>
+
+             or an <iframe> from YouTube/Vimeo with the same classes. No source
+             is hardcoded here on purpose -- nothing should imply a video exists
+             before one does.
+             ============================================================ -->
+        <section id="demo-video" data-exit class="fs fs-lift bg-white px-6 py-20">
+          <div class="fs-body max-w-5xl mx-auto space-y-8">
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+              <h2 class="h2-display text-title">See Studio Photuna in action</h2>
+              <p class="text-base text-body">From the moment a guest taps the screen to the moment they receive their printed photo and QR gallery.</p>
+            </div>
+
+            <div class="aspect-video w-full rounded-2xl border border-line bg-grey overflow-hidden">
+              <div class="w-full h-full flex flex-col items-center justify-center gap-4 text-center px-6" id="demoVideoPlaceholder">
+                <span class="w-16 h-16 rounded-full bg-white border border-line shadow-sm flex items-center justify-center text-brand text-xl" aria-hidden="true">
+                  <i class="fa-solid fa-play ml-1"></i>
+                </span>
+                <div class="space-y-1">
+                  <p class="text-base font-bold text-title">Studio Photuna Demo</p>
+                  <p class="text-xs font-bold text-muted uppercase tracking-widest">Demo video coming soon</p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -594,10 +639,23 @@
             <!-- Single-line marquee. app.js renders each review twice into the
                  track so the -50% loop meets itself; hovering or focusing
                  inside pauses it. -->
-            <div class="marquee -mx-6">
+            <div class="marquee -mx-6" id="reviewsMarquee">
               <div class="marquee-track py-2" id="googleReviewsList">
                 <!-- Rendered Dynamically via JS state -->
               </div>
+            </div>
+
+            <!-- Shown instead of the marquee while no approved reviews exist.
+                 Studio Photuna is early-stage and says so, rather than filling
+                 the space with invented operators. -->
+            <div class="hidden max-w-2xl mx-auto text-center space-y-4" id="reviewsEmpty">
+              <div class="w-14 h-14 mx-auto rounded-full bg-brand/10 text-brand flex items-center justify-center text-xl" aria-hidden="true"><i class="fa-solid fa-comment-dots"></i></div>
+              <h3 class="text-xl font-bold text-title">Built with feedback from photobooth operators</h3>
+              <p class="text-sm text-body">Studio Photuna is still growing, and we're actively improving the platform based on feedback from real operators. Reviews from operators will appear here as they come in.</p>
+              <p class="text-sm text-body">If you find a bug, have an idea, or think something could work better, we'd genuinely like to hear from you.</p>
+              <a href="mailto:support@studiophotuna.com?subject=Studio%20Photuna%20feedback" class="btn-animation inline-flex items-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-6 py-3 text-sm font-extrabold transition-colors">
+                Send Feedback <i class="fa-solid fa-arrow-right text-xs"></i>
+              </a>
             </div>
 
             <!-- Submit a Review (Collapsible) — visually distinct from the proof cards above -->
@@ -656,6 +714,48 @@
         </section>
 
         <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is Studio Photuna?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna is a Windows application for photo booth operators. It runs your camera, printer, templates, guest sessions, and QR photo delivery from one workspace — so you can operate a professional photobooth without proprietary kiosk hardware."}},{"@type":"Question","name":"Do I need a physical kiosk enclosure to run the app?","acceptedAnswer":{"@type":"Answer","text":"No. Studio Photuna runs natively on any Windows 10/11 PC, so you can use a laptop with a tripod and external camera to get started. A kiosk enclosure is optional and only needed if you want a more permanent installation."}},{"@type":"Question","name":"What cameras are compatible with the software?","acceptedAnswer":{"@type":"Answer","text":"Studio Photuna supports most DSLR and mirrorless cameras that offer USB tethering or PC Control mode. Popular Canon EOS and Sony Alpha models work out of the box. The app scans connected USB ports and auto-detects supported devices."}},{"@type":"Question","name":"Does the app support physical printing?","acceptedAnswer":{"@type":"Answer","text":"Yes. The output module works with standard dye-sublimation printers. You can configure orientation, margins, cut borders, and the number of copies per session directly in the app settings."}},{"@type":"Question","name":"Can guests retake their photos during a session?","acceptedAnswer":{"@type":"Answer","text":"Yes. Operators can enable the retake option in the booth flow settings. Guests will see a preview after capture and can choose to retake before the strip is printed."}},{"@type":"Question","name":"What photo strip layouts are available?","acceptedAnswer":{"@type":"Answer","text":"The template editor supports 4x6, 6x4, and 2x6 strip layouts. Each layout can be customized with frames, overlays, logos, and branding elements through the built-in drag-and-drop editor."}},{"@type":"Question","name":"How does QR cloud sharing work?","acceptedAnswer":{"@type":"Answer","text":"After each photo session, the app generates a unique QR code displayed on screen. Guests scan it with their phone camera to instantly download their digital photos from the cloud. No app install required on the guest's end."}},{"@type":"Question","name":"Is there a free trial available?","acceptedAnswer":{"@type":"Answer","text":"Yes. New operators get a 14-day free trial with full access to all features — camera integration, template editing, QR cloud sharing, and printer configuration. No credit card required to start. Photo exports are watermarked during the trial and become watermark-free once you upgrade."}},{"@type":"Question","name":"Can I use the app offline during events?","acceptedAnswer":{"@type":"Answer","text":"The core capture, template rendering, and printing features work offline. However, QR cloud sharing, session syncing, and remote dashboard access require an active internet connection at the venue."}},{"@type":"Question","name":"How do software updates work?","acceptedAnswer":{"@type":"Answer","text":"Pro subscribers receive automatic update notifications inside the app. Updates include new templates, bug fixes, camera driver improvements, and feature additions. You can install updates at your convenience."}},{"@type":"Question","name":"What happens to guest photos after the event?","acceptedAnswer":{"@type":"Answer","text":"Photos captured locally stay on your PC indefinitely. Cloud-uploaded photos (via QR sharing) are retained for 30 days after the event, then permanently deleted from our servers to protect guest privacy."}},{"@type":"Question","name":"Can I cancel my subscription?","acceptedAnswer":{"@type":"Answer","text":"Yes, anytime. Free trials carry no charges and can be cancelled with no financial obligation. Monthly plans can be cancelled to prevent the next billing cycle, and annual plans cancelled within 30 days receive a pro-rata refund for unused months — see our full Refund & Cancellation Policy for details."}},{"@type":"Question","name":"How do I download the app?","acceptedAnswer":{"@type":"Answer","text":"Head to the download page or use the download button on this page to get the Windows installer, then sign in with your account to start your 14-day free trial from inside the app."}}]}</script>
+        <!-- ============================================================
+             BOOK A DEMO
+
+             No scheduling provider is connected yet. The CTA below is wired to
+             a mailto so it is functional rather than dead, and DEMO_BOOKING_URL
+             in app.js is the single place to drop a real booking link when one
+             exists -- set it and the button switches to that link automatically.
+             No external scheduling URL is invented here.
+             ============================================================ -->
+        <section id="book-demo" data-exit class="fs fs-lift py-20 px-6 bg-navy-950">
+          <div class="fs-body max-w-5xl mx-auto">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+              <div class="space-y-5">
+                <span class="badge bg-white/10 text-white/80">Book a demo</span>
+                <h2 class="h2-display text-white">Want to see it before you commit?</h2>
+                <p class="text-base sm:text-lg text-white/80">Book a 20-minute live walkthrough of Studio Photuna.</p>
+                <p class="text-sm text-white/60">We'll show you how the application works, answer your questions, and explain how Studio Photuna can fit into your current photo booth setup.</p>
+                <div class="pt-1">
+                  <a id="bookDemoCta" href="mailto:support@studiophotuna.com?subject=Book%20a%20Studio%20Photuna%20demo&amp;body=Hi%20Studio%20Photuna%2C%0A%0AI%27d%20like%20to%20book%20a%2020-minute%20demo.%0A%0AName%3A%0ACurrent%20photobooth%20status%20(already%20operating%20%2F%20not%20yet%20%2F%20planning%20to%20start)%3A%0AWhat%20I%27d%20like%20to%20see%3A%0APreferred%20dates%20and%20times%3A%0A%0AThanks%21" class="btn-animation inline-flex items-center gap-2 rounded-full bg-white hover:bg-grey text-title px-6 py-3.5 text-sm font-extrabold transition-colors">
+                    Book a Free Demo <i class="fa-solid fa-arrow-right text-xs"></i>
+                  </a>
+                  <p class="text-xs font-bold text-white/50 mt-3">No sales pressure. Bring your questions.</p>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border border-white/15 bg-white/[0.06] p-6 sm:p-7">
+                <p class="text-xs font-black uppercase tracking-[0.12em] text-white/50 mb-4">What we'll cover</p>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5 text-sm text-white/85">
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>Application overview</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>Event setup</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>Templates</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>Guest workflow</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>Printing</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>QR / digital delivery</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>Hardware setup</span></li>
+                  <li class="flex items-start gap-2.5"><i class="fa-solid fa-circle-check text-brand-300 mt-0.5"></i><span>Subscription</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <!-- Exits on opacity alone -- the long answer text is hard to read
              through a blur as it leaves. -->
         <section id="faq" data-exit class="fs fs-lift py-20 px-6 bg-white">
@@ -840,24 +940,20 @@
             </div>
 
             <div class="reveal max-w-3xl mx-auto text-center space-y-6 relative">
-              <p class="text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-white/70">Your next event could run on it</p>
-              <h2 class="h2-display text-white" style="font-weight: 800;">What are you waiting for?</h2>
-              <p class="text-base sm:text-lg text-white/85 max-w-xl mx-auto">Install it on the PC you already have, connect your camera and printer, and run a real event before you pay anything.</p>
+              <p class="text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-white/70">Ready when you are</p>
+              <h2 class="h2-display text-white" style="font-weight: 800;">Your next event could run on Studio Photuna.</h2>
+              <p class="text-base sm:text-lg text-white/85 max-w-xl mx-auto">Try the complete workflow on your own equipment for 14 days.</p>
 
               <div class="pt-2">
                 <div class="inline-flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 p-1.5">
                   <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-white hover:bg-grey text-title px-5 sm:px-7 py-3 text-sm font-extrabold transition-colors">
-                    Start free trial <i class="fa-solid fa-arrow-right text-xs"></i>
+                    Start 14-Day Free Trial <i class="fa-solid fa-arrow-right text-xs"></i>
                   </button>
-                  <a href="/download" onclick="navigateTo('download'); return false;" class="whitespace-nowrap px-4 sm:px-5 py-3 text-sm font-extrabold text-white hover:text-white/80 transition-colors">Download the app</a>
+                  <a href="#book-demo" onclick="goToSection('book-demo'); return false;" class="whitespace-nowrap px-4 sm:px-5 py-3 text-sm font-extrabold text-white hover:text-white/80 transition-colors">Book a Free Demo</a>
                 </div>
               </div>
 
-              <div class="flex items-center justify-center gap-x-5 gap-y-2 flex-wrap text-xs font-bold text-white/70">
-                <span><i class="fa-solid fa-clock mr-1.5"></i>14 days free</span>
-                <span><i class="fa-solid fa-credit-card mr-1.5"></i>No card required</span>
-                <span><i class="fa-solid fa-rotate-left mr-1.5"></i>Cancel any time</span>
-              </div>
+              <p class="text-xs font-bold text-white/70">No credit card required.</p>
             </div>
           </div>
         </section>
