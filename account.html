@@ -403,15 +403,9 @@
       html:has(.fs) {
         scroll-snap-type: y mandatory;
       }
-      .fs, .fs-block, .fs-compact {
+      .fs, .fs-block {
         scroll-snap-align: start;
         scroll-snap-stop: always;
-      }
-      /* Snap target sized to its own content rather than forced to a full
-         viewport -- lets shorter sections join the sequence without adding a
-         whole screen of scrolling each. */
-      .fs-compact {
-        position: relative;
       }
 
       /* Product tour: only the selected panel is shown. Panels stay in the DOM
