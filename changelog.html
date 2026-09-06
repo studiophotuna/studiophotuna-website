@@ -915,6 +915,96 @@
 
         <div class="space-y-8">
 
+          <!-- v0.4.2 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-4-2">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-brand/10 text-brand font-mono font-bold text-xs px-3 py-1 rounded-full">v0.4.2</span>
+                <h2 class="text-2xl font-black text-title">Update Installer Fix</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">September 7, 2026</span>
+            </div>
+            <p class="text-sm text-body -mt-2">A single fix for the in-app update banner, which could strand a finished download at 0% and leave &quot;Install &amp; restart&quot; out of reach.</p>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-red-600"><i class="fa-solid fa-bug"></i> Fixed</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span>Fixed the update banner freezing at &quot;Downloading 0%&quot; once an update finished downloading. The download completed, but the banner reset to zero exactly when it should have advanced, so &quot;Install &amp; restart&quot; was never reachable. Updating from Settings &rarr; Check for updates was unaffected.</span></li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- v0.4.1 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-4-1">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-brand/10 text-brand font-mono font-bold text-xs px-3 py-1 rounded-full">v0.4.1</span>
+                <h2 class="text-2xl font-black text-title">Event Isolation, Full Screen &amp; Security Hardening</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">September 7, 2026</span>
+            </div>
+            <p class="text-sm text-body -mt-2">Events are properly isolated from one another: a new event no longer inherits the last one&#39;s branding, settings or design, and Templates and Frames now show what is actually applied to the event you have open. The app also opens full screen, and a storage-cleanup permission gap has been closed.</p>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-green-700"><i class="fa-solid fa-sparkles"></i> New</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">&bull;</span> <span><strong class="text-title">Opens full screen</strong> &mdash; Fills the display on launch; F11 toggles.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">&bull;</span> <span><strong class="text-title">Copy templates and frames to a new event</strong> &mdash; An optional toggle when creating an event, listing each source event with its template and frame counts. Branding and settings always start fresh, and the source event is never modified.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">&bull;</span> <span><strong class="text-title">Applied and Library views</strong> &mdash; Templates and Frames now open on Applied to this event, with Library for browsing everything. Previously these always listed the whole shared library, which made a new event look like it had inherited the last one&#39;s design.</span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">&bull;</span> <span><strong class="text-title">Reload returns to Home</strong> &mdash; Closes the open event rather than restoring the last screen.</span></li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-navy-700"><i class="fa-solid fa-shield-halved"></i> Security</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-navy-700 font-bold mt-0.5">&bull;</span> <span><strong class="text-title">Event storage cleanup locked down</strong> &mdash; The routine that deletes an event&#39;s photos and gallery records ran with elevated privileges, never checked the caller, and was reachable by any signed-in account, so one operator could delete another operator&#39;s event photos. It now verifies ownership and restricts access. This fix is applied on our side; no action is needed from operators.</span></li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-red-600"><i class="fa-solid fa-bug"></i> Fixed</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span>Fixed deleted events reappearing after a restart.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span>Fixed new events opening with the previous event&#39;s branding and settings.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span>Fixed saving settings overwriting every event. Booth-level settings still apply to all events; event-level settings now apply only to the event you have open.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span>Fixed the template editor discarding in-progress work and carrying frames between templates.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span>Fixed booths reporting <code class="text-xs bg-grey px-1 rounded">0.3.0</code> regardless of build.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span>Fixed the &quot;Account services are not configured&quot; error on every event delete.</span></li>
+              </ul>
+            </div>
+          </article>
+
+          <!-- v0.4.0 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-4-0">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-brand/10 text-brand font-mono font-bold text-xs px-3 py-1 rounded-full">v0.4.0</span>
+                <h2 class="text-2xl font-black text-title">Remote Booth Control &amp; Kiosk Recovery</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">September 5, 2026</span>
+            </div>
+            <p class="text-sm text-body -mt-2">Booths can now be stopped remotely, and a kiosk that restarts mid-event comes back up on its own instead of waiting for someone to walk over to it.</p>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-green-700"><i class="fa-solid fa-sparkles"></i> New</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">&bull;</span> <span><strong class="text-title">Stop Booth remote command</strong></span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">&bull;</span> <span><strong class="text-title">Kiosk auto-resume after restart</strong></span></li>
+                <li class="flex items-start gap-2"><span class="text-green-600 font-bold mt-0.5">&bull;</span> <span><strong class="text-title">Launch on startup registration</strong> &mdash; The setting now reflects true system state.</span></li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-red-600"><i class="fa-solid fa-bug"></i> Fixed</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span>Fixed remote commands not reaching a booth on the same machine or connection.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span>Fixed Ctrl+R re-entering the booth with no way back to admin.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span>Fixed duplicate and stale offline booth entries.</span></li>
+              </ul>
+            </div>
+          </article>
+
           <!-- v0.3.0 -->
           <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-3-0">
             <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
@@ -1037,9 +1127,9 @@
             </div>
 
             <div class="space-y-3">
-              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-purple-600"><i class="fa-solid fa-scale-balanced"></i> Updated</h3>
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-navy-700"><i class="fa-solid fa-scale-balanced"></i> Updated</h3>
               <ul class="space-y-2 text-sm text-body">
-                <li class="flex items-start gap-2"><span class="text-purple-500 font-bold mt-0.5">•</span> <span><strong class="text-title">Terms of Service &amp; Privacy Policy</strong> — Updated to reflect new data handling practices introduced in this release — covering guest consent, session data collection, and operator cloud backup destinations.</span></li>
+                <li class="flex items-start gap-2"><span class="text-navy-700 font-bold mt-0.5">•</span> <span><strong class="text-title">Terms of Service &amp; Privacy Policy</strong> — Updated to reflect new data handling practices introduced in this release — covering guest consent, session data collection, and operator cloud backup destinations.</span></li>
               </ul>
             </div>
           </article>
