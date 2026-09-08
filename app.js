@@ -199,7 +199,7 @@ const billingPlans = {
     price: "₱1,800<small class='text-base font-semibold text-white/60'>/mo</small>",
     anchor: "",
     note: "Billed monthly. Cancel any time.",
-    details: ["20 events per billing cycle", "30 custom templates", "No watermark on prints or downloads", "Standard support"],
+    details: ["20 events per billing cycle", "30 custom templates", "No watermark on prints or downloads", "Galleries kept for 6 months", "Standard support"],
     cta: "Choose Monthly",
   },
   yearly: {
@@ -207,7 +207,7 @@ const billingPlans = {
     price: "₱950<small class='text-base font-semibold text-white/60'>/mo</small>",
     anchor: "₱1,800",
     note: "₱11,400 billed yearly — ₱10,200 less than paying month to month.",
-    details: ["50 events per billing cycle", "100 custom templates", "No watermark on prints or downloads", "Priority support"],
+    details: ["50 events per billing cycle", "100 custom templates", "No watermark on prints or downloads", "Galleries kept for 12 months", "Priority support"],
     cta: "Choose Yearly",
   }
 };
