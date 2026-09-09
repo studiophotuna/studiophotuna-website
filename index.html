@@ -883,7 +883,7 @@
           </div>
 
           <!-- Auth Actions (Signed Out State) -->
-          <button class="btn-animation inline-flex min-h-[44px] items-center justify-center rounded-full border border-line bg-white hover:bg-grey px-4 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
+          <button class="btn-animation inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-full border border-line bg-white hover:bg-grey px-3 sm:px-4 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
           <a href="/#book-demo" onclick="goToSection('book-demo'); return false;" class="btn-animation hidden xl:inline-flex min-h-[44px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand transition-colors">Book a Demo</a>
           <button class="btn-animation hidden sm:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-5 text-sm font-extrabold transition-colors shadow-lg shadow-brand/25" type="button" onclick="startFreeTrial()">Start Free Trial <i class="fa-solid fa-arrow-right text-xs"></i></button>
           <button class="hamburger lg:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
@@ -928,7 +928,7 @@
             <span class="ph-strip hidden lg:block" style="bottom:12%;right:7%;width:13rem;--r:-5deg;animation-delay:-11s;"><img src="strip-d.webp" width="620" height="349" alt="" /></span>
           </div>
 
-          <div class="hero-content relative max-w-5xl mx-auto text-center space-y-6">
+          <div class="hero-content relative w-full min-w-0 max-w-5xl mx-auto text-center space-y-6">
             <p class="text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-muted">For photobooth owners and operators</p>
             <h1 class="h1-display text-[#111827] text-4xl sm:text-6xl md:text-7xl">
               Run your photobooth<br class="hidden sm:block"> with one powerful app.
@@ -939,12 +939,16 @@
             <p class="text-sm text-muted max-w-xl mx-auto font-semibold">
               Use the camera and printer you already own. No proprietary kiosk required.
             </p>
+            <!-- Two nowrap labels side by side gave this pill a ~495px
+                 min-content width, which the hero could not shrink below and
+                 #hero's overflow-clip then cut off. It stacks on phones and
+                 only becomes the single-row pill once there is room. -->
             <div class="pt-2">
-              <div class="inline-flex items-center gap-2 rounded-full bg-white border border-line p-1.5 shadow-[0_10px_30px_rgba(17,24,39,0.07)]">
-                <button onclick="startFreeTrial()" class="btn-animation inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-brand hover:bg-brand-600 text-white px-4 sm:px-6 py-3 text-sm font-extrabold transition-colors">
+              <div class="flex w-full flex-col gap-2 rounded-3xl sm:w-auto sm:inline-flex sm:flex-row sm:items-center sm:rounded-full bg-white border border-line p-1.5 shadow-[0_10px_30px_rgba(17,24,39,0.07)]">
+                <button onclick="startFreeTrial()" class="btn-animation inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-full bg-brand hover:bg-brand-600 text-white px-4 sm:w-auto sm:px-6 py-3 text-sm font-extrabold transition-colors">
                   Start 14-Day Free Trial <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
-                <a href="#demo-video" onclick="goToSection('demo-video'); return false;" class="whitespace-nowrap px-3 sm:px-5 py-3 text-sm font-extrabold text-title hover:text-brand transition-colors">See Studio Photuna in Action</a>
+                <a href="#demo-video" onclick="goToSection('demo-video'); return false;" class="w-full text-center whitespace-nowrap px-3 sm:w-auto sm:px-5 py-3 text-sm font-extrabold text-title hover:text-brand transition-colors">See Studio Photuna in Action</a>
               </div>
             </div>
             <p class="text-xs font-bold text-muted">14 days free · No credit card required · Cancel anytime</p>
@@ -1239,7 +1243,7 @@
              opacity-only variant for the same reason. -->
         <!-- No exit treatment at all: this section is walked a step at a time,
              so dimming it on the way out fights the thing it is for. -->
-        <section id="how-it-works" data-exit-late class="fs-block fs-lift bg-white py-10 sm:py-20 px-6">
+        <section id="how-it-works" data-exit-late class="fs-block fs-lift overflow-x-clip bg-white py-10 sm:py-20 px-6">
           <div class="max-w-7xl mx-auto space-y-12">
             <div class="text-center max-w-2xl mx-auto space-y-4">
               <h2 class="h2-display text-title">How It Works</h2>
