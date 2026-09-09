@@ -101,6 +101,16 @@
         --shadow: 0 30px 90px rgba(17, 24, 39, 0.12);
       }
 
+      /* A bare URL or long address has no break opportunity, so on a narrow
+         screen it pushes the whole page sideways -- a raw privacy-policy link
+         on the cookie page was doing exactly that at 320px. break-word breaks
+         such a token only when it would otherwise overflow, and unlike
+         "anywhere" it does not change any element's intrinsic width, so
+         nothing else in the layout shifts. */
+      body {
+        overflow-wrap: break-word;
+      }
+
       /* Editorial serif headings -- Playfair Display carries the "premium"
          read on every page, paired with Plus Jakarta Sans for everything
          else. .h1-display is for each page's one big hero headline;
