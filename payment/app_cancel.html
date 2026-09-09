@@ -100,6 +100,16 @@
         --shadow: 0 30px 90px rgba(17, 24, 39, 0.12);
       }
 
+      /* A bare URL or long address has no break opportunity, so on a narrow
+         screen it pushes the whole page sideways -- a raw privacy-policy link
+         on the cookie page was doing exactly that at 320px. break-word breaks
+         such a token only when it would otherwise overflow, and unlike
+         "anywhere" it does not change any element's intrinsic width, so
+         nothing else in the layout shifts. */
+      body {
+        overflow-wrap: break-word;
+      }
+
       /* Editorial serif headings -- Playfair Display carries the "premium"
          read on every page, paired with Plus Jakarta Sans for everything
          else. .h1-display is for each page's one big hero headline;
@@ -882,7 +892,7 @@
           </div>
 
           <!-- Auth Actions (Signed Out State) -->
-          <button class="btn-animation inline-flex min-h-[44px] items-center justify-center rounded-full border border-line bg-white hover:bg-grey px-4 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
+          <button class="btn-animation inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-full border border-line bg-white hover:bg-grey px-3 sm:px-4 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
           <a href="/#book-demo" onclick="goToSection('book-demo'); return false;" class="btn-animation hidden xl:inline-flex min-h-[44px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand transition-colors">Book a Demo</a>
           <button class="btn-animation hidden sm:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-5 text-sm font-extrabold transition-colors shadow-lg shadow-brand/25" type="button" onclick="startFreeTrial()">Start Free Trial <i class="fa-solid fa-arrow-right text-xs"></i></button>
           <button class="hamburger lg:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
