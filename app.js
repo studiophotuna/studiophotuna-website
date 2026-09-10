@@ -580,6 +580,49 @@ billingToggleButtons.forEach((button) => {
 // has real recurring billing wired up right now -- PayMongo/Xendit/PayPal
 // fall back to the Manual GCash flow the same way, until each gets its own
 // recurring-billing integration.
+// The buyer's gateway choice for this visit. Null until they pick one, in
+// which case the configured default is used — so behaviour is unchanged for
+// anyone who ignores the picker.
+let _chosenGateway = null;
+
+// Only gateways this site can actually take payment through, in the order they
+// are offered. Kept in step with SELECTABLE in
+// create-subscription-checkout-session, which re-checks the choice server-side.
+const SELECTABLE_GATEWAYS = [
+  { key: "paymongo", label: "PayMongo", sub: "GCash · Maya · Cards" },
+  { key: "paypal", label: "PayPal", sub: "PayPal · Cards" },
+];
+
+// Renders the picker once the configured gateway is known. Stripe and Manual
+// GCash take their own routes and get no picker, so the section stays hidden
+// and the flow is exactly what it was before.
+async function renderGatewayChoice() {
+  const wrap = document.getElementById("gatewayChoiceWrap");
+  const opts = document.getElementById("gatewayChoiceOptions");
+  if (!wrap || !opts) return;
+
+  const configured = await getActiveAppGateway();
+  if (!SELECTABLE_GATEWAYS.some((g) => g.key === configured)) { wrap.classList.add("hidden"); return; }
+
+  if (!_chosenGateway) _chosenGateway = configured;
+  wrap.classList.remove("hidden");
+  opts.innerHTML = "";
+
+  SELECTABLE_GATEWAYS.forEach((g) => {
+    const active = _chosenGateway === g.key;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.setAttribute("aria-pressed", String(active));
+    btn.className = "rounded-xl border px-3 py-2.5 text-left transition-colors " +
+      (active ? "border-white/70 bg-white/15" : "border-white/20 hover:bg-white/10");
+    btn.innerHTML =
+      '<span class="block text-xs font-extrabold text-white">' + g.label + '</span>' +
+      '<span class="block text-[10px] font-semibold text-white/50">' + g.sub + '</span>';
+    btn.onclick = () => { _chosenGateway = g.key; renderGatewayChoice(); };
+    opts.appendChild(btn);
+  });
+}
+
 async function getActiveAppGateway() {
   if (!supabaseClient) return "manual_gcash";
   try {
@@ -660,7 +703,12 @@ async function handleSubscribePlan(triggerId) {
     : selectedBilling;
   const blocker = getSubscriptionBlocker(currentLicense, requestedBilling);
   if (blocker) { if (blocker.type === "confirm") { if (!window.confirm(blocker.message)) return; } else { spawnToast(blocker.title, blocker.message, "fa-solid fa-circle-info", "warning"); return; } }
-  const gateway = await getActiveAppGateway();
+  const configuredGateway = await getActiveAppGateway();
+  // A buyer who picked a gateway overrides the configured default; the edge
+  // function re-checks the choice against its own allowlist regardless.
+  const gateway = SELECTABLE_GATEWAYS.some((g) => g.key === _chosenGateway)
+    ? _chosenGateway
+    : configuredGateway;
   if (gateway === "manual_gcash") { openGcashModal(requestedBilling); return; }
   const ctas = [document.getElementById("proPlanCta"), document.getElementById("renewalBannerBtn")].filter(Boolean);
   const originalLabels = ctas.map((el) => el.textContent);
@@ -672,7 +720,7 @@ async function handleSubscribePlan(triggerId) {
     // PayPal charge once for the selected billing period (no
     // auto-renewal yet) via a separate function.
     const functionName = gateway === "stripe" ? "create-checkout-session" : "create-subscription-checkout-session";
-    const { data, error } = await supabaseClient.functions.invoke(functionName, { body: { billing: requestedBilling, discount_code: discountCode } });
+    const { data, error } = await supabaseClient.functions.invoke(functionName, { body: { billing: requestedBilling, discount_code: discountCode, provider: gateway } });
     if (error) throw await resolveFunctionError(error);
     if (!data?.url) {
       // A discount-code validation failure (bad/expired/already-used code)
@@ -2162,6 +2210,7 @@ window.onload = async function () {
 
   setActiveNav(CURRENT_VIEW);
   setBillingPlan(selectedBilling); // guarded internally; Pro plan card can appear on more than one page
+  renderGatewayChoice();           // same guard: no-ops on pages without the Pro plan card
 
   if (CURRENT_VIEW === 'book-event') {
     buildWizardProgress(); buildWizardPkgGrid();

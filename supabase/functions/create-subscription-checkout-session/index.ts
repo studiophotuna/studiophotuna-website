@@ -48,7 +48,7 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    const { billing, discount_code } = await req.json();
+    const { billing, discount_code, provider: requestedProvider } = await req.json();
     let amount = PHP_AMOUNTS[billing];
     if (!amount) return json({ error: "Invalid billing cycle." }, 400);
 
@@ -104,18 +104,26 @@ serve(async (req) => {
       discountCodeId = discount.id;
     }
 
-    // The admin can switch this at any time, so re-check server-side
-    // rather than trusting the client.
+    // The admin setting is the default, and still the only thing that decides
+    // whether online checkout is available at all.
     const { data: settings } = await supabaseAdmin
       .from("payment_gateway_settings")
       .select("provider")
       .eq("context", "app")
       .maybeSingle();
 
-    const provider = settings?.provider;
-    if (provider === "stripe" || provider === "manual_gcash" || !provider) {
+    const configured = settings?.provider;
+    if (configured === "stripe" || configured === "manual_gcash" || !configured) {
       return json({ error: "This payment method isn't handled by this endpoint." }, 400);
     }
+
+    // A buyer may pick a different gateway than the configured default. That is
+    // safe to accept from the client: the amount is computed above from the
+    // billing cycle and the discount, both validated server-side, so the choice
+    // only decides which of our own gateways processes an already-fixed charge.
+    // It is still checked against an allowlist rather than passed through.
+    const SELECTABLE = ["paymongo", "xendit", "paypal"];
+    const provider = SELECTABLE.includes(requestedProvider) ? requestedProvider : configured;
 
     const siteUrl = Deno.env.get("SITE_URL") ?? "https://studiophotuna.com";
     const successUrl = `${siteUrl}/payment/app_success`;

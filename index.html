@@ -1738,6 +1738,14 @@
                     <span><i class="fa-solid fa-rotate-left mr-1"></i>Cancel any time</span>
                     <span><i class="fa-solid fa-lock mr-1"></i>Secure checkout</span>
                   </div>
+                  <!-- Gateway picker. Hidden by default and revealed by
+                       renderGatewayChoice() in app.js only when the configured
+                       gateway is an online one, so the Manual GCash flow is
+                       never shown a choice it cannot act on. -->
+                  <div class="hidden mt-4" id="gatewayChoiceWrap">
+                    <p class="text-center text-[11px] font-bold uppercase tracking-wider text-white/40">Pay with</p>
+                    <div class="mt-2 grid grid-cols-2 gap-2" id="gatewayChoiceOptions"></div>
+                  </div>
                   <button type="button" onclick="document.getElementById('discountCodeWrap').classList.toggle('hidden')" class="block mx-auto mt-3 text-xs font-bold text-white/55 hover:text-white underline underline-offset-2">Have a discount code?</button>
                   <div class="hidden mt-3 space-y-2" id="discountCodeWrap">
                     <div class="flex gap-2">
