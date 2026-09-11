@@ -199,7 +199,7 @@ const billingPlans = {
     price: "₱1,800<small class='text-base font-semibold text-white/60'>/mo</small>",
     anchor: "",
     note: "Billed monthly. Cancel any time.",
-    details: ["20 events per billing cycle", "30 custom templates", "No watermark on prints or downloads", "Galleries kept for 6 months", "Standard support"],
+    details: ["20 events per billing cycle", "30 custom templates", "Use on up to 3 booth devices", "No watermark on prints or downloads", "Galleries kept for 6 months", "Standard support"],
     cta: "Choose Monthly",
   },
   yearly: {
@@ -207,7 +207,7 @@ const billingPlans = {
     price: "₱950<small class='text-base font-semibold text-white/60'>/mo</small>",
     anchor: "₱1,800",
     note: "₱11,400 billed yearly — ₱10,200 less than paying month to month.",
-    details: ["50 events per billing cycle", "100 custom templates", "No watermark on prints or downloads", "Galleries kept for 12 months", "Priority support"],
+    details: ["50 events per billing cycle", "100 custom templates", "Use on up to 5 booth devices", "No watermark on prints or downloads", "Galleries kept for 12 months", "Priority support"],
     cta: "Choose Yearly",
   }
 };
@@ -482,6 +482,132 @@ function populateAccountPage(user) {
   document.getElementById("profileCompany").value = profile?.company || "";
   document.getElementById("profilePhone").value = profile?.phone || "";
   renderRenewalBanner(license); setBillingPlan(selectedBilling);
+  renderAccountDevices(user);
+}
+
+// Booth devices on the Account page. Built with textContent throughout: device
+// names are typed by operators, so none of it may go through innerHTML.
+let _devicesRenderToken = 0;
+async function renderAccountDevices(user) {
+  const countEl = document.getElementById("accountDevicesCount");
+  const captionEl = document.getElementById("accountDevicesCaption");
+  const meterEl = document.getElementById("accountDevicesMeter");
+  const noteEl = document.getElementById("accountDevicesNote");
+  const listEl = document.getElementById("accountDevicesList");
+  if (!countEl || !listEl || !supabaseClient || !user) return;
+
+  // populateAccountPage can run several times as auth settles; only the latest
+  // call may write, or an older response could overwrite a newer one.
+  const token = ++_devicesRenderToken;
+
+  const typeLabel = (type, platform) => {
+    const t = String(type || "").toLowerCase();
+    if (t === "windows") return "Windows PC";
+    if (t === "mac") return "Mac";
+    if (t === "ipad") return "iPad";
+    if (t === "android_tablet") return "Android tablet";
+    const p = String(platform || "").toLowerCase();
+    if (p.includes("win")) return "Windows PC";
+    if (p.includes("ios")) return "iPad";
+    if (p.includes("android")) return "Android tablet";
+    return "Device";
+  };
+  const ago = (iso) => {
+    const t = iso ? new Date(iso).getTime() : NaN;
+    if (Number.isNaN(t)) return "unknown";
+    const mins = Math.round((Date.now() - t) / 60000);
+    if (mins < 2) return "just now";
+    if (mins < 60) return mins + " min ago";
+    const hrs = Math.round(mins / 60);
+    if (hrs < 24) return hrs + " hr ago";
+    const days = Math.round(hrs / 24);
+    if (days < 30) return days + (days === 1 ? " day ago" : " days ago");
+    return new Date(iso).toLocaleDateString();
+  };
+
+  try {
+    const [allowanceRes, rowsRes] = await Promise.all([
+      supabaseClient.rpc("my_device_allowance"),
+      supabaseClient.from("license_devices").select("*").eq("user_id", user.id).order("last_seen_at", { ascending: false }),
+    ]);
+    if (token !== _devicesRenderToken) return;
+
+    const rows = rowsRes.error ? [] : (rowsRes.data || []);
+    // Rows from before per-device naming that have not checked in since are
+    // listed but take no seat — the same rule the database applies.
+    const counted = rows.filter((r) => r.seat_counted !== false);
+    const limit = allowanceRes.error ? null : allowanceRes.data?.limit ?? null;
+    const used = counted.length;
+
+    countEl.textContent = limit != null ? used + " / " + limit : String(used);
+    captionEl.textContent = limit != null ? "seats in use" : "devices";
+
+    meterEl.replaceChildren();
+    if (limit != null) {
+      for (let i = 0; i < Math.max(limit, used); i++) {
+        const seg = document.createElement("span");
+        seg.className = "h-2 flex-1 rounded-full " +
+          (i >= used ? "bg-grey border border-line" : i >= limit ? "bg-red-500" : used >= limit ? "bg-yellow-500" : "bg-brand");
+        meterEl.appendChild(seg);
+      }
+      noteEl.classList.remove("hidden");
+      noteEl.textContent = used > limit
+        ? (used - limit) + " over your plan. Every device listed keeps working, but a new one can't be added until you're below " + limit + "."
+        : used >= limit
+          ? "All seats are in use. Release a device in the app before adding a new one."
+          : (limit - used) + " free, so there's room for another booth device.";
+    } else {
+      noteEl.classList.add("hidden");
+    }
+
+    listEl.replaceChildren();
+    if (!rows.length) {
+      const li = document.createElement("li");
+      li.className = "py-3 text-sm text-body";
+      li.textContent = "No devices yet. A computer or tablet appears here the first time it opens the app while signed in.";
+      listEl.appendChild(li);
+      return;
+    }
+
+    let seat = 0;
+    for (const r of rows) {
+      const isCounted = r.seat_counted !== false;
+      if (isCounted) seat += 1;
+
+      const li = document.createElement("li");
+      li.className = "py-3 flex items-center gap-3";
+
+      const badge = document.createElement("span");
+      badge.className = "w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-black shrink-0 " +
+        (isCounted ? "bg-brand/10 text-brand" : "bg-grey text-muted");
+      badge.textContent = isCounted ? String(seat) : "–";
+
+      const body = document.createElement("div");
+      body.className = "min-w-0 flex-1";
+
+      const name = document.createElement("div");
+      name.className = "text-sm font-extrabold text-title truncate";
+      name.textContent = (r.custom_name && r.custom_name.trim()) || (r.device_name && r.device_name.trim()) || typeLabel(r.device_type, r.platform);
+
+      const meta = document.createElement("div");
+      meta.className = "text-xs text-body";
+      const parts = [typeLabel(r.device_type, r.platform)];
+      if (r.custom_name && r.device_name) parts.push(r.device_name);
+      if (r.app_version) parts.push("v" + r.app_version);
+      parts.push("last used " + ago(r.last_seen_at));
+      if (!isCounted) parts.push("not updated yet, no seat");
+      meta.textContent = parts.join(" · ");
+
+      body.append(name, meta);
+      li.append(badge, body);
+      listEl.appendChild(li);
+    }
+  } catch (err) {
+    if (token !== _devicesRenderToken) return;
+    console.warn("Unable to load booth devices", err);
+    countEl.textContent = "–";
+    listEl.replaceChildren();
+  }
 }
 
 function renderRenewalBanner(license) {
