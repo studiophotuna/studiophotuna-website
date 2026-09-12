@@ -223,13 +223,10 @@
       }
 
       /* Numbered step navigator for the scroll-driven How It Works flow */
-      /* Booth flow leaves on a blur like the other sections, but only over its
-         final screenful -- see the exit-late mode in app.js. The filter sits
-         on the sticky element itself rather than a wrapper: on an ancestor it
-         would create a containing block and break position: sticky, whereas
-         on the sticky element it is harmless. */
+      /* Booth flow fades out over its final screenful -- see the exit-late
+         mode in app.js. Fade only, matching every other section; the hero is
+         the one place the blur is kept. */
       #boothFlowSticky {
-        filter: blur(calc(var(--exit, 0) * 14px));
         opacity: calc(1 - var(--exit, 0) * 0.85);
       }
 
@@ -484,9 +481,11 @@
       }
       .fs > .fs-body, .fs > .fs-body-soft { width: 100%; }
 
-      /* Exit treatment as a section scrolls away: app.js publishes --exit. */
+      /* Exit treatment as a section scrolls away: app.js publishes --exit.
+         Fade and a slight scale-back only -- the blur is the hero's alone.
+         Dropping filter here also removes the containing block it created,
+         so a sticky descendant inside a .fs-body section now behaves. */
       .fs-body {
-        filter: blur(calc(var(--exit) * 14px));
         opacity: calc(1 - var(--exit) * 0.85);
         transform: scale(calc(1 - var(--exit) * 0.04));
       }
