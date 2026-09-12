@@ -2353,6 +2353,8 @@ window.onload = async function () {
     if (window.location.hash) scrollAndHighlight(window.location.hash.slice(1));
   } else if (CURRENT_VIEW === 'privacy-request') {
     initPrivacyRequestPage();
+  } else if (CURRENT_VIEW === 'payment-app-cancel') {
+    initPaymentCancelPage();
   }
 
   if (supabaseClient) {
@@ -2373,9 +2375,48 @@ window.onload = async function () {
   if (CURRENT_VIEW === 'payment-book-success') initBookingSuccessPage();
 };
 
+// A payment started in the desktop app returns here through the app's
+// paypal-return function, which has already captured the payment and granted
+// the plan before redirecting. Its outcome arrives as ?source=app&status=... .
+// These parameters only choose which message to show — anyone can type them —
+// so nothing here grants, confirms or charges anything. The website's own
+// checkout never sets source=app and keeps its existing handling below.
+function readAppPaymentReturn() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get("source") !== "app") return null;
+  const clean = (v, max) => (v ? String(v).replace(/[^A-Za-z0-9_-]/g, "").slice(0, max) : "");
+  return {
+    provider: clean(p.get("provider"), 16),
+    status: clean(p.get("status"), 16),
+    plan: clean(p.get("plan"), 16),
+    ref: clean(p.get("ref"), 40),
+  };
+}
+
+const APP_PROVIDER_NAMES = { paypal: "PayPal", paymongo: "PayMongo" };
+const APP_PLAN_NAMES = { monthly: "Pro Monthly", yearly: "Pro Yearly", plus: "Gallery Plus", business: "Gallery Business" };
+
 async function initPaymentSuccessPage() {
   const statusMsg = document.getElementById("paymentStatusMessage");
   if (!statusMsg) return;
+
+  const appReturn = readAppPaymentReturn();
+  if (appReturn) {
+    const planName = APP_PLAN_NAMES[appReturn.plan] || "Pro";
+    const summary = document.getElementById("paymentSummary");
+    if (summary) summary.textContent = "Your " + planName + " plan is now active.";
+    // No sign-in needed: the plan was granted before this page loaded, and the
+    // buyer is usually signed in to the app, not the website.
+    statusMsg.textContent = "Go back to the Studio Photuna app. It switches to your new plan within a few seconds, and if it's closed, your plan is ready the next time you open it.";
+    const txn = document.getElementById("paymentTxnId");
+    const date = document.getElementById("paymentDate");
+    const method = document.getElementById("paymentMethod");
+    if (txn) txn.textContent = appReturn.ref || "—";
+    if (date) date.textContent = new Date().toLocaleString();
+    if (method) method.textContent = APP_PROVIDER_NAMES[appReturn.provider] || "Online payment";
+    document.getElementById("paymentReceiptDetails")?.classList.remove("hidden");
+    return;
+  }
   if (!window.currentSupabaseUser || !supabaseClient) {
     statusMsg.textContent = "Sign in to your account to see your updated plan.";
     return;
@@ -2550,6 +2591,82 @@ function initPrivacyRequestPage() {
       submitBtn.disabled = false; submitBtn.textContent = "Submit Request";
     }
   };
+}
+
+// Every way a desktop-app payment can end without a plan being granted, and
+// what the buyer actually needs to know about each. Money is only mentioned as
+// taken where it really was ("activation", and possibly "error").
+const APP_PAYMENT_OUTCOMES = {
+  cancelled: {
+    title: "Checkout Cancelled",
+    body: "You weren't charged, and your plan hasn't changed. Go back to the Studio Photuna app whenever you're ready to try again.",
+    icon: "fa-circle-info", tone: "brand",
+  },
+  declined: {
+    title: "Payment Declined",
+    body: "{provider} couldn't complete this payment, so you weren't charged. Start checkout again from the app and choose a different card or funding source.",
+    icon: "fa-circle-xmark", tone: "red",
+  },
+  pending: {
+    title: "Payment Not Completed",
+    body: "The payment wasn't approved on {provider}, so you weren't charged. Start checkout again from the app to finish.",
+    icon: "fa-circle-info", tone: "brand",
+  },
+  review: {
+    title: "Payment Under Review",
+    body: "{provider} is still reviewing this payment. Your plan activates once it clears, usually within 24 hours. If it hasn't by then, contact support and quote the reference below.",
+    icon: "fa-hourglass-half", tone: "amber",
+  },
+  activation: {
+    title: "Payment Received",
+    body: "Your payment went through, but we couldn't activate your plan automatically. Contact support and quote the reference below, and we'll activate it right away. You won't be charged again.",
+    icon: "fa-triangle-exclamation", tone: "amber",
+  },
+  error: {
+    title: "We Couldn't Confirm This Payment",
+    body: "Something went wrong while confirming this payment with {provider}. If you were charged, contact support and quote the reference below. Otherwise, try again from the app.",
+    icon: "fa-triangle-exclamation", tone: "amber",
+  },
+  unavailable: {
+    title: "We Couldn't Confirm This Payment",
+    body: "We couldn't reach {provider} to confirm this payment. If you were charged, contact support and quote the reference below. Otherwise, try again from the app in a few minutes.",
+    icon: "fa-triangle-exclamation", tone: "amber",
+  },
+  invalid: {
+    title: "Link Not Recognised",
+    body: "This payment link is invalid or has expired, and you haven't been charged through it. Start checkout again from the app.",
+    icon: "fa-circle-info", tone: "brand",
+  },
+};
+
+function initPaymentCancelPage() {
+  const appReturn = readAppPaymentReturn();
+  if (!appReturn) return;
+  const outcome = APP_PAYMENT_OUTCOMES[appReturn.status] || APP_PAYMENT_OUTCOMES.cancelled;
+  const provider = APP_PROVIDER_NAMES[appReturn.provider] || "the payment provider";
+
+  const title = document.getElementById("cancelTitle");
+  const body = document.getElementById("cancelBody");
+  const refEl = document.getElementById("cancelRef");
+  const wrap = document.getElementById("cancelIconWrap");
+  const icon = document.getElementById("cancelIcon");
+
+  if (title) title.textContent = outcome.title;
+  if (body) body.textContent = outcome.body.replace("{provider}", provider);
+  if (refEl && appReturn.ref) {
+    refEl.textContent = "Reference: " + appReturn.ref;
+    refEl.classList.remove("hidden");
+  }
+  if (icon) icon.className = "fa-solid " + outcome.icon;
+  if (wrap) {
+    const tones = {
+      brand: "bg-brand/10 text-brand",
+      red: "bg-red-100 text-red-600",
+      amber: "bg-yellow-100 text-yellow-700",
+    };
+    wrap.className = "w-20 h-20 rounded-full flex items-center justify-center text-3xl mx-auto " + (tones[outcome.tone] || tones.brand);
+  }
+  document.title = outcome.title + " | Studio Photuna";
 }
 
 function handleCheckoutRedirectResult() {

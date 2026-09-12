@@ -1,11 +1,12 @@
       <div class="px-6 py-16 sm:py-24 max-w-2xl mx-auto">
         <div class="bg-white border border-line rounded-3xl shadow-luxe p-8 sm:p-12 text-center space-y-6">
-          <div class="w-20 h-20 rounded-full bg-brand/10 text-brand flex items-center justify-center text-3xl mx-auto">
-            <i class="fa-solid fa-circle-info"></i>
+          <div class="w-20 h-20 rounded-full bg-brand/10 text-brand flex items-center justify-center text-3xl mx-auto" id="cancelIconWrap">
+            <i class="fa-solid fa-circle-info" id="cancelIcon"></i>
           </div>
           <div class="space-y-3">
-            <h1 class="h1-display text-title text-3xl sm:text-5xl">Checkout Cancelled</h1>
-            <p class="text-lg text-body max-w-lg mx-auto">No charge was made. Your card was not billed, and your account plan is unchanged.</p>
+            <h1 class="h1-display text-title text-3xl sm:text-5xl" id="cancelTitle">Checkout Cancelled</h1>
+            <p class="text-lg text-body max-w-lg mx-auto" id="cancelBody">No charge was made. Your card was not billed, and your account plan is unchanged.</p>
+            <p class="text-xs text-muted hidden" id="cancelRef"></p>
           </div>
           <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
             <button onclick="goToSection('pricing')" class="btn-animation bg-brand hover:bg-brand-600 text-white font-extrabold px-8 py-3.5 rounded-full text-sm uppercase shadow-sm">
