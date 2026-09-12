@@ -277,6 +277,7 @@ const ROUTE_MAP = {
   'operator-agreement': '/operator-agreement',
   'privacy-framework': '/privacy-framework',
   'refund-policy': '/refund-policy',
+  'open-source-licenses': '/open-source-licenses',
   'cookie-policy': '/cookie-policy',
   'data-processing': '/data-processing',
   'privacy-request': '/privacy-request',

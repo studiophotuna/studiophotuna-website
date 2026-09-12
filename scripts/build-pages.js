@@ -132,6 +132,14 @@ const PAGES = [
     mainClass: "min-h-screen pt-20",
   },
   {
+    outputFile: "open-source-licenses.html",
+    viewId: "open-source-licenses",
+    contentFile: "content/open-source-licenses.html",
+    title: "Open Source Licenses | Studio Photuna",
+    description: "Open source components distributed with Photuna Booth App, their licenses, and how to obtain their source code.",
+    mainClass: "min-h-screen pt-20",
+  },
+  {
     outputFile: "cookie-policy.html",
     viewId: "cookie-policy",
     contentFile: "content/cookie-policy.html",
