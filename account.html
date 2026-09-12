@@ -110,20 +110,10 @@
         overflow-wrap: break-word;
       }
 
-      /* Printing a payment receipt. Hidden by visibility rather than display,
-         because display:none on an ancestor collapses the receipt itself. */
-      @media print {
-        body * { visibility: hidden !important; }
-        #receiptPrintArea, #receiptPrintArea * { visibility: visible !important; }
-        #receiptPrintArea {
-          position: absolute !important;
-          left: 0; top: 0; right: 0;
-          margin: 0 !important;
-          box-shadow: none !important;
-          border: 0 !important;
-        }
-        .receipt-no-print { display: none !important; }
-      }
+      /* A receipt prints as its own document from a hidden iframe (see
+         printReceiptDocument in app.js), so no print rules are needed for the
+         page itself. Hiding the page by visibility was the earlier approach and
+         printed blank sheets. */
 
       /* Editorial serif headings -- Playfair Display carries the "premium"
          read on every page, paired with Plus Jakarta Sans for everything
@@ -1011,7 +1001,7 @@
                 </p>
               </div>
               <div class="receipt-no-print flex gap-2 border-t border-line px-6 py-4">
-                <button type="button" onclick="window.print()" class="btn-animation flex-1 bg-brand hover:bg-brand-600 text-white font-extrabold py-2.5 rounded-xl text-xs uppercase">Print / Save as PDF</button>
+                <button type="button" id="receiptPrintBtn" class="btn-animation flex-1 bg-brand hover:bg-brand-600 text-white font-extrabold py-2.5 rounded-xl text-xs uppercase">Print / Save as PDF</button>
                 <button type="button" onclick="closeReceiptModal()" class="border border-line hover:bg-grey text-title font-extrabold px-4 py-2.5 rounded-xl text-xs uppercase">Close</button>
               </div>
             </div>
