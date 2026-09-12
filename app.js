@@ -2296,8 +2296,8 @@ function toggleReviewForm() {
   if (chevron) chevron.style.transform = open ? "rotate(180deg)" : "";
 
   // Opening the form pushes its fields below the fold, and scrolling down to
-  // reach them would otherwise drive this section's exit blur -- leaving the
-  // visitor typing into blurred inputs. Pin the effect off while it is open.
+  // reach them would otherwise drive this section's exit fade -- leaving the
+  // visitor typing into inputs that are dimming out. Pin it off while open.
   const section = body.closest("[data-exit]");
   if (section) {
     section.classList.toggle("exit-locked", open);
@@ -3436,9 +3436,11 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
   const targets = [];
   // Every full-screen section publishes --exit: how far its own top edge has
   // travelled above the viewport, as a fraction of its height. That drives the
-  // blur/fade it leaves with as the next section rides up over it. Measuring
-  // against the element's own top (rather than a viewport crossing) means the
-  // hero works on the same rule despite starting already on screen.
+  // exit treatment as the next section rides up over it -- a fade and slight
+  // scale-back everywhere, plus a blur on the hero, which is the only section
+  // that still blurs. Measuring against the element's own top (rather than a
+  // viewport crossing) means the hero works on the same rule despite starting
+  // already on screen.
   document.querySelectorAll("[data-exit]").forEach(el => {
     targets.push({ el, prop: "--exit", mode: "exit", span: 0.66 });
   });
@@ -3480,8 +3482,8 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
         // very tall section only fades over its final stretch: the ramp runs
         // as that edge closes the last `span` viewports. Measured against the
         // booth flow, its final step becomes active at 0.65 viewports out, so
-        // 0.7 starts the blur just as that step settles and finishes it as
-        // the section leaves -- the earlier steps stay perfectly sharp.
+        // 0.7 starts the fade just as that step settles and finishes it as
+        // the section leaves -- the earlier steps stay fully opaque.
         const rect = t.el.getBoundingClientRect();
         progress = 1 - rect.bottom / (vh * t.span);
       } else {
