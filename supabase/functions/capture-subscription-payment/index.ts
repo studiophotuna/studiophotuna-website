@@ -16,6 +16,7 @@
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { recordWebsitePayment } from "../_shared/recordPayment.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -119,17 +120,34 @@ serve(async (req) => {
 
     if (body.status === "COMPLETED") {
       const billing = license.pending_billing === "yearly" ? "yearly" : "monthly";
+      const periodEnd = periodEndFor(billing);
       await supabaseAdmin
         .from("licenses")
         .update({
           state: "active",
           plan: billing === "yearly" ? "pro_yearly" : "pro_monthly",
-          current_period_end: periodEndFor(billing),
+          current_period_end: periodEnd,
           cancel_at_period_end: true, // no auto-renewal for this provider yet -- customer resubscribes manually
           pending_discount_code_id: null,
         })
         .eq("user_id", user.id);
       await finalizeDiscountRedemption(license.pending_discount_code_id, user.id);
+
+      // Receipt for the operator's billing history. What PayPal actually took,
+      // read off the capture rather than assumed from the plan's list price,
+      // so a discounted payment shows what was really paid.
+      const capture = body?.purchase_units?.[0]?.payments?.captures?.[0];
+      const paid = Number(capture?.amount?.value);
+      await recordWebsitePayment(supabaseAdmin, {
+        provider: "paypal",
+        reference: order_id,
+        userId: user.id,
+        billing,
+        amountCentavos: Number.isFinite(paid) ? Math.round(paid * 100) : null,
+        currency: capture?.amount?.currency_code ?? "PHP",
+        method: "PayPal",
+        periodEnd,
+      });
       return json({ captured: true });
     }
 

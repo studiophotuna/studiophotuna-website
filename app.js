@@ -483,6 +483,141 @@ function populateAccountPage(user) {
   document.getElementById("profilePhone").value = profile?.phone || "";
   renderRenewalBanner(license); setBillingPlan(selectedBilling);
   renderAccountDevices(user);
+  renderBillingHistory(user);
+}
+
+// Payment receipts, read straight from subscription_payments (RLS limits the
+// read to this operator's own rows). Same records the desktop app lists, so a
+// payment made in either place shows up in both.
+let _receiptsById = {};
+
+function formatReceiptMoney(centavos, currency) {
+  if (centavos === null || centavos === undefined) return "—";
+  try {
+    return new Intl.NumberFormat("en-PH", { style: "currency", currency: currency || "PHP" }).format(centavos / 100);
+  } catch (_) {
+    return (currency || "PHP") + " " + (centavos / 100).toFixed(2);
+  }
+}
+function formatReceiptDate(iso, withTime) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "—";
+  return withTime ? d.toLocaleString() : d.toLocaleDateString();
+}
+
+async function renderBillingHistory(user) {
+  const list = document.getElementById("billingHistoryList");
+  if (!list || !supabaseClient || !user) return;
+  list.replaceChildren();
+  _receiptsById = {};
+
+  let rows = [];
+  try {
+    const { data, error } = await supabaseClient
+      .from("subscription_payments")
+      .select("receipt_number, provider, method, description, amount_centavos, currency, paid_at, period_start, period_end, reference")
+      .not("applied_at", "is", null)
+      .order("paid_at", { ascending: false });
+    if (error) throw error;
+    rows = data || [];
+  } catch (err) {
+    console.warn("Unable to load billing history", err);
+    const li = document.createElement("li");
+    li.className = "py-3 text-sm text-body";
+    li.textContent = "Could not load your billing history. Please try again shortly.";
+    list.appendChild(li);
+    return;
+  }
+
+  if (!rows.length) {
+    const li = document.createElement("li");
+    li.className = "py-3 text-sm text-body";
+    li.textContent = "No payments yet. Receipts appear here as soon as a payment clears.";
+    list.appendChild(li);
+    return;
+  }
+
+  for (const r of rows) {
+    _receiptsById[r.receipt_number] = r;
+
+    const li = document.createElement("li");
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "w-full flex items-center gap-3 py-3 text-left hover:bg-grey rounded-xl px-1";
+    btn.onclick = () => openReceiptModal(r.receipt_number);
+
+    const icon = document.createElement("span");
+    icon.className = "w-9 h-9 rounded-lg bg-green-50 text-green-700 flex items-center justify-center shrink-0";
+    icon.innerHTML = '<i class="fa-solid fa-receipt"></i>';
+
+    const body = document.createElement("div");
+    body.className = "min-w-0 flex-1";
+    const title = document.createElement("div");
+    title.className = "text-sm font-extrabold text-title truncate";
+    title.textContent = r.description || "Photuna subscription";
+    const meta = document.createElement("div");
+    meta.className = "text-xs text-body";
+    meta.textContent = [formatReceiptDate(r.paid_at), r.method || r.provider, r.receipt_number].filter(Boolean).join(" · ");
+    body.append(title, meta);
+
+    const amount = document.createElement("div");
+    amount.className = "text-right shrink-0";
+    const value = document.createElement("div");
+    value.className = "text-sm font-black text-title";
+    value.style.fontVariantNumeric = "tabular-nums";
+    value.textContent = formatReceiptMoney(r.amount_centavos, r.currency);
+    const state = document.createElement("div");
+    state.className = "text-[11px] font-black text-green-700";
+    state.textContent = "Paid";
+    amount.append(value, state);
+
+    btn.append(icon, body, amount);
+    li.appendChild(btn);
+    list.appendChild(li);
+  }
+}
+
+function openReceiptModal(receiptNumber) {
+  const r = _receiptsById[receiptNumber];
+  const modal = document.getElementById("receiptModal");
+  const rows = document.getElementById("receiptRows");
+  if (!r || !modal || !rows) return;
+
+  document.getElementById("receiptAmount").textContent = formatReceiptMoney(r.amount_centavos, r.currency);
+  rows.replaceChildren();
+  const entries = [
+    ["Receipt no.", r.receipt_number],
+    ["Date paid", formatReceiptDate(r.paid_at, true)],
+    ["Description", r.description || "Photuna subscription"],
+    ["Covers", r.period_end ? formatReceiptDate(r.period_start) + " – " + formatReceiptDate(r.period_end) : "—"],
+    ["Paid with", r.method || r.provider],
+    ["Billed to", (window.currentSupabaseUser && window.currentSupabaseUser.email) || "—"],
+    ["Reference", r.reference],
+  ];
+  for (const [k, v] of entries) {
+    const row = document.createElement("div");
+    row.className = "flex items-start justify-between gap-4 py-2.5";
+    const dt = document.createElement("dt");
+    dt.className = "text-body";
+    dt.textContent = k;
+    const dd = document.createElement("dd");
+    dd.className = "text-right font-extrabold text-title break-words max-w-[62%]";
+    dd.textContent = v || "—";
+    row.append(dt, dd);
+    rows.appendChild(row);
+  }
+
+  modal.classList.remove("hidden");
+  modal.classList.add("flex");
+}
+
+function closeReceiptModal(event) {
+  if (event && event.target && event.target.id !== "receiptModal") return;
+  const modal = document.getElementById("receiptModal");
+  if (!modal) return;
+  modal.classList.add("hidden");
+  modal.classList.remove("flex");
 }
 
 // Booth devices on the Account page. Built with textContent throughout: device

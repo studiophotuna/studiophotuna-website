@@ -110,6 +110,21 @@
         overflow-wrap: break-word;
       }
 
+      /* Printing a payment receipt. Hidden by visibility rather than display,
+         because display:none on an ancestor collapses the receipt itself. */
+      @media print {
+        body * { visibility: hidden !important; }
+        #receiptPrintArea, #receiptPrintArea * { visibility: visible !important; }
+        #receiptPrintArea {
+          position: absolute !important;
+          left: 0; top: 0; right: 0;
+          margin: 0 !important;
+          box-shadow: none !important;
+          border: 0 !important;
+        }
+        .receipt-no-print { display: none !important; }
+      }
+
       /* Editorial serif headings -- Playfair Display carries the "premium"
          read on every page, paired with Plus Jakarta Sans for everything
          else. .h1-display is for each page's one big hero headline;
@@ -956,6 +971,50 @@
             <div class="account-card bg-grey border border-line p-4 rounded-xl"><small class="text-[10px] uppercase font-black text-muted block mb-1">Status</small><strong id="accountStatus" class="text-base text-title font-extrabold font-mono">No subscription</strong></div>
             <div class="account-card bg-grey border border-line p-4 rounded-xl"><small class="text-[10px] uppercase font-black text-muted block mb-1">Trial Used</small><strong id="accountTrial" class="text-base text-title font-extrabold">No</strong></div>
             <div class="account-card bg-grey border border-line p-4 rounded-xl"><small class="text-[10px] uppercase font-black text-muted block mb-1">Gallery Add-on</small><strong id="accountGallery" class="text-base text-title font-extrabold">No</strong></div>
+          </div>
+
+          <!-- Billing history. Filled by renderBillingHistory() in app.js from
+               subscription_payments, the same records the app shows, so a
+               payment made in either place appears in both. -->
+          <div class="border border-line rounded-2xl p-5 space-y-4" id="billingHistoryPanel">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div class="min-w-0">
+                <h3 class="text-lg font-black text-title">Billing history</h3>
+                <p class="text-xs text-body mt-1">Every payment on your account. Open one for a receipt you can print or save as PDF.</p>
+              </div>
+            </div>
+            <ul id="billingHistoryList" class="divide-y divide-line"></ul>
+          </div>
+
+          <!-- Receipt dialog -->
+          <div id="receiptModal" class="hidden fixed inset-0 z-50 items-center justify-center bg-title/50 p-4 receipt-no-print" onclick="closeReceiptModal(event)">
+            <div id="receiptPrintArea" class="bg-white border border-line rounded-2xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+              <div class="border-b border-line px-6 py-5 flex items-start justify-between gap-3">
+                <div>
+                  <small class="text-[10px] uppercase font-black text-muted tracking-widest">Payment receipt</small>
+                  <strong class="block text-lg text-title font-black mt-1">Studio Photuna</strong>
+                  <small class="text-xs text-muted">studiophotuna.com</small>
+                </div>
+                <button type="button" onclick="closeReceiptModal()" class="receipt-no-print w-8 h-8 rounded-lg border border-line text-muted hover:bg-grey flex items-center justify-center" aria-label="Close receipt">
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+              <div class="px-6 py-5">
+                <strong id="receiptAmount" class="block text-3xl font-black text-title" style="font-variant-numeric: tabular-nums">—</strong>
+                <span class="inline-flex items-center gap-1.5 mt-1 rounded-full bg-green-50 text-green-700 px-2.5 py-0.5 text-[11px] font-black">
+                  <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Paid
+                </span>
+                <dl id="receiptRows" class="mt-5 divide-y divide-line text-sm"></dl>
+                <p class="mt-4 text-[11px] text-muted leading-relaxed">
+                  This is a payment receipt for your records. It is not a BIR Official Receipt.
+                  Questions? <a href="mailto:support@studiophotuna.com" class="text-brand font-bold">support@studiophotuna.com</a>
+                </p>
+              </div>
+              <div class="receipt-no-print flex gap-2 border-t border-line px-6 py-4">
+                <button type="button" onclick="window.print()" class="btn-animation flex-1 bg-brand hover:bg-brand-600 text-white font-extrabold py-2.5 rounded-xl text-xs uppercase">Print / Save as PDF</button>
+                <button type="button" onclick="closeReceiptModal()" class="border border-line hover:bg-grey text-title font-extrabold px-4 py-2.5 rounded-xl text-xs uppercase">Close</button>
+              </div>
+            </div>
           </div>
 
           <!-- Booth devices. Filled by renderAccountDevices() in app.js from the

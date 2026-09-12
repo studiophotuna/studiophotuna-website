@@ -22,6 +22,7 @@
 
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { recordWebsitePayment } from "../_shared/recordPayment.ts";
 
 const supabaseAdmin = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -112,17 +113,43 @@ serve(async (req) => {
           .maybeSingle();
         if (license) {
           const billing = license.pending_billing === "yearly" ? "yearly" : "monthly";
+          const periodEnd = periodEndFor(billing);
           await supabaseAdmin
             .from("licenses")
             .update({
               state: "active",
               plan: billing === "yearly" ? "pro_yearly" : "pro_monthly",
-              current_period_end: periodEndFor(billing),
+              current_period_end: periodEnd,
               cancel_at_period_end: true,
               pending_discount_code_id: null,
             })
             .eq("user_id", userId);
           await finalizeDiscountRedemption(license.pending_discount_code_id, userId);
+
+          // Receipt for the operator's billing history. The amount and the
+          // funding source come off the session PayMongo just settled, so a
+          // discounted payment shows what was really paid, by GCash or card.
+          const sessionAttrs = checkoutSession?.attributes ?? {};
+          const paymentAttrs = sessionAttrs?.payments?.[0]?.attributes
+            ?? sessionAttrs?.payments?.[0]?.data?.attributes
+            ?? {};
+          const sourceType = String(paymentAttrs?.source?.type ?? "").toLowerCase();
+          const methodLabel = sourceType === "gcash" ? "GCash"
+            : sourceType === "paymaya" ? "Maya"
+            : sourceType === "grab_pay" ? "GrabPay"
+            : sourceType === "card" ? "Card"
+            : "PayMongo";
+          const amount = Number(paymentAttrs?.amount ?? sessionAttrs?.payment_intent?.attributes?.amount);
+          await recordWebsitePayment(supabaseAdmin, {
+            provider: "paymongo",
+            reference: checkoutSession.id,
+            userId,
+            billing,
+            amountCentavos: Number.isFinite(amount) ? amount : null,
+            currency: paymentAttrs?.currency ?? "PHP",
+            method: methodLabel,
+            periodEnd,
+          });
         }
       }
     }
