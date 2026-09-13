@@ -929,6 +929,34 @@
 
         <div class="space-y-8">
 
+          <!-- v0.4.10 -->
+          <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-4-10">
+            <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
+              <div class="space-y-1">
+                <span class="inline-flex items-center gap-2 bg-brand/10 text-brand font-mono font-bold text-xs px-3 py-1 rounded-full">v0.4.10</span>
+                <h2 class="text-2xl font-black text-title">Booths Stay Running</h2>
+              </div>
+              <span class="text-xs font-bold text-muted uppercase tracking-wider">September 13, 2026</span>
+            </div>
+            <p class="text-sm text-body -mt-2">If you have had to restart the app during long events to get QR codes working again, this release fixes the cause. Update before your next event.</p>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-red-600"><i class="fa-solid fa-bug"></i> Fixed</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span><strong>Booths no longer freeze about an hour after opening.</strong> When the app quietly renewed its sign-in in the background, it could stop working: galleries stayed on &ldquo;Preparing your gallery&rdquo; and the booth stopped syncing until it was restarted. A booth left closed for a while could freeze again straight away on the next launch.</span></li>
+              </ul>
+            </div>
+
+            <div class="space-y-3">
+              <h3 class="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-brand"><i class="fa-solid fa-bolt"></i> Improved</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span><strong>Galleries are ready about twice as fast.</strong> Photos and clips now upload several at a time instead of one after another, so guests get their QR code sooner &mdash; most noticeably on slower venue Wi-Fi.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span><strong>Missing motion clips can be completed in the cloud.</strong> If a booth could not finish a session&rsquo;s motion clip, it can now be created afterwards instead of the gallery going without one.</span></li>
+                <li class="flex items-start gap-2"><span class="text-red-500 font-bold mt-0.5">&bull;</span> <span><strong>Groundwork for tablet booths.</strong> Each session now saves a small layout file alongside its clips, so motion clips can be made in the cloud for devices that cannot make them themselves. Windows booths still create their own clips.</span></li>
+              </ul>
+            </div>
+          </article>
+
           <!-- v0.4.9 -->
           <article class="border border-line rounded-3xl bg-white p-8 space-y-6" id="v0-4-9">
             <div class="flex flex-wrap items-baseline justify-between gap-3 border-b border-line pb-5">
