@@ -3144,8 +3144,8 @@ document.onclick = () => { closeDropdown(); document.querySelector(".dropdown-me
 const proofList = document.getElementById("proofList");
 const proofFilterButtons = document.querySelectorAll("[data-proof-filter]");
 
-const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", privacy: "Privacy Requests", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics", settings: "Settings", discounts: "Discount Codes", "manual-sub": "Manual Subscription" };
-const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], privacy: ["privacy"], reviews: ["reviews"], analytics: ["analytics"], settings: ["settings", "discounts", "manual-sub"] };
+const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", privacy: "Privacy Requests", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics", cameras: "Camera Support", settings: "Settings", discounts: "Discount Codes", "manual-sub": "Manual Subscription" };
+const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], privacy: ["privacy"], reviews: ["reviews"], analytics: ["analytics"], cameras: ["cameras"], settings: ["settings", "discounts", "manual-sub"] };
 let activeAdminGroup = "bookings";
 const adminGroupButtons = document.querySelectorAll(".admin-group-tabs [data-admin-group]");
 const adminSubtabsRow = document.getElementById("adminSubtabsRow");
@@ -3159,6 +3159,7 @@ async function loadActiveAdminTab() {
   else if (activeAdminTab === "inbox") task = loadInboxEmails();
   else if (activeAdminTab === "privacy") task = loadPrivacyRequestsAdmin();
   else if (activeAdminTab === "analytics") task = loadAnalytics();
+  else if (activeAdminTab === "cameras") task = loadCameraModels();
   else if (activeAdminTab === "settings") task = loadPaymentGatewaySettings();
   else if (activeAdminTab === "discounts") task = loadDiscountCodes();
   else if (activeAdminTab === "manual-sub") task = loadManualSubPanel();
@@ -3192,6 +3193,7 @@ function activateAdminTab(tab) {
   const inboxList = document.getElementById("inboxList"); if (inboxList) inboxList.classList.toggle("hidden", activeAdminTab !== "inbox");
   const privacyRequestList = document.getElementById("privacyRequestList"); if (privacyRequestList) privacyRequestList.classList.toggle("hidden", activeAdminTab !== "privacy");
   const analyticsPanel = document.getElementById("analyticsPanel"); if (analyticsPanel) analyticsPanel.classList.toggle("hidden", activeAdminTab !== "analytics");
+  const cameraModelsPanel = document.getElementById("cameraModelsPanel"); if (cameraModelsPanel) cameraModelsPanel.classList.toggle("hidden", activeAdminTab !== "cameras");
   const settingsPanel = document.getElementById("settingsPanel"); if (settingsPanel) settingsPanel.classList.toggle("hidden", activeAdminTab !== "settings");
   const discountsPanel = document.getElementById("discountsPanel"); if (discountsPanel) discountsPanel.classList.toggle("hidden", activeAdminTab !== "discounts");
   const manualSubPanel = document.getElementById("manualSubPanel"); if (manualSubPanel) manualSubPanel.classList.toggle("hidden", activeAdminTab !== "manual-sub");
@@ -3222,6 +3224,93 @@ function activateAdminGroup(group, preferredTab) {
 
 adminGroupButtons.forEach(btn => { btn.onclick = () => activateAdminGroup(btn.dataset.adminGroup); });
 adminTabButtons.forEach(btn => { btn.onclick = () => activateAdminTab(btn.dataset.adminTab); });
+
+// ---------------------------------------------------------------------------
+// Camera support coverage
+//
+// Photuna ships support for far more camera models than can be tested in house
+// (31 Nikon module families alone). Booths report the models they meet and how
+// far each one got, and this is the resulting catalogue: which models are proven
+// in the field and which are still unproven.
+//
+// A model is "working" only once it has both taken a photo and produced a live
+// view frame. RLS restricts camera_models to admins, so a non-admin simply sees
+// nothing here rather than being refused.
+// ---------------------------------------------------------------------------
+let cameraModels = [];
+
+async function loadCameraModels() {
+  if (!supabaseClient) return;
+  if (!window.currentSupabaseUser) { try { const { data } = await supabaseClient.auth.getSession(); window.currentSupabaseUser = data?.session?.user || null; } catch (_) { } if (!window.currentSupabaseUser) return; }
+  try {
+    const { data, error } = await supabaseClient.from("camera_models").select("*");
+    if (error) throw error;
+    cameraModels = data || [];
+    renderCameraModels();
+  } catch (err) { console.warn("Unable to load camera coverage", err); }
+}
+
+function cameraStatusBadge(status) {
+  if (status === "working") return `<span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-green-100 text-green-700">PROVEN</span>`;
+  if (status === "partial") return `<span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">PARTIAL</span>`;
+  return `<span class="text-[10px] font-black px-2 py-0.5 rounded-full bg-grey text-muted">UNPROVEN</span>`;
+}
+
+function renderCameraModels() {
+  const panel = document.getElementById("cameraModelsPanel");
+  if (!panel) return;
+
+  if (!cameraModels.length) {
+    panel.innerHTML = `<div class="border border-dashed border-line rounded-2xl p-8 text-center text-muted"><p class="font-bold text-sm">No camera models reported yet.</p><p class="text-xs mt-1">Booths report a model the first time they meet it.</p></div>`;
+    return;
+  }
+
+  const esc = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const rank = { detected: 0, partial: 1, working: 2 };
+  // Unproven first: that is the list worth working through.
+  const rows = [...cameraModels].sort((a, b) =>
+    (rank[a.status] ?? 0) - (rank[b.status] ?? 0)
+    || String(a.brand).localeCompare(String(b.brand))
+    || String(a.model_label).localeCompare(String(b.model_label)));
+
+  const count = (s) => cameraModels.filter(m => m.status === s).length;
+  const tick = (on) => on
+    ? `<i class="fa-solid fa-circle-check text-green-600"></i>`
+    : `<i class="fa-regular fa-circle text-line"></i>`;
+
+  panel.innerHTML = `
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+      <div class="border border-line rounded-2xl bg-white p-4"><div class="text-2xl font-black text-title">${cameraModels.length}</div><div class="text-[11px] font-bold text-muted uppercase">Models seen</div></div>
+      <div class="border border-line rounded-2xl bg-white p-4"><div class="text-2xl font-black text-green-700">${count("working")}</div><div class="text-[11px] font-bold text-muted uppercase">Proven</div></div>
+      <div class="border border-line rounded-2xl bg-white p-4"><div class="text-2xl font-black text-amber-600">${count("partial")}</div><div class="text-[11px] font-bold text-muted uppercase">Partial</div></div>
+      <div class="border border-line rounded-2xl bg-white p-4"><div class="text-2xl font-black text-muted">${count("detected")}</div><div class="text-[11px] font-bold text-muted uppercase">Unproven</div></div>
+    </div>
+    <div class="border border-line rounded-2xl bg-white overflow-x-auto">
+      <table class="w-full text-xs">
+        <thead><tr class="text-left text-muted border-b border-line">
+          <th class="px-4 py-3 font-black uppercase text-[10px]">Camera</th>
+          <th class="px-3 py-3 font-black uppercase text-[10px]">Status</th>
+          <th class="px-3 py-3 font-black uppercase text-[10px] text-center">Photo</th>
+          <th class="px-3 py-3 font-black uppercase text-[10px] text-center">Live view</th>
+          <th class="px-3 py-3 font-black uppercase text-[10px] text-center">Booths</th>
+          <th class="px-3 py-3 font-black uppercase text-[10px]">Last problem</th>
+          <th class="px-4 py-3 font-black uppercase text-[10px]">Last seen</th>
+        </tr></thead>
+        <tbody>
+          ${rows.map(m => `
+            <tr class="border-b border-line last:border-0">
+              <td class="px-4 py-3"><div class="font-bold text-title">${esc(m.model_label)}</div><div class="text-[10px] text-muted uppercase">${esc(m.brand)}</div></td>
+              <td class="px-3 py-3">${cameraStatusBadge(m.status)}</td>
+              <td class="px-3 py-3 text-center">${tick(m.capture_confirmed)}</td>
+              <td class="px-3 py-3 text-center">${tick(m.live_view_confirmed)}</td>
+              <td class="px-3 py-3 text-center font-bold text-title">${Number(m.operators_seen) || 0}</td>
+              <td class="px-3 py-3">${m.last_error_code ? `<span class="font-mono text-[10px] text-red-600">${esc(m.last_error_code)}</span>${m.failure_count ? ` <span class="text-muted">(${Number(m.failure_count)})</span>` : ""}` : `<span class="text-muted">&mdash;</span>`}</td>
+              <td class="px-4 py-3 text-muted">${m.last_seen_at ? new Date(m.last_seen_at).toLocaleDateString() : "&mdash;"}</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>
+    </div>`;
+}
 
 async function loadPaymentGatewaySettings() {
   if (!supabaseClient) return;
