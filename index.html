@@ -433,27 +433,6 @@
         scroll-snap-stop: always;
       }
 
-      /* Product tour: only the selected panel is shown. Panels stay in the DOM
-         so their screenshots are already decoded when a tab is picked. */
-      .tour-panel[hidden] { display: none; }
-      .tour-tab {
-        border-left: 2px solid var(--line);
-        transition: border-color 0.2s ease, background-color 0.2s ease;
-      }
-      .tour-tab[aria-selected="true"] {
-        border-left-color: #0c66e4;
-        background: var(--grey);
-      }
-      @media (max-width: 1023px) {
-        .tour-tab {
-          border-left: 0;
-          border-bottom: 2px solid var(--line);
-        }
-        .tour-tab[aria-selected="true"] {
-          border-left: 0;
-          border-bottom-color: #0c66e4;
-        }
-      }
       /* The footer has to be a snap target too. Without it the last section's
          bottom edge is the final snap position, and scroll-snap-stop pins the
          page there -- leaving the footer permanently cut off. */
@@ -974,24 +953,15 @@
         </section>
 
         <!-- ============================================================
-             PRODUCT DEMO PLACEHOLDER
+             PRODUCT DEMO
 
-             There is no demo video yet, so this is a deliberate placeholder
-             rather than a player with nothing behind it.
+             Embedded through youtube-nocookie.com rather than youtube.com:
+             that domain sets no tracking cookie until the viewer actually
+             presses play, which is what the cookie policy page describes.
 
-             TO ADD THE REAL VIDEO LATER: replace the whole
-             <div id="demoVideoPlaceholder"> block below with the embed,
-             keeping the parent .aspect-video wrapper so the 16:9 framing and
-             responsive behaviour stay intact. For example:
-
-               <video controls playsinline preload="none"
-                      poster="app_image_3.webp" class="w-full h-full object-cover">
-                 <source src="/studio-photuna-demo.mp4" type="video/mp4" />
-               </video>
-
-             or an <iframe> from YouTube/Vimeo with the same classes. No source
-             is hardcoded here on purpose -- nothing should imply a video exists
-             before one does.
+             The .aspect-video wrapper owns the 16:9 framing and the
+             responsive behaviour; the iframe only fills it. To swap the
+             video, change the id in the src and the title text with it.
              ============================================================ -->
         <section id="demo-video" data-exit class="fs fs-lift bg-white px-6 py-10 sm:py-12">
           <div class="fs-body max-w-5xl mx-auto space-y-8">
@@ -1001,15 +971,14 @@
             </div>
 
             <div class="aspect-video w-full rounded-2xl border border-line bg-grey overflow-hidden">
-              <div class="w-full h-full flex flex-col items-center justify-center gap-4 text-center px-6" id="demoVideoPlaceholder">
-                <span class="w-16 h-16 rounded-full bg-white border border-line shadow-sm flex items-center justify-center text-brand text-xl" aria-hidden="true">
-                  <i class="fa-solid fa-play ml-1"></i>
-                </span>
-                <div class="space-y-1">
-                  <p class="text-base font-bold text-title">Studio Photuna Demo</p>
-                  <p class="text-xs font-bold text-muted uppercase tracking-widest">Demo video coming soon</p>
-                </div>
-              </div>
+              <iframe
+                class="w-full h-full block"
+                src="https://www.youtube-nocookie.com/embed/sS6qRakw-R4?rel=0"
+                title="Studio Photuna demo: a guest session from tap to printed photo"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
             </div>
           </div>
         </section>
@@ -1197,59 +1166,6 @@
           </div>
         </section>
 
-        <!-- Product tour: tabs swap a real application screenshot. Screenshots
-             are the ones already in the project; no UI is mocked up. -->
-        <section id="product-tour" data-exit class="fs fs-lift bg-grey px-6 py-10 sm:py-20">
-          <div class="fs-body max-w-6xl mx-auto space-y-6 sm:space-y-10">
-            <div class="text-center max-w-2xl mx-auto space-y-4">
-              <h2 class="h2-display text-title">Explore Studio Photuna</h2>
-              <p class="text-base text-body">Get a closer look at the tools you'll use to prepare, run, and manage your events.</p>
-            </div>
-            <div class="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-6 lg:gap-10 items-start">
-              <div class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible -mx-6 px-6 lg:mx-0 lg:px-0" role="tablist" aria-label="Product tour">
-                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-title whitespace-nowrap" role="tab" aria-selected="true" aria-controls="tour-dashboard" id="tourtab-dashboard" onclick="selectTourTab('dashboard')">Dashboard</button>
-                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-body whitespace-nowrap" role="tab" aria-selected="false" aria-controls="tour-events" id="tourtab-events" onclick="selectTourTab('events')">Events</button>
-                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-body whitespace-nowrap" role="tab" aria-selected="false" aria-controls="tour-templates" id="tourtab-templates" onclick="selectTourTab('templates')">Templates</button>
-                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-body whitespace-nowrap" role="tab" aria-selected="false" aria-controls="tour-guest" id="tourtab-guest" onclick="selectTourTab('guest')">Guest Flow</button>
-                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-body whitespace-nowrap" role="tab" aria-selected="false" aria-controls="tour-printing" id="tourtab-printing" onclick="selectTourTab('printing')">Printing</button>
-                <button type="button" class="tour-tab shrink-0 text-left px-4 py-3 text-sm font-bold text-body whitespace-nowrap" role="tab" aria-selected="false" aria-controls="tour-gallery" id="tourtab-gallery" onclick="selectTourTab('gallery')">Gallery</button>
-              </div>
-
-              <div>
-                <div class="tour-panel" id="tour-dashboard" role="tabpanel" aria-labelledby="tourtab-dashboard">
-                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="app_image_3.webp" width="1918" height="1080" loading="lazy" alt="Studio Photuna dashboard" class="w-full h-auto block" /></div>
-                  <h3 class="text-lg font-bold text-title mt-5">Dashboard</h3>
-                  <p class="text-sm text-body mt-1">Manage your events and get an overview of your activity.</p>
-                </div>
-                <div class="tour-panel" id="tour-events" role="tabpanel" aria-labelledby="tourtab-events" hidden>
-                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="app_image_2.webp" width="1916" height="1080" loading="lazy" alt="Studio Photuna event setup" class="w-full h-auto block" /></div>
-                  <h3 class="text-lg font-bold text-title mt-5">Events</h3>
-                  <p class="text-sm text-body mt-1">Create and manage the events you prepare for your clients.</p>
-                </div>
-                <div class="tour-panel" id="tour-templates" role="tabpanel" aria-labelledby="tourtab-templates" hidden>
-                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="interact_image_2.webp" width="3200" height="2000" loading="lazy" alt="Studio Photuna template selection" class="w-full h-auto block" /></div>
-                  <h3 class="text-lg font-bold text-title mt-5">Templates</h3>
-                  <p class="text-sm text-body mt-1">Prepare branded layouts for your photo sessions.</p>
-                </div>
-                <div class="tour-panel" id="tour-guest" role="tabpanel" aria-labelledby="tourtab-guest" hidden>
-                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="interact_image_1.webp" width="3200" height="2000" loading="lazy" alt="Studio Photuna guest welcome screen" class="w-full h-auto block" /></div>
-                  <h3 class="text-lg font-bold text-title mt-5">Guest Flow</h3>
-                  <p class="text-sm text-body mt-1">Guide guests through the photo experience from start to finish.</p>
-                </div>
-                <div class="tour-panel" id="tour-printing" role="tabpanel" aria-labelledby="tourtab-printing" hidden>
-                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="interact_image_6.webp" width="3200" height="2000" loading="lazy" alt="Studio Photuna printing screen" class="w-full h-auto block" /></div>
-                  <h3 class="text-lg font-bold text-title mt-5">Printing</h3>
-                  <p class="text-sm text-body mt-1">Send completed photo sessions to your connected printer.</p>
-                </div>
-                <div class="tour-panel" id="tour-gallery" role="tabpanel" aria-labelledby="tourtab-gallery" hidden>
-                  <div class="rounded-2xl overflow-hidden border border-line bg-white shadow-luxe"><img src="interact_image_7.webp" width="3200" height="2000" loading="lazy" alt="Studio Photuna QR gallery hand-off" class="w-full h-auto block" /></div>
-                  <h3 class="text-lg font-bold text-title mt-5">Gallery</h3>
-                  <p class="text-sm text-body mt-1">Provide guests with digital access to their photos.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         <!-- Live Photobooth Interface Showcase Gallery -->
         <!-- fs-block, not fs: the booth flow inside relies on position:
