@@ -226,6 +226,27 @@
         scroll-snap-stop: always;
       }
 
+      /* ---- Demo page step-through ----------------------------------- */
+      /* The strip scrolls horizontally on narrow screens rather than
+         wrapping, so the sequence still reads as a sequence on a phone. */
+      .demo-step {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-shrink: 0;
+        padding: 0.55rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--body);
+        white-space: nowrap;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .demo-step:hover { background: #fff; }
+      .demo-step.active { background: #fff; color: var(--title); box-shadow: 0 2px 8px rgba(17,24,39,0.08); }
+      .demo-step-n { font-size: 0.625rem; font-weight: 900; color: var(--brand); }
+      .demo-panel[hidden] { display: none; }
+
       /* Numbered step navigator for the scroll-driven How It Works flow */
       /* Booth flow fades out over its final screenful -- see the exit-late
          mode in app.js. Fade only, matching every other section; the hero is
@@ -776,6 +797,21 @@
       .site-header {
         transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       }
+
+      /* Resources dropdown. Opens on hover for pointers and on focus for
+         keyboards; the menu's own padding-top bridges the gap to the trigger
+         so the pointer never crosses dead space on the way down. */
+      .nav-group:hover .nav-group-menu,
+      .nav-group:focus-within .nav-group-menu {
+        display: block;
+      }
+      .nav-group:hover .nav-group-trigger i,
+      .nav-group:focus-within .nav-group-trigger i {
+        transform: rotate(180deg);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .nav-group-trigger i { transition: none; }
+      }
       .site-header.header-hidden {
         transform: translateY(calc(-100% - 1.5rem));
       }
@@ -849,12 +885,26 @@
         <!-- Anchors target homepage sections; goToSection routes home first
              when the visitor is on another page. Download, Help & Support and
              Changelog remain reachable from the footer. -->
-        <nav class="hidden lg:flex items-center gap-7 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="/#product" onclick="goToSection('product'); return false;" class="hover:text-brand transition-colors">Product</a>
-          <a href="/#how-it-works" onclick="goToSection('how-it-works'); return false;" class="hover:text-brand transition-colors">How It Works</a>
-          <a href="/#hardware" onclick="goToSection('hardware'); return false;" class="hover:text-brand transition-colors">Hardware</a>
+        <nav class="hidden lg:flex items-center gap-6 text-[15px] font-bold text-title" aria-label="Primary navigation">
+          <a href="/product" data-nav="product" onclick="navigateTo('product'); return false;" class="hover:text-brand transition-colors">Product</a>
+          <a href="/solutions" data-nav="solutions" onclick="navigateTo('solutions'); return false;" class="hover:text-brand transition-colors">Solutions</a>
+          <a href="/hardware" data-nav="hardware" onclick="navigateTo('hardware'); return false;" class="hover:text-brand transition-colors">Hardware</a>
           <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
-          <a href="/#faq" onclick="goToSection('faq'); return false;" class="hover:text-brand transition-colors">FAQ</a>
+          <a href="/demo" data-nav="demo" onclick="navigateTo('demo'); return false;" class="hover:text-brand transition-colors">Demo</a>
+          <!-- Resources groups the pages that already existed (Help Center,
+               Changelog, Download) rather than adding them to the top level. -->
+          <div class="nav-group relative">
+            <button type="button" class="nav-group-trigger inline-flex items-center gap-1.5 font-bold text-title hover:text-brand transition-colors" aria-haspopup="true" aria-expanded="false">
+              Resources <i class="fa-solid fa-chevron-down text-[10px] text-muted transition-transform"></i>
+            </button>
+            <div class="nav-group-menu absolute top-full left-0 pt-3 hidden">
+              <div class="w-60 border border-line rounded-2xl bg-white p-2 shadow-luxe flex flex-col gap-0.5">
+                <a href="/help-support" onclick="navigateTo('help-support'); return false;" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-life-ring text-brand w-4"></i> Help Center</a>
+                <a href="/download" onclick="navigateTo('download'); return false;" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-download text-brand w-4"></i> Download the App</a>
+                <a href="/changelog" onclick="navigateTo('changelog'); return false;" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-code-branch text-brand w-4"></i> Changelog</a>
+              </div>
+            </div>
+          </div>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
@@ -876,7 +926,6 @@
 
           <!-- Auth Actions (Signed Out State) -->
           <button class="btn-animation inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-full border border-line bg-white hover:bg-grey px-3 sm:px-4 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
-          <a href="/#book-demo" onclick="goToSection('book-demo'); return false;" class="btn-animation hidden xl:inline-flex min-h-[44px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand transition-colors">Book a Demo</a>
           <button class="btn-animation hidden sm:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-5 text-sm font-extrabold transition-colors shadow-lg shadow-brand/25" type="button" onclick="startFreeTrial()">Start Free Trial <i class="fa-solid fa-arrow-right text-xs"></i></button>
           <button class="hamburger lg:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
@@ -885,17 +934,27 @@
     </header>
 
     <!-- Insets match the header pill's px-3 / sm:px-6 container so the two
-         line up as one floating stack. -->
-    <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-2xl p-4 flex flex-col gap-2 shadow-luxe z-30">
-      <a href="/#product" onclick="goToSection('product'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Product</a>
-      <a href="/#how-it-works" onclick="goToSection('how-it-works'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">How It Works</a>
-      <a href="/#hardware" onclick="goToSection('hardware'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Hardware</a>
+         line up as one floating stack. Mobile gets the primary CTA inline at
+         the top rather than only in the header, so starting a trial is always
+         one tap from the menu. -->
+    <div id="mobile-menu" class="hidden lg:hidden fixed top-[78px] left-3 right-3 sm:left-6 sm:right-6 bg-white border border-line rounded-2xl p-4 flex flex-col gap-1 shadow-luxe z-30 max-h-[calc(100vh-6.5rem)] overflow-y-auto">
+      <button type="button" onclick="startFreeTrial(); toggleMobileMenu();" class="btn-animation w-full inline-flex items-center justify-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white py-3.5 text-sm font-extrabold transition-colors mb-1">
+        Start 14-Day Free Trial <i class="fa-solid fa-arrow-right text-xs"></i>
+      </button>
+      <a href="/demo" onclick="navigateTo('demo'); toggleMobileMenu(); return false;" class="w-full text-center rounded-full border border-line hover:bg-grey py-3 text-sm font-extrabold text-title transition-colors mb-2">Explore Demo</a>
+
+      <a href="/product" onclick="navigateTo('product'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Product</a>
+      <a href="/solutions" onclick="navigateTo('solutions'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Solutions</a>
+      <a href="/hardware" onclick="navigateTo('hardware'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Hardware</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
-      <a href="/#faq" onclick="goToSection('faq'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">FAQ</a>
-      <div class="h-px my-1 bg-line"></div>
-      <a href="/#book-demo" onclick="goToSection('book-demo'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Book a Demo</a>
-      <a href="/download" data-nav="download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download</a>
-      <a href="/help-support" data-nav="help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help &amp; Support</a>
+
+      <div class="h-px my-2 bg-line"></div>
+      <p class="px-4 pb-1 text-[11px] font-black uppercase tracking-wider text-muted">Resources</p>
+      <a href="/help-support" onclick="navigateTo('help-support'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Help Center</a>
+      <a href="/download" onclick="navigateTo('download'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Download the App</a>
+      <a href="/changelog" onclick="navigateTo('changelog'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Changelog</a>
+
+      <div class="h-px my-2 bg-line"></div>
       <a href="/account" data-nav="account" onclick="navigateTo('account'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">View Account</a>
     </div>
 
@@ -942,21 +1001,34 @@
               </div>
             </div>
             <div>
-              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Company</p>
+              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Product</p>
               <nav class="flex flex-col gap-2.5 text-sm text-white/70">
-                <a href="/" onclick="navigateTo('home'); return false;" class="hover:text-brand transition-colors">Home</a>
-                <a href="/book-event" onclick="navigateTo('book-event'); return false;" class="hover:text-brand transition-colors">Book an Event</a>
-                <a href="/#features" onclick="goToSection('features'); return false;" class="hover:text-brand transition-colors">Features</a>
+                <a href="/product" onclick="navigateTo('product'); return false;" class="hover:text-brand transition-colors">Overview</a>
+                <a href="/product#guest-experience" onclick="navigateTo('product'); return false;" class="hover:text-brand transition-colors">Guest Experience</a>
+                <a href="/product#operator-dashboard" onclick="navigateTo('product'); return false;" class="hover:text-brand transition-colors">Operator Dashboard</a>
+                <a href="/product#templates" onclick="navigateTo('product'); return false;" class="hover:text-brand transition-colors">Templates &amp; Branding</a>
+                <a href="/demo" onclick="navigateTo('demo'); return false;" class="hover:text-brand transition-colors">Demo</a>
                 <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
               </nav>
             </div>
             <div>
-              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Product</p>
+              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Solutions</p>
+              <nav class="flex flex-col gap-2.5 text-sm text-white/70">
+                <a href="/solutions#event" onclick="navigateTo('solutions'); return false;" class="hover:text-brand transition-colors">Event Photo Booth</a>
+                <a href="/solutions#vendo" onclick="navigateTo('solutions'); return false;" class="hover:text-brand transition-colors">Photo Booth Vendo</a>
+                <a href="/solutions#start-a-business" onclick="navigateTo('solutions'); return false;" class="hover:text-brand transition-colors">Start a Booth Business</a>
+                <a href="/solutions#multi-booth" onclick="navigateTo('solutions'); return false;" class="hover:text-brand transition-colors">Multi-Booth Operators</a>
+                <a href="/hardware" onclick="navigateTo('hardware'); return false;" class="hover:text-brand transition-colors">Hardware</a>
+                <a href="/book-event" onclick="navigateTo('book-event'); return false;" class="hover:text-brand transition-colors">Book an Event</a>
+              </nav>
+            </div>
+            <div>
+              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Resources</p>
               <nav class="flex flex-col gap-2.5 text-sm font-medium text-white/70">
-                <a href="/account" onclick="navigateTo('account'); return false;" class="hover:text-brand transition-colors">My Account</a>
+                <a href="/help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Help Center</a>
                 <a href="/download" onclick="navigateTo('download'); return false;" class="hover:text-brand transition-colors">Download the App</a>
                 <a href="/changelog" onclick="navigateTo('changelog'); return false;" class="hover:text-brand transition-colors">Changelog</a>
-                <a href="/help-support" onclick="navigateTo('help-support'); return false;" class="hover:text-brand transition-colors">Help & Support</a>
+                <a href="/account" onclick="navigateTo('account'); return false;" class="hover:text-brand transition-colors">My Account</a>
               </nav>
             </div>
             <div>

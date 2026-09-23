@@ -226,6 +226,27 @@
         scroll-snap-stop: always;
       }
 
+      /* ---- Demo page step-through ----------------------------------- */
+      /* The strip scrolls horizontally on narrow screens rather than
+         wrapping, so the sequence still reads as a sequence on a phone. */
+      .demo-step {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-shrink: 0;
+        padding: 0.55rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--body);
+        white-space: nowrap;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .demo-step:hover { background: #fff; }
+      .demo-step.active { background: #fff; color: var(--title); box-shadow: 0 2px 8px rgba(17,24,39,0.08); }
+      .demo-step-n { font-size: 0.625rem; font-weight: 900; color: var(--brand); }
+      .demo-panel[hidden] { display: none; }
+
       /* Numbered step navigator for the scroll-driven How It Works flow */
       /* Booth flow fades out over its final screenful -- see the exit-late
          mode in app.js. Fade only, matching every other section; the hero is
@@ -775,6 +796,21 @@
          nothing peeks over the edge mid-transition. */
       .site-header {
         transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* Resources dropdown. Opens on hover for pointers and on focus for
+         keyboards; the menu's own padding-top bridges the gap to the trigger
+         so the pointer never crosses dead space on the way down. */
+      .nav-group:hover .nav-group-menu,
+      .nav-group:focus-within .nav-group-menu {
+        display: block;
+      }
+      .nav-group:hover .nav-group-trigger i,
+      .nav-group:focus-within .nav-group-trigger i {
+        transform: rotate(180deg);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .nav-group-trigger i { transition: none; }
       }
       .site-header.header-hidden {
         transform: translateY(calc(-100% - 1.5rem));

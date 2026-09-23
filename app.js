@@ -145,6 +145,81 @@ async function loadPackagesFromSupabase() {
 // internal page) and the "Book a Free Demo" button switches to it
 // automatically. Leave it empty and the button keeps its mailto fallback,
 // so it is never a dead link.
+// ---- Guest flow demo (/demo) ---------------------------------------------
+// Drives the step-through on the demo page. Copy here describes only what the
+// screenshots actually show; steps that vary by configuration say so rather
+// than implying a fixed flow.
+const demoGuestSteps = [
+  { title: "Welcome", body: "A branded \u201cTap to Start\u201d screen invites the guest to begin. It carries the event\u2019s own logo and styling, and resets itself after every session so the booth is always ready for the next person." },
+  { title: "Layout", body: "The guest picks a strip format from the layouts you enabled for this event, under a countdown that keeps the queue moving." },
+  { title: "Capture", body: "The app drives your camera directly over USB. Shots are taken in sequence and the strip assembles on screen as each one lands." },
+  { title: "Retake", body: "Before anything prints, the guest can review the set and retake individual shots. You choose whether this step appears at all." },
+  { title: "Selection", body: "The chosen photos drop into the template so the guest sees the finished strip exactly as it will print." },
+  { title: "Frames & Effects", body: "Tone presets and frames are applied live, with the preview updating beside the controls. The presets available are the ones you configured." },
+  { title: "QR Gallery", body: "Photos upload and a gallery is generated for this session. Nothing is left for the guest to install." },
+  { title: "Print & Done", body: "The strip prints while a QR code on screen gives the guest their digital copies. The booth then resets for the next session." },
+];
+
+let demoCurrentStep = 1;
+
+function demoStep(target) {
+  const total = demoGuestSteps.length;
+  let next = demoCurrentStep;
+  if (target === "next") next = demoCurrentStep >= total ? 1 : demoCurrentStep + 1;
+  else if (target === "prev") next = demoCurrentStep <= 1 ? total : demoCurrentStep - 1;
+  else next = Number(target);
+  if (!next || next < 1 || next > total) return;
+
+  demoCurrentStep = next;
+  document.querySelectorAll(".demo-step").forEach((b, i) => {
+    const on = i + 1 === next;
+    b.classList.toggle("active", on);
+    b.setAttribute("aria-selected", on ? "true" : "false");
+  });
+  document.querySelectorAll(".demo-panel").forEach((panel, i) => {
+    panel.hidden = i + 1 !== next;
+  });
+  const step = demoGuestSteps[next - 1];
+  const label = document.getElementById("demoStepLabel");
+  const title = document.getElementById("demoStepTitle");
+  const body = document.getElementById("demoStepBody");
+  if (label) label.textContent = "Step " + String(next).padStart(2, "0") + " of " + String(total).padStart(2, "0");
+  if (title) title.textContent = step.title;
+  if (body) body.textContent = step.body;
+  track("demo_step_view", { demo: "guest", step: next, step_title: step.title });
+}
+
+// ---- Conversion tracking -------------------------------------------------
+// GA4 is loaded in partials/scripts-footer.html but fired no custom events, so
+// nothing between landing and signup was measurable. track() is a thin, safe
+// wrapper: if gtag has not loaded (blocked, consent declined, offline) it is a
+// no-op rather than an exception. Only real interactions call it -- no synthetic
+// or inferred events.
+function track(eventName, params) {
+  try {
+    if (typeof window.gtag !== "function") return;
+    window.gtag("event", eventName, params || {});
+  } catch (_) { /* analytics must never break the page */ }
+}
+
+// Section views worth measuring on their own (pricing especially, since it is
+// the step right before the trial click). Fires once per page view per section.
+(function trackSectionViews() {
+  const watched = { pricing: "view_pricing", demo: "view_demo_section" };
+  const ids = Object.keys(watched).filter(id => document.getElementById(id));
+  if (!ids.length || !("IntersectionObserver" in window)) return;
+  const seen = new Set();
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (!e.isIntersecting || seen.has(e.target.id)) continue;
+      seen.add(e.target.id);
+      track(watched[e.target.id], { section_id: e.target.id });
+      io.unobserve(e.target);
+    }
+  }, { threshold: 0.4 });
+  ids.forEach(id => io.observe(document.getElementById(id)));
+})();
+
 const DEMO_BOOKING_URL = "";
 
 (function applyDemoBookingUrl() {
@@ -231,6 +306,10 @@ function copyPaymentField(elementId, btn) {
 // in the shared header/footer/modal partials don't need to change.
 const ROUTE_MAP = {
   'home': '/',
+  'product': '/product',
+  'solutions': '/solutions',
+  'hardware': '/hardware',
+  'demo': '/demo',
   'book-event': '/book-event',
   'bookings-admin': '/bookings-admin',
   'account': '/account',
@@ -305,9 +384,16 @@ function showAuthForm() { document.getElementById("authLandingPanel").classList.
 // pricing trial card, demo feedback prompt). A signed-in visitor should
 // never see the login/signup modal again -- the trial itself is redeemed
 // inside the desktop app, not on the website, so point them there instead.
-function startFreeTrial() {
+function startFreeTrial(source) {
+  track("start_trial_click", { source: source || "unattributed", signed_in: !!window.currentSupabaseUser });
   if (window.currentSupabaseUser) { openStartTrialModal(); return; }
   openAuthModal("signup");
+}
+
+// Secondary conversion. Called from the demo cards so admin and guest launches
+// are counted separately -- that split is the point of tracking them at all.
+function trackDemoLaunch(which, source) {
+  track("demo_launch", { demo: which, source: source || "unattributed" });
 }
 
 function openStartTrialModal() {

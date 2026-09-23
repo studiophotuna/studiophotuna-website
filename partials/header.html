@@ -8,12 +8,26 @@
         <!-- Anchors target homepage sections; goToSection routes home first
              when the visitor is on another page. Download, Help & Support and
              Changelog remain reachable from the footer. -->
-        <nav class="hidden lg:flex items-center gap-7 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="/#product" onclick="goToSection('product'); return false;" class="hover:text-brand transition-colors">Product</a>
-          <a href="/#how-it-works" onclick="goToSection('how-it-works'); return false;" class="hover:text-brand transition-colors">How It Works</a>
-          <a href="/#hardware" onclick="goToSection('hardware'); return false;" class="hover:text-brand transition-colors">Hardware</a>
+        <nav class="hidden lg:flex items-center gap-6 text-[15px] font-bold text-title" aria-label="Primary navigation">
+          <a href="/product" data-nav="product" onclick="navigateTo('product'); return false;" class="hover:text-brand transition-colors">Product</a>
+          <a href="/solutions" data-nav="solutions" onclick="navigateTo('solutions'); return false;" class="hover:text-brand transition-colors">Solutions</a>
+          <a href="/hardware" data-nav="hardware" onclick="navigateTo('hardware'); return false;" class="hover:text-brand transition-colors">Hardware</a>
           <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
-          <a href="/#faq" onclick="goToSection('faq'); return false;" class="hover:text-brand transition-colors">FAQ</a>
+          <a href="/demo" data-nav="demo" onclick="navigateTo('demo'); return false;" class="hover:text-brand transition-colors">Demo</a>
+          <!-- Resources groups the pages that already existed (Help Center,
+               Changelog, Download) rather than adding them to the top level. -->
+          <div class="nav-group relative">
+            <button type="button" class="nav-group-trigger inline-flex items-center gap-1.5 font-bold text-title hover:text-brand transition-colors" aria-haspopup="true" aria-expanded="false">
+              Resources <i class="fa-solid fa-chevron-down text-[10px] text-muted transition-transform"></i>
+            </button>
+            <div class="nav-group-menu absolute top-full left-0 pt-3 hidden">
+              <div class="w-60 border border-line rounded-2xl bg-white p-2 shadow-luxe flex flex-col gap-0.5">
+                <a href="/help-support" onclick="navigateTo('help-support'); return false;" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-life-ring text-brand w-4"></i> Help Center</a>
+                <a href="/download" onclick="navigateTo('download'); return false;" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-download text-brand w-4"></i> Download the App</a>
+                <a href="/changelog" onclick="navigateTo('changelog'); return false;" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-bold text-title hover:bg-grey transition-colors"><i class="fa-solid fa-code-branch text-brand w-4"></i> Changelog</a>
+              </div>
+            </div>
+          </div>
         </nav>
 
         <div class="header-actions flex items-center gap-4">
@@ -35,7 +49,6 @@
 
           <!-- Auth Actions (Signed Out State) -->
           <button class="btn-animation inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-full border border-line bg-white hover:bg-grey px-3 sm:px-4 text-sm font-extrabold text-title cursor-pointer transition-colors" type="button" id="loginOpen">Log In</button>
-          <a href="/#book-demo" onclick="goToSection('book-demo'); return false;" class="btn-animation hidden xl:inline-flex min-h-[44px] items-center justify-center px-3 text-sm font-extrabold text-title hover:text-brand transition-colors">Book a Demo</a>
           <button class="btn-animation hidden sm:inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-5 text-sm font-extrabold transition-colors shadow-lg shadow-brand/25" type="button" onclick="startFreeTrial()">Start Free Trial <i class="fa-solid fa-arrow-right text-xs"></i></button>
           <button class="hamburger lg:hidden w-11 h-11 border border-line rounded-full bg-white text-title flex items-center justify-center text-xl" type="button" aria-label="Menu" aria-expanded="false">≡</button>
         </div>
