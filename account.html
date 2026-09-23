@@ -448,6 +448,14 @@
       html:has(.fs) {
         scroll-snap-type: y mandatory;
       }
+      /* Every page fills the viewport at minimum, including the ones that
+         do not use the full-screen section system. 100svh so mobile browser
+         chrome does not eat into it. */
+      main {
+        min-height: 100vh;
+        min-height: 100svh;
+      }
+
       .fs, .fs-block {
         scroll-snap-align: start;
         scroll-snap-stop: always;
@@ -599,11 +607,11 @@
 
       /* ---- Hero ----------------------------------------------------- */
 
-      /* The hero blurs back and fades as the page scrolls, so the section
+      /* The hero fades and scales back as the page scrolls, so the section
          below (which is pulled up over it) reads as sliding on top.
-         --exit is published by app.js from scroll depth over the hero. */
+         --exit is published by app.js from scroll depth over the hero.
+         No blur: nothing on the site blurs on scroll any more. */
       .hero-content {
-        filter: blur(calc(var(--exit) * 14px));
         opacity: calc(1 - var(--exit) * 0.85);
         transform: scale(calc(1 - var(--exit) * 0.05));
       }
@@ -886,8 +894,6 @@
              when the visitor is on another page. Download, Help & Support and
              Changelog remain reachable from the footer. -->
         <nav class="hidden lg:flex items-center gap-6 text-[15px] font-bold text-title" aria-label="Primary navigation">
-          <a href="/product" data-nav="product" onclick="navigateTo('product'); return false;" class="hover:text-brand transition-colors">Product</a>
-          <a href="/solutions" data-nav="solutions" onclick="navigateTo('solutions'); return false;" class="hover:text-brand transition-colors">Solutions</a>
           <a href="/hardware" data-nav="hardware" onclick="navigateTo('hardware'); return false;" class="hover:text-brand transition-colors">Hardware</a>
           <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
           <a href="/demo" data-nav="demo" onclick="navigateTo('demo'); return false;" class="hover:text-brand transition-colors">Demo</a>
@@ -943,8 +949,6 @@
       </button>
       <a href="/demo" onclick="navigateTo('demo'); toggleMobileMenu(); return false;" class="w-full text-center rounded-full border border-line hover:bg-grey py-3 text-sm font-extrabold text-title transition-colors mb-2">Explore Demo</a>
 
-      <a href="/product" onclick="navigateTo('product'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Product</a>
-      <a href="/solutions" onclick="navigateTo('solutions'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Solutions</a>
       <a href="/hardware" onclick="navigateTo('hardware'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Hardware</a>
       <a href="/#pricing" onclick="goToSection('pricing'); toggleMobileMenu(); return false;" class="block py-2.5 px-4 rounded-xl font-bold text-title hover:bg-grey">Pricing</a>
 
@@ -1164,23 +1168,11 @@
             <div>
               <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Product</p>
               <nav class="flex flex-col gap-2.5 text-sm text-white/70">
-                <a href="/product" onclick="navigateTo('product'); return false;" class="hover:text-brand transition-colors">Overview</a>
-                <a href="/product#guest-experience" onclick="navigateTo('product'); return false;" class="hover:text-brand transition-colors">Guest Experience</a>
-                <a href="/product#operator-dashboard" onclick="navigateTo('product'); return false;" class="hover:text-brand transition-colors">Operator Dashboard</a>
-                <a href="/product#templates" onclick="navigateTo('product'); return false;" class="hover:text-brand transition-colors">Templates &amp; Branding</a>
                 <a href="/demo" onclick="navigateTo('demo'); return false;" class="hover:text-brand transition-colors">Demo</a>
-                <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
-              </nav>
-            </div>
-            <div>
-              <p class="font-bold text-white text-xs uppercase tracking-wider mb-4">Solutions</p>
-              <nav class="flex flex-col gap-2.5 text-sm text-white/70">
-                <a href="/solutions#event" onclick="navigateTo('solutions'); return false;" class="hover:text-brand transition-colors">Event Photo Booth</a>
-                <a href="/solutions#vendo" onclick="navigateTo('solutions'); return false;" class="hover:text-brand transition-colors">Photo Booth Vendo</a>
-                <a href="/solutions#start-a-business" onclick="navigateTo('solutions'); return false;" class="hover:text-brand transition-colors">Start a Booth Business</a>
-                <a href="/solutions#multi-booth" onclick="navigateTo('solutions'); return false;" class="hover:text-brand transition-colors">Multi-Booth Operators</a>
+                <a href="/#guest-experience" onclick="goToSection('guest-experience'); return false;" class="hover:text-brand transition-colors">Guest Experience</a>
+                <a href="/#operator" onclick="goToSection('operator'); return false;" class="hover:text-brand transition-colors">Operator Dashboard</a>
                 <a href="/hardware" onclick="navigateTo('hardware'); return false;" class="hover:text-brand transition-colors">Hardware</a>
-                <a href="/book-event" onclick="navigateTo('book-event'); return false;" class="hover:text-brand transition-colors">Book an Event</a>
+                <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="hover:text-brand transition-colors">Pricing</a>
               </nav>
             </div>
             <div>

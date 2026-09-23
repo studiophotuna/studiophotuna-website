@@ -448,6 +448,14 @@
       html:has(.fs) {
         scroll-snap-type: y mandatory;
       }
+      /* Every page fills the viewport at minimum, including the ones that
+         do not use the full-screen section system. 100svh so mobile browser
+         chrome does not eat into it. */
+      main {
+        min-height: 100vh;
+        min-height: 100svh;
+      }
+
       .fs, .fs-block {
         scroll-snap-align: start;
         scroll-snap-stop: always;
@@ -599,11 +607,11 @@
 
       /* ---- Hero ----------------------------------------------------- */
 
-      /* The hero blurs back and fades as the page scrolls, so the section
+      /* The hero fades and scales back as the page scrolls, so the section
          below (which is pulled up over it) reads as sliding on top.
-         --exit is published by app.js from scroll depth over the hero. */
+         --exit is published by app.js from scroll depth over the hero.
+         No blur: nothing on the site blurs on scroll any more. */
       .hero-content {
-        filter: blur(calc(var(--exit) * 14px));
         opacity: calc(1 - var(--exit) * 0.85);
         transform: scale(calc(1 - var(--exit) * 0.05));
       }

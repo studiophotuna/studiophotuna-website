@@ -58,22 +58,6 @@ const PAGES = [
     },
   },
   {
-    outputFile: "product.html",
-    viewId: "product",
-    contentFile: "content/product.html",
-    title: "Product | Photo Booth Software for Operators | Studio Photuna",
-    description: "See what Studio Photuna does: guest booth flow, operator dashboard, templates and branding, payment workflows, QR photo delivery, and printing \u2014 in one Windows application.",
-    mainClass: "min-h-screen pt-20",
-  },
-  {
-    outputFile: "solutions.html",
-    viewId: "solutions",
-    contentFile: "content/solutions.html",
-    title: "Solutions | Event, Self-Service & Multi-Booth | Studio Photuna",
-    description: "One platform, different ways to run a booth: attended event photo booths, self-service photo booth vendo setups, first-time photo booth businesses, and multi-booth operations.",
-    mainClass: "min-h-screen pt-20",
-  },
-  {
     outputFile: "hardware.html",
     viewId: "hardware",
     contentFile: "content/hardware.html",
@@ -87,14 +71,6 @@ const PAGES = [
     contentFile: "content/demo.html",
     title: "Product Demo | See Studio Photuna Before You Sign Up",
     description: "Explore Studio Photuna yourself. Step through the complete guest booth experience screen by screen, and see how the operator dashboard is organised \u2014 no meeting required.",
-    mainClass: "min-h-screen pt-20",
-  },
-  {
-    outputFile: "book-event.html",
-    viewId: "book-event",
-    contentFile: "content/book-event.html",
-    title: "Book an Event | Studio Photuna",
-    description: "Book Studio Photuna for your event: review pricing, check real-time availability, and secure your event details in a simple 5-step wizard.",
     mainClass: "min-h-screen pt-20",
   },
   {

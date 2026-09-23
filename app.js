@@ -306,11 +306,8 @@ function copyPaymentField(elementId, btn) {
 // in the shared header/footer/modal partials don't need to change.
 const ROUTE_MAP = {
   'home': '/',
-  'product': '/product',
-  'solutions': '/solutions',
   'hardware': '/hardware',
   'demo': '/demo',
-  'book-event': '/book-event',
   'bookings-admin': '/bookings-admin',
   'account': '/account',
   'download': '/download',
