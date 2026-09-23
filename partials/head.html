@@ -87,8 +87,16 @@
          such a token only when it would otherwise overflow, and unlike
          "anywhere" it does not change any element's intrinsic width, so
          nothing else in the layout shifts. */
+      html {
+        font-size: 112.5%;            /* 18px on phones */
+      }
+      @media (min-width: 640px) {
+        html { font-size: 118.75%; }  /* 19px, matching the reference base */
+      }
+
       body {
         overflow-wrap: break-word;
+        line-height: 1.65;
       }
 
       /* A receipt prints as its own document from a hidden iframe (see
@@ -105,15 +113,15 @@
         font-family: 'Playfair Display', serif;
         letter-spacing: -0.01em;
       }
-      .h1-display { font-weight: 800; line-height: 1.05; }
+      .h1-display { font-weight: 900; line-height: 1; }
       .h1-display em, .h2-display em { font-style: italic; color: var(--brand); }
 
       /* Section H2 spec: 3.75rem / font-weight 700 at desktop, scaled down
          responsively for smaller viewports. */
       .h2-display {
-        font-weight: 700;
-        font-size: 1.875rem;
-        line-height: 1.2;
+        font-weight: 800;
+        font-size: 2.125rem;
+        line-height: 1.15;
       }
       @media (min-width: 640px) { .h2-display { font-size: 2.25rem; } }
       @media (min-width: 768px) { .h2-display { font-size: 3rem; } }
