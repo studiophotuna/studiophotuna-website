@@ -106,8 +106,16 @@
          such a token only when it would otherwise overflow, and unlike
          "anywhere" it does not change any element's intrinsic width, so
          nothing else in the layout shifts. */
+      html {
+        font-size: 112.5%;            /* 18px on phones */
+      }
+      @media (min-width: 640px) {
+        html { font-size: 118.75%; }  /* 19px, matching the reference base */
+      }
+
       body {
         overflow-wrap: break-word;
+        line-height: 1.65;
       }
 
       /* A receipt prints as its own document from a hidden iframe (see
@@ -124,15 +132,27 @@
         font-family: 'Playfair Display', serif;
         letter-spacing: -0.01em;
       }
-      .h1-display { font-weight: 800; line-height: 1.05; }
+      .h1-display { font-weight: 900; line-height: 1; }
+
+      /* Headings wrapped wherever the line happened to run out, leaving
+         single-word last lines ("Action", "Together", "Questions") and lines
+         a third the width of the one above. text-wrap: balance evens the
+         lines out across the block; browsers without it just wrap as before. */
+      .h1-display, .h2-display {
+        text-wrap: balance;
+      }
+      /* Body copy only needs the weaker guarantee: no orphaned last word. */
+      p, li, figcaption {
+        text-wrap: pretty;
+      }
       .h1-display em, .h2-display em { font-style: italic; color: var(--brand); }
 
       /* Section H2 spec: 3.75rem / font-weight 700 at desktop, scaled down
          responsively for smaller viewports. */
       .h2-display {
-        font-weight: 700;
-        font-size: 1.875rem;
-        line-height: 1.2;
+        font-weight: 800;
+        font-size: 2.125rem;
+        line-height: 1.15;
       }
       @media (min-width: 640px) { .h2-display { font-size: 2.25rem; } }
       @media (min-width: 768px) { .h2-display { font-size: 3rem; } }
@@ -225,6 +245,27 @@
         scroll-snap-align: start;
         scroll-snap-stop: always;
       }
+
+      /* ---- Demo page step-through ----------------------------------- */
+      /* The strip scrolls horizontally on narrow screens rather than
+         wrapping, so the sequence still reads as a sequence on a phone. */
+      .demo-step {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        flex-shrink: 0;
+        padding: 0.55rem 0.9rem;
+        border-radius: 999px;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: var(--body);
+        white-space: nowrap;
+        transition: background-color 0.2s ease, color 0.2s ease;
+      }
+      .demo-step:hover { background: #fff; }
+      .demo-step.active { background: #fff; color: var(--title); box-shadow: 0 2px 8px rgba(17,24,39,0.08); }
+      .demo-step-n { font-size: 0.625rem; font-weight: 900; color: var(--brand); }
+      .demo-panel[hidden] { display: none; }
 
       /* Numbered step navigator for the scroll-driven How It Works flow */
       /* Booth flow fades out over its final screenful -- see the exit-late
@@ -427,6 +468,14 @@
       html:has(.fs) {
         scroll-snap-type: y mandatory;
       }
+      /* Every page fills the viewport at minimum, including the ones that
+         do not use the full-screen section system. 100svh so mobile browser
+         chrome does not eat into it. */
+      main {
+        min-height: 100vh;
+        min-height: 100svh;
+      }
+
       .fs, .fs-block {
         scroll-snap-align: start;
         scroll-snap-stop: always;
@@ -578,11 +627,11 @@
 
       /* ---- Hero ----------------------------------------------------- */
 
-      /* The hero blurs back and fades as the page scrolls, so the section
+      /* The hero fades and scales back as the page scrolls, so the section
          below (which is pulled up over it) reads as sliding on top.
-         --exit is published by app.js from scroll depth over the hero. */
+         --exit is published by app.js from scroll depth over the hero.
+         No blur: nothing on the site blurs on scroll any more. */
       .hero-content {
-        filter: blur(calc(var(--exit) * 14px));
         opacity: calc(1 - var(--exit) * 0.85);
         transform: scale(calc(1 - var(--exit) * 0.05));
       }
@@ -775,6 +824,21 @@
          nothing peeks over the edge mid-transition. */
       .site-header {
         transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* Resources dropdown. Opens on hover for pointers and on focus for
+         keyboards; the menu's own padding-top bridges the gap to the trigger
+         so the pointer never crosses dead space on the way down. */
+      .nav-group:hover .nav-group-menu,
+      .nav-group:focus-within .nav-group-menu {
+        display: block;
+      }
+      .nav-group:hover .nav-group-trigger i,
+      .nav-group:focus-within .nav-group-trigger i {
+        transform: rotate(180deg);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .nav-group-trigger i { transition: none; }
       }
       .site-header.header-hidden {
         transform: translateY(calc(-100% - 1.5rem));

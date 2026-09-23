@@ -1,0 +1,120 @@
+      <div class="px-6 py-12 sm:py-16 max-w-6xl mx-auto space-y-14 sm:space-y-20">
+
+        <header class="text-center max-w-3xl mx-auto space-y-4">
+          <p class="text-[11px] sm:text-xs font-bold uppercase tracking-[0.14em] text-muted">Product demo</p>
+          <h1 class="h1-display text-title text-4xl sm:text-5xl">See It Before You Sign Up</h1>
+          <p class="text-base sm:text-lg text-body">Step through the software yourself. No meeting to book, no form to fill in first &mdash; watch the dashboard walkthrough, then click through what your guests see.</p>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+            <a href="#guest" class="btn-animation w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-6 py-3 text-sm font-extrabold transition-colors">Try Guest Flow <i class="fa-solid fa-arrow-down text-xs"></i></a>
+            <a href="#admin" class="btn-animation w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-line bg-white hover:bg-grey text-title px-6 py-3 text-sm font-extrabold transition-colors">Watch Dashboard Demo</a>
+          </div>
+        </header>
+
+        <!-- ============================================================
+             GUEST FLOW DEMO.  A real, working step-through built from the
+             eight screens a guest actually sees. Driven by demoStep() in
+             app.js; every panel is in the DOM so images are already
+             decoded when a step is picked, and it degrades to a plain
+             stacked list with no JS.
+             ============================================================ -->
+        <section id="guest" class="scroll-mt-24 space-y-6">
+          <div class="max-w-2xl space-y-3">
+            <h2 class="h2-display text-title text-3xl sm:text-4xl">Guest Flow</h2>
+            <p class="text-base text-body">What your customer sees, in order. Which steps appear depends on how you configure the event &mdash; payment, for example, only shows on a self-service booth.</p>
+          </div>
+
+          <div class="rounded-3xl border border-line bg-white overflow-hidden shadow-luxe">
+            <div class="border-b border-line bg-grey overflow-x-auto">
+              <div class="flex gap-1 p-2 min-w-max" role="tablist" aria-label="Guest flow steps">
+                <button type="button" class="demo-step active" role="tab" aria-selected="true" aria-controls="demo-panel-1" onclick="demoStep(1)"><span class="demo-step-n">01</span> Welcome</button>
+                <button type="button" class="demo-step" role="tab" aria-selected="false" aria-controls="demo-panel-2" onclick="demoStep(2)"><span class="demo-step-n">02</span> Layout</button>
+                <button type="button" class="demo-step" role="tab" aria-selected="false" aria-controls="demo-panel-3" onclick="demoStep(3)"><span class="demo-step-n">03</span> Capture</button>
+                <button type="button" class="demo-step" role="tab" aria-selected="false" aria-controls="demo-panel-4" onclick="demoStep(4)"><span class="demo-step-n">04</span> Retake</button>
+                <button type="button" class="demo-step" role="tab" aria-selected="false" aria-controls="demo-panel-5" onclick="demoStep(5)"><span class="demo-step-n">05</span> Selection</button>
+                <button type="button" class="demo-step" role="tab" aria-selected="false" aria-controls="demo-panel-6" onclick="demoStep(6)"><span class="demo-step-n">06</span> Frames</button>
+                <button type="button" class="demo-step" role="tab" aria-selected="false" aria-controls="demo-panel-7" onclick="demoStep(7)"><span class="demo-step-n">07</span> QR Gallery</button>
+                <button type="button" class="demo-step" role="tab" aria-selected="false" aria-controls="demo-panel-8" onclick="demoStep(8)"><span class="demo-step-n">08</span> Print &amp; Done</button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr]">
+              <div class="bg-grey-2 p-3 sm:p-5 order-1">
+                <div class="demo-panel" id="demo-panel-1" role="tabpanel"><img src="interact_image_1.webp" width="3200" height="2000" alt="Branded Tap to Start welcome screen inviting the guest to begin a session" class="rounded-xl border border-line w-full h-auto block" /></div>
+                <div class="demo-panel" id="demo-panel-2" role="tabpanel" hidden><img src="interact_image_2.webp" width="3200" height="2000" loading="lazy" alt="Layout picker showing available photo strip formats under a countdown" class="rounded-xl border border-line w-full h-auto block" /></div>
+                <div class="demo-panel" id="demo-panel-3" role="tabpanel" hidden><img src="interact_image_4.webp" width="3200" height="2000" loading="lazy" alt="Photo strip assembling as each shot is captured" class="rounded-xl border border-line w-full h-auto block" /></div>
+                <div class="demo-panel" id="demo-panel-4" role="tabpanel" hidden><img src="Interact_image_3.webp" width="3200" height="2000" loading="lazy" alt="Retake review screen where the guest picks which shots to take again" class="rounded-xl border border-line w-full h-auto block" /></div>
+                <div class="demo-panel" id="demo-panel-5" role="tabpanel" hidden><img src="interact_image_4.webp" width="3200" height="2000" loading="lazy" alt="Strip assembly preview with the selected photos in place" class="rounded-xl border border-line w-full h-auto block" /></div>
+                <div class="demo-panel" id="demo-panel-6" role="tabpanel" hidden><img src="app_image_3.webp" width="1920" height="1080" loading="lazy" alt="Tone and frame options with a live preview of the finished strip" class="rounded-xl border border-line w-full h-auto block" /></div>
+                <div class="demo-panel" id="demo-panel-7" role="tabpanel" hidden><img src="interact_image_6.webp" width="3200" height="2000" loading="lazy" alt="Preparing your gallery screen while the photos upload" class="rounded-xl border border-line w-full h-auto block" /></div>
+                <div class="demo-panel" id="demo-panel-8" role="tabpanel" hidden><img src="interact_image_7.webp" width="3200" height="2000" loading="lazy" alt="Printing screen with a scannable QR code for the guest gallery" class="rounded-xl border border-line w-full h-auto block" /></div>
+              </div>
+
+              <div class="p-5 sm:p-7 flex flex-col justify-start gap-6 order-2">
+                <div class="space-y-3">
+                  <p class="text-xs font-black uppercase tracking-wider text-brand" id="demoStepLabel">Step 01 of 08</p>
+                  <h3 class="text-2xl font-bold text-title" id="demoStepTitle">Welcome</h3>
+                  <p class="text-sm text-body" id="demoStepBody">A branded &ldquo;Tap to Start&rdquo; screen invites the guest to begin. It carries the event's own logo and styling, and resets itself after every session so the booth is always ready for the next person.</p>
+                </div>
+                <div class="flex items-center gap-2 lg:mt-auto">
+                  <button type="button" onclick="demoStep('prev')" class="btn-animation w-11 h-11 shrink-0 rounded-full border border-line hover:bg-grey text-title flex items-center justify-center transition-colors" aria-label="Previous step"><i class="fa-solid fa-arrow-left text-xs"></i></button>
+                  <button type="button" onclick="demoStep('next')" class="btn-animation flex-1 rounded-full bg-title hover:bg-navy-800 text-white py-3 text-sm font-extrabold transition-colors">Next step</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- ============================================================
+             ADMIN DASHBOARD DEMO.  One genuine dashboard capture exists
+             today, so this section shows that screen and describes the
+             real navigation visible in it. The interactive walkthrough is
+             marked as not yet available rather than mocked up.
+
+             TO ADD THE FULL DEMO LATER: replace the placeholder card with
+             the same .demo-step / .demo-panel structure used by the guest
+             flow above and add the screens to demoAdminSteps in app.js.
+             ============================================================ -->
+        <section id="admin" class="scroll-mt-24 space-y-6">
+          <div class="max-w-2xl space-y-3">
+            <h2 class="h2-display text-title text-3xl sm:text-4xl">Admin Dashboard</h2>
+            <p class="text-base text-body">The operator side: where you set up events, build templates, configure the booth and see what it earned.</p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr] gap-5">
+            <figure class="rounded-3xl overflow-hidden border border-line bg-white shadow-luxe">
+              <img src="app_image_2.webp" width="1920" height="1080" loading="lazy" alt="Studio Photuna booth configuration: camera, printer, storage and update status tiles above camera settings, with the main navigation on the left" class="w-full h-auto block" />
+              <figcaption class="px-5 py-3 text-xs font-bold text-muted border-t border-line">Settings &rarr; Booth Configuration, with camera device, resolution and capture behaviour</figcaption>
+            </figure>
+
+            <div class="space-y-3">
+              <h3 class="text-base font-bold text-title">How the dashboard is organised</h3>
+              <ul class="space-y-2 text-sm text-body">
+                <li class="flex items-start gap-2.5"><i class="fa-solid fa-house text-brand mt-0.5 w-4"></i><span><strong class="text-title">Home</strong> &mdash; the operator landing screen</span></li>
+                <li class="flex items-start gap-2.5"><i class="fa-solid fa-calendar-days text-brand mt-0.5 w-4"></i><span><strong class="text-title">Events</strong> &mdash; one workspace per client event</span></li>
+                <li class="flex items-start gap-2.5"><i class="fa-solid fa-gauge-high text-brand mt-0.5 w-4"></i><span><strong class="text-title">Dashboard</strong> &mdash; live session and revenue view</span></li>
+                <li class="flex items-start gap-2.5"><i class="fa-solid fa-gear text-brand mt-0.5 w-4"></i><span><strong class="text-title">Settings</strong> &mdash; camera, printing, storage, general, audit &amp; logs, system</span></li>
+                <li class="flex items-start gap-2.5"><i class="fa-solid fa-wifi text-brand mt-0.5 w-4"></i><span><strong class="text-title">Remote Booth</strong> &mdash; check on and stop a booth remotely</span></li>
+                <li class="flex items-start gap-2.5"><i class="fa-solid fa-chart-line text-brand mt-0.5 w-4"></i><span><strong class="text-title">Reports</strong> &mdash; sessions, prints and takings per event</span></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-line bg-grey p-5 sm:p-6 space-y-3">
+            <h3 class="text-base font-bold text-title">Watch the walkthrough</h3>
+            <p class="text-sm text-body">The operator side, recorded end to end.</p>
+            <div class="aspect-video w-full max-w-3xl rounded-2xl border border-line bg-white overflow-hidden">
+              <iframe class="w-full h-full block" src="https://www.youtube-nocookie.com/embed/sS6qRakw-R4?rel=0" title="Studio Photuna dashboard walkthrough" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-3xl bg-navy-950 px-6 py-10 sm:py-14 text-center space-y-5">
+          <h2 class="h2-display text-white text-3xl sm:text-4xl">Seen enough?</h2>
+          <p class="text-base text-white/70 max-w-xl mx-auto">Run your own events on your own hardware for 14 days before paying anything.</p>
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button onclick="startFreeTrial('demo_footer')" class="btn-animation w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-brand hover:bg-brand-600 text-white px-7 py-3.5 text-sm font-extrabold transition-colors">Start Free Trial <i class="fa-solid fa-arrow-right text-xs"></i></button>
+            <a href="/#pricing" onclick="goToSection('pricing'); return false;" class="btn-animation w-full sm:w-auto inline-flex items-center justify-center rounded-full border border-white/25 hover:bg-white/10 text-white px-7 py-3.5 text-sm font-extrabold transition-colors">See Pricing</a>
+          </div>
+        </section>
+      </div>
