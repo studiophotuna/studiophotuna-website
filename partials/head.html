@@ -227,6 +227,74 @@
         scroll-snap-stop: always;
       }
 
+      /* ---- Admin sidebar navigation ---------------------------------- */
+      .admin-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0.125rem;
+        padding: 0.75rem;
+        border: 1px solid var(--line);
+        border-radius: 1.25rem;
+        background: #fff;
+        box-shadow: 0 1px 2px rgba(17, 24, 39, 0.04);
+      }
+      .admin-nav-label {
+        margin: 0.75rem 0 0.25rem;
+        padding: 0 0.625rem;
+        font-size: 0.625rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .admin-nav-label:first-child { margin-top: 0.125rem; }
+      .admin-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        width: 100%;
+        padding: 0.5rem 0.625rem;
+        border-radius: 0.75rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: var(--body);
+        text-align: left;
+        white-space: nowrap;
+        transition: background-color 0.15s ease, color 0.15s ease;
+      }
+      .admin-nav-item:hover { background: var(--grey); color: var(--title); }
+      .admin-nav-item.active { background: var(--brand); color: #fff; }
+      .admin-nav-item.active .admin-nav-icon { color: #fff; }
+      .admin-nav-icon { width: 1rem; font-size: 0.75rem; color: var(--muted); flex-shrink: 0; }
+      .admin-nav-text { flex: 1; min-width: 0; }
+      .admin-nav-badge {
+        flex-shrink: 0;
+        min-width: 1.25rem;
+        padding: 0 0.3rem;
+        border-radius: 999px;
+        background: #ef4444;
+        color: #fff;
+        font-size: 0.625rem;
+        font-weight: 900;
+        line-height: 1.25rem;
+        text-align: center;
+      }
+      .admin-nav-item.active .admin-nav-badge { background: #fff; color: var(--brand); }
+
+      /* Below lg the sidebar becomes a horizontal strip that scrolls, so the
+         working area keeps the full width on a tablet or phone. */
+      @media (max-width: 1023px) {
+        .admin-nav {
+          flex-direction: row;
+          overflow-x: auto;
+          gap: 0.375rem;
+          align-items: center;
+        }
+        .admin-nav-label { display: none; }
+        .admin-nav-item { width: auto; white-space: nowrap; }
+        .admin-nav-text { flex: 0 0 auto; }
+      }
+
       /* ---- Demo page step-through ----------------------------------- */
       /* The strip scrolls horizontally on narrow screens rather than
          wrapping, so the sequence still reads as a sequence on a phone. */
