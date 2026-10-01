@@ -3523,7 +3523,7 @@ async function deleteDiscountCode(id) {
 function openDiscountCodeModal(mode, id) {
   const existing = id ? _discountCodes.find(c => c.id === id) : null;
   document.getElementById("discountCodeModal")?.remove();
-  const planOptions = ["monthly", "yearly", "plus", "business"].map(p =>
+  const planOptions = ["monthly", "yearly"].map(p =>
     `<label class="flex items-center gap-2 cursor-pointer text-sm">
       <input type="checkbox" name="dcPlan" value="${p}" ${existing?.applies_to?.includes(p) ? "checked" : ""} class="rounded accent-purple"/>
       <span class="capitalize">${p}</span>
