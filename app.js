@@ -370,8 +370,78 @@ function spawnToast(title, description, iconClass = 'fa-circle-check', type = 'i
 }
 
 function openAuthModal(mode = "landing") {
-  authModal.classList.remove("hidden"); authModal.classList.add("grid"); authModal.setAttribute("aria-hidden", "false"); authMessage.textContent = "";
-  if (mode === "signup") { setAuthMode("signup"); } else { showAuthLanding(); }
+  authModal.classList.remove("hidden"); authModal.classList.add("grid"); authModal.setAttribute("aria-hidden", "false"); setAuthMessage("");
+  if (mode === "signup") { startSignup(); } else { showAuthLanding(); }
+}
+
+// ── Sign-up progress (endowed progress) ───────────────────────────────────
+// Choosing to sign up is already a step, so the bar starts at 20% rather than
+// zero; creating the account takes it to 60%, and downloading the app finishes
+// the web part at 100%. The app then carries on with its own booth-ready
+// checklist, which starts with these steps already ticked.
+//
+// Kept per browser in localStorage: it only has to survive the redirect to the
+// download page (and Google's sign-in round trip), not follow a person around.
+const SIGNUP_PROGRESS_KEY = "photuna.signupProgress";
+const SIGNUP_STEPS = {
+  started:    { pct: 20,  label: "You’re on your way" },
+  account:    { pct: 60,  label: "Account ready — one step left" },
+  downloaded: { pct: 100, label: "All set on the web" },
+};
+const SIGNUP_ORDER = ["started", "account", "downloaded"];
+
+function getSignupProgress() {
+  try { const v = localStorage.getItem(SIGNUP_PROGRESS_KEY); return SIGNUP_STEPS[v] ? v : null; } catch { return null; }
+}
+
+// Only ever moves forward, so revisiting the form cannot take a step away.
+function markSignupProgress(step) {
+  const current = getSignupProgress();
+  if (current && SIGNUP_ORDER.indexOf(current) >= SIGNUP_ORDER.indexOf(step)) return current;
+  try { localStorage.setItem(SIGNUP_PROGRESS_KEY, step); } catch { /* private mode: the bar still animates this visit */ }
+  return step;
+}
+
+// Draws any progress widget whose elements share a prefix (the auth card uses
+// "signupProgress", the download page "downloadProgress"). Animates from the
+// width it shows now, so a step is seen to fill rather than appear.
+function renderSignupProgress(prefix, step) {
+  const meta = SIGNUP_STEPS[step]; if (!meta) return;
+  const bar = document.getElementById(prefix + "Bar");
+  const pct = document.getElementById(prefix + "Pct");
+  const label = document.getElementById(prefix + "Label");
+  const track = document.getElementById(prefix + "Track");
+  // A short timer rather than requestAnimationFrame, which background tabs pause.
+  if (bar) setTimeout(() => { bar.style.width = meta.pct + "%"; }, 40);
+  if (pct) pct.textContent = meta.pct + "%";
+  if (label) label.textContent = meta.label;
+  if (track) track.setAttribute("aria-valuenow", String(meta.pct));
+  const reached = SIGNUP_ORDER.indexOf(step);
+  document.querySelectorAll("#" + prefix + "Steps [data-step]").forEach((li) => {
+    li.classList.toggle("is-done", SIGNUP_ORDER.indexOf(li.dataset.step) <= reached);
+  });
+}
+
+function startSignup() {
+  const step = markSignupProgress("started");
+  setAuthMode("signup");
+  const bar = document.getElementById("signupProgressBar");
+  if (bar && step === "started") bar.style.width = "0%";
+  renderSignupProgress("signupProgress", step);
+}
+
+function toggleAuthPassword() {
+  const btn = document.getElementById("authPasswordToggle");
+  const show = authPassword.type === "password";
+  authPassword.type = show ? "text" : "password";
+  if (btn) { btn.textContent = show ? "Hide" : "Show"; btn.setAttribute("aria-label", show ? "Hide password" : "Show password"); }
+}
+
+// Sign-up needs the consent box ticked, as in the app. It used to be shown but
+// never checked, so an account could be created without agreeing.
+function updateAuthSubmitState() {
+  const consent = document.getElementById("consentCheck");
+  authSubmit.disabled = authMode === "signup" && !consent?.checked;
 }
 function closeAuthModal() { authModal.classList.add("hidden"); authModal.classList.remove("grid"); authModal.setAttribute("aria-hidden", "true"); }
 function showAuthLanding() { document.getElementById("authLandingPanel").classList.remove("hidden"); document.getElementById("authFormPanel").classList.add("hidden"); }
@@ -446,21 +516,33 @@ async function sendPasswordReset() {
 function setAuthMode(mode) {
   authMode = mode;
   showAuthForm();
+  setAuthMessage("");
   document.querySelectorAll(".auth-tab").forEach((tab) => {
     const isActive = tab.dataset.authTab === mode;
-    tab.classList.toggle("active", isActive); tab.classList.toggle("bg-white", isActive); tab.classList.toggle("text-purple", isActive); tab.classList.toggle("text-muted", !isActive);
+    tab.classList.toggle("active", isActive);
+    tab.classList.toggle("bg-white", isActive); tab.classList.toggle("text-slate-900", isActive); tab.classList.toggle("shadow-sm", isActive);
+    tab.classList.toggle("text-slate-500", !isActive);
   });
-  authName.style.display = mode === "signup" ? "block" : "none";
+  document.getElementById("authNameField")?.classList.toggle("hidden", mode !== "signup");
   authName.toggleAttribute("required", mode === "signup");
+  document.getElementById("signupProgress")?.classList.toggle("hidden", mode !== "signup");
+  authPassword.setAttribute("autocomplete", mode === "signup" ? "new-password" : "current-password");
   const authConsentEl = document.getElementById("authConsent");
   if (authConsentEl) { authConsentEl.classList.toggle("hidden", mode !== "signup"); authConsentEl.classList.toggle("flex", mode === "signup"); }
   const authForgotLinkEl = document.getElementById("authForgotLink");
   if (authForgotLinkEl) authForgotLinkEl.classList.toggle("hidden", mode !== "login");
-  authPassword.setAttribute("placeholder", mode === "signup" ? "Create a Password" : "Password");
-  authSubmit.textContent = mode === "signup" ? "Create Free Account" : "Sign In";
+  authPassword.setAttribute("placeholder", mode === "signup" ? "Create a password" : "Enter your password");
+  authSubmit.textContent = mode === "signup" ? "Create account" : "Login";
+  updateAuthSubmitState();
 }
 
-function setAuthMessage(message, isError = false) { authMessage.textContent = message; authMessage.style.color = isError ? "#dc2626" : "var(--body)"; }
+// Same message box as the app: red for a problem, green otherwise.
+function setAuthMessage(message, isError = false) {
+  authMessage.textContent = message || "";
+  authMessage.classList.toggle("hidden", !message);
+  authMessage.classList.toggle("border-rose-200", isError); authMessage.classList.toggle("bg-rose-50", isError); authMessage.classList.toggle("text-rose-700", isError);
+  authMessage.classList.toggle("border-emerald-200", !isError); authMessage.classList.toggle("bg-emerald-50", !isError); authMessage.classList.toggle("text-emerald-700", !isError);
+}
 
 function initialsFor(name, email) {
   const source = (name || "").trim() || (email || "").split("@")[0] || "";
@@ -2799,6 +2881,9 @@ window.onload = async function () {
       const user = data?.session?.user || null;
       window.currentSupabaseUser = user;
       loadAccountState(user).then(() => { handleCheckoutRedirectResult(); if (CURRENT_VIEW === 'payment-app-success') initPaymentSuccessPage(); });
+      // Someone who chose "Create an account" and then went through Google comes
+      // back signed in: that is the account step done.
+      if (user && getSignupProgress() === "started") { markSignupProgress("account"); if (CURRENT_VIEW === 'download') initDownloadProgress(); }
     });
     supabaseClient.auth.onAuthStateChange((evt, session) => {
       const user = session?.user || null; window.currentSupabaseUser = user; loadAccountState(user);
@@ -2810,7 +2895,46 @@ window.onload = async function () {
   } else { handleCheckoutRedirectResult(); if (CURRENT_VIEW === 'payment-app-success') initPaymentSuccessPage(); }
 
   if (CURRENT_VIEW === 'payment-book-success') initBookingSuccessPage();
+  if (CURRENT_VIEW === 'download') initDownloadProgress();
 };
+
+// The download page carries the bar on: 60% while the installer is the one
+// thing left, 100% once it is clicked. Shown only to someone who started
+// signing up in this browser, and the finished state only on the visit where
+// it was reached, so returning operators are not shown it forever.
+let downloadProgressWired = false;
+function initDownloadProgress() {
+  const card = document.getElementById("downloadProgress");
+  const step = getSignupProgress();
+  let justFinished = false;
+  try { justFinished = sessionStorage.getItem("photuna.signupFinished") === "1"; } catch { /* ignore */ }
+  let awaitingEmail = "";
+  try { awaitingEmail = sessionStorage.getItem("photuna.signupAwaitingEmail") || ""; } catch { /* ignore */ }
+  const nextText = document.getElementById("downloadProgressNext");
+  if (nextText && awaitingEmail) {
+    nextText.textContent = `Confirm your email first: we sent a link to ${awaitingEmail}. Then download the installer below and sign in to the app with the same account.`;
+  }
+  if (card && (step === "account" || (step === "downloaded" && justFinished))) {
+    card.classList.remove("hidden");
+    renderSignupProgress("downloadProgress", step);
+    document.getElementById("downloadProgressDone")?.classList.toggle("hidden", step !== "downloaded"); document.getElementById("downloadProgressNext")?.classList.toggle("hidden", step === "downloaded");
+  }
+  if (downloadProgressWired) return;
+  downloadProgressWired = true;
+  document.querySelectorAll("[data-installer-link]").forEach((link) => {
+    link.addEventListener("click", () => {
+      if (!getSignupProgress()) return; // operators who never signed up here
+      markSignupProgress("downloaded");
+      try { sessionStorage.setItem("photuna.signupFinished", "1"); } catch { /* ignore */ }
+      if (card) {
+        card.classList.remove("hidden");
+        renderSignupProgress("downloadProgress", "downloaded");
+        document.getElementById("downloadProgressDone")?.classList.remove("hidden"); document.getElementById("downloadProgressNext")?.classList.add("hidden");
+      }
+      track("installer_download", { after_signup: true });
+    });
+  });
+}
 
 // A payment started in the desktop app returns here through the app's
 // paypal-return function, which has already captured the payment and granted
@@ -3827,24 +3951,52 @@ if (publicReviewForm) publicReviewForm.onsubmit = handleReviewSubmit;
 authForm.onsubmit = async (event) => {
   event.preventDefault(); if (!supabaseClient) return;
   const email = document.getElementById("authEmail").value.trim(); const password = authPassword.value; const name = authName.value.trim();
-  authSubmit.disabled = true; setAuthMessage(authMode === "signup" ? "Creating free account..." : "Signing in secure console...");
+  if (authMode === "signup" && !document.getElementById("consentCheck")?.checked) {
+    setAuthMessage("Please accept the Privacy Policy and Terms to create an account.", true); return;
+  }
+  authSubmit.disabled = true; setAuthMessage(authMode === "signup" ? "Creating account..." : "Signing in...");
   try {
     if (authMode === "signup") {
-      const { data, error } = await supabaseClient.auth.signUp({ email, password, options: { data: { full_name: name } } }); if (error) throw error;
+      const { data, error } = await supabaseClient.auth.signUp({
+        email, password,
+        options: { data: { full_name: name, terms_accepted_at: new Date().toISOString() }, emailRedirectTo: `${window.location.origin}/account` },
+      });
+      if (error) throw error;
+      // Supabase answers a sign-up for an existing email with a look-alike user
+      // that has no identities, so as not to reveal which emails have accounts.
+      if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        throw new Error("This email is already registered. Sign in instead, or use Forgot Password.");
+      }
+      // Email confirmation is required on this project: no session comes back
+      // until the link in the email is opened. The account exists, so the step
+      // is done, but the operator has to confirm before signing in anywhere.
+      if (!data?.session) {
+        renderSignupProgress("signupProgress", markSignupProgress("account"));
+        try { sessionStorage.setItem("photuna.signupAwaitingEmail", email); } catch { /* ignore */ }
+        setAuthMessage(`Account created. We sent a confirmation link to ${email} \u2014 open it to activate your account. Taking you to the download page...`, false);
+        spawnToast("Check Your Inbox", "Confirm your email, then sign in to the app.", "fa-solid fa-envelope", "success");
+        setTimeout(() => { closeAuthModal(); navigateTo("download"); }, 3500);
+        return;
+      }
       if (data?.user?.id) {
         const { error: profileErr } = await supabaseClient.from("profiles").upsert({ id: data.user.id, full_name: name, email, subscription_plan: "free" });
         if (profileErr) console.warn("Profile row creation failed on signup (non-fatal, account still created):", profileErr);
       }
       // New accounts need the desktop app, so send them straight to the
       // download page next -- the natural next step after signing up.
-      setAuthMessage("Signup confirmed. Taking you to the download page...", false); spawnToast("Signup Successful", "Let's get the app installed.", "fa-solid fa-circle-check", "success");
-      setTimeout(() => { closeAuthModal(); navigateTo("download"); }, 1500);
+      renderSignupProgress("signupProgress", markSignupProgress("account"));
+      setAuthMessage("Account created. Taking you to the download page...", false); spawnToast("Signup Successful", "Let's get the app installed.", "fa-solid fa-circle-check", "success");
+      setTimeout(() => { closeAuthModal(); navigateTo("download"); }, 1800);
     } else {
-      const { error } = await supabaseClient.auth.signInWithPassword({ email, password }); if (error) throw error;
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) {
+        if (/not confirmed/i.test(error.message || "")) throw new Error("Please confirm your email first. Open the link we sent to your inbox, then sign in again.");
+        throw error;
+      }
       setAuthMessage("Access verified.", false); spawnToast("Welcome Back", "Session established securely.", "fa-solid fa-circle-check", "success"); setTimeout(closeAuthModal, 1200);
     }
   } catch (err) { setAuthMessage(err.message || "Credential validation failed.", true); }
-  finally { authSubmit.disabled = false; }
+  finally { updateAuthSubmitState(); }
 };
 
 logoutAction.onclick = async () => {

@@ -4,6 +4,27 @@
           <p class="text-lg text-body max-w-2xl mx-auto">Get the Windows application that runs your camera, templates, printing, and guest QR delivery — all from one install.</p>
         </div>
 
+        <!-- Sign-up progress, continued from the sign-up card (app.js initDownloadProgress).
+             Hidden unless this browser just signed up. -->
+        <div id="downloadProgress" class="hidden max-w-3xl mx-auto rounded-2xl border border-blue-100 bg-blue-50/60 p-5 sm:p-6" aria-live="polite">
+          <div class="flex items-baseline justify-between gap-3 mb-2">
+            <span class="text-sm font-bold text-title" id="downloadProgressLabel">Account ready &mdash; one step left</span>
+            <span class="text-sm font-black text-blue-600" id="downloadProgressPct">60%</span>
+          </div>
+          <div class="h-2.5 w-full overflow-hidden rounded-full bg-white" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="60" id="downloadProgressTrack">
+            <div class="h-full rounded-full bg-blue-600 transition-[width] duration-700 ease-out" style="width:20%" id="downloadProgressBar"></div>
+          </div>
+          <ol class="mt-3 grid grid-cols-3 text-[11px] font-medium text-slate-400" id="downloadProgressSteps">
+            <li data-step="started" class="flex items-center gap-1.5"><span class="step-dot"></span>Started</li>
+            <li data-step="account" class="flex items-center justify-center gap-1.5"><span class="step-dot"></span>Create account</li>
+            <li data-step="downloaded" class="flex items-center justify-end gap-1.5"><span class="step-dot"></span>Download app</li>
+          </ol>
+          <p class="mt-4 text-xs text-body" id="downloadProgressNext">Download the installer below to finish. You&rsquo;ll sign in to the app with the account you just created.</p>
+          <div id="downloadProgressDone" class="hidden mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs text-emerald-800">
+            <strong class="font-bold">Your download has started.</strong> Run the installer, sign in with the same account, and the app will walk you through getting your booth ready &mdash; your first two steps are already done.
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <!-- Left Sidebar -->
           <div class="space-y-6 lg:col-span-1">
@@ -74,7 +95,7 @@
               <div class="grid grid-cols-2 gap-4 text-xs">
                 <div class="bg-grey border border-line rounded-xl p-4">
                   <span class="text-muted block uppercase font-bold text-[9px] mb-1">Current Version</span>
-                  <strong class="text-title font-mono">0.4.19</strong>
+                  <strong class="text-title font-mono">0.4.20</strong>
                 </div>
                 <div class="bg-grey border border-line rounded-xl p-4">
                   <span class="text-muted block uppercase font-bold text-[9px] mb-1">File Size</span>
@@ -91,11 +112,11 @@
               </div>
 
               <div class="flex flex-wrap gap-3 pt-2">
-                <a class="btn-animation bg-brand hover:bg-brand-600 text-white font-extrabold px-6 py-3.5 rounded-full text-xs uppercase flex items-center gap-2 shadow-sm" href="https://github.com/studiophotuna/Photuna-download-updates/releases/download/0.4.19/Photuna.Booth.App.Setup.0.4.19.exe">
+                <a data-installer-link class="btn-animation bg-brand hover:bg-brand-600 text-white font-extrabold px-6 py-3.5 rounded-full text-xs uppercase flex items-center gap-2 shadow-sm" href="https://github.com/studiophotuna/Photuna-download-updates/releases/download/0.4.20/Photuna.Booth.App.Setup.0.4.20.exe">
                   <i class="fa-solid fa-download"></i> Download Installer
                 </a>
               </div>
-              <p class="text-[11px] text-muted">Photuna.Booth.App.Setup.0.4.19.exe — Stable local build</p>
+              <p class="text-[11px] text-muted">Photuna.Booth.App.Setup.0.4.20.exe — Stable local build</p>
             </div>
 
             <!-- What's Included Card -->
@@ -139,14 +160,14 @@
             <!-- Release Notes -->
             <div class="bg-white border border-line rounded-2xl p-6 space-y-3">
               <div class="flex items-center justify-between gap-3">
-                <h4 class="font-bold text-title text-sm flex items-center gap-2"><i class="fa-solid fa-list-check text-brand"></i> Release Notes — v0.4.19</h4>
+                <h4 class="font-bold text-title text-sm flex items-center gap-2"><i class="fa-solid fa-list-check text-brand"></i> Release Notes — v0.4.20</h4>
                 <a href="/changelog" onclick="navigateTo('changelog'); return false;" class="text-[11px] font-bold text-brand hover:underline whitespace-nowrap">View full changelog</a>
               </div>
               <ul class="space-y-2 text-xs text-body">
-                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> Smoother USB camera live view on Canon EOS</li>
-                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> Redesigned consent screen with larger buttons</li>
-                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> Guests see the real gallery period for your plan</li>
-                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> Expired galleries are deleted from our servers</li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> Sign-up now tells you to confirm your email</li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> Clear message when an email is already registered</li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> New Get booth-ready checklist on Home</li>
+                <li class="flex items-start gap-2"><span class="text-brand font-bold mt-0.5">•</span> The tour waits until the free trial offer is answered</li>
               </ul>
             </div>
           </div>
