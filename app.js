@@ -3967,8 +3967,14 @@ document.querySelectorAll(".reveal, .feature-card").forEach(el => revealObserver
   // that still blurs. Measuring against the element's own top (rather than a
   // viewport crossing) means the hero works on the same rule despite starting
   // already on screen.
+  // Measured from the section's BOTTOM edge, not its top. Keying off the top
+  // meant a section taller than the viewport began fading while the reader was
+  // still inside it: pricing is 1161px in a 900px viewport, so by the time its
+  // top had travelled 766px the plan button and price note were at half
+  // opacity with both still on screen. From the bottom edge the ramp can only
+  // run as the last screenful actually leaves, whatever the section's height.
   document.querySelectorAll("[data-exit]").forEach(el => {
-    targets.push({ el, prop: "--exit", mode: "exit", span: 0.66 });
+    targets.push({ el, prop: "--exit", mode: "exit-late", span: 0.7 });
   });
   document.querySelectorAll("[data-exit-late]").forEach(el => {
     targets.push({ el, prop: "--exit", mode: "exit-late", span: 0.7 });
