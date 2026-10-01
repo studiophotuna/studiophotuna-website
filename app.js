@@ -2863,7 +2863,7 @@ window.onload = async function () {
     applyBookingPaymentModeNote();
   } else if (CURRENT_VIEW === 'bookings-admin') {
     if (adminMessage) setMessage(adminMessage, "Loading bookings...");
-    Promise.all([loadBookings(), loadReviewsAdmin()]).then(() => {
+    Promise.all([loadBookings(), loadReviewsAdmin(), refreshAdminBadges()]).then(() => {
       const stamp = document.getElementById("adminLastUpdated");
       if (stamp) stamp.textContent = "Updated " + new Date().toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit" });
     });
@@ -3317,8 +3317,28 @@ const proofFilterButtons = document.querySelectorAll("[data-proof-filter]");
 const ADMIN_TAB_TITLES = { bookings: "Bookings", proofs: "Payment Proofs", tickets: "Support Tickets", packages: "Packages", privacy: "Privacy Requests", reviews: "Reviews", inbox: "Inbox", analytics: "Analytics", cameras: "Camera Support", settings: "Settings", discounts: "Discount Codes", "manual-sub": "Manual Subscription" };
 const ADMIN_GROUPS = { bookings: ["bookings", "packages"], support: ["proofs", "tickets", "inbox"], privacy: ["privacy"], reviews: ["reviews"], analytics: ["analytics"], cameras: ["cameras"], settings: ["settings", "discounts", "manual-sub"] };
 let activeAdminGroup = "bookings";
-const adminGroupButtons = document.querySelectorAll(".admin-group-tabs [data-admin-group]");
+const adminGroupButtons = document.querySelectorAll(".admin-nav [data-admin-group]");
 const adminSubtabsRow = document.getElementById("adminSubtabsRow");
+
+// Badge counts used to appear only after you opened the tab that fetched
+// them, because the loaders that set them ran from loadActiveAdminTab().
+// Opening the dashboard now fetches all of them up front, so "3 pending
+// proofs" is visible without going looking for it. Each is allowed to fail
+// on its own -- one broken query should not blank the rest of the badges.
+async function refreshAdminBadges() {
+  const jobs = [
+    ["proofs", typeof loadProofs === "function" ? loadProofs : null],
+    ["tickets", typeof loadTickets === "function" ? loadTickets : null],
+    ["inbox", typeof loadInboxEmails === "function" ? loadInboxEmails : null],
+    ["privacy", typeof loadPrivacyRequestsAdmin === "function" ? loadPrivacyRequestsAdmin : null],
+  ];
+  await Promise.allSettled(jobs.map(([name, fn]) => {
+    if (!fn) return Promise.resolve();
+    return Promise.resolve(fn()).catch(err => {
+      console.warn("Admin badge refresh failed for " + name + " (non-fatal):", err);
+    });
+  }));
+}
 
 async function loadActiveAdminTab() {
   let task;
@@ -3352,9 +3372,12 @@ function activateAdminTab(tab) {
   if (adminPanelTitle) adminPanelTitle.textContent = ADMIN_TAB_TITLES[activeAdminTab] || "Bookings";
   adminTabButtons.forEach(b => {
     const isActive = b.dataset.adminTab === activeAdminTab;
-    b.classList.toggle("active", isActive); b.classList.toggle("border-purple/40", isActive); b.classList.toggle("bg-purple/5", isActive); b.classList.toggle("text-purple", isActive);
-    b.classList.toggle("border-line", !isActive); b.classList.toggle("bg-white", !isActive); b.classList.toggle("text-body", !isActive);
+    b.classList.toggle("active", isActive);
+    if (isActive) activeAdminGroup = b.dataset.adminGroup || activeAdminGroup;
   });
+  // Booking stats describe bookings, so they only belong above that tab.
+  const adminStats = document.getElementById("adminStats");
+  if (adminStats) adminStats.classList.toggle("hidden", activeAdminTab !== "bookings");
   bookingList.classList.toggle("hidden", activeAdminTab !== "bookings");
   proofList.classList.toggle("hidden", activeAdminTab !== "proofs");
   const ticketList = document.getElementById("ticketList"); if (ticketList) ticketList.classList.toggle("hidden", activeAdminTab !== "tickets");
@@ -3381,19 +3404,19 @@ function activateAdminTab(tab) {
 function activateAdminGroup(group, preferredTab) {
   activeAdminGroup = group;
   const tabsInGroup = ADMIN_GROUPS[group] || [];
-  adminGroupButtons.forEach(b => {
-    const isActive = b.dataset.adminGroup === group;
-    b.classList.toggle("active", isActive); b.classList.toggle("bg-white", isActive); b.classList.toggle("text-purple", isActive); b.classList.toggle("shadow-sm", isActive);
-    b.classList.toggle("text-body", !isActive);
-  });
-  adminTabButtons.forEach(b => { b.classList.toggle("hidden", b.dataset.adminGroup !== group); });
-  if (adminSubtabsRow) adminSubtabsRow.classList.toggle("hidden", tabsInGroup.length <= 1);
+  // Sidebar items are always all visible, so there is nothing to show or hide
+  // per group -- the active item alone marks where you are.
   const targetTab = (preferredTab && tabsInGroup.includes(preferredTab)) ? preferredTab : tabsInGroup[0];
   activateAdminTab(targetTab);
 }
 
-adminGroupButtons.forEach(btn => { btn.onclick = () => activateAdminGroup(btn.dataset.adminGroup); });
+// One flat list: every sidebar item is both a group and a tab, so a single
+// handler covers it. adminGroupButtons and adminTabButtons select the same
+// elements now, hence binding once.
 adminTabButtons.forEach(btn => { btn.onclick = () => activateAdminTab(btn.dataset.adminTab); });
+
+// The markup no longer hard-codes an active item, so paint the default one.
+if (adminTabButtons.length) activateAdminTab(activeAdminTab);
 
 // ---------------------------------------------------------------------------
 // Camera support coverage
@@ -3938,7 +3961,7 @@ if (refreshBookings) {
   refreshBookings.onclick = async () => {
     const icon = refreshBookings.querySelector("i");
     refreshBookings.disabled = true; icon?.classList.add("fa-spin");
-    try { await loadActiveAdminTab(); }
+    try { await Promise.all([loadActiveAdminTab(), refreshAdminBadges()]); }
     finally { refreshBookings.disabled = false; icon?.classList.remove("fa-spin"); }
   };
 }
